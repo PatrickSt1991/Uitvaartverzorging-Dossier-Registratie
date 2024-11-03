@@ -207,7 +207,10 @@ Datum Tijd: {DateTime.Now}"
                 try
                 {
                     var issue = await _githubClient.Issue.Create(owner, repo, newIssue);
-                    SendNotificationEmailAsync(configuratieGithubViewModel.IssueType, issue.Number);
+                    
+                    if(DataProvider.SmtpEnabled)
+                        SendNotificationEmailAsync(configuratieGithubViewModel.IssueType, issue.Number);
+
                     CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show("Melding aangemaakt", "Melding is met succes aangemaakt.", $"Meldingsnummer {issue.Number}", "Terug", "Blijven");
                     if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
                     {
@@ -334,13 +337,13 @@ Datum Tijd: {DateTime.Now}"
         }
         public static async Task SendNotificationEmailAsync(string issueType, int issueNummer)
         {
-            string smtpServer = "smtp.gmail.com";
-            int port = 587;
-            string senderEmail = "githubdossierregistratie@gmail.com";
-            string password = "bgzg dijr ekkz syou";
-            string recipientEmail = "patrick.stel@kpnmail.nl";
-            string subject = "Eefting Dossier Registratie - " + issueType + " melding.";
-            string body = "Er is een nieuwe melding gemaakt voor het Eefting Dossier Registratie Systeem. \r\n" +
+            string smtpServer = DataProvider.SmtpServer;
+            int port = DataProvider.SmtpPort;
+            string senderEmail = DataProvider.SmtpUsername;
+            string password = DataProvider.SmtpPassword;
+            string recipientEmail = DataProvider.SmtpReciever;
+            string subject = "Dossier Registratie - " + issueType + " melding.";
+            string body = "Er is een nieuwe melding gemaakt voor het Dossier Registratie Systeem. \r\n" +
                             "Issue nummer is: " + issueNummer;
 
             using SmtpClient client = new(smtpServer, port);

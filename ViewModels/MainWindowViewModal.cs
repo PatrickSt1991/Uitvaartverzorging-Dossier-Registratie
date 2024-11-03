@@ -1,6 +1,7 @@
 ﻿using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,6 +44,7 @@ namespace Dossier_Registratie.ViewModels
         private string _archivePath;
         private string _Title;
         private string _selectedComboBoxItem;
+        private string _applicationUnavailable;
         private string _versionLabel = "Dossier Registratie - Versie: 3";
         private string _copyrightText = "© " + DateTime.Now.ToString("yyyy") + " - Patrick Stel - All Rights Reserved - " +
                                 "Created for Eefting Uitvaartverzorging B.V. - " +
@@ -162,6 +164,15 @@ namespace Dossier_Registratie.ViewModels
         {
             get { return _versionLabel; }
             set { _versionLabel = value; OnPropertyChanged(nameof(VersionLabel)); }
+        }
+        public string ApplicationUnavailable
+        {
+            get { return _applicationUnavailable; }
+            set 
+            {
+                _applicationUnavailable = value; 
+                OnPropertyChanged(nameof(ApplicationUnavailable)); 
+            }
         }
         public string CopyrightText
         {
@@ -330,6 +341,9 @@ namespace Dossier_Registratie.ViewModels
             createRepository = new CreateOperations();
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             combinedResults = new List<OverledeneSearchSurname>();
+
+            string MainApplicationName = !string.IsNullOrEmpty(DataProvider.ApplicationName) ? "DigiGraf" : DataProvider.ApplicationName;
+            ApplicationUnavailable = MainApplicationName + " is op het moment niet beschikbaar vanwege onderhoud.";
 
             LoadImageFromDatabase();
             string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();

@@ -180,6 +180,34 @@ namespace Dossier_Registratie.Helper
         {
             get { return InstanceConfig["MaintenanceConfiguration:MaintenancePassword"]; }
         }
+        public static string ApplicationName
+        {
+            get { return InstanceConfig["SystemConfiguration:ApplicationName"]; }
+        }
+        public static bool SmtpEnabled
+        {
+            get { return InstanceConfig.GetValue<bool>("SmtpConfiguration:Enabled"); }
+        }
+        public static string SmtpServer
+        {
+            get { return InstanceConfig["SmtpConfiguration:Server"]; }
+        }
+        public static int SmtpPort
+        {
+            get{ return InstanceConfig.GetValue<int>("SmtpConfiguration:Port"); }
+        }
+        public static string SmtpUsername
+        {
+            get { return InstanceConfig["SmtpConfiguration:Username"]; }
+        }
+        public static string SmtpPassword
+        {
+            get { return InstanceConfig["SmtpConfiguration:Password"]; }
+        }
+        public static string SmtpReciever
+        {
+            get { return InstanceConfig["SmtpConfiguration:Reciever"]; }
+        }
         public static string ConnectionString { get; } = InstanceConfig.GetConnectionString("DossierRegistratieConnectionString");
         public static string ShutdownFile { get; } = GetShutdownFilePath();
         public static string GetShutdownFilePath()

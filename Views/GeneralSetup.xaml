@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:GeneralSetupViewModel}"
              mc:Ignorable="d" 
              x:Name="GeneralSetupControl"
-             d:DesignHeight="1500" d:DesignWidth="800" Background="White" ScrollViewer.CanContentScroll="True">
+             d:DesignHeight="2500" d:DesignWidth="800" Background="White" ScrollViewer.CanContentScroll="True">
     <UserControl.Resources>
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <Setter Property="Padding" Value="5"/>
@@ -26,7 +26,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Border BorderBrush="#ccc" BorderThickness="1" CornerRadius="10" Padding="20" Background="White">
             <StackPanel>
-                <TextBlock Text="DigiGraf Configuratie" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding ConfigurationTitle}" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
                 <StackPanel Orientation="Vertical">
                     <Label Content="Bedrijfs Informatie" FontSize="16" FontWeight="Bold"/>
                     <StackPanel Orientation="Horizontal">
@@ -87,10 +87,16 @@
                 <StackPanel Orientation="Vertical">
                     <Label Content="Systeem Informatie" FontSize="16" FontWeight="Bold"/>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Applicatienaam" Margin="10,0,0,5" Width="200"/>
+                        <TextBlock Text="Systeennaam" Margin="10,0,0,5" Width="200"/>
                         <TextBox Text="{Binding SystemTitle}" Width="545" Height="30" 
                              Margin="0,0,0,10" ToolTip="System name." 
                              Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Applicatienaam" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding ApplicationName}" Width="545" Height="30" 
+         Margin="0,0,0,10" ToolTip="Applicatie name." 
+         Style="{StaticResource TextBoxStyle}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="GitHub automatische issues" Margin="10,0,0,5" Width="200"/>
@@ -144,6 +150,62 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
+                    <Label Content="SMTP (Mail) Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Mail ontvangen van Github melding" Margin="10,0,0,5" Width="200"/>
+                        <ToggleButton IsChecked="{Binding SmtpEnabled}" Width="60" Height="30" Margin="0,0,0,10">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Grid>
+                                                    <Border x:Name="BackgroundBorder" Background="LightGray" CornerRadius="15" />
+                                                    <Border x:Name="SwitchKnob" Background="White" Width="25" Height="25" CornerRadius="12.5" HorizontalAlignment="Left" Margin="2"/>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="BackgroundBorder" Property="Background" Value="#FFC92F39"/>
+                                                        <Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="SMTP Server" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding SmtpServer}" Width="545" Height="30" 
+            Margin="0,0,0,10" ToolTip="SMTP Server" 
+            Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="SMTP Poort" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding SmtpPort}" Width="545" Height="30" 
+             Margin="0,0,0,10" ToolTip="Enter the smtp port" 
+             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="SMTP Username (Email)" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding SmtpUsername}" Width="545" Height="30" 
+Margin="0,0,0,10" ToolTip="Enter the smtp port" 
+Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="SMTP Wachtwoord" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <PasswordBox x:Name="PasswordBox" Width="545" Height="30" Margin="0,0,0,10"
+            ToolTip="Enter the password for the smtp."
+            helper:PasswordBoxHelper.BoundPassword="{Binding SmtpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Ontvanger (Email)" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding SmtpReciever}" Width="545" Height="30" Margin="0,0,0,10" ToolTip="Enter the reciever" Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
                     <Label Content="Database Informatie" FontSize="16" FontWeight="Bold"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Host (Data Source)" Margin="10,0,0,5" Width="200"/>
@@ -165,7 +227,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Wachtwoord" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
-                        <PasswordBox x:Name="PasswordBox" Width="545" Height="30" Margin="0,0,0,10"
+                        <PasswordBox x:Name="PasswordBoxSmtp" Width="545" Height="30" Margin="0,0,0,10"
                             ToolTip="Enter the password for the database."
                             helper:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>

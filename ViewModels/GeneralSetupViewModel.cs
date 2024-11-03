@@ -46,6 +46,15 @@ namespace Dossier_Registratie.ViewModels
         private string _maintenanceUrl;
         private string _maintenanceUsername;
         private string _maintenancePassword;
+        private string _applicationName;
+        private string _configurationTitle;
+        private bool _smtpEnabled;
+        private string _smtpUsername;
+        private string _smtpPassword;
+        private string _smtpServer;
+        private int _smtpPort;
+        private string _smtpReciever;
+        
         public string OrganizationName
         {
             get => _organizationName;
@@ -255,6 +264,16 @@ namespace Dossier_Registratie.ViewModels
             {
                 _githubEnabled = value;
                 OnPropertyChanged(nameof(GithubEnabled));
+
+                if (!_githubEnabled)
+                {
+                    SmtpEnabled = false;
+                    SmtpUsername = string.Empty;
+                    SmtpPassword = string.Empty;
+                    SmtpServer = string.Empty;
+                    SmtpPort = 0;
+                    SmtpReciever = string.Empty;
+                }
             }
         }
         public string GithubKey
@@ -329,12 +348,90 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(MaintenancePassword));
             }
         }
+
+        public string ApplicationName
+        {
+            get => _applicationName;
+            set
+            {
+                _applicationName = string.IsNullOrEmpty(value) ? "DigiGraf" : value;
+                OnPropertyChanged(nameof(ApplicationName));
+            }
+        }
+        public string ConfigurationTitle
+        {
+            get => _configurationTitle;
+            set
+            {
+                _configurationTitle = value;
+                OnPropertyChanged(nameof(ConfigurationTitle));
+            }
+        }
+        public bool SmtpEnabled
+        {
+            get => _smtpEnabled;
+            set
+            {
+                if (GithubEnabled)
+                {
+                    _smtpEnabled = value;
+                    OnPropertyChanged(nameof(SmtpEnabled));
+                }
+            }
+        }
+        public string SmtpUsername
+        {
+            get => _smtpUsername;
+            set
+            {
+                _smtpUsername = value;
+                OnPropertyChanged(nameof(SmtpUsername));
+            }
+        }
+        public string SmtpPassword
+        {
+            get => _smtpPassword;
+            set
+            {
+                _smtpPassword = value;
+                OnPropertyChanged(nameof(SmtpPassword));
+            }
+        }
+        public string SmtpServer
+        {
+            get => _smtpServer;
+            set
+            {
+                _smtpServer = value;
+                OnPropertyChanged(nameof(SmtpServer));
+            }
+        }
+        public int SmtpPort
+        {
+            get => _smtpPort;
+            set
+            {
+                _smtpPort = value;
+                OnPropertyChanged(nameof(SmtpPort));
+            }
+        }
+        public string SmtpReciever
+        {
+            get => _smtpReciever;
+            set
+            {
+                _smtpReciever = value;
+                OnPropertyChanged(nameof(SmtpReciever));
+            }
+        }
+
         public ICommand SaveCommand { get; }
         public ICommand UploadLogoCommand { get; }
 
         public GeneralSetupViewModel()
         {
             LoadSettingsFromDataProvider();
+            ConfigurationTitle = ApplicationName + " Configuratie";
             SaveCommand = new RelayCommand(SaveSettings);
             UploadLogoCommand = new AdminRelayCommand(obj => UploadImage(obj));
         }
@@ -410,6 +507,13 @@ namespace Dossier_Registratie.ViewModels
             MaintenanceUrl = DataProvider.MaintenanceUrl;
             MaintenanceUsername = DataProvider.MaintenanceUser;
             MaintenancePassword = DataProvider.MaintenancePassword;
+            ApplicationName = DataProvider.ApplicationName;
+            SmtpEnabled = DataProvider.SmtpEnabled;
+            SmtpPassword = DataProvider.SmtpPassword;
+            SmtpUsername = DataProvider.SmtpUsername;
+            SmtpPort = DataProvider.SmtpPort;
+            SmtpServer = DataProvider.SmtpServer;
+            SmtpReciever = DataProvider.SmtpReciever;
         }
         private void UpdateConnectionString()
         {
@@ -438,6 +542,7 @@ namespace Dossier_Registratie.ViewModels
                 SystemSettings = new
                 {
                     DataProvider.SystemTitle,
+                    DataProvider.ApplicationName,
                     DataProvider.GithubKey,
                     DataProvider.GithubOwner,
                     DataProvider.GithubRepo,
@@ -461,8 +566,16 @@ namespace Dossier_Registratie.ViewModels
                     MaintenanceUrl,
                     MaintenanceUsername,
                     MaintenancePassword
+                },
+                SmtpConfiguration = new
+                {
+                    DataProvider.SmtpEnabled,
+                    DataProvider.SmtpServer,
+                    DataProvider.SmtpPort,
+                    DataProvider.SmtpUsername,
+                    DataProvider.SmtpPassword,
+                    DataProvider.SmtpReciever
                 }
-
             };
 
             string jsonString = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });

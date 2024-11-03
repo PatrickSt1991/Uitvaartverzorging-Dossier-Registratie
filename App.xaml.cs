@@ -59,7 +59,7 @@ namespace Dossier_Registratie
 
             var setupWindow = new Window
             {
-                Title = "DigiGraf Configuration",
+                Title = "Installatie",
                 Content = new Dossier_Registratie.Views.GeneralSetup { DataContext = setupViewModel },
                 Width = 850,
                 Height = 850,
