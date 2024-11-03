@@ -1,5 +1,5 @@
 ---
-title: Start
+title: Welkom
 layout: home
 ---
 
@@ -9,7 +9,7 @@ Bij DigiGraf begrijpen we dat nauwkeurige en efficiënte dossiervoering cruciaal
 
 Met DigiGraf krijgt u een alles-in-één oplossing voor dossierbeheer waarmee u op één centrale plek alle gegevens van overledenen, betrokkenen, uitvaartdetails en financiële informatie kunt verzamelen. Onze software helpt u uw dienstverlening naar een hoger niveau te tillen door u te voorzien van inzicht en overzicht, zonder tijdrovende administratie.
 
-# Voordelen van DigiGraf:
+## Voordelen van DigiGraf:
 - Gebruiksvriendelijke Interface: Eenvoudige navigatie en overzichtelijke schermen die het invoeren van gegevens snel en intuïtief maken.
 - Krachtige Agenda-functionaliteit: Beheer en plan uitvaarten eenvoudig in een visueel aantrekkelijke kalenderweergave, waarmee u snel de agenda en taken van uw team kunt inzien.
 - Documentbeheer op maat: DigiGraf biedt de mogelijkheid om belangrijke documenten, zoals contracten en brieven, automatisch te genereren, met branding-opties voor uw bedrijf. Ook kunt u eenvoudig afbeeldingen en logo’s toevoegen aan uw Word-sjablonen.
