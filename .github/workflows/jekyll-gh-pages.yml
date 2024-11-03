@@ -44,6 +44,10 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
+      - name: Install dependencies
+        # Install gems specified in the Gemfile, including Jekyll
+        run: bundle install
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
