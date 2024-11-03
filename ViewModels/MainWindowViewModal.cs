@@ -341,6 +341,7 @@ namespace Dossier_Registratie.ViewModels
             createRepository = new CreateOperations();
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             combinedResults = new List<OverledeneSearchSurname>();
+
             string MainApplicationName = !string.IsNullOrEmpty(DataProvider.ApplicationName) ? "DigiGraf" : DataProvider.ApplicationName;
             ApplicationUnavailable = MainApplicationName + " is op het moment niet beschikbaar vanwege onderhoud.";
 

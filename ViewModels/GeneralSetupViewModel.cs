@@ -54,6 +54,7 @@ namespace Dossier_Registratie.ViewModels
         private string _smtpServer;
         private int _smtpPort;
         private string _smtpReciever;
+        
         public string OrganizationName
         {
             get => _organizationName;
@@ -347,6 +348,7 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(MaintenancePassword));
             }
         }
+
         public string ApplicationName
         {
             get => _applicationName;
