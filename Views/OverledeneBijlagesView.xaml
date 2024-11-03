@@ -1,0 +1,429 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.OverledeneBijlagesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dossier_Registratie.ViewModels"
+             mc:Ignorable="d" d:DesignHeight="696.96" d:DesignWidth="1190.257"
+             DataContext="{x:Static local:OverledeneBijlagesViewModel.BijlagesInstance}">
+    <UserControl.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Name="BijlageGrid" Background="White" ScrollViewer.CanContentScroll="True" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
+            <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_OverledeneInfo" Content="Documenten Overledene" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Width="416" FontWeight="Bold" FontFamily="Arial" FontSize="16"/>
+            <Rectangle Height="1" Margin="10,79,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <TextBox x:Name="view_UitvaartNrFamilie" Text="{Binding InfoUitvaartleider.Uitvaartnummer}" TabIndex="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="204,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" IsEnabled="False" SelectionBrush="#FFD70000" FontFamily="Arial"/>
+            <Label x:Name="lbl_Uitvaartnummer"  Content="Uitvaartnummer" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="31" Width="179" FontFamily="Arial" FontSize="16"/>
+            <Button x:Name="lbl_SaveOverledene" Command="{Binding Path=SaveCommand}" CommandParameter="VolgendeButton" Content="Volgende" Margin="1036,16,16,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="13" FontFamily="Arial" />
+            <Button x:Name="lbl_Previous" Command="{Binding Path=PreviousCommand}" Content="Vorige" Margin="892,16,160,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="14" FontFamily="Arial" />
+            <Button x:Name="btn_DocumentAkteVanCessie" Content="Genereren" HorizontalAlignment="Left" Margin="797,130,0,0" VerticalAlignment="Top" Height="40" Width="185" Command="{Binding OpenPopupCommand}" CommandParameter="{Binding ElementName=myPopup}" TabIndex="8"/>
+            <Label x:Name="lbl_Rouwbrief" Content="Akte van Cessie" HorizontalAlignment="Left" Margin="570,140,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentTevredenheid" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.TevredenheidTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="797,175,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Bestaande openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_Advertenties" Content="Tevredenheid" HorizontalAlignment="Left" Margin="570,185,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentBezittingen" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.BezittingenTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="797,220,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_uittrekselBurgelijkeStand" Content="Bezittingen" HorizontalAlignment="Left" Margin="570,230,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentAanvraagDienst" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.AanvraagDienstTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="797,265,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_dankbetuiging" Content="Aanvraag dienst" HorizontalAlignment="Left" Margin="570,275,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <TextBox x:Name="view_AttendantIntake" Text="{Binding InfoUitvaartleider.PersoneelNaam}" HorizontalAlignment="Left" Margin="783,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial" VerticalContentAlignment="Center"/>
+            <Button x:Name="btn_DocumentKostenbegroting" Content="Openen" HorizontalAlignment="Left" Margin="797,85,0,0" VerticalAlignment="Top" Height="40" Width="185" TabIndex="7" Command="{Binding OpenKostenbegrotingCommand}"/>
+            <Label x:Name="lbl_Kostenbegroting" Content="Kostenbegroting" HorizontalAlignment="Left" Margin="570,95,0,0" VerticalAlignment="Top" Height="30" Width="208" BorderThickness="0,0,0,1" BorderBrush="Red" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="cb_DocumentDocument" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.DocumentTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,85,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentDocument" Content="Document" HorizontalAlignment="Left" Margin="10,95,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentChecklist" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.ChecklistTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,130,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentChecklist" Content="Checklist" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentOverdracht" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OverdrachtTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,175,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentOverdracht" Content="Overdacht" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentOpdrachtBegrafenis" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OpdrachtBegrafenisTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,220,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentOpdrachtBedrafenis" Content="Opdracht Begrafenis" HorizontalAlignment="Left" Margin="10,230,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentOpdrachtCrematie" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OpdrachtCrematieTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,265,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentOpdrachtCrematie" Content="Opdracht Crematie" HorizontalAlignment="Left" Margin="10,275,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentTerugmelding" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.TerugmeldingTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,310,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentTerugmelding" Content="Terugmelding" HorizontalAlignment="Left" Margin="10,320,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <ComboBox x:Name="cb_DocumentKoffiekamer" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.KoffiekamerTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="797,310,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentKoffiekamer" Content="Koffiekamer / Condoleance" HorizontalAlignment="Left" Margin="570,320,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+            <Popup x:Name="myPopup" IsOpen="False" StaysOpen="False" PlacementTarget="{Binding ElementName=BijlageGrid}" Placement="Center">
+                <Border Background="White" BorderBrush="Black" BorderThickness="1" CornerRadius="5">
+                    <StackPanel Margin="10">
+                        <ComboBox x:Name="comboBoxVerzekering" Width="150" Height="30" Margin="0,0,0,5"
+                                      ItemsSource="{Binding Path=VerzekeringenWithAll}" DisplayMemberPath="VerzekeringName"
+                                      SelectedItem="{Binding Path=SelectedVerzekering, Mode=TwoWay}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Genereren" Width="75" Height="30" Margin="0,0,5,0" Command="{Binding GenererenAkteVanCessieCommand}" />
+                            <Button Content="Mail" Height="30" Width="50" Margin="5,0,5,0" Command="{Binding GenererenAkteVanCessieCommand}" CommandParameter="mail"/>
+                            <Button Content="Sluiten" Width="75" Height="30" Command="{Binding ClosePopupCommand}" CommandParameter="{Binding ElementName=myPopup}"/>
+
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Popup>
+            <ProgressBar x:Name="loadingSpinner" Width="65" Height="65" IsIndeterminate="True" 
+                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" 
+                         VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar.Template>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="0" Padding="1">
+                            <Grid x:Name="PART_Indicator" HorizontalAlignment="Left">
+                                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <Ellipse x:Name="glow" Width="60" Height="60" Stroke="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" StrokeThickness="10" Opacity="0.4" />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </ProgressBar.Template>
+            </ProgressBar>
+            <ComboBox x:Name="cb_DocumentAangifte" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.AangifteTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,355,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+                <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/printer.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Uitprinten" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Word" Content="Openen" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="lbl_DocumentAangifte" Content="Aangifte" HorizontalAlignment="Left" Margin="10,365,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

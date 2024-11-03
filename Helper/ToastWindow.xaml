@@ -1,0 +1,20 @@
+﻿<Window x:Class="Dossier_Registratie.Helper.ToastWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dossier_Registratie.Helper"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Width="300"
+        Height="100"
+        Loaded="Window_Loaded"
+        WindowStartupLocation="Manual">
+    <Border Background="#FFC92F39" CornerRadius="10" Padding="10" Opacity="0.9">
+        <TextBlock x:Name="MessageTextBlock" Foreground="White" FontWeight="Bold" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Border>
+</Window>

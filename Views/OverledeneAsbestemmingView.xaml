@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.OverledeneAsbestemmingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dossier_Registratie.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="950.96" d:DesignWidth="1190.257"
+             DataContext="{x:Static local:OverledeneAsbestemmingViewModel.AsbestemmingInstance}"
+             Loaded="ReloadDynamicElements">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Name="AsbestemmingGrid" Background="White" ScrollViewer.CanContentScroll="True" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
+            <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>
+            <Rectangle Height="1" Margin="10,79,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Label x:Name="lbl_asbestemming" Content="Asbestemming Overledene" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Width="429" FontWeight="Bold" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="view_UitvaartNrFamilie" Text="{Binding InfoUitvaartleider.Uitvaartnummer}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="204,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial"/>
+            <Label x:Name="lbl_Uitvaartnummer" Content="Uitvaartnummer" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="31" Width="179" FontFamily="Arial" FontSize="16"/>
+            <Button x:Name="lbl_SaveUitvaart" Command="{Binding Path=SaveCommand}" CommandParameter="VolgendeButton" Content="Volgende" Margin="1036,16,16,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="6" FontFamily="Arial" />
+            <Button x:Name="lbl_Previous" Command="{Binding Path=PreviousCommand}" Content="Vorige" Margin="892,16,160,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="7" FontFamily="Arial" />
+            <TextBox x:Name="view_AttendantIntake" Text="{Binding InfoUitvaartleider.PersoneelNaam}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="783,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial"/>
+            <ComboBox x:Name="input_asBestemming" DisplayMemberPath="AsbestemmingOmschrijving" Text="{Binding AsbestemmingModel.Asbestemming}" ItemsSource="{Binding Path=Asbestemmingen}" HorizontalAlignment="Left" Margin="208,96,0,0" VerticalAlignment="Top" Width="513" Height="31" FontSize="16" TabIndex="1" FontFamily="Arial"/>
+            <Label x:Name="lbl_asBestemming" Content="Asbestemming" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_grafType" Text="{Binding AsbestemmingModel.TypeGraf}" HorizontalAlignment="Left" Margin="208,133,0,0" VerticalAlignment="Top" Width="513" Height="31" FontSize="16" TabIndex="2" FontFamily="Arial">
+                <ComboBoxItem x:Name="koopgraf" Tag="koopgraf" Content="Koopgraf"/>
+                <ComboBoxItem x:Name="huurgraf" Tag="huurgraf" Content="Huurgraf"/>
+            </ComboBox>
+            <Label x:Name="lbl_typeGraf" Content="Type graf" HorizontalAlignment="Left" Margin="10,133,0,0" VerticalAlignment="Top" Height="31" Width="163" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_grafMonument" Text="{Binding AsbestemmingModel.GrafMonument}" HorizontalAlignment="Left" Margin="208,241,0,0" VerticalAlignment="Top" Width="513" Height="31" FontSize="16" TabIndex="5" FontFamily="Arial">
+                <ComboBoxItem x:Name="staandeLetterplaat" Tag="staandeLetterplaat" Content="Staande letterplaat"/>
+                <ComboBoxItem x:Name="staandeLetterplaatVloer" Tag="staandeLetterplaatVloer" Content="Staande letterplaat met een vloer"/>
+                <ComboBoxItem x:Name="liggendeZerk" Tag="liggendeZerk" Content="Liggende zerk"/>
+            </ComboBox>
+            <Label x:Name="lbl_grafMonument" Content="Grafmonument" HorizontalAlignment="Left" Margin="10,241,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_bestaandGraf" Text="{Binding AsbestemmingModel.BestaandGraf}" HorizontalAlignment="Left" Margin="208,169,0,0" VerticalAlignment="Top" Width="513" Height="31" FontSize="16" TabIndex="3" FontFamily="Arial" >
+                <ComboBoxItem x:Name="jaBestaand" Tag="jaBestaand" Content="Ja"/>
+                <ComboBoxItem x:Name="neeBestaand" Tag="neeBestaand" Content="Nee"/>
+            </ComboBox>
+            <Label x:Name="lbl_bestaandGraf" Content="Bestaand graf" HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_zandKelderGraf" Text="{Binding AsbestemmingModel.ZandKelderGraf}" HorizontalAlignment="Left" Margin="208,205,0,0" VerticalAlignment="Top" Width="513" Height="31" FontSize="16" TabIndex="4" FontFamily="Arial" >
+                <ComboBoxItem x:Name="enkelZandgraf" Tag="enkelZandgraf" Content="Enkel zandgraf"/>
+                <ComboBoxItem x:Name="dubbelZandgraf" Tag="dubbelZandgraf" Content="Dubbel zandgraf"/>
+                <ComboBoxItem x:Name="enkelKeldergraf" Tag="enkelKeldergraf" Content="Enkel keldergraf"/>
+                <ComboBoxItem x:Name="dubbelKeldergraf" Tag="dubbelKeldergraf" Content="Dubbel keldergraf"/>
+            </ComboBox>
+            <Label x:Name="lbl_zandKelderGraf" Content="Zand / Kelder graf" HorizontalAlignment="Left" Margin="10,205,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_asBestemmingAnders" Content="Asbestemming anders" HorizontalAlignment="Left" Margin="595,94,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16" Visibility="Collapsed"/>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

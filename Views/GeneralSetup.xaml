@@ -1,0 +1,306 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.GeneralSetup"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dossier_Registratie.Views" 
+             xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
+             xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             d:DataContext="{d:DesignInstance Type=viewmodels:GeneralSetupViewModel}"
+             mc:Ignorable="d" 
+             x:Name="GeneralSetupControl"
+             d:DesignHeight="1500" d:DesignWidth="800" Background="White" ScrollViewer.CanContentScroll="True">
+    <UserControl.Resources>
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="BorderBrush" Value="#888"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="MinWidth" Value="250"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Border BorderBrush="#ccc" BorderThickness="1" CornerRadius="10" Padding="20" Background="White">
+            <StackPanel>
+                <TextBlock Text="DigiGraf Configuratie" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Bedrijfs Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Bedrijfsnaam" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationName}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization name." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Straat" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationStreet}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization street." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Huisnummer" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationHousenumber}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization housenumber." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Huisnummer toevoeging" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationHousenumberAddition}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization Housenumber Addition." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Postcode" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationZipcode}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization zipcode." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Stad" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationCity}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization city." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Telefoonnummer" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationPhonenumber}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization phonenumber." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="E-mail" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationEmail}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization email." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="IBAN" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding OrganizationIban}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Organization IBAN." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Systeem Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Applicatienaam" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding SystemTitle}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="System name." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="GitHub automatische issues" Margin="10,0,0,5" Width="200"/>
+                        <ToggleButton IsChecked="{Binding GithubEnabled}" Width="60" Height="30" Margin="0,0,0,10">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Grid>
+                                                    <Border x:Name="BackgroundBorder" Background="LightGray" CornerRadius="15" />
+                                                    <Border x:Name="SwitchKnob" Background="White" Width="25" Height="25" CornerRadius="12.5" HorizontalAlignment="Left" Margin="2"/>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="BackgroundBorder" Property="Background" Value="#FFC92F39"/>
+                                                        <Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="GitHub key" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding GithubKey}" Width="545" Height="60" 
+                             Margin="0,0,0,10" ToolTip="Github Key." 
+                             Style="{StaticResource TextBoxStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="GitHub eigenaar" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding GithubOwner}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Github Owner." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="GitHub repository" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding GithubRepo}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Github Repository." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="GitHub product" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding GithubProduct}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Github Product." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Database Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Host (Data Source)" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding DataSource}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Enter the database host (e.g., localhost)." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Database naam" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding DatabaseName}" Width="545" Height="30" 
+                            Margin="0,0,0,10" ToolTip="Enter the name of the database." 
+                            Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Gebruikersnaam (User ID)" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding UserId}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Enter the username for the database." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Wachtwoord" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <PasswordBox x:Name="PasswordBox" Width="545" Height="30" Margin="0,0,0,10"
+                            ToolTip="Enter the password for the database."
+                            helper:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Onderhouds Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Onderhouds check enabled" Margin="10,0,0,5" Width="200"/>
+                        <ToggleButton IsChecked="{Binding GithubEnabled}" Width="60" Height="30" Margin="0,0,0,10">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Grid>
+                                                    <Border x:Name="BackgroundBorder" Background="LightGray" CornerRadius="15" />
+                                                    <Border x:Name="SwitchKnob" Background="White" Width="25" Height="25" CornerRadius="12.5" HorizontalAlignment="Left" Margin="2"/>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="BackgroundBorder" Property="Background" Value="#FFC92F39"/>
+                                                        <Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Onderhouds URL" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding DatabaseName}" Width="545" Height="30" 
+            Margin="0,0,0,10" ToolTip="Enter the name of the database." 
+            Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Gebruikersnaam" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding UserId}" Width="545" Height="30" 
+             Margin="0,0,0,10" ToolTip="Enter the username for the database." 
+             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Wachtwoord" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <PasswordBox x:Name="PasswordBoxMaintenance" Width="545" Height="30" Margin="0,0,0,10"
+            ToolTip="Enter the password for the database."
+            helper:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Data Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Systeeem Uitschakelen Bestand" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Sluit alle instanties van de applicatie" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding ShutdownFile}" Width="545" Height="30" Margin="0,0,0,10" ToolTip="Enter the full path for the shutdown file." Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Database &lt; 2023" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Zoek in oude MS Access database" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding Access2023Db}" Width="545" Height="30" Margin="0,0,0,10" ToolTip="Enter the full path for the access database." Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Database &lt; 2024" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Zoek in oude MS Access database" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding Access2024Db}" Width="545" Height="30" Margin="0,0,0,10" ToolTip="Enter the full path for the access database." Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Archief Folder" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Zoekt de folder door naar PDF bestand" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding ArchiveFolder}" Width="545" Height="30" Margin="0,0,0,10" ToolTip="Enter the full path for the shutdown file." Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Sjabloon Folder" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Folder waarr de word sjablonen staan" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding TemplateFolder}" Width="545" Height="30" 
+                         Margin="0,0,0,10" ToolTip="Enter the full path for the shutdown file." 
+                         Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Opslag Folder (Gegenereerd)" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Opslag folder voor gegenereerde bestanden" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding DocuSaveFolder}" Width="545" Height="30" 
+                         Margin="0,0,0,10" ToolTip="Enter the full path for the shutdown file." 
+                         Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Factuur Opslag Folder" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Waar alle facturen opgeslagen worden" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding BillSaveFolder}" Width="545" Height="30" 
+                         Margin="0,0,0,10" ToolTip="Enter the full path for the shutdown file." 
+                         Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Afbeelding Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Applicatie Logo" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Staat links boven in de applicatie" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <Button Command="{Binding UploadLogoCommand}" CommandParameter="Frontend" Content="Upload Application Logo" Width="250" HorizontalContentAlignment="Left" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Beheer Logo" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Staat links boven in de beheer sectie" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <Button Command="{Binding UploadLogoCommand}" CommandParameter="Backend" Content="Upload Backend Logo" Width="250" HorizontalContentAlignment="Left" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Document Logo" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Header van de gegenereerde documenten" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <Button Command="{Binding UploadLogoCommand}" CommandParameter="Document" Content="Upload Document Logo" Width="250" HorizontalContentAlignment="Left" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </StackPanel>
+                <Button Content="Opslaan en opnieuw opstarten" Command="{Binding SaveCommand}" 
+                    Width="200" Height="30" Margin="0,20,0,0" HorizontalAlignment="Right"/>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

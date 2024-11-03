@@ -1,0 +1,519 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.OverledeneExtraInfoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dossier_Registratie.ViewModels" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="950.96" d:DesignWidth="1190.257"
+             DataContext="{x:Static local:OverledeneExtraInfoViewModal.ExtraInfoInstance}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Name="ExtraInfoGrid" Background="White" ScrollViewer.CanContentScroll="True" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
+            <TextBox x:Name="input_SureNameFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverAchternaam,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="21" FontFamily="Arial"/>
+            <Label x:Name="lbl_SureNameFamilie" Content="Achternaam" HorizontalAlignment="Left" Margin="555,158,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_SalutationFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverAanhef, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="749,121,0,0" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="20" FontFamily="Arial">
+                <ComboBoxItem Content="Dhr."/>
+                <ComboBoxItem Content="Mevr."/>
+                <ComboBoxItem Content="Onzijdig"/>
+            </ComboBox>
+            <Label x:Name="lbl_SalutationFamilie" Content="Aanhef" HorizontalAlignment="Left" Margin="555,121,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_FirstnameFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverVoornaamen,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,231,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="23" FontFamily="Arial"/>
+            <Label x:Name="lbl_FirstnameFamilie" Content="Voornamen" HorizontalAlignment="Left" Margin="555,231,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_PrepositionFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverTussenvoegsel,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,194,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="22" FontFamily="Arial"/>
+            <Label x:Name="lbl_PrepositionFamilie" Content="Tussenvoegsel" HorizontalAlignment="Left" Margin="555,194,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <DatePicker 
+    x:Name="input_DateOfBirthFamilie" 
+    SelectedDate="{Binding Path=OpdrachtgeverPersoonsgegevens.OpdrachtgeverGeboortedatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" 
+    TabIndex="24" 
+    VerticalContentAlignment="Center" 
+    HorizontalAlignment="Left" 
+    Margin="749,268,0,0" 
+    Width="336" 
+    Height="31" 
+    FontSize="16" 
+    FontFamily="Arial" 
+    VerticalAlignment="Top" 
+    Language="nl-NL"
+    materialDesign:HintAssist.Hint="Geboortedatum" 
+    materialDesign:TextFieldAssist.HasClearButton="True" 
+    Style="{StaticResource MaterialDesignFloatingHintDatePicker}">
+
+                <!-- Customize the TextBox Template if needed, or keep default -->
+                <DatePicker.Resources>
+                    <Style TargetType="DatePickerTextBox">
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <TextBox 
+                            x:Name="GeboorteDatum" 
+                            Text="{Binding Path=SelectedDate, StringFormat='dd-MM-yyyy', RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DatePicker.Resources>
+            </DatePicker>
+            <Label x:Name="lbl_DateOfBirthFamilie" Content="Geboortedatum" HorizontalAlignment="Left" Margin="555,268,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_AddressFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverStraat,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,451,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="30" FontFamily="Arial" GotFocus="FetchExraInfoAddressInfoCommand"/>
+            <Label x:Name="lbl_Addres" Content="Adres:" HorizontalAlignment="Left" Margin="555,451,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_PostalCodeFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverPostcode,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,342,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="27" FontFamily="Arial"/>
+            <Label x:Name="lbl_PostalCode" Content="Postcode" HorizontalAlignment="Left" Margin="555,342,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_CityFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverWoonplaats,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,487,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="31" FontFamily="Arial"/>
+            <Label x:Name="lbl_City" Content="Woonplaats" HorizontalAlignment="Left" Margin="555,487,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_BSNFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverBSN,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,85,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="19" FontFamily="Arial"/>
+            <Label x:Name="lbl_BSNFamilie" Content="BSN" HorizontalAlignment="Left" Margin="555,85,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_FamilieExtraInfo" Content="Persoonsgegevens Opdrachtgever" HorizontalAlignment="Left" Margin="555,51,0,0" VerticalAlignment="Top" Width="416" FontWeight="Bold" FontFamily="Arial" FontSize="16"/>
+            <Rectangle Height="1" Margin="10,79,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <TextBox x:Name="input_KinderenAmount" Text="{Binding OverledeneExtraInfo.OverledeneAantalKinderen,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,160,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="32" FontSize="16" TabIndex="3" FontFamily="Arial"/>
+            <Label x:Name="lbl_Kinderen" Content="Aantal kinderen" HorizontalAlignment="Left" Margin="8,160,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_AgeFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverLeeftijd,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,304,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="32" FontSize="16" TabIndex="26" FontFamily="Arial"/>
+            <Label x:Name="lbl_Age" Content="Leeftijd" HorizontalAlignment="Left" Margin="555,304,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_ExtraInfo" Content="Extra Gegevens Overledene" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Width="429" FontWeight="Bold" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="view_UitvaartNrFamilie" Text="{Binding ExtraInfoUitvaartleider.Uitvaartnummer}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="204,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial"/>
+            <Label x:Name="lbl_Uitvaartnummer" Content="Uitvaartnummer" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="31" Width="179" FontFamily="Arial" FontSize="16"/>
+            <Button x:Name="lbl_SaveFamilie" Command="{Binding SaveCommand}" CommandParameter="VolgendeButton" Content="Volgende" Margin="1035,16,15,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="36" FontFamily="Arial" />
+            <Button x:Name="lbl_Previous" Command="{Binding PreviousCommand}" Content="Vorige" Margin="887,16,155,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="37" FontFamily="Arial" />
+            <ComboBox x:Name="input_maritalStatus" Text="{Binding OverledeneExtraInfo.OverledeneBurgelijkestaat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedMaritalStatus, Mode=TwoWay}" HorizontalAlignment="Left" Margin="206,85,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="1" FontFamily="Arial">
+                <ComboBoxItem Tag="trouwen" Content="Gehuwd"/>
+                <ComboBoxItem Tag="gescheiden" Content="Gescheiden"/>
+                <ComboBoxItem Tag="alleenstaand" Content="Ongehuwd"/>
+                <ComboBoxItem Tag="partner" Content="Partnerschap"/>
+                <ComboBoxItem Tag="overlijden" Content="Weduwe / Weduwnaar"/>
+            </ComboBox>
+            <Label x:Name="lbl_Burgelijkestaat" Content="Burgerlijkestaat" HorizontalAlignment="Left" Margin="8,85,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_KinderenMinderjarig" Text="{Binding OverledeneExtraInfo.OverledeneKinderenMinderjarig,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="206,197,0,0" VerticalAlignment="Top" Width="301" Height="32" FontSize="16" TabIndex="4" FontFamily="Arial"/>
+            <Label x:Name="lbl_KinderenMinderjarig" Content="Waarvan minderjarig" HorizontalAlignment="Left" Margin="8,197,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_childerenDeceased" Text="{Binding OverledeneExtraInfo.OverledeneKinderenMinderjarigOverleden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,234,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="5" FontFamily="Arial"/>
+            <Label x:Name="lbl_childerenDeceased" Content="Waarvan overleden" HorizontalAlignment="Left" Margin="8,234,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_ParentOne" Text="{Binding OverledeneExtraInfo.OverledeneEersteOuder,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="6" FontFamily="Arial"/>
+            <Label x:Name="lbl_ParentOne" Content="Eerst ouder overledene" HorizontalAlignment="Left" Margin="8,269,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_ParentOneDeceased" Text="{Binding OverledeneExtraInfo.OverledeneEersteOuderOverleden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="206,304,0,0" VerticalAlignment="Top" Width="301" Height="32" FontSize="16" TabIndex="7" FontFamily="Arial">
+                <ComboBoxItem Content="Ja"/>
+                <ComboBoxItem Content="Nee"/>
+                <ComboBoxItem Content="Onbekend"/>
+            </ComboBox>
+            <Label x:Name="lbl_ParentOneDeceased" Content="Eerste ouder overleden" HorizontalAlignment="Left" Margin="8,304,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_ParentTwo" Text="{Binding OverledeneExtraInfo.OverledeneTweedeOuder,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,341,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="8" FontFamily="Arial"/>
+            <Label x:Name="lbl_ParentTwo" Content="Tweede ouder overledene" HorizontalAlignment="Left" Margin="8,341,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_ParentTwoDeceased" Text="{Binding OverledeneExtraInfo.OverledeneTweedeOuderOverleden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="206,376,0,0" VerticalAlignment="Top" Width="301" Height="32" FontSize="16" TabIndex="9" FontFamily="Arial">
+                <ComboBoxItem Content="Ja"/>
+                <ComboBoxItem Content="Nee"/>
+                <ComboBoxItem Content="Onbekend"/>
+            </ComboBox>
+            <Label x:Name="lbl_ParentTwoDeceased" Content="Tweede ouder overleden" HorizontalAlignment="Left" Margin="8,376,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
+
+            <!-- Hidden TrouwDatum -->
+            <Label x:Name="lbl_Huwelijk" Content="Huwelijk" HorizontalAlignment="Left" Margin="8,589,0,0" VerticalAlignment="Top" Width="434" FontWeight="Bold" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <DatePicker x:Name="input_TrouwDatum" SelectedDate="{Binding OverledeneExtraInfo.OverledeneTrouwDatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="8" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,622,0,0" Width="301" Height="30" FontSize="16" FontFamily="Arial" VerticalAlignment="Top" Language="nl-NL" materialDesign:HintAssist.Hint="Trouwdatum" materialDesign:TextFieldAssist.HasClearButton="True">
+                <DatePicker.Style>
+                    <Style TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignFloatingHintDatePicker}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DatePicker.Style>
+                <DatePicker.Resources>
+                    <Style TargetType="DatePickerTextBox">
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <TextBox 
+                            x:Name="TrouwDatum" 
+                            Text="{Binding Path=SelectedDate, StringFormat='dd-MM-yyyy', RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DatePicker.Resources>
+            </DatePicker>
+
+            <Label x:Name="lbl_DateHuwelijk" Content="Trouw Datum" HorizontalAlignment="Left" Margin="8,622,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <Label x:Name="lbl_NaamEchtgenoot" Content="Achternaam echtgeno(o)t(te)" HorizontalAlignment="Left" Margin="8,655,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="14">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <TextBox x:Name="input_NaamEchtgenoot" Text="{Binding OverledeneExtraInfo.NaamWederhelft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,655,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="8" FontFamily="Arial">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <Label x:Name="lbl_VoornaamEchtgenoot" Content="Voornaam echtgeno(o)t(te)" HorizontalAlignment="Left" Margin="8,688,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="14">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <TextBox x:Name="input_VoornaamEchtgenoot" Text="{Binding OverledeneExtraInfo.VoornaamWederhelft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,688,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" TabIndex="8" FontFamily="Arial">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="trouwen">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+
+            <!-- Hidden PartnerDatum -->
+            <Label x:Name="lbl_Partner" Content="Geregistreerd partnerschap" HorizontalAlignment="Left" Margin="8,589,0,0" VerticalAlignment="Top" Width="434" FontWeight="Bold" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <DatePicker x:Name="input_DatePartner" SelectedDate="{Binding OverledeneExtraInfo.OverledeneGeregistreerdDatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="15" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,622,0,0" Width="300" Height="30" FontSize="16" FontFamily="Arial" VerticalAlignment="Top" Language="nl-NL" materialDesign:HintAssist.Hint="Parnerschap datum" materialDesign:TextFieldAssist.HasClearButton="True">
+                <DatePicker.Style>
+                    <Style TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignFloatingHintDatePicker}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DatePicker.Style>
+                <DatePicker.Resources>
+                    <Style TargetType="DatePickerTextBox">
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <TextBox 
+                            x:Name="OverledeneGeregistreerdDatum" 
+                            Text="{Binding Path=SelectedDate, StringFormat='dd-MM-yyyy', RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DatePicker.Resources>
+            </DatePicker>
+
+            <Label x:Name="lbl_Date_Partner" Content="Datum" HorizontalAlignment="Left" Margin="8,622,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <Label x:Name="lbl_NaamPartner" Content="Achternaam partner" HorizontalAlignment="Left" Margin="8,655,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <TextBox x:Name="input_NaamPartner" Text="{Binding OverledeneExtraInfo.NaamWederhelft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,655,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="8" FontFamily="Arial">
+
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <Label x:Name="lbl_VoornaamPartner" Content="Voornaam partner" HorizontalAlignment="Left" Margin="8,688,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <TextBox x:Name="input_VoornaamPartner" Text="{Binding OverledeneExtraInfo.VoornaamWederhelft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,688,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" TabIndex="8" FontFamily="Arial">
+
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="partner">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+
+            <!-- Hidden Gescheiden-->
+            <TextBox x:Name="input_Divorsed" Text="{Binding OverledeneExtraInfo.OverledeneGescheidenVan, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,622,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" TabIndex="17" FontFamily="Arial">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="gescheiden">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <Label x:Name="lbl_Date_Gescheiden" Content="Gescheiden van" HorizontalAlignment="Left" Margin="8,622,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="gescheiden">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <Label x:Name="lbl_Gescheiden" Content="Gescheiden" HorizontalAlignment="Left" Margin="8,589,0,0" VerticalAlignment="Top" Width="430" FontWeight="Bold" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="gescheiden">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+
+            <!-- Hidden OverlijdenDatum -->
+            <TextBox x:Name="input_Weduwe" Text="{Binding OverledeneExtraInfo.OverledeneWedenaarVan, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,622,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="302" Height="30" FontSize="16" TabIndex="18" FontFamily="Arial">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="overlijden">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <Label x:Name="lbl_WeduweVan" Content="Weduwe/Weduwnaar van" HorizontalAlignment="Left" Margin="8,622,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="overlijden">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <Label x:Name="lbl_Weduwe" Content="Weduwe/Weduwnaar van" HorizontalAlignment="Left" Margin="8,589,0,0" VerticalAlignment="Top" Width="430" FontWeight="Bold" FontFamily="Arial" FontSize="16">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=input_maritalStatus, Path=SelectedItem.Tag}" Value="overlijden">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+
+            <TextBox x:Name="input_CountyFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverGemeente,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,524,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="32" FontFamily="Arial"/>
+            <Label x:Name="lbl_County" Content="Gemeente" HorizontalAlignment="Left" Margin="555,524,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="view_AttendantIntake" Text="{Binding ExtraInfoUitvaartleider.PersoneelNaam}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="783,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial"/>
+            <TextBox x:Name="input_HousenumberFamily" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverHuisnummer,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,378,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="28" FontFamily="Arial"/>
+            <Label x:Name="lbl_Housenumber" Content="Huisnummer:" HorizontalAlignment="Left" Margin="555,378,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_HousenumberAdditionFamily" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverHuisnummerToevoeging,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,414,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="29" FontFamily="Arial"/>
+            <Label x:Name="lbl_HousenumberAddition" Content="Huisnummer toevoeging:" HorizontalAlignment="Left" Margin="555,414,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_Executeur" Text="{Binding OverledeneExtraInfo.OverledeneExecuteur,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,413,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="10" FontFamily="Arial"/>
+            <Label x:Name="lbl_Executeur" Content="Executeur" HorizontalAlignment="Left" Margin="8,413,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_ExecuteurPhone" Text="{Binding OverledeneExtraInfo.OverledeneExecuteurTelefoon,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,448,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="11" FontFamily="Arial"/>
+            <Label x:Name="lbl_ExecuteurPhone" Content="Executeur telefoon nr." HorizontalAlignment="Left" Margin="8,448,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_Will" Text="{Binding OverledeneExtraInfo.OverledeneTestament,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,553,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="14" FontFamily="Arial"/>
+            <Label x:Name="lbl_ExecuteurPhone_Copy1" Content="Testament" HorizontalAlignment="Left" Margin="8,553,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_Geloof" Text="{Binding OverledeneExtraInfo.OverledeneLevensovertuiging,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="32" FontSize="16" TabIndex="2" FontFamily="Arial"/>
+            <Label x:Name="lbl_Geloof" Content="Levensovertuiging" HorizontalAlignment="Left" Margin="8,121,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_PhoneNumberFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverTelefoon,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,560,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="33" FontFamily="Arial"/>
+            <Label x:Name="lbl_PhoneNumber" Content="Telefoonnummer" HorizontalAlignment="Left" Margin="555,560,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_email" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,596,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="34" FontFamily="Arial"/>
+            <Label x:Name="lbl_Email" Content="E-mail" HorizontalAlignment="Left" Margin="555,596,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_RelationToDeceased" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverRelatieTotOverledene, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="749,632,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="35" FontFamily="Arial"/>
+            <Label x:Name="lbl_RelationToDeceased" Content="Relatie tot overledene" HorizontalAlignment="Left" Margin="555,632,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_Notaris" Text="{Binding OverledeneExtraInfo.OverledeneNotaris,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,483,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="12" FontFamily="Arial"/>
+            <Label x:Name="lbl_Notaris" Content="Notaris" HorizontalAlignment="Left" Margin="8,483,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_NotarisPhone" Text="{Binding OverledeneExtraInfo.OverledeneNotarisTelefoon,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="206,518,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301" Height="30" FontSize="16" TabIndex="13" FontFamily="Arial"/>
+            <Label x:Name="lbl_NotarisPhone" Content="Notaris telefoon nr." HorizontalAlignment="Left" Margin="8,518,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_extraInfo" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverExtraInformatie,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="36" HorizontalAlignment="Left" Margin="555,732,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Height="142" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
+            <Label x:Name="lbl_extraInfo" Content="Extra Informatie Overledene" HorizontalAlignment="Left" Margin="555,696,0,0" VerticalAlignment="Top" Height="31" Width="530" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
+            <Button x:Name="lbl_extraContactPersoon" Command="{Binding OpenCreateExtraContactPopupCommand}" Content="Extra Contactpersoon / Opdrachtgever" Margin="862,879,0,0" VerticalAlignment="Top" Height="31" TabIndex="37" FontFamily="Arial" HorizontalAlignment="Left" Width="223" />
+
+            <Popup x:Name="extaContactPopup" Placement="Center" StaysOpen="True" IsOpen="{Binding IsCreateExtraContactPopupOpen}">
+                <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="425" Height="555" CornerRadius="5">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
+                            <Label Content="BSN: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverBSN}" Width="250" TabIndex="1" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Aanhef: " Width="150"/>
+                            <ComboBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverAanhef, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="250" TabIndex="2">
+                                <ComboBoxItem Content="Dhr."/>
+                                <ComboBoxItem Content="Mevr."/>
+                                <ComboBoxItem Content="Onzijdig"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Achternaam: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverAchternaam}" Width="250" TabIndex="3"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Tussenvoegsel: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverTussenvoegsel}" Width="250" TabIndex="4"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Voornamen: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverVoornaamen}" Width="250" TabIndex="5"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Geboortedatum: " Width="150"/>
+                            <DatePicker x:Name="input_DateOfBirthFamilieExtra" SelectedDate="{Binding Path=ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverGeboortedatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="6" VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="250" Language="nl-NL" materialDesign:HintAssist.Hint="Geboortedatum" materialDesign:TextFieldAssist.HasClearButton="True" Style="{StaticResource MaterialDesignFloatingHintDatePicker}">
+                                <DatePicker.Resources>
+                                    <Style TargetType="DatePickerTextBox">
+                                        <Setter Property="Control.Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <TextBox x:Name="ExtraGeboorteDatum" Text="{Binding Path=SelectedDate, StringFormat='dd-MM-yyyy', RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}" TabIndex="6"/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </DatePicker.Resources>
+                            </DatePicker>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Leeftijd: " Width="150"/>
+                            <TextBox x:Name="input_AgeFamilieExtra" Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverLeeftijd,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="250" TabIndex="7"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Postcode: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverPostcode}" Width="250" TabIndex="8"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Huisnummer: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverHuisnummer}" Width="250" TabIndex="9"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Huisnummer Toevoeging: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverHuisnummerToevoeging}" Width="250" TabIndex="10"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Adres: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverStraat}" Width="250" TabIndex="11" GotFocus="FetchSecondExraInfoAddressInfoCommand" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Woonplaats" Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverWoonplaats}" Width="250" TabIndex="12" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Gemeente: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverGemeente}" Width="250" TabIndex="13"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Telefoonnummer: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverTelefoon}" Width="250" TabIndex="14"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Email: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverEmail}" Width="250" TabIndex="15"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                            <Label Content="Relatie tot overledene: " Width="150"/>
+                            <TextBox Text="{Binding ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverRelatieTotOverledene}" Width="250" TabIndex="16"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,15,5,5">
+                            <Button Content="Sluiten" Command="{Binding CloseCreateExtraContactPopupCommand}" Margin="0,0,10,10" Width="120" Height="30" TabIndex="18" />
+                            <Button Content="Opslaan" Command="{Binding SaveExtraContactPersoonCommand}" Margin="0,0,0,10" Width="120" Height="30" TabIndex="17" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Popup>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
