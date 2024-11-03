@@ -1,73 +1,37 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll site to Pages
+name: Deploy Jekyll with GitHub Pages dependencies preinstalled
 
 on:
   push:
-    branches:
-      - "main"
-    paths:
-      - "docs/**"
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: ["main"]
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  # Build job
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: docs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-
-      - name: Install dependencies
-        # Install gems specified in the Gemfile, including Jekyll
-        run: bundle install
-
       - name: Setup Pages
-        id: pages
         uses: actions/configure-pages@v5
-
       - name: Build with Jekyll
-        # Outputs to './docs/_site' directory within the 'docs' folder
-        run: bundle exec jekyll build --destination ./_site --baseurl "${{ steps.pages.outputs.base_path }}"
-        env:
-          JEKYLL_ENV: production
-
-      - name: List generated files
-        # Verify the content of the _site folder after build
-        run: ls -R ./_site
-
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs  # Adjust to the actual folder where your Jekyll source files are located
+          destination: ./docs/_site  # Ensure this matches the expected destination
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./_site"  # Adjusted to match the actual build output within 'docs'
+          path: ./docs/_site  # Ensure this path matches where _site is generated
 
-  # Deployment job
   deploy:
     environment:
       name: github-pages
