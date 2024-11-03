@@ -1,0 +1,40 @@
+{
+  "ConnectionStrings": {
+    "DossierRegistratieConnectionString": "Data Source=;Database=;User Id=;Password=;"
+  },
+  "CompanySettings": {
+    "Name": "",
+    "Street": "",
+    "HouseNumber": "",
+    "HouseNumberAddition": "",
+    "Zipcode": "",
+    "City": "",
+    "PhoneNumber": "",
+    "Email": "",
+    "IBAN": ""
+  },
+  "SystemSettings": {
+    "SystemTitle": "Dossier Registratie Systeem",
+    "GithubEnabled": false,
+    "GithubKey": "",
+    "GithubOwner": "",
+    "GithubRepo": "",
+    "GithubProduct": "",
+    "SetupComplete": false
+  },
+  "SystemConfiguration": {
+    "ShutdownFile": "",
+    "Database2024": "",
+    "Database2023": "",
+    "PdfArchive": "",
+    "TemplateFolder": "",
+    "DocumentenOpslag": "",
+    "FactuurOpslag": ""
+  },
+  "MaintenanceConfiguration": {
+    "MaintenanceCheckEnabled":  false,
+    "MaintenanceUrl": "",
+    "MaintenanceUser": "",
+    "MaintenancePassword": ""
+  }
+}
