@@ -1,0 +1,21 @@
+﻿<Window x:Class="Dossier_Registratie.Views.CustomMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dossier_Registratie.Views"
+        mc:Ignorable="d"
+        Title="dummyTitle" Height="200" Width="300" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <TextBlock Name="HeaderTextBlock" Text="dummyHeader" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,25,0,110" Width="280"/>
+        <TextBlock Name="MessageTextBlock" Text="dummyText" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,79,0,44" Width="280"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" Width="280">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Name="ContinueButton" Content="Begrepen" Width="100" Margin="5" Click="ContinueButton_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="60 0 0 0">
+                <Button Name="StopButton" Content="Blijven" Width="100" Margin="5" Click="StopButton_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

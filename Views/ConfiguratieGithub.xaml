@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.ConfiguratieGithub"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels" 
+             xmlns:local="clr-namespace:Dossier_Registratie.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="800"
+             Loaded="ReloadHelp">
+    <UserControl.DataContext>
+        <viewmodels:ConfigurationGithubViewModel />
+    </UserControl.DataContext>
+    <Border Background="#ffffff">
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="7*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="6*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                
+                <StackPanel Orientation="Vertical" Grid.Row="0">
+                    <TextBlock Text="Meld een fout of een aanpassing" Margin="30 0 0 0" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <RadioButton IsChecked="{Binding BugChecked}" Content="Fout in de applicatie" HorizontalAlignment="Left" Margin="30,15,0,0"  VerticalAlignment="Top"/>
+                    <RadioButton IsChecked="{Binding FeatureChecked}" Content="Aanpassing in de applicatie" HorizontalAlignment="Left" Margin="30,10,0,0" VerticalAlignment="Top"/>
+                </StackPanel>
+
+
+                <Label Content="Onderwerp" HorizontalAlignment="Left" Margin="25,0,0,0" VerticalAlignment="Top" Width="133" Grid.Row="1" FontWeight="SemiBold"/>
+                <TextBox x:Name="onderwerp" HorizontalAlignment="Left" Margin="30,0,0,0" Width="327" IsEnabled="{Binding OnderwerpEnabled}" Text="{Binding OnderwerpText}" Grid.Row="1"/>
+
+                <StackPanel Orientation="Vertical" Grid.Row="2">
+                    <Label Content="Beschrijving" HorizontalAlignment="Left" Margin="25,0,0,0" VerticalAlignment="Top" FontWeight="SemiBold"/>
+                    <TextBox x:Name="omschrijving" HorizontalAlignment="Left" Margin="30,0,0,0" Width="327" Height="300" IsEnabled="{Binding OmschrijvingEnabled}" Text="{Binding OmschrijvingText}" AcceptsReturn="True"/>
+                    <Label Content="Inzender" HorizontalAlignment="Left" Margin="25,20,0,0" VerticalAlignment="Top" Width="134" FontWeight="SemiBold"/>
+                    <TextBox x:Name="inzender" HorizontalAlignment="Left" Margin="30,50,0,0" Width="328" Text="{Binding Inzender}" IsEnabled="False"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="30,0,0,0" Grid.Row="3">
+                    <Button Content="Terug" Width="140" Command="{Binding ReturnToStartCommand}" Height="25"/>
+                    <Button Content="Versturen" Margin="45,0,0,0" Width="140" Command="{Binding CreateFeatureOrIssue}" Height="25" HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Second Column: Right Side Grid -->
+            <Grid Grid.Column="1" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Status gemelde issues" FontWeight="SemiBold" HorizontalAlignment="Left" FontSize="14" VerticalAlignment="Center" Grid.Row="0"/>
+                <ComboBox ItemsSource="{Binding States}" SelectedItem="{Binding SelectedState}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="120" Grid.Row="1"/>
+
+                <ListView ItemsSource="{Binding Issues}" Margin="0,10,10,10" Grid.Row="2">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="#" DisplayMemberBinding="{Binding Id}" Width="35"/>
+                            <GridViewColumn Header="Onderwerp" DisplayMemberBinding="{Binding Title}" Width="775"/>
+                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding State}" Width="185"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <StackPanel Orientation="Vertical" Grid.Row="3">
+                    <TextBlock Text="{Binding TotalIssues, StringFormat='Totaal aantal meldingen: {0}'}" Margin="0,5,0,0" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding OpenIssues, StringFormat='Waarvan open: {0}'}" Margin="0,5,0,0" FontSize="14"/>
+                    <TextBlock Text="{Binding ClosedIssues, StringFormat='Waarvan opgelost: {0}'}" Margin="0,5,0,0" FontSize="14"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

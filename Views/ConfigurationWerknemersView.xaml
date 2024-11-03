@@ -1,0 +1,253 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.ConfigurationWerknemersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dossier_Registratie.Views"
+             xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="2450" d:DesignWidth="1800">
+    <UserControl.DataContext>
+        <viewmodels:ConfigurationWerknemersViewModel/>
+    </UserControl.DataContext>
+    <Grid Name="GebruikersGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Popup IsOpen="{Binding IsEditUserPopupOpen}" Placement="Center" StaysOpen="True">
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="385" Height="465" CornerRadius="5">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Initialen: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Initialen}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Voornaam: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Voornaam}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Roepnaam: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Roepnaam}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Tussenvoegsel: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Tussenvoegsel}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Achternaam: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Achternaam}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Geboorteplaats: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Geboorteplaats}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Geboortedatum: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <DatePicker x:Name="input_DateOfBirthOverledene" Width="250" Margin="0,-10,0,0"
+                            SelectedDate="{Binding Path=SelectedUser.Geboortedatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}"
+                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}">
+                            <DatePicker.Resources>
+                                <Style TargetType="DatePickerTextBox">
+                                    <Setter Property="Control.Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <TextBox x:Name="OverledeneGeboortedatum"
+                                         Text="{Binding Path=SelectedDate, StringFormat='dd-MM-yyyy', RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DatePicker.Resources>
+                        </DatePicker>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Email: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <TextBox Text="{Binding SelectedUser.Email}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Uitvaartleider: " Width="110"/>
+                        <CheckBox IsChecked="{Binding SelectedUser.IsUitvaartverzorger}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Drager: " Width="110"/>
+                        <CheckBox IsChecked="{Binding SelectedUser.IsDrager}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Chauffeur: " Width="110"/>
+                        <CheckBox IsChecked="{Binding SelectedUser.IsChauffeur}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Verzorger: " Width="110"/>
+                        <CheckBox IsChecked="{Binding SelectedUser.IsOpbaren}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Width="110">
+                            <Label.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="*" Foreground="Red" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Rechten: "/>
+                                </StackPanel>
+                            </Label.Content>
+                        </Label>
+                        <ComboBox x:Name="cb_UserPermission" ItemsSource="{Binding Permissions}" SelectedValuePath="Id" SelectedValue="{Binding SelectedUser.PermissionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="PermissionName" Width="100"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,15,5,5">
+                        <Button Content="Sluiten" Command="{Binding CloseEditUserPopupCommand}" Margin="0,0,10,10" Width="120" Height="30" />
+                        <Button Content="Opslaan" Command="{Binding SaveUserCommand}" Margin="0,0,0,10" Width="120" Height="30" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <Grid>
+            <TextBlock Text="Werknemers" FontSize="20" FontWeight="SemiBold" Margin="0 20 0 0" HorizontalAlignment="Left" Foreground="#121518"/>
+            <Button Width="150" Height="25" Content="Nieuwe Gebruiker" Command="{Binding CreateNewEmployeeCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
+        </Grid>
+
+        <Separator Height="1" Grid.Row="3" Margin="0 -1 0 10"/>
+
+        <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="gebruikersDataGrid" ItemsSource="{Binding Werknemers}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn IsReadOnly="True" Width="*" Header="Status">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="StatusStyle" Tag="{Binding Id}"  Foreground="{Binding BtnBrush}" Style="{StaticResource gridActiveButton}">
+                                    <Icon:PackIconMaterial Kind="AccountReactivateOutline" Style="{StaticResource gridButtonIcon}"/>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Initialen" IsReadOnly="True" CanUserResize="True" Width="auto" Binding="{Binding Initialen}"/>
+                <DataGridTextColumn Header="Voornaam" IsReadOnly="True" CanUserResize="True" Width="auto" Binding="{Binding Voornaam}"/>
+                <DataGridTextColumn Header="Roepnaam" IsReadOnly="True" CanUserResize="True" Width="auto" Binding="{Binding Roepnaam}"/>
+                <DataGridTextColumn Header="Tussenvoegsel" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Tussenvoegsel}" />
+                <DataGridTextColumn Header="Achternaam" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Achternaam}" />
+                <DataGridTextColumn Header="Geboorteplaats" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Geboorteplaats}" />
+                <DataGridTextColumn Header="Geboortedatum" IsReadOnly="True" CanUserResize="False" Width="auto">
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="Geboortedatum" StringFormat="dd-MM-yyyy" />
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="E-Mail" IsReadOnly="True" CanUserResize="True" Width="Auto" MinWidth="186" Binding="{Binding Email}"/>
+                <DataGridTextColumn Header="Rechten" IsReadOnly="True" CanUserResize="True" Width="Auto" MinWidth="186" Binding="{Binding PermissionName}"/>
+                <DataGridTemplateColumn IsReadOnly="True" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{Binding DataContext.EditUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                    <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                               </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Margin="5 0 0 0" Command="{Binding DataContext.DisableUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                    <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource gridRemoveButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Margin="5 0 0 0" Command="{Binding DataContext.ActivateUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                    <Icon:PackIconMaterial Kind="AccountReactivateOutline" Style="{StaticResource gridButtonIcon}"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource gridActivateButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

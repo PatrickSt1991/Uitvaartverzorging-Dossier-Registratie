@@ -1,0 +1,181 @@
+﻿<UserControl x:Class="Dossier_Registratie.Views.ConfigurationPriceComponentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dossier_Registratie.Views"
+             xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="1450" d:DesignWidth="1800" d:Background="White">
+    <UserControl.DataContext>
+        <viewmodels:ConfigurationPriceComponentsViewModel/>
+    </UserControl.DataContext>
+    <Grid x:Name="PriceComponentGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Popup IsOpen="{Binding IsEditPriceComponentPopupOpen}" Placement="Center" StaysOpen="False" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="725" Height="Auto" CornerRadius="5">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
+                        <Label Content="Omschrijving: " Width="200"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentOmschrijving, UpdateSourceTrigger=PropertyChanged}" Width="500" Height="50" AcceptsReturn="True" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Bedrag: " Width="200"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="500"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Factuur Bedrag: " Width="200"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="500"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Verzekerd Aantal: " Width="200"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentAantal, UpdateSourceTrigger=PropertyChanged}" Width="500"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <StackPanel Orientation="Vertical">
+                            <Label Content="Verzekeringen: " Width="200" />
+                            <Button Content="Selecteer alles" Command="{Binding SelectAllCommand}" Width="100" Height="30" Margin="5 10 95 0"/>
+                            <Button Content="Deselecteer alles" Command="{Binding DeselectAllCommand}" Width="100" Height="30" Margin="5 10 95 0"/>
+
+                        </StackPanel>
+
+                        <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" DisplayMemberPath="Name" SelectionMode="Multiple" Width="500">
+                            <ListBox.Resources>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="OverridesDefaultStyle" Value="true" />
+                                    <Setter Property="SnapsToDevicePixels" Value="true" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <CheckBox Margin="5,2" IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                                          Command="{Binding DataContext.VerzekeringCheckCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}">
+                                                    <ContentPresenter />
+                                                </CheckBox>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Standaard PM: " Width="200"/>
+                        <CheckBox IsChecked="{Binding SelectedPriceComponent.DefaultPM}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Sortering: " Width="200"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.SortOrder, UpdateSourceTrigger=PropertyChanged}" Width="500"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,15,5,5">
+                        <Button Content="Sluiten" Command="{Binding CloseEditPriceComponentPopupCommand}" Margin="0,0,10,10" Width="120" Height="30" />
+                        <Button Content="Opslaan" Command="{Binding SavePriceComponentCommand}" Margin="0,0,0,10" Width="120" Height="30" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <Grid>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Kostenbegroting Prijs Componenten" FontSize="20" FontWeight="SemiBold" Margin="0 20 0 0" HorizontalAlignment="Left" Foreground="#121518"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Label Width="100" Height="25" VerticalAlignment="Bottom" Content="Omschrijving:" FontWeight="Bold"/>
+                <TextBox Text="{Binding SearchOmschrijving, UpdateSourceTrigger=PropertyChanged}" Width="444" Height="25" VerticalAlignment="Bottom" Margin="0 0 20 0"/>
+                <Label Width="80" Height="25" VerticalAlignment="Bottom" Content="Verzekeraar:" FontWeight="Bold"/>
+                <ComboBox x:Name="cb_verzekeringFilter" ItemsSource="{Binding PriceComponentsVerzekeraars}" SelectedItem="{Binding SelectedPriceComponentVerzekeraar, Mode=TwoWay}" DisplayMemberPath="Name" Width="200" Height="25" HorizontalAlignment="Right" Margin="0 20 20 0"/>
+                <Button Width="150" Height="25" Content="Nieuwe Prijs Component" Command="{Binding CreateNewPriceComponentCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
+            </StackPanel>
+        </Grid>
+
+        <Separator Height="1" Grid.Row="3" Margin="0 -1 0 10"/>
+
+        <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
+       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="priceComponentsDataGrid" ItemsSource="{Binding PriceComponents}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn IsReadOnly="True" Width="100" Header="Status">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="StatusStyle" Tag="{Binding ComponentId}"  Foreground="{Binding BtnBrush}" Style="{StaticResource gridActiveButton}">
+                                    <Icon:PackIconMaterial Kind="CircleBoxOutline" Style="{StaticResource gridButtonIcon}"/>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Omschrijving" IsReadOnly="True" CanUserResize="True" Width="750" Binding="{Binding ComponentOmschrijving}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="Bedrag" IsReadOnly="True" CanUserResize="True" Width="100" Binding="{Binding ComponentBedrag, StringFormat=N2}"/>
+                <DataGridTextColumn Header="Factuur Bedrag" IsReadOnly="True" CanUserResize="True" Width="100" Binding="{Binding ComponentFactuurBedrag, StringFormat=N2}"/>
+                <DataGridCheckBoxColumn Header="PM" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="50" Binding="{Binding DefaultPM}"/>
+                <DataGridTextColumn Header="Verzekerd Aantal" IsReadOnly="True" CanUserResize="True" Width="200" Binding="{Binding ComponentAantal}"/>
+                <DataGridTextColumn Header="Verzekering (Afkorting)" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding ComponentVerzekering}" />
+                <DataGridTemplateColumn IsReadOnly="True" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{Binding DataContext.EditPriceComponentsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding ComponentId}">
+                                    <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Margin="5 0 0 0" Command="{Binding DataContext.DisablePriceComponentsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding ComponentId}">
+                                    <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource gridRemoveButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Margin="5 0 0 0" Command="{Binding DataContext.ActivatePriceComponentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding ComponentId}">
+                                    <Icon:PackIconMaterial Kind="AccountReactivateOutline" Style="{StaticResource gridButtonIcon}"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource gridActivateButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
