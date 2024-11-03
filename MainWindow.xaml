@@ -116,7 +116,7 @@
         <Popup x:Name="maintenancePopup" Placement="Center" StaysOpen="True" IsOpen="{Binding IsUnderMaintenance}">
             <Border Background="White" Width="700" Height="200" BorderBrush="Black" BorderThickness="2" CornerRadius="10">
                 <Grid>
-                    <TextBlock Text="DigiGraf is op het moment niet beschikbaar vanwege onderhoud." FontSize="20" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Padding="25"/>
+                    <TextBlock Text="{Binding ApplicationUnavailable}" FontSize="20" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Padding="25"/>
                     <Button Content="Sluiten" Width="80" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontWeight="Bold" FontSize="20" Margin="10" IsEnabled="True" Click="CloseApplication_Click"/>
                 </Grid>
             </Border>
