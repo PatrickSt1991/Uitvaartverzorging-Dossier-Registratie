@@ -1,6 +1,6 @@
 ---
 title: Start
-layout: Start
+layout: home
 ---
 
 **Welkom bij DigiGraf - Dé Dossier Registratie Software voor de Uitvaartverzorging**
