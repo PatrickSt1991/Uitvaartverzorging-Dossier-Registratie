@@ -47,7 +47,6 @@ namespace Dossier_Registratie.ViewModels
         private string _applicationUnavailable;
         private string _versionLabel = "Dossier Registratie - Versie: 3";
         private string _copyrightText = "© " + DateTime.Now.ToString("yyyy") + " - Patrick Stel - All Rights Reserved - " +
-                                "Created for Eefting Uitvaartverzorging B.V. - " +
                                 "Licensed under GNU Affero General Public License v3.0 ";
 
         private static readonly string configLocation = Path.Combine(Directory.GetCurrentDirectory(), "AppConnectionSettings.json");
