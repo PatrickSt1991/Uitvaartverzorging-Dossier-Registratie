@@ -13,7 +13,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] SET dossierCompleted = 1 WHERE UitvaartId = @UitvaartId";
+                command.CommandText = "UPDATE [OverledeneUitvaartleider] SET dossierCompleted = 1 WHERE UitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", uitvaartId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -28,7 +28,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] SET dossierCompleted = 0 WHERE UitvaartId = @UitvaartId";
+                command.CommandText = "UPDATE [OverledeneUitvaartleider] SET dossierCompleted = 0 WHERE UitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", uitvaartId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -43,7 +43,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] SET isDeleted = 0 WHERE Id = @employeeId";
+                command.CommandText = "UPDATE [ConfigurationPersoneel] SET isDeleted = 0 WHERE Id = @employeeId";
                 command.Parameters.AddWithValue("@employeeId", employeeId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -58,7 +58,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationKisten] SET isDeleted = 0 WHERE Id = @kistId";
+                command.CommandText = "UPDATE [ConfigurationKisten] SET isDeleted = 0 WHERE Id = @kistId";
                 command.Parameters.AddWithValue("@kistId", kistId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -73,7 +73,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationAsbestemming] SET isDeleted = 0 WHERE asbestemmingId = @asbestemmingId";
+                command.CommandText = "UPDATE [ConfigurationAsbestemming] SET isDeleted = 0 WHERE asbestemmingId = @asbestemmingId";
                 command.Parameters.AddWithValue("@asbestemmingId", asbestemmingId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -88,7 +88,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationVerzekeraar] SET isDeleted = 0 WHERE Id = @verzekeraarId";
+                command.CommandText = "UPDATE [ConfigurationVerzekeraar] SET isDeleted = 0 WHERE Id = @verzekeraarId";
                 command.Parameters.AddWithValue("@verzekeraarId", verzekeraarId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -103,7 +103,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationLeveranciers] SET isDeleted = 0 WHERE leverancierId = @leverancierId";
+                command.CommandText = "UPDATE [ConfigurationLeveranciers] SET isDeleted = 0 WHERE leverancierId = @leverancierId";
                 command.Parameters.AddWithValue("@leverancierId", leverancierId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -118,7 +118,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] SET isDeleted = 0 WHERE ComponentId = @componentId";
+                command.CommandText = "UPDATE [ConfigurationFactuurComponent] SET isDeleted = 0 WHERE ComponentId = @componentId";
                 command.Parameters.AddWithValue("@componentId", componentId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -133,7 +133,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationOverledenLocaties] SET isDeleted = 0 WHERE Id = @Id";
+                command.CommandText = "UPDATE [ConfigurationOverledenLocaties] SET isDeleted = 0 WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", suggestionId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -148,7 +148,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationRouwbrieven] SET isDeleted = 0 WHERE rouwbrievenId = @rouwbriefId";
+                command.CommandText = "UPDATE [ConfigurationRouwbrieven] SET isDeleted = 0 WHERE rouwbrievenId = @rouwbriefId";
                 command.Parameters.AddWithValue("@rouwbriefId", rouwbriefId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -163,7 +163,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] SET isDeleted = 1 WHERE Id = @employeeId";
+                command.CommandText = "UPDATE [ConfigurationPersoneel] SET isDeleted = 1 WHERE Id = @employeeId";
                 command.Parameters.AddWithValue("@employeeId", employeeId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -178,7 +178,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationKisten] SET isDeleted = 1 WHERE Id = @kistId";
+                command.CommandText = "UPDATE [ConfigurationKisten] SET isDeleted = 1 WHERE Id = @kistId";
                 command.Parameters.AddWithValue("@kistId", kistId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -193,7 +193,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationAsbestemming] SET isDeleted = 1 WHERE asbestemmingId = @asbestemmingId";
+                command.CommandText = "UPDATE [ConfigurationAsbestemming] SET isDeleted = 1 WHERE asbestemmingId = @asbestemmingId";
                 command.Parameters.AddWithValue("@asbestemmingId", asbestemmingId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -208,7 +208,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationVerzekeraar] SET isDeleted = 1 WHERE Id = @verzekeraarId";
+                command.CommandText = "UPDATE [ConfigurationVerzekeraar] SET isDeleted = 1 WHERE Id = @verzekeraarId";
                 command.Parameters.AddWithValue("@verzekeraarId", verzekeraarId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -223,7 +223,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationLeveranciers] SET isDeleted = 1 WHERE leverancierId = @leverancierId";
+                command.CommandText = "UPDATE [ConfigurationLeveranciers] SET isDeleted = 1 WHERE leverancierId = @leverancierId";
                 command.Parameters.AddWithValue("@leverancierId", leverancierId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -238,7 +238,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] SET isDeleted = 1 WHERE ComponentId = @componentId";
+                command.CommandText = "UPDATE [ConfigurationFactuurComponent] SET isDeleted = 1 WHERE ComponentId = @componentId";
                 command.Parameters.AddWithValue("@componentId", componentId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -253,7 +253,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationRouwbrieven] SET isDeleted = 1 WHERE rouwbrievenId = @rouwbriefId";
+                command.CommandText = "UPDATE [ConfigurationRouwbrieven] SET isDeleted = 1 WHERE rouwbrievenId = @rouwbriefId";
                 command.Parameters.AddWithValue("@rouwbriefId", rouwbriefId);
                 if (command.ExecuteNonQuery() == 0)
                 {
@@ -301,7 +301,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationOverledenLocaties] SET isDeleted = 1 WHERE Id = @Id";
+                command.CommandText = "UPDATE [ConfigurationOverledenLocaties] SET isDeleted = 1 WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", suggestionId);
                 if (command.ExecuteNonQuery() == 0)
                 {

@@ -29,7 +29,7 @@ namespace Dossier_Registratie.Repositories
                                         "ISNULL(addressHousenumberAddition, '')) " +
                                         "ELSE NULL " +
                                         "END AS CorrespondenceAddress, addressZipcode, addressCity, verzekeraarTelefoon " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationVerzekeraar] " +
+                                        "FROM [ConfigurationVerzekeraar] " +
                                         "WHERE Id = @HerkomstId";
                 command.Parameters.AddWithValue("@HerkomstId", HerkomstId);
                 using (var reader = command.ExecuteReader())
@@ -74,7 +74,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[ShortName],[LongName],[Street],[Housenumber],[Zipcode],[City],[County],[IsDeleted] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationOverledenLocaties] ";
+                                        "FROM [ConfigurationOverledenLocaties] ";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -109,7 +109,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[ShortName],[LongName],[Street],[Housenumber],[Zipcode],[City],[County],[IsDeleted] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationOverledenLocaties] WHERE [Id] = @suggestionId";
+                                        "FROM [ConfigurationOverledenLocaties] WHERE [Id] = @suggestionId";
                 command.Parameters.AddWithValue("@suggestionId", suggestionId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -141,7 +141,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[ShortName],[LongName],[Street],[Housenumber],[Zipcode],[City],[County],[IsDeleted] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationOverledenLocaties] ";
+                                        "FROM [ConfigurationOverledenLocaties] ";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -419,7 +419,7 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum]," +
                                         "[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] " +
+                                        "FROM [ConfigurationPersoneel] " +
                                         "ORDER BY isDeleted, Achternaam ASC";
                 using (var reader = command.ExecuteReader())
                 {
@@ -475,10 +475,10 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT OUL.UitvaartId AS UitvaartId,OUL.Uitvaartnummer AS UitvaartNummer, CASE WHEN overledeneTussenvoegsel IS NOT NULL THEN CONCAT(overledeneTussenvoegsel, ' ', overledeneAchternaam) ELSE overledeneAchternaam END AS Achternaam, " +
                                         "overledeneVoornamen AS Voornamen, uitvaartInfoDatumTijdUitvaart, uitvaartInfoDienstDatumTijd, CONCAT(CP.Initialen, ' ', CP.Achternaam) AS Uitvaartleider " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] OPG " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartInfo] OUI ON OPG.UitvaartId = OUI.uitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OUL ON OPG.UitvaartId = OUL.UitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] CP ON OUL.PersoneelId = CP.Id " +
+                                        "FROM [OverledenePersoonsGegevens] OPG " +
+                                        "INNER JOIN[OverledeneUitvaartInfo] OUI ON OPG.UitvaartId = OUI.uitvaartId " +
+                                        "INNER JOIN[OverledeneUitvaartleider] OUL ON OPG.UitvaartId = OUL.UitvaartId " +
+                                        "INNER JOIN[ConfigurationPersoneel] CP ON OUL.PersoneelId = CP.Id " +
                                         "WHERE uitvaartInfoDatumTijdUitvaart IS NOT NULL AND uitvaartInfoDatumTijdUitvaart >= GETDATE() AND uitvaartInfoDatumTijdUitvaart < DATEADD(DAY, 8, GETDATE()) " +
                                         "ORDER BY uitvaartInfoDatumTijdUitvaart, uitvaartInfoDienstDatumTijd";
 
@@ -511,10 +511,10 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT OUL.UitvaartId AS UitvaartId,OUL.Uitvaartnummer AS UitvaartNummer, CASE WHEN overledeneTussenvoegsel IS NOT NULL THEN CONCAT(overledeneTussenvoegsel, ' ', overledeneAchternaam) ELSE overledeneAchternaam END AS Achternaam, " +
                                         "overledeneVoornamen AS Voornamen, overledenDatumTijd AS DatumTijdOverleden, CONCAT(CP.Initialen, ' ', CP.Achternaam) AS Uitvaartleider, overledeneVoorregeling " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] OPG " +
-                                        "LEFT JOIN[EeftingDossierRegistratie].[dbo].[OverledeneOverlijdenInfo] OOI ON OPG.UitvaartId = OOI.uitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OUL ON OPG.UitvaartId = OUL.UitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] CP ON OUL.PersoneelId = CP.Id " +
+                                        "FROM [OverledenePersoonsGegevens] OPG " +
+                                        "LEFT JOIN[OverledeneOverlijdenInfo] OOI ON OPG.UitvaartId = OOI.uitvaartId " +
+                                        "INNER JOIN[OverledeneUitvaartleider] OUL ON OPG.UitvaartId = OUL.UitvaartId " +
+                                        "INNER JOIN[ConfigurationPersoneel] CP ON OUL.PersoneelId = CP.Id " +
                                         "ORDER BY CASE WHEN ISNUMERIC(Uitvaartnummer) = 1 THEN CAST(Uitvaartnummer AS INT) " +
                                         "ELSE CAST(SUBSTRING(Uitvaartnummer, PATINDEX('%[0-9]%', Uitvaartnummer), LEN(Uitvaartnummer)) AS INT) END DESC, " +
                                         "Uitvaartleider";
@@ -548,7 +548,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[isOpbaren] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] WHERE Id = @werknemerId";
+                                        "FROM [ConfigurationPersoneel] WHERE Id = @werknemerId";
                 command.Parameters.AddWithValue("@werknemerId", werknemerId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -667,7 +667,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [asbestemmingId], [asbestemmingOmschrijving], [isDeleted] FROM [EeftingDossierRegistratie].[dbo].[ConfigurationAsbestemming] WHERE asbestemmingId =  @asbestemmingId";
+                command.CommandText = "SELECT [asbestemmingId], [asbestemmingOmschrijving], [isDeleted] FROM [ConfigurationAsbestemming] WHERE asbestemmingId =  @asbestemmingId";
                 command.Parameters.AddWithValue("@asbestemmingId", asbestemmingId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -692,7 +692,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [UitvaartId] FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] WHERE Uitvaartnummer = @uitvaartnr";
+                command.CommandText = "SELECT [UitvaartId] FROM [OverledeneUitvaartleider] WHERE Uitvaartnummer = @uitvaartnr";
                 command.Parameters.AddWithValue("@uitvaartnr", Uitvaartnummer);
 
                 using (var reader = command.ExecuteReader())
@@ -786,7 +786,7 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT [leverancierId],[leverancierName],[leverancierBeschrijving],[steenhouwer]," +
                                         "[bloemist],[kisten],[urnsieraden],[isDeleted] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationLeveranciers]";
+                                        "FROM [ConfigurationLeveranciers]";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -820,7 +820,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [rouwbrievenId],[rouwbrievenName],[isDeleted] FROM [EeftingDossierRegistratie].[dbo].[ConfigurationRouwbrieven]";
+                command.CommandText = "SELECT [rouwbrievenId],[rouwbrievenName],[isDeleted] FROM [ConfigurationRouwbrieven]";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -846,7 +846,7 @@ namespace Dossier_Registratie.Repositories
 
             using (var connection = GetConnection())
             using (var command = new SqlCommand("SELECT [Id], OU.UitvaartId AS OUUitvaartId, Uitvaartnummer, [kostenbegrotingUrl], [kostenbegrotingJson], [kostenbegrotingCreationDate], [kostenbegrotingCreated], [factuurCreationDate], [factuurUrl], [factuurCreated] " +
-                                                "FROM [EeftingDossierRegistratie].[dbo].[OverledeneFacturen] AS OFA " +
+                                                "FROM [OverledeneFacturen] AS OFA " +
                                                 "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
                                                 "WHERE kostenbegrotingUrl IS NOT NULL AND kostenbegrotingUrl != ''", connection))
             {
@@ -920,10 +920,10 @@ namespace Dossier_Registratie.Repositories
                                       "(CASE WHEN (opdrachtgeverHuisnummerToevoeging IS NOT NULL) THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer, ' ', opdrachtgeverHuisnummerToevoeging) " +
                                       "ELSE CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) END) AS OpdrachtgeverStraat, " +
                                       "opdrachtgeverPostcode, opdrachtgeverWoonplaats, OOI.overledenDatumTijd " +
-                                      "FROM [EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] OPG " +
-                                      "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledeneOpdrachtgever] OO ON OPG.UitvaartId = OO.uitvaartId " +
-                                      "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OUL ON OPG.UitvaartId = OUL.UitvaartId " +
-                                      "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledeneOverlijdenInfo] OOI ON OPG.uitvaartId = OOI.UitvaartId " +
+                                      "FROM [OverledenePersoonsGegevens] OPG " +
+                                      "INNER JOIN [OverledeneOpdrachtgever] OO ON OPG.UitvaartId = OO.uitvaartId " +
+                                      "INNER JOIN [OverledeneUitvaartleider] OUL ON OPG.UitvaartId = OUL.UitvaartId " +
+                                      "INNER JOIN [OverledeneOverlijdenInfo] OOI ON OPG.uitvaartId = OOI.UitvaartId " +
                                       "WHERE OPG.uitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartIdGuid);
 
@@ -956,11 +956,11 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT ob.[Id],ul.Uitvaartnummer,[bloemenBedrag],[bloemenProvisie],[bloemenUitbetaling],[leverancierName], " +
                     "CONCAT(Voornaam, ' ', Tussenvoegsel, ' ', Achternaam) " +
-                    "FROM [EeftingDossierRegistratie].[dbo].[OverledeneBloemen] ob " +
-                    "INNER JOIN [EeftingDossierRegistratie].[dbo].OverledeneUitvaartleider ou ON ob.uitvaartId = ou.UitvaartId " +
-                    "INNER JOIN [EeftingDossierRegistratie].[dbo].ConfigurationPersoneel cp ON cp.Id = ou.PersoneelId " +
-                    "INNER JOIN [EeftingDossierRegistratie].[dbo].ConfigurationLeveranciers cl on ob.bloemenLeverancier = cl.leverancierId " +
-                    "INNER JOIN [EeftingDossierRegistratie].[dbo].OverledeneUitvaartleider ul ON ul.UitvaartId = ob.uitvaartId " +
+                    "FROM [OverledeneBloemen] ob " +
+                    "INNER JOIN OverledeneUitvaartleider ou ON ob.uitvaartId = ou.UitvaartId " +
+                    "INNER JOIN ConfigurationPersoneel cp ON cp.Id = ou.PersoneelId " +
+                    "INNER JOIN ConfigurationLeveranciers cl on ob.bloemenLeverancier = cl.leverancierId " +
+                    "INNER JOIN OverledeneUitvaartleider ul ON ul.UitvaartId = ob.uitvaartId " +
                     "WHERE ob.uitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", UitvaartIdGuid);
 
@@ -994,10 +994,10 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT os.[Id],Uitvaartnummer,[steenhouwerBedrag],[steenhouwerProvisie],[steenhouwerUitbetaing]" +
                                         ",leverancierName, CONCAT(Voornaam, ' ', Tussenvoegsel, ' ', Achternaam), [steenhouwerProvisieTotaal] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[OverledeneSteenhouwer] os " +
-                                        "INNER JOIN [EeftingDossierRegistratie].[dbo].OverledeneUitvaartleider ou ON os.uitvaartId = ou.UitvaartId " +
-                                        "INNER JOIN [EeftingDossierRegistratie].[dbo].ConfigurationPersoneel cp ON cp.Id = ou.PersoneelId " +
-                                        "INNER JOIN [EeftingDossierRegistratie].[dbo].ConfigurationLeveranciers cl on os.steenhouwerLeverancier = cl.leverancierId " +
+                                        "FROM [OverledeneSteenhouwer] os " +
+                                        "INNER JOIN OverledeneUitvaartleider ou ON os.uitvaartId = ou.UitvaartId " +
+                                        "INNER JOIN ConfigurationPersoneel cp ON cp.Id = ou.PersoneelId " +
+                                        "INNER JOIN ConfigurationLeveranciers cl on os.steenhouwerLeverancier = cl.leverancierId " +
                                         "WHERE os.uitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", UitvaartIdGuid);
 
@@ -1031,10 +1031,10 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT ous.[Id],Uitvaartnummer,[urnBedrag],[urnProvisie],[urnUitbetaling]" +
                                       ",leverancierName, CONCAT(Voornaam, ' ', Tussenvoegsel, ' ', Achternaam) " +
-                                      "FROM [EeftingDossierRegistratie].[dbo].[overledeneUrnSieraden] ous " +
-                                      "INNER JOIN [EeftingDossierRegistratie].[dbo].OverledeneUitvaartleider ou ON ous.uitvaartId = ou.UitvaartId " +
-                                      "INNER JOIN [EeftingDossierRegistratie].[dbo].ConfigurationPersoneel cp ON cp.Id = ou.PersoneelId " +
-                                      "INNER JOIN [EeftingDossierRegistratie].[dbo].ConfigurationLeveranciers cl on ous.urnLeverancier = cl.leverancierId " +
+                                      "FROM [overledeneUrnSieraden] ous " +
+                                      "INNER JOIN OverledeneUitvaartleider ou ON ous.uitvaartId = ou.UitvaartId " +
+                                      "INNER JOIN ConfigurationPersoneel cp ON cp.Id = ou.PersoneelId " +
+                                      "INNER JOIN ConfigurationLeveranciers cl on ous.urnLeverancier = cl.leverancierId " +
                                       "WHERE ous.uitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", UitvaartIdGuid);
 
@@ -1067,7 +1067,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [BijlageId], OB.[UitvaartId], [DocumentName], [DocumentType], [DocumentURL], [DocumentHash], [DocumentInconsistent] " +
-                                      "FROM [EeftingDossierRegistratie].[dbo].[OverledeneBijlages] OB " +
+                                      "FROM [OverledeneBijlages] OB " +
                                       "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OB.UitvaartId " +
                                       "WHERE Uitvaartnummer = @uitvaartNummer AND [DocumentName] LIKE 'AkteVanCessie%'";
 
@@ -1102,8 +1102,8 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.[SpecificCrematie], FC1.[SpecificBegrafenis], FC1.[SpecificPakket] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] FC1 " +
-                                        "LEFT JOIN [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] FC2 " +
+                                        "FROM [ConfigurationFactuurComponent] FC1 " +
+                                        "LEFT JOIN [ConfigurationFactuurComponent] FC2 " +
                                         "ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
                                         "WHERE (FC1.Verzekering LIKE '%' + @Verzekering + '%' OR FC1.Verzekering = '') AND FC2.Id IS NULL " +
                                         "ORDER BY FC1.SortOrder, FC1.isDeleted ASC";
@@ -1146,7 +1146,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [ComponentId],[Omschrijving],[Bedrag],[VerzekerdAantal],[Verzekering],[IsDeleted],[SortOrder],[DefaultPM] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] ORDER BY SortOrder ASC";
+                                        "FROM [ConfigurationFactuurComponent] ORDER BY SortOrder ASC";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -1183,8 +1183,8 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
 
                 command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.[SpecificPakket], FC1.DefaultPM " +
-                                      "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] FC1 " +
-                                      "LEFT JOIN [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] FC2 " +
+                                      "FROM [ConfigurationFactuurComponent] FC1 " +
+                                      "LEFT JOIN [ConfigurationFactuurComponent] FC2 " +
                                       "ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
                                       "WHERE (FC1.Verzekering LIKE '%' + @Verzekering + '%' OR FC1.Verzekering = '') AND FC2.Id IS NULL " +
                                       "ORDER BY FC1.SortOrder ASC";
@@ -1222,7 +1222,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.SortOrder, FC1.[factuurBedrag], FC1.[DefaultPM] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationFactuurComponent] FC1 " +
+                                        "FROM [ConfigurationFactuurComponent] FC1 " +
                                         "WHERE ComponentId = @componentId";
                 command.Parameters.AddWithValue("@componentId", componentId);
                 using (var reader = command.ExecuteReader())
@@ -1254,9 +1254,9 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT kistTypeNummer, kistOmschrijving, COUNT(kistTypeNummer) as KistCount " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[OverledeneOpbaring] " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[ConfigurationKisten] ON [opbaringKistId] = [ConfigurationKisten].[Id] " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] ON [OverledeneOpbaring].uitvaartId = [OverledeneUitvaartleider].UitvaartId " +
+                                        "FROM [OverledeneOpbaring] " +
+                                        "INNER JOIN[ConfigurationKisten] ON [opbaringKistId] = [ConfigurationKisten].[Id] " +
+                                        "INNER JOIN[OverledeneUitvaartleider] ON [OverledeneOpbaring].uitvaartId = [OverledeneUitvaartleider].UitvaartId " +
                                         "WHERE Uitvaartnummer BETWEEN @StartNummer AND @EndNummer " +
                                         "GROUP BY kistTypeNummer, kistOmschrijving " +
                                         "ORDER BY kistCount DESC";
@@ -1289,9 +1289,9 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT CV.verzekeraarNaam as HerkomstName, COUNT(overledenHerkomst) AS HerkomstCount " +
-                                        "FROM EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationVerzekeraar AS CV ON overledenHerkomst = CV.Id " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider AS OU ON OU.UitvaartId = OverledeneOverlijdenInfo.UitvaartId " +
+                                        "FROM OverledeneOverlijdenInfo " +
+                                        "INNER JOIN ConfigurationVerzekeraar AS CV ON overledenHerkomst = CV.Id " +
+                                        "INNER JOIN OverledeneUitvaartleider AS OU ON OU.UitvaartId = OverledeneOverlijdenInfo.UitvaartId " +
                                         "WHERE Uitvaartnummer BETWEEN @StartNummer AND @EndNummer " +
                                         "GROUP BY CV.verzekeraarNaam " +
                                         "ORDER BY HerkomstCount DESC";
@@ -1322,10 +1322,10 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT OPG.overledeneWoonplaats as Woonplaats, CV.verzekeraarNaam as HerkomstName, COUNT(overledenHerkomst) AS HerkomstCount " +
-                                        "FROM EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI " +
-                                        "LEFT JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens AS OPG ON OOI.UitvaartId = OPG.uitvaartId " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationVerzekeraar AS CV ON overledenHerkomst = CV.Id " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider AS OU ON OU.UitvaartId = OOI.UitvaartId " +
+                                        "FROM OverledeneOverlijdenInfo OOI " +
+                                        "LEFT JOIN OverledenePersoonsGegevens AS OPG ON OOI.UitvaartId = OPG.uitvaartId " +
+                                        "INNER JOIN ConfigurationVerzekeraar AS CV ON overledenHerkomst = CV.Id " +
+                                        "INNER JOIN OverledeneUitvaartleider AS OU ON OU.UitvaartId = OOI.UitvaartId " +
                                         "WHERE Uitvaartnummer BETWEEN @StartNummer AND @EndNummer " +
                                         "GROUP BY CV.verzekeraarNaam, overledeneWoonplaats";
                 command.Parameters.AddWithValue("@StartNummer", SqlDbType.Int).Value = int.Parse(startNummer);
@@ -1356,8 +1356,8 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT CONCAT(CP.Initialen, ' ', CP.Achternaam) AS UitvaartLeider, COUNT(OU.Uitvaartnummer) AS Uitvaartnummer " +
-                                        "FROM EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OU " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OU.PersoneelId = CP.Id " +
+                                        "FROM OverledeneUitvaartleider OU " +
+                                        "INNER JOIN ConfigurationPersoneel CP ON OU.PersoneelId = CP.Id " +
                                         "WHERE Uitvaartnummer BETWEEN @StartNummer AND @EndNummer " +
                                         "GROUP BY CONCAT(CP.Initialen, ' ', CP.Achternaam) " +
                                         "ORDER BY Uitvaartnummer DESC";
@@ -1389,10 +1389,10 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT CV.verzekeraarNaam as HerkomstName, SUM(CONVERT(INT, COALESCE(uitvaartInfoDienstVolgauto, 0))) AS AantalAutos " +
-                                        "FROM EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI " +
-                                        "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo AS OPG ON OOI.UitvaartId = OPG.uitvaartId " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationVerzekeraar AS CV ON overledenHerkomst = CV.Id " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider AS OU ON OU.UitvaartId = OOI.UitvaartId " +
+                                        "FROM OverledeneOverlijdenInfo OOI " +
+                                        "LEFT JOIN OverledeneUitvaartInfo AS OPG ON OOI.UitvaartId = OPG.uitvaartId " +
+                                        "INNER JOIN ConfigurationVerzekeraar AS CV ON overledenHerkomst = CV.Id " +
+                                        "INNER JOIN OverledeneUitvaartleider AS OU ON OU.UitvaartId = OOI.UitvaartId " +
                                         "WHERE Uitvaartnummer BETWEEN @StartNummer AND @EndNummer " +
                                         "GROUP BY CV.verzekeraarNaam;";
                 command.Parameters.AddWithValue("@StartNummer", SqlDbType.Int).Value = int.Parse(startNummer);
@@ -1420,12 +1420,12 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT Uitvaartnummer, CONCAT([overledeneAchternaam],' ',[overledeneTussenvoegsel]) AS Naam, overledeneVoornamen as Voornaam, overledenDatumTijd, CV.verzekeraarNaam as Verzekeraar, uitvaartInfoType, factuurUrl " +
-                                        "FROM[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OU " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] OPG ON OU.UitvaartId = OPG.uitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneOverlijdenInfo] OOI ON OPG.uitvaartId = OOI.UitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[ConfigurationVerzekeraar] CV ON overledenHerkomst = CV.Id " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartInfo] OUI ON OPG.uitvaartId = OUI.uitvaartId " +
-                                        "LEFT JOIN[EeftingDossierRegistratie].[dbo].[OverledeneFacturen] OFA ON OPG.uitvaartId = OFA.uitvaartId " +
+                                        "FROM[OverledeneUitvaartleider] OU " +
+                                        "INNER JOIN[OverledenePersoonsGegevens] OPG ON OU.UitvaartId = OPG.uitvaartId " +
+                                        "INNER JOIN[OverledeneOverlijdenInfo] OOI ON OPG.uitvaartId = OOI.UitvaartId " +
+                                        "INNER JOIN[ConfigurationVerzekeraar] CV ON overledenHerkomst = CV.Id " +
+                                        "INNER JOIN[OverledeneUitvaartInfo] OUI ON OPG.uitvaartId = OUI.uitvaartId " +
+                                        "LEFT JOIN[OverledeneFacturen] OFA ON OPG.uitvaartId = OFA.uitvaartId " +
                                         "WHERE Uitvaartnummer BETWEEN @StartNummer AND @EndNummer " +
                                         "ORDER BY Uitvaartnummer ASC";
                 command.Parameters.AddWithValue("@StartNummer", SqlDbType.Int).Value = int.Parse(startNummer);
@@ -1457,7 +1457,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],[UitvaartId],[Cijfer] FROM [EeftingDossierRegistratie].[dbo].[OverledeneKlantTevredenheid] WHERE [UitvaartId] = @uitvaartId";
+                command.CommandText = "SELECT [Id],[UitvaartId],[Cijfer] FROM [OverledeneKlantTevredenheid] WHERE [UitvaartId] = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -1482,7 +1482,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT MIN(CAST('0' AS INT)) AS LowestUitvaartnummer, MAX(CAST(Uitvaartnummer+1 AS INT)) AS HighestUitvaartnummer FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] WHERE ISNUMERIC(Uitvaartnummer) = 1";
+                command.CommandText = "SELECT MIN(CAST('0' AS INT)) AS LowestUitvaartnummer, MAX(CAST(Uitvaartnummer+1 AS INT)) AS HighestUitvaartnummer FROM [OverledeneUitvaartleider] WHERE ISNUMERIC(Uitvaartnummer) = 1";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -1506,7 +1506,7 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "SELECT CASE WHEN Tussenvoegsel IS NOT NULL THEN CONCAT(Voornaam, ' ', Tussenvoegsel, ' ', Achternaam) " +
                                         "ELSE CONCAT(Voornaam, ' ', Achternaam) END AS FullName " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] " +
+                                        "FROM [ConfigurationPersoneel] " +
                                         "WHERE [Id] = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", werknemerId);
                 var fullName = command.ExecuteScalar();
@@ -1528,7 +1528,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT leverancierName FROM [EeftingDossierRegistratie].[dbo].[ConfigurationLeveranciers] WHERE [leverancierId] = @LeverancierId";
+                command.CommandText = "SELECT leverancierName FROM [ConfigurationLeveranciers] WHERE [leverancierId] = @LeverancierId";
                 command.Parameters.AddWithValue("@LeverancierId", leverancierId);
                 var leverancierName = command.ExecuteScalar();
 
@@ -1551,7 +1551,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [leverancierId],[leverancierName],[leverancierBeschrijving],[steenhouwer],[bloemist],[kisten],[urnsieraden],[isDeleted] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[ConfigurationLeveranciers] WHERE [leverancierId] = @LeverancierId";
+                                        "FROM [ConfigurationLeveranciers] WHERE [leverancierId] = @LeverancierId";
                 command.Parameters.AddWithValue("@LeverancierId", leverancierId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -1581,7 +1581,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [rouwbrievenId],[rouwbrievenName],[isDeleted] FROM [EeftingDossierRegistratie].[dbo].[ConfigurationRouwbrieven] WHERE [rouwbrievenId] = @rouwbrievenId";
+                command.CommandText = "SELECT [rouwbrievenId],[rouwbrievenName],[isDeleted] FROM [ConfigurationRouwbrieven] WHERE [rouwbrievenId] = @rouwbrievenId";
                 command.Parameters.AddWithValue("@rouwbrievenId", rouwbrievenId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -1607,7 +1607,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [BijlageId], [UitvaartId], [DocumentName], [DocumentType], [DocumentURL], [DocumentHash], [DocumentInconsistent], [isDeleted] " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[OverledeneBijlages] " +
+                                        "FROM [OverledeneBijlages] " +
                                         "WHERE UitvaartId = @UitvaartId " +
                                         "AND DocumentName = 'Dossier'";
                 command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
@@ -1638,8 +1638,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT CP.Id, CP.PermissionName FROM [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneelPermission] CPP " +
-                                        "INNER JOIN [EeftingDossierRegistratie].[dbo].[ConfigurationPermissions] CP ON CPP.PermissionId = CP.Id " +
+                command.CommandText = "SELECT CP.Id, CP.PermissionName FROM [ConfigurationPersoneelPermission] CPP " +
+                                        "INNER JOIN [ConfigurationPermissions] CP ON CPP.PermissionId = CP.Id " +
                                         "WHERE CPP.PersoneelId = @werknemerId";
                 command.Parameters.AddWithValue("@werknemerId", werknemerId);
                 using (var reader = command.ExecuteReader())
@@ -1664,7 +1664,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],[PermissionName],[IsEnabled] FROM[EeftingDossierRegistratie].[dbo].[ConfigurationPermissions]";
+                command.CommandText = "SELECT [Id],[PermissionName],[IsEnabled] FROM[ConfigurationPermissions]";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -1690,9 +1690,9 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT CP.Id AS EId, CONCAT(Voornaam, ' ', Achternaam) AS EmployeeName, CAST(AVG(CAST(Cijfer AS DECIMAL(10, 1))) AS DECIMAL(10, 1)) AS AverageCijfer, COUNT(*) AS TotalUitvaarten " +
-                                        "FROM[EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OU " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] CP ON CP.Id = OU.PersoneelId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneKlantTevredenheid] OKT ON OKT.UitvaartId = OU.UitvaartId " +
+                                        "FROM[OverledeneUitvaartleider] OU " +
+                                        "INNER JOIN[ConfigurationPersoneel] CP ON CP.Id = OU.PersoneelId " +
+                                        "INNER JOIN[OverledeneKlantTevredenheid] OKT ON OKT.UitvaartId = OU.UitvaartId " +
                                         "WHERE dossierCompleted = 1 " +
                                         "GROUP BY CP.Id, CONCAT(Voornaam, ' ', Achternaam)";
 
@@ -1720,10 +1720,10 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT CAST(Uitvaartnummer AS INT) AS Uitvaartnr, CONCAT(OPG.overledeneAanhef, ' ', OPG.overledeneVoornamen, ' ', OPG.overledeneTussenvoegsel, ' ', OPG.overledeneAchternaam) AS UitvaartVan, CP.Id as EId, CONCAT(Voornaam, ' ', Achternaam) AS EmployeeName, Cijfer FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OU " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] CP ON CP.Id = OU.PersoneelId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledeneKlantTevredenheid] OKT ON OKT.UitvaartId = OU.UitvaartId " +
-                                        "INNER JOIN[EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] OPG ON OPG.UitvaartId = OU.UitvaartId " +
+                command.CommandText = "SELECT CAST(Uitvaartnummer AS INT) AS Uitvaartnr, CONCAT(OPG.overledeneAanhef, ' ', OPG.overledeneVoornamen, ' ', OPG.overledeneTussenvoegsel, ' ', OPG.overledeneAchternaam) AS UitvaartVan, CP.Id as EId, CONCAT(Voornaam, ' ', Achternaam) AS EmployeeName, Cijfer FROM [OverledeneUitvaartleider] OU " +
+                                        "INNER JOIN[ConfigurationPersoneel] CP ON CP.Id = OU.PersoneelId " +
+                                        "INNER JOIN[OverledeneKlantTevredenheid] OKT ON OKT.UitvaartId = OU.UitvaartId " +
+                                        "INNER JOIN[OverledenePersoonsGegevens] OPG ON OPG.UitvaartId = OU.UitvaartId " +
                                         "WHERE CP.id = @employeeid " +
                                         "AND dossierCompleted = 1 " +
                                         "ORDER BY Uitvaartnr ASC";
@@ -1834,9 +1834,9 @@ namespace Dossier_Registratie.Repositories
                                             "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverAchternaam) ELSE CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                             "(CASE WHEN OOG.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer) ELSE CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer, ' ', OOG.opdrachtgeverHuisnummerToevoeging) END) as OpdrachtgeverAdres, " +
                                             "opdrachtgeverTelefoon " +
-                                            "FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartInfo] OUI " +
-                                            "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] OPG ON OUI.uitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledeneOpdrachtgever] OOG ON OUI.uitvaartId = OOG.uitvaartId " +
+                                            "FROM [OverledeneUitvaartInfo] OUI " +
+                                            "INNER JOIN [OverledenePersoonsGegevens] OPG ON OUI.uitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN [OverledeneOpdrachtgever] OOG ON OUI.uitvaartId = OOG.uitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -1886,9 +1886,9 @@ namespace Dossier_Registratie.Repositories
                                             "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverAchternaam) ELSE CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                             "(CASE WHEN OOG.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer, ', ', OOG.opdrachtgeverPostcode, ', ', OOG.opdrachtgeverWoonplaats) ELSE CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer, TRIM(OOG.opdrachtgeverHuisnummerToevoeging),', ', OOG.opdrachtgeverPostcode, ', ', OOG.opdrachtgeverWoonplaats) END) as Adres, " +
                                             "OOG.opdrachtgeverTelefoon " +
-                                            "FROM EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI ON OPG.uitvaartId = OUI.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OOG ON OOG.uitvaartId = OPG.uitvaartId " +
+                                            "FROM OverledenePersoonsGegevens OPG " +
+                                            "INNER JOIN OverledeneUitvaartInfo OUI ON OPG.uitvaartId = OUI.uitvaartId " +
+                                            "INNER JOIN OverledeneOpdrachtgever OOG ON OOG.uitvaartId = OPG.uitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -1934,11 +1934,11 @@ namespace Dossier_Registratie.Repositories
                     command.CommandText = "SELECT OUI.uitvaartInfoType, OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoUitvaartLocatie, CONCAT(Initialen,' ',Achternaam) as UitvaartLeider, " +
                                             "CP.Email, OPG.overledeneAchternaam, OPG.overledeneVoornamen, OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, OPG.overledeneWoonplaats, " +
                                             "OOI.overledenDatumTijd, OOI.overledenGemeente, OOI.overledenPlaats " +
-                                            "FROM EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
-                                            "JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
+                                            "FROM OverledenePersoonsGegevens OPG " +
+                                            "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
+                                            "JOIN OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -1989,11 +1989,11 @@ namespace Dossier_Registratie.Repositories
                                             "CASE WHEN OPG.overledeneTussenvoegsel IS NOT NULL AND LEN(OPG.overledeneTussenvoegsel) > 0 THEN CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneTussenvoegsel,' ',OPG.overledeneAchternaam) ELSE " +
                                             "CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneAchternaam) END AS volledigeNaam, " +
                                             "OOI.overledenDatumTijd, CV.verzekeraarNaam, OO.opbaringVerzorgingJson " +
-                                            "FROM EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OUI.UitvaartId = OOI.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationVerzekeraar CV ON OOI.overledenHerkomst = CV.Id " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneOpbaring OO ON OUI.uitvaartId = OO.uitvaartId " +
+                                            "FROM OverledeneUitvaartInfo OUI " +
+                                            "LEFT JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
+                                            "LEFT JOIN OverledeneOverlijdenInfo OOI ON OUI.UitvaartId = OOI.uitvaartId " +
+                                            "INNER JOIN ConfigurationVerzekeraar CV ON OOI.overledenHerkomst = CV.Id " +
+                                            "LEFT JOIN OverledeneOpbaring OO ON OUI.uitvaartId = OO.uitvaartId " +
                                             "WHERE OUI.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2037,10 +2037,10 @@ namespace Dossier_Registratie.Repositories
                 command.CommandText = "SELECT uitvaartInfoType, overledeneAanhef, overledeneVoornamen, " +
                                       "CASE WHEN overledeneTussenvoegsel IS NOT NULL THEN CONCAT(overledeneTussenvoegsel, ' ', overledeneAchternaam) ELSE overledeneAchternaam END AS Achternaam, " +
                                       "CASE WHEN CP.Tussenvoegsel IS NOT NULL THEN CONCAT(CP.Voornaam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) ELSE CONCAT(CP.Voornaam, ' ', CP.Achternaam) END AS PersoneelName " +
-                                      "FROM EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OU ON OU.UitvaartId = OUI.uitvaartId " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OU.PersoneelId = CP.Id " +
+                                      "FROM OverledeneUitvaartInfo OUI " +
+                                      "INNER JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
+                                      "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OUI.uitvaartId " +
+                                      "INNER JOIN ConfigurationPersoneel CP ON OU.PersoneelId = CP.Id " +
                                       "WHERE OUI.uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2084,12 +2084,12 @@ namespace Dossier_Registratie.Repositories
                                           "THEN CONCAT(opg.overledeneAanhef, ' ', opg.overledeneVoornamen, ' ', opg.overledeneAchternaam) " +
                                           "ELSE CONCAT(opg.overledeneAanhef, ' ', opg.overledeneVoornamen, ' ', opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam) " +
                                           "END AS Overledene, bloemenText, bloemenLint, bloemenKaart, oo.opdrachtgeverTelefoon " +
-                                          "FROM [EeftingDossierRegistratie].[dbo].[OverledeneBloemen] ob " +
-                                          "INNER JOIN [EeftingDossierRegistratie].[dbo].[ConfigurationLeveranciers] cl ON ob.bloemenLeverancier = cl.leverancierId " +
-                                          "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] ou ON ob.uitvaartId = ou.UitvaartId " +
-                                          "INNER JOIN [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneel] cp ON ou.PersoneelId = cp.Id " +
-                                          "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledenePersoonsGegevens] opg ON ob.uitvaartId = opg.uitvaartId " +
-                                          "INNER JOIN [EeftingDossierRegistratie].[dbo].[OverledeneOpdrachtgever] oo ON ob.uitvaartId = oo.uitvaartId " +
+                                          "FROM [OverledeneBloemen] ob " +
+                                          "INNER JOIN [ConfigurationLeveranciers] cl ON ob.bloemenLeverancier = cl.leverancierId " +
+                                          "INNER JOIN [OverledeneUitvaartleider] ou ON ob.uitvaartId = ou.UitvaartId " +
+                                          "INNER JOIN [ConfigurationPersoneel] cp ON ou.PersoneelId = cp.Id " +
+                                          "INNER JOIN [OverledenePersoonsGegevens] opg ON ob.uitvaartId = opg.uitvaartId " +
+                                          "INNER JOIN [OverledeneOpdrachtgever] oo ON ob.uitvaartId = oo.uitvaartId " +
                                           "WHERE ob.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2136,11 +2136,11 @@ namespace Dossier_Registratie.Repositories
                                             "OO.opbaringSieradenOmschrijving, OO.opbaringSieradenRetour," +
                                             "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAchternaam, ', ', LEFT(ISNULL(opdrachtgeverVoornaamen, ''), 1) ) ELSE CONCAT(OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam, ', ', LEFT(ISNULL(opdrachtgeverVoornaamen, ''), 1)) END) as Opdrachtgever, " +
                                             "(CASE WHEN opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) ELSE CONCAT(opdrachtgeverStraat, ' ', TRIM(opdrachtgeverHuisnummer), ' ', TRIM(opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever " +
-                                            "FROM EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OPG.uitvaartId = OOI.UitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OOG ON OOG.uitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOpbaring OO ON OPG.uitvaartId = OO.uitvaartId " +
+                                            "FROM OverledenePersoonsGegevens OPG " +
+                                            "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN OverledeneOverlijdenInfo OOI ON OPG.uitvaartId = OOI.UitvaartId " +
+                                            "INNER JOIN OverledeneOpdrachtgever OOG ON OOG.uitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN OverledeneOpbaring OO ON OPG.uitvaartId = OO.uitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2197,15 +2197,15 @@ namespace Dossier_Registratie.Repositories
                                             "OOI.overledenDatumTijd, OOI.overledenPlaats, OA.asbestemming, uitvaartInfoDienstConsumpties, " +
                                             "OOI.overledenHerkomst, OUIM.AulaNaam, OUIM.AantalPersonen, OO.opdrachtgeverGeboortedatum, OO.opdrachtgeverPostcode, " +
                                             "OO.opdrachtgeverRelatieTotOverledene, OO.opdrachtgeverTelefoon, OO.opdrachtgeverWoonplaats, OO.opdrachtgeverEmail, OUI.uitvaartInfoDienstDatumTijd " +
-                                            "FROM EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OO " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneExtraInfo OEI ON OEI.uitvaartId = OO.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
-                                            "JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneAsbestemming OA ON OO.uitvaartId = OA.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfoMisc OUIM ON OO.uitvaartId = OUIM.uitvaartId " +
+                                            "FROM OverledeneOpdrachtgever OO " +
+                                            "INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN OverledeneExtraInfo OEI ON OEI.uitvaartId = OO.uitvaartId " +
+                                            "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
+                                            "JOIN OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
+                                            "LEFT JOIN OverledeneAsbestemming OA ON OO.uitvaartId = OA.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfoMisc OUIM ON OO.uitvaartId = OUIM.uitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2280,13 +2280,13 @@ namespace Dossier_Registratie.Repositories
                                             "OPG.overledeneAchternaam, OPG.overledeneVoornamen, " +
                                             "OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, " +
                                             "OOI.overledenDatumTijd, OOI.overledenPlaats, OPG.overledeneBSN " +
-                                            "FROM EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OO " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
-                                            "JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneAsbestemming OA ON OO.uitvaartId = OA.uitvaartId " +
+                                            "FROM OverledeneOpdrachtgever OO " +
+                                            "INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
+                                            "JOIN OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
+                                            "LEFT JOIN OverledeneAsbestemming OA ON OO.uitvaartId = OA.uitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2337,13 +2337,13 @@ namespace Dossier_Registratie.Repositories
                                       "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoType, OUI.uitvaartInfoUitvaartLocatie, OO.opdrachtgeverAchternaam, " +
                                       "(CASE WHEN OO.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer) ELSE CONCAT(OO.opdrachtgeverStraat, ' ', TRIM(OO.opdrachtgeverHuisnummer), ' ', TRIM(OO.opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever, " +
                                       "OO.opdrachtgeverPostcode, OO.opdrachtgeverWoonplaats, OO.opdrachtgeverRelatieTotOverledene, OO.opdrachtgeverTelefoon " +
-                                      "FROM EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OO " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneVerzerkeringInfo OVI ON OPG.uitvaartId = OVI.uitvaartId " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
-                                      "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
-                                      "JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
-                                      "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
+                                      "FROM OverledeneOpdrachtgever OO " +
+                                      "INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
+                                      "INNER JOIN OverledeneVerzerkeringInfo OVI ON OPG.uitvaartId = OVI.uitvaartId " +
+                                      "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
+                                      "INNER JOIN ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
+                                      "JOIN OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
+                                      "LEFT JOIN OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
                                       "WHERE OPG.uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2398,9 +2398,9 @@ namespace Dossier_Registratie.Repositories
                     command.CommandText = "SELECT Uitvaartnummer, (CASE WHEN CP.Tussenvoegsel IS NULL THEN CONCAT(CP.Initialen, ' ', CP.Achternaam) ELSE CONCAT(CP.Initialen, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Uitvaartleider, (CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverAchternaam) ELSE CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                         "OO.opdrachtgeverWoonplaats, OO.opdrachtgeverTelefoon, " +
                                         "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging) as opdrachtgeverAdres " +
-                                        "FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OUL " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
-                                        "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OO ON OUL.UitvaartId = OO.uitvaartId " +
+                                        "FROM [OverledeneUitvaartleider] OUL " +
+                                        "INNER JOIN ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
+                                        "INNER JOIN OverledeneOpdrachtgever OO ON OUL.UitvaartId = OO.uitvaartId " +
                                         "WHERE OUL.UitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2455,14 +2455,14 @@ namespace Dossier_Registratie.Repositories
                                             "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging) as opdrachtgeverAdres, OO.opdrachtgeverPostcode, OO.opdrachtgeverWoonplaats," +
                                             "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoUitvaartLocatie, OUI.uitvaartInfoType, OOI.overledenSchouwarts, OUIM.UBS, " +
                                             "OEI.naamWederhelft, OEI.voornaamWederhelft, OEI.overledeneGescheidenVan, OEI.overledeneBurgelijkestaat " +
-                                            "FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartleider] OUL " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledenePersoonsGegevens OPG ON OUL.UitvaartId = OPG.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOverlijdenInfo OOI ON OUL.UitvaartId = OOI.UitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneExtraInfo OEI ON OUL.UitvaartId = OEI.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfo OUI ON OUL.UitvaartId = OUI.uitvaartId " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
-                                            "INNER JOIN EeftingDossierRegistratie.dbo.OverledeneOpdrachtgever OO ON OUL.UitvaartId = OO.uitvaartId " +
-                                            "LEFT JOIN EeftingDossierRegistratie.dbo.OverledeneUitvaartInfoMisc OUIM ON OUI.uitvaartId = OUIM.UitvaartId " +
+                                            "FROM [OverledeneUitvaartleider] OUL " +
+                                            "INNER JOIN OverledenePersoonsGegevens OPG ON OUL.UitvaartId = OPG.uitvaartId " +
+                                            "INNER JOIN OverledeneOverlijdenInfo OOI ON OUL.UitvaartId = OOI.UitvaartId " +
+                                            "INNER JOIN OverledeneExtraInfo OEI ON OUL.UitvaartId = OEI.uitvaartId " +
+                                            "INNER JOIN OverledeneUitvaartInfo OUI ON OUL.UitvaartId = OUI.uitvaartId " +
+                                            "INNER JOIN ConfigurationPersoneel CP ON OUL.PersoneelId = CP.Id " +
+                                            "INNER JOIN OverledeneOpdrachtgever OO ON OUL.UitvaartId = OO.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfoMisc OUIM ON OUI.uitvaartId = OUIM.UitvaartId " +
                                             "WHERE OUL.UitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2526,7 +2526,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [uitvaartInfoType] FROM [EeftingDossierRegistratie].[dbo].[OverledeneUitvaartInfo] WHERE [UitvaartId] = @UitvaartId";
+                command.CommandText = "SELECT [uitvaartInfoType] FROM [OverledeneUitvaartInfo] WHERE [UitvaartId] = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
                 var uitvaartType = command.ExecuteScalar();

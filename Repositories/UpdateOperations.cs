@@ -109,7 +109,7 @@ namespace Dossier_Registratie.Repositories
                 WHEN MAX(PermissionId) = @permissionId THEN 'NoChangeNeeded'
                 ELSE 'UpdateNeeded'
             END
-        FROM [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneelPermission] 
+        FROM [ConfigurationPersoneelPermission] 
         WHERE PersoneelId = @employeeId";
                 command.Parameters.Clear(); // Clear previous parameters
                 command.Parameters.AddWithValue("@employeeId", employeeId);
@@ -129,7 +129,7 @@ namespace Dossier_Registratie.Repositories
                 else if (result == "UpdateNeeded")
                 {
                     // Proceed with the update
-                    command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneelPermission] SET PermissionId = @permissionId WHERE PersoneelId = @employeeId";
+                    command.CommandText = "UPDATE [ConfigurationPersoneelPermission] SET PermissionId = @permissionId WHERE PersoneelId = @employeeId";
                     command.Parameters.Clear(); // Clear previous parameters
                     command.Parameters.AddWithValue("@employeeId", employeeId);
                     command.Parameters.AddWithValue("@permissionId", rechtenId);
@@ -867,7 +867,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneSteenhouwer] " +
+                command.CommandText = "UPDATE [OverledeneSteenhouwer] " +
                                         "SET [steenhouwerPaid] = 1, " +
                                         "[steenhouwerProvisie] = @provisie, " +
                                         "[steenhouwerUitbetaing] = @betalingDatum, " +
@@ -893,7 +893,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneBloemen] " +
+                command.CommandText = "UPDATE [OverledeneBloemen] " +
                                         "SET [bloemenPaid] = 1, " +
                                         "[bloemenProvisie] = @provisie, " +
                                         "[bloemenUitbetaling] = @betalingDatum, " +
@@ -917,7 +917,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[ConfigurationOverledenLocaties] " +
+                command.CommandText = "UPDATE [ConfigurationOverledenLocaties] " +
                                         "SET [ShortName] = @ShortName," +
                                         "[LongName] = @LongName," +
                                         "[Street] = @Street," +
@@ -947,7 +947,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[overledeneUrnSieraden] " +
+                command.CommandText = "UPDATE [overledeneUrnSieraden] " +
                                         "SET [urnPaid] = 1, " +
                                         "[urnProvisie] = @provisie, " +
                                         "[urnUitbetaling] = @betalingDatum, " +
@@ -971,7 +971,7 @@ namespace Dossier_Registratie.Repositories
             {
                 await connection.OpenAsync();
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneFacturen]" +
+                command.CommandText = "UPDATE [OverledeneFacturen]" +
                                     " SET [kostenbegrotingUrl] = @kostenbegrotingUrl," +
                                     " [kostenbegrotingJson] = @kostenbegrotingData," +
                                     " [kostenbegrotingCreationDate] = @kostenbegrotingCreationDate," +
@@ -993,7 +993,7 @@ namespace Dossier_Registratie.Repositories
             {
                 await connection.OpenAsync().ConfigureAwait(false);
                 command.Connection = connection;
-                command.CommandText = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneBijlages] " +
+                command.CommandText = "UPDATE [OverledeneBijlages] " +
                                       "SET [DocumentURL] = @documentUrl, " +
                                       "[DocumentHash] = @documentHash " +
                                       "WHERE [UitvaartId] = @UitvaartId " +

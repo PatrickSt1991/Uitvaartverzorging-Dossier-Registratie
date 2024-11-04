@@ -753,7 +753,7 @@ namespace Dossier_Registratie.ViewModels
             string akteQuery;
             if (akteStatus)
             {
-                akteQuery = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneBijlages]" +
+                akteQuery = "UPDATE [OverledeneBijlages]" +
                                     " SET [DocumentURL] = '" + destinationFile + "'," +
                                     " [DocumentHash] = 'recreated_on_build'" +
                                     " WHERE [UitvaartId] = '" + Globals.UitvaartCodeGuid + "'" +
@@ -764,7 +764,7 @@ namespace Dossier_Registratie.ViewModels
             {
                 Guid documentId = Guid.NewGuid();
 
-                akteQuery = "INSERT INTO [EeftingDossierRegistratie].[dbo].[OverledeneBijlages] ([BijlageId],[UitvaartId],[DocumentName],[DocumentType],[DocumentURL],[DocumentHash],[DocumentInconsistent],[isDeleted]) " +
+                akteQuery = "INSERT INTO [OverledeneBijlages] ([BijlageId],[UitvaartId],[DocumentName],[DocumentType],[DocumentURL],[DocumentHash],[DocumentInconsistent],[isDeleted]) " +
                     "VALUES ('" + documentId + "', '" + Globals.UitvaartCodeGuid + "', 'AkteVanCessie_" + verzekeringName + ".docx', 'Word', '" + destinationFile + "', 'recreated_on_build',0,0)";
             }
 

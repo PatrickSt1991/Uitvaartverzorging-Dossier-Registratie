@@ -575,7 +575,7 @@ namespace Dossier_Registratie.ViewModels
 
                     Guid documentId = Guid.NewGuid();
 
-                    string factuurQuery = "UPDATE [EeftingDossierRegistratie].[dbo].[OverledeneFacturen] " +
+                    string factuurQuery = "UPDATE [OverledeneFacturen] " +
                                             "SET [factuurUrl] = @FactuurUrl, [factuurCreationDate] = @FactuurCreationDate, [factuurCreated] = '1' " +
                                             "WHERE [UitvaartId] = @UitvaartId";
 

@@ -34,7 +34,7 @@ namespace Dossier_Registratie.Repositories
             {
                 await connection.OpenAsync();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [EeftingDossierRegistratie].[dbo].[OverledeneFacturen] ([Id],[uitvaartId],[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate],[kostenbegrotingCreated],[kostenbegrotingVerzekeraar]) " +
+                command.CommandText = "INSERT INTO [OverledeneFacturen] ([Id],[uitvaartId],[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate],[kostenbegrotingCreated],[kostenbegrotingVerzekeraar]) " +
                                         "VALUES (@id, @uitvaartId, @kostenbegrotingUrl, @kostenbegrotingData, @kostenbegrotingCreationDate, 1, @verzekeraarId)";
                 command.Parameters.AddWithValue("@kostenbegrotingUrl", kostenbegrotingUrl);
                 command.Parameters.AddWithValue("@kostenbegrotingData", kostenbegrotingData);
@@ -83,7 +83,7 @@ namespace Dossier_Registratie.Repositories
             {
                 await connection.OpenAsync().ConfigureAwait(false);
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [EeftingDossierRegistratie].[dbo].[OverledeneBijlages] ([BijlageId],[UitvaartId],[DocumentName],[DocumentType],[DocumentURL],[DocumentHash],[DocumentInconsistent],[isDeleted]) " +
+                command.CommandText = "INSERT INTO [OverledeneBijlages] ([BijlageId],[UitvaartId],[DocumentName],[DocumentType],[DocumentURL],[DocumentHash],[DocumentInconsistent],[isDeleted]) " +
                                       "VALUES (@bijlageId, @uitvaartId, @documentName, @documentType, @documentUrl, @documentHash, @documentInconsistent, @isDeleted)";
                 command.Parameters.AddWithValue("@bijlageId", documentInfo.BijlageId);
                 command.Parameters.AddWithValue("@UitvaartId", documentInfo.UitvaartId);
@@ -109,7 +109,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [EeftingDossierRegistratie].[dbo].[OverledeneBijlages] (BijlageId, UitvaartId, DocumentName, DocumentType, DocumentURL, DocumentHash, DocumentInconsistent, isDeleted) " +
+                command.CommandText = "INSERT INTO [OverledeneBijlages] (BijlageId, UitvaartId, DocumentName, DocumentType, DocumentURL, DocumentHash, DocumentInconsistent, isDeleted) " +
                                         "VALUES (@BijlageId, @UivaartId, @DocumentName, @DocumenType, @DocumentURL, @DocumentHash, @DocumentInconsistent, @DocumentIsDeleted)";
                 command.Parameters.AddWithValue("@BijlageId", finishDossier.BijlageId);
                 command.Parameters.AddWithValue("@UivaartId", finishDossier.UitvaartId);
@@ -651,7 +651,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [EeftingDossierRegistratie].[dbo].[ConfigurationUsers] ([Id],[PersoneelId],[WindowsUsername],[IsActive]) VALUES (@Id, @PersoneelId, @WindowsUser, @Inactive)";
+                command.CommandText = "INSERT INTO [ConfigurationUsers] ([Id],[PersoneelId],[WindowsUsername],[IsActive]) VALUES (@Id, @PersoneelId, @WindowsUser, @Inactive)";
                 command.Parameters.AddWithValue("@Id", Id);
                 command.Parameters.AddWithValue("@PersoneelId", PersoneelId);
                 command.Parameters.AddWithValue("@WindowsUser", WindowsUser);
@@ -669,7 +669,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [EeftingDossierRegistratie].[dbo].[ConfigurationPersoneelPermission] ([Id],[PermissionId],[PersoneelId],[PersoneelKey]) VALUES (@Id, @PermissionId, @PersoneelId, @Key)";
+                command.CommandText = "INSERT INTO [ConfigurationPersoneelPermission] ([Id],[PermissionId],[PersoneelId],[PersoneelKey]) VALUES (@Id, @PermissionId, @PersoneelId, @Key)";
                 command.Parameters.AddWithValue("@Id", Guid.NewGuid());
                 command.Parameters.AddWithValue("@PermissionId", rechtenId);
                 command.Parameters.AddWithValue("@PersoneelId", PersoneelId);
