@@ -1,4 +1,5 @@
-﻿using Dossier_Registratie.ViewModels;
+﻿using Dossier_Registratie.Helper;
+using Dossier_Registratie.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,7 +14,8 @@ namespace Dossier_Registratie.Views
         private void ReloadHelp(object sender, RoutedEventArgs e)
         {
             var viewModel = (ConfigurationGithubViewModel)this.DataContext;
-            viewModel.LoadIssuesAsync();
+            if(DataProvider.GithubEnabled)
+                viewModel.LoadIssuesAsync();
         }
     }
 }
