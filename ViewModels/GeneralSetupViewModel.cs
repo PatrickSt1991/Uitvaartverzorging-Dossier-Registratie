@@ -578,7 +578,7 @@ namespace Dossier_Registratie.ViewModels
                 IsDrager = false,
                 IsChauffeur = false,
                 IsOpbaren = false,
-                PermissionId = Guid.Parse("D8454762-9245-4B6C-9D29-293B9BC2FFB2");
+                PermissionId = Guid.Parse("D8454762-9245-4B6C-9D29-293B9BC2FFB2"),
                 PermissionName = "System"
             };
         }
@@ -700,7 +700,7 @@ namespace Dossier_Registratie.ViewModels
                 File.WriteAllText("AppConnectionSettings.json", jsonString);
 
                 Process.Start(Environment.ProcessPath);
-                Application.Current.Shutdown();
+                System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
