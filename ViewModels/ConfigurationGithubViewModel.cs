@@ -230,17 +230,19 @@ Datum Tijd: {DateTime.Now}"
         public ConfigurationGithubViewModel()
         {
 
-            _githubClient = new GitHubClient(new ProductHeaderValue(product));
-            _githubClient.Credentials = new Credentials(token);
-
-
-            CreateFeatureOrIssue = new ViewModelCommand(ExecuteCreateFeatureOrIssue);
-            ReturnToStartCommand = new RelayCommand(() => IntAggregator.Transmit(0));
             Inzender = Environment.UserName;
             Issues = new ObservableCollection<GitHubModel>();
             States = new ObservableCollection<string> { "Open", "Closed" };
-            LoadIssuesCommand = new RelayCommand(async () => await LoadIssuesAsync());
-            SelectedState = "Open";
+
+            if (DataProvider.GithubEnabled)
+            {
+                SelectedState = "Open";
+                _githubClient = new GitHubClient(new ProductHeaderValue(product));
+                _githubClient.Credentials = new Credentials(token);
+                CreateFeatureOrIssue = new ViewModelCommand(ExecuteCreateFeatureOrIssue);
+                ReturnToStartCommand = new RelayCommand(() => IntAggregator.Transmit(0));
+                LoadIssuesCommand = new RelayCommand(async () => await LoadIssuesAsync());
+            }
         }
         public async Task LoadIssuesAsync()
         {

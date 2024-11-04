@@ -1,16 +1,16 @@
 {
   "ConnectionStrings": {
-    "DossierRegistratieConnectionString": "Data Source=;Database=;User Id=;Password=;"
+    "DossierRegistratieConnectionString": "Data Source=localhost;Database=DossierRegistratie;User Id=RegistratieUser;Password=test1234;"
   },
   "CompanySettings": {
-    "Name": "",
-    "Street": "",
-    "HouseNumber": "",
+    "Name": "test",
+    "Street": "test",
+    "HouseNumber": "1",
     "HouseNumberAddition": "",
-    "Zipcode": "",
-    "City": "",
-    "PhoneNumber": "",
-    "Email": "",
+    "Zipcode": "1234aa",
+    "City": "aa",
+    "PhoneNumber": "0987654321",
+    "Email": "aa@aa.nl",
     "IBAN": ""
   },
   "SystemSettings": {
@@ -23,7 +23,7 @@
     "SetupComplete": false
   },
   "SystemConfiguration": {
-    "ShutdownFile": "",
+    "ShutdownFile": "C:\\test\\shutdown.txt",
     "Database2024": "",
     "Database2023": "",
     "PdfArchive": "",

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Dossier_Registratie.Helper;
+using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Microsoft.Win32;
+using Octokit;
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -10,6 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using static Dossier_Registratie.MainWindow;
 
 namespace Dossier_Registratie.ViewModels
 {
@@ -519,8 +522,120 @@ namespace Dossier_Registratie.ViewModels
         {
             ConnectionString = $"Data Source={DataSource};Database={DatabaseName};User Id={UserId};Password={Password};";
         }
+        private static bool TestDatabaseConnection(string connectionString)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    new ToastWindow("Database connectie geslaagd").Show();
+                    return true;
+                }
+            }
+            catch
+            {
+                new ToastWindow("Database connectie mislukt, controleer de instellingen").Show();
+                return false;
+            }
+        }
+        private static bool SetupInstallUser()
+        {
+            var newUser = CreateNewUser();
+            ICreateOperations createRepository = new CreateOperations();
+            Guid personnelId = newUser.Id;
+
+            if (!CreateEmployee(createRepository, newUser))
+                return false;
+
+            if (!CreateWindowsAccount(createRepository, personnelId))
+                return false;
+
+            Globals.PermissionLevelId = "D8454762-9245-4B6C-9D29-293B9BC2FFB2";
+            Globals.PermissionLevelName = "System";
+
+            if (!CreateUserPermission(createRepository, personnelId, Guid.Parse(Globals.PermissionLevelId)))
+                return false;
+
+            return true;
+        }
+        private static WerknemersModel CreateNewUser()
+        {
+            return new WerknemersModel
+            {
+                Id = Guid.NewGuid(),
+                Initialen = "S",
+                Voornaam = "Systeem",
+                Roepnaam = "Beheerder",
+                Tussenvoegsel = string.Empty,
+                Achternaam = "Beheerder",
+                VolledigeNaam = "Systeem Beheeder",
+                Geboortedatum = DateTime.Today,
+                Geboorteplaats = string.Empty,
+                Email = DataProvider.OrganizationEmail,
+                IsDeleted = false,
+                IsUitvaartverzorger = false,
+                IsDrager = false,
+                IsChauffeur = false,
+                IsOpbaren = false,
+                PermissionId = Guid.Parse("D8454762-9245-4B6C-9D29-293B9BC2FFB2"),
+                PermissionName = "System"
+            };
+        }
+        private static bool CreateEmployee(ICreateOperations createRepository, WerknemersModel user)
+        {
+            try
+            {
+                createRepository.EmployeeCreate(user);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ShowError("Error creating system account", ex);
+                return false;
+            }
+        }
+        private static bool CreateWindowsAccount(ICreateOperations createRepository, Guid personnelId)
+        {
+            try
+            {
+                createRepository.CreateWindowsUser(Guid.NewGuid(), personnelId, Environment.UserName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ShowError("Error creating system user", ex);
+                return false;
+            }
+        }
+        private static bool CreateUserPermission(ICreateOperations createRepository, Guid personnelId, Guid permissionLevelId)
+        {
+            try
+            {
+                createRepository.CreateUserPermission(personnelId, permissionLevelId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ShowError("Error creating system user permission", ex);
+                return false;
+            }
+        }
+        private static void ShowError(string message, Exception ex)
+        {
+            new ToastWindow($"{message}: {ex.Message}").Show();
+            MessageBox.Show($"{message}: {ex.Message}", "Operation Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
         private void SaveSettings()
         {
+
+            if (!TestDatabaseConnection(ConnectionString))
+                return;
+
+            if(!DataProvider.SetupComplete)
+                if (!SetupInstallUser())
+                    return;
+
             var config = new
             {
                 ConnectionStrings = new
@@ -585,7 +700,7 @@ namespace Dossier_Registratie.ViewModels
                 File.WriteAllText("AppConnectionSettings.json", jsonString);
 
                 Process.Start(Environment.ProcessPath);
-                Application.Current.Shutdown();
+                System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
