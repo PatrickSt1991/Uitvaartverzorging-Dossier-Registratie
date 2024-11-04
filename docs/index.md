@@ -1,6 +1,6 @@
 ---
 title: Welkom
-layout: home
+layout: default
 ---
 
 **Welkom bij DigiGraf - Dé Dossier Registratie Software voor de Uitvaartverzorging**
