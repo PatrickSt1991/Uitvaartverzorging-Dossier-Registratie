@@ -1,7 +1,11 @@
 ---
 title: Welkom
 layout: default
+nav_enabled: true
+nav_order: 1
 ---
+
+![Screenshot of the application](./images/dg_logo_small.png)
 
 **Welkom bij DigiGraf - Dé Dossier Registratie Software voor de Uitvaartverzorging**
 
