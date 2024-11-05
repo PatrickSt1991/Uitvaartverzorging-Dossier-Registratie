@@ -1,41 +1,41 @@
 {
   "ConnectionStrings": {
-    "DossierRegistratieConnectionString": "Data Source=localhost;Database=EeftingDossierRegistratie;User Id=EeftingRegistratie;Password=33ft1ngR3g1str@t13;"
+    "DossierRegistratieConnectionString": "Data Source=localhost;Database=DossierRegistratie;User Id=RegistratieUser;Password=test1234;"
   },
   "CompanySettings": {
-    "Name": "Uitvaartverzorging Eefting B.V.",
-    "Street": "Oostereinde",
-    "HouseNumber": "11",
+    "Name": "test",
+    "Street": "test",
+    "HouseNumber": "1",
     "HouseNumberAddition": "",
-    "Zipcode": "9672 TB",
-    "City": "Winschoten",
-    "PhoneNumber": "0597 - 412 628",
-    "Email": "info@uitvaartverzorging-eefting.nl",
-    "IBAN": "NL 69 ABNA 0535 6375 86"
+    "Zipcode": "1234aa",
+    "City": "aa",
+    "PhoneNumber": "0987654321",
+    "Email": "aa@aa.nl",
+    "IBAN": ""
   },
   "SystemSettings": {
     "SystemTitle": "Dossier Registratie Systeem",
     "ApplicationName": "DigiGraf",
-    "GithubEnabled": true,
-    "GithubKey": "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",
-    "GithubOwner": "PatrickSt1991",
-    "GithubRepo": "Eefting-Uitvaartverzorging---Dossier-Registratie",
-    "GithubProduct": "Eefting_Uitvaart_Dossier_Registratie_Application",
-    "SetupComplete": true
+    "GithubEnabled": false,
+    "GithubKey": "",
+    "GithubOwner": "",
+    "GithubRepo": "",
+    "GithubProduct": "",
+    "SetupComplete": false
   },
   "SystemConfiguration": {
-    "ShutdownFile": "C:\\temp\\shutdown.txt",
-    "Database2024": "C:\\test\\Eefting Beheer_be.accdb",
-    "Database2023": "C:\\test\\Eefting Beheer.accdb",
-    "PdfArchive": "\\\\server\\DOSSIER ARCHIEF\\Dossier 2000 tm ",
-    "TemplateFolder": "C:\\Users\\Patrick\\Desktop\\C# Project Eefting\\Templates",
-    "DocumentenOpslag": "C:\\Users\\Patrick\\Desktop\\C# Project Eefting\\Documenten",
-    "FactuurOpslag": "C:\\Users\\Patrick\\Desktop\\C# Project Eefting\\Facturen"
+    "ShutdownFile": "C:\\test\\shutdown.txt",
+    "Database2024": "",
+    "Database2023": "",
+    "PdfArchive": "",
+    "TemplateFolder": "",
+    "DocumentenOpslag": "",
+    "FactuurOpslag": ""
   },
   "MaintenanceConfiguration": {
-    "MaintenanceCheckEnabled": false,
-    "MaintenanceUrl": "http://77.164.105.99:8888/DossierRegistratie.xml",
-    "MaintenanceUser": "dossierRegistratie",
-    "MaintenancePassword": "33ftingD0ssier2025!"
+    "MaintenanceCheckEnabled":  false,
+    "MaintenanceUrl": "",
+    "MaintenanceUser": "",
+    "MaintenancePassword": ""
   }
 }
