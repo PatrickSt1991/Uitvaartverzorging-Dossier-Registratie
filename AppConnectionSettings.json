@@ -15,6 +15,7 @@
   },
   "SystemSettings": {
     "SystemTitle": "Dossier Registratie Systeem",
+    "ApplicationName": "DigiGraf",
     "GithubEnabled": false,
     "GithubKey": "",
     "GithubOwner": "",
