@@ -40,8 +40,8 @@ Instellen van Databaseverbinding
   - Tijdens de installatie opent DigiGraf de configuratiebestanden
   - Vul de verschillende onderdelen in zoals gevraagd, niet alles is verplicht
 <p float="left">
-  <img src="./images/installatie1.pmg" alt="Screenshot of the application" width="45%" />
-  <img src="./images/installatie2.png" alt="Screenshot of the application" width="45%" />
+  <img src="./images/Installatie1.png" alt="Screenshot of the application" width="45%" />
+  <img src="./images/Installatie1.png" alt="Screenshot of the application" width="45%" />
 </p>
 
 ### Voltooi de Installatie
