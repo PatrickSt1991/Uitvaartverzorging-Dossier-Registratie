@@ -8,6 +8,7 @@ nav_order: 1
 ![Screenshot of the application](./images/dg_logo_small.png)
 
 **Welkom bij DigiGraf - Dé Dossier Registratie Software voor de Uitvaartverzorging**
+**Deze GitHub Pagina is nog in aanbouw**
 
 Bij DigiGraf begrijpen we dat nauwkeurige en efficiënte dossiervoering cruciaal is voor de uitvaartverzorging. Onze software is speciaal ontwikkeld om uitvaartondernemers te ondersteunen bij het registreren, beheren en bijwerken van dossiers op een betrouwbare en gebruiksvriendelijke manier.
 
