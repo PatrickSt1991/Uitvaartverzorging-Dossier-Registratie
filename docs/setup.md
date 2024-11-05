@@ -53,6 +53,6 @@ Instellen van Databaseverbinding
   - Oplossing: Download en installeer de laatste versie van [.NET Framework 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) via de officiële Microsoft-website en probeer de installatie opnieuw.
     
 ### Ondersteuning
-Voor verdere ondersteuning kunt u contact opnemen met ons ondersteuningsteam via e-mail op support@digigraf.nl of telefonisch op +31 (0)20 123 4567.
+Voor verdere ondersteuning kunt u contact opnemen met ons ondersteuningsteam via de GitHub pagina.
 
 Bedankt dat u voor DigiGraf heeft gekozen – wij wensen u een succesvolle start met ons dossierregistratiepakket!
