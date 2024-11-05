@@ -2,6 +2,7 @@
 layout: default
 title: Installatie
 nav_enabled: true
+nav_order: 2
 ---
 
 ## DigiGraf Installatiehandleiding
