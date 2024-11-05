@@ -5,7 +5,7 @@ nav_enabled: true
 nav_order: 3
 ---
 
-### Ingebruikname / Handleiding
+# Ingebruikname / Handleiding
 Deze handleiding helpt u om snel vertrouwd te raken met de belangrijkste functies en navigatie van DigiGraf, zodat u optimaal gebruik kunt maken van onze software voor dossierbeheer in de uitvaartverzorging.
 
 ## Aanmelden en Starten
@@ -19,13 +19,13 @@ Deze handleiding helpt u om snel vertrouwd te raken met de belangrijkste functie
 ## Belangrijkste Knoppen en Navigatie
 In DigiGraf vindt u een aantal basisfunctionaliteiten via de knoppen in het hoofdmenu. Hieronder worden de belangrijkste knoppen en hun functies uitgelegd.
 
-# Hoofdmenu
+#### Hoofdmenu
   - Dossiers: Dit is het hart van DigiGraf waar u alle geregistreerde dossiers kunt beheren en doorzoeken.
   - Agenda: Een visuele weergave van geplande uitvaarten en andere belangrijke afspraken. Hier kunt u nieuwe evenementen toevoegen en bestaande afspraken beheren.
   - Documenten: Hier beheert u de documenten die horen bij uw dossiers, zoals contracten, facturen, en brieven.
   - Instellingen: Toegang tot algemene instellingen van de applicatie, zoals gebruikersrechten, systeeminstellingen, en het beheren van sjablonen.
 
-# Actieknoppen binnen Dossiers
+### Actieknoppen binnen Dossiers
 Bij het werken met dossiers zijn er een aantal veelgebruikte actieknoppen die u helpen om dossiers snel en eenvoudig te beheren:
 
   - Nieuw Dossier: Maak een nieuw dossier aan voor een overledene. U wordt gevraagd om persoonlijke gegevens en uitvaartdetails in te voeren.
@@ -34,7 +34,7 @@ Bij het werken met dossiers zijn er een aantal veelgebruikte actieknoppen die u 
   - Dossier Bewerken: Pas bestaande informatie aan door op Bewerken te klikken wanneer u een dossier geopend heeft.
   - Document Toevoegen: Voeg een document toe aan een dossier door op Documenten te klikken en een nieuw bestand of sjabloon te kiezen.
 
-# Verschillende Weergaven en Hun Functies
+### Verschillende Weergaven en Hun Functies
 DigiGraf biedt verschillende weergaven om specifieke taken binnen uw werkproces eenvoudig uit te voeren:
 
 1. Dashboard
@@ -60,6 +60,6 @@ DigiGraf biedt verschillende weergaven om specifieke taken binnen uw werkproces 
   - Document Sjablonen: Gebruik sjablonen voor veelgebruikte documenten om tijd te besparen en consistentie te garanderen.
   - Filteren en Sorteren: Gebruik filters in de Dossierweergave om dossiers snel te sorteren op datum, naam, of andere criteria.
 
-# Ondersteuning
+### Ondersteuning
 Voor verdere vragen kunt u altijd de ingebouwde helpfunctie gebruiken via Help in het hoofdmenu of contact opnemen met ons ondersteuningsteam via de GitHub pagina.
 Met DigiGraf is dossierbeheer eenvoudig en georganiseerd, zodat u zich volledig kunt richten op het bieden van de beste dienstverlening voor uw klanten.
