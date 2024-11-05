@@ -24,7 +24,7 @@ Voordat u DigiGraf installeert, controleer of uw systeem voldoet aan de volgende
 
 ### Stap-voor-stap Installatie-instructies
 Download de Installer
-- Ga naar de officiële DigiGraf-pagina om de laatste release te downloaden.
+- Ga naar de officiële [DigiGraf-pagina Releases](https://github.com/PatrickSt1991/Uitvaartverzorging-Dossier-Registratie/releases) om de laatste release te downloaden.
 - Pak de zip uit of de server of computer en start de .exe
 
 ### Start de Installatie
@@ -50,7 +50,7 @@ Instellen van Databaseverbinding
   - Oplossing: Controleer of de SQL Server actief is en of de verbindingsinstellingen correct zijn ingevoerd. Zorg ervoor dat de juiste poorten op de firewall zijn geopend.
 
  - Probleem: .NET Framework 6.0 is niet geïnstalleerd.
-  - Oplossing: Download en installeer de laatste versie van .NET Framework 6.0 via de officiële Microsoft-website en probeer de installatie opnieuw.
+  - Oplossing: Download en installeer de laatste versie van [.NET Framework 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) via de officiële Microsoft-website en probeer de installatie opnieuw.
     
 ### Ondersteuning
 Voor verdere ondersteuning kunt u contact opnemen met ons ondersteuningsteam via e-mail op support@digigraf.nl of telefonisch op +31 (0)20 123 4567.
