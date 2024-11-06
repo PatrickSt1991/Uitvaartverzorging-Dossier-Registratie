@@ -645,6 +645,12 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
+            if (!PersoonsGegevens.OverledeneVoorregeling && !IsOverlijdenInfoValid)
+            {
+                new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
+                return;
+            }
+
             if (UitvaartLeider.UitvaartId == Guid.Empty)
             {
                 UitvaartLeider.UitvaartId = newGuid;
