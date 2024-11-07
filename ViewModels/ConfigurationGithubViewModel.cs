@@ -236,12 +236,12 @@ Datum Tijd: {DateTime.Now}"
 
             if (DataProvider.GithubEnabled)
             {
-                SelectedState = "Open";
                 _githubClient = new GitHubClient(new ProductHeaderValue(product));
                 _githubClient.Credentials = new Credentials(token);
                 CreateFeatureOrIssue = new ViewModelCommand(ExecuteCreateFeatureOrIssue);
                 ReturnToStartCommand = new RelayCommand(() => IntAggregator.Transmit(0));
                 LoadIssuesCommand = new RelayCommand(async () => await LoadIssuesAsync());
+                SelectedState = "Open";
             }
         }
         public async Task LoadIssuesAsync()

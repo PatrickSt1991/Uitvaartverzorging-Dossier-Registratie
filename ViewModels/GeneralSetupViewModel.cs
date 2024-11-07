@@ -631,11 +631,10 @@ namespace Dossier_Registratie.ViewModels
             if (!TestDatabaseConnection(ConnectionString))
                 return;
 
-            /*
             if (!DataProvider.SetupComplete)
                 if (!SetupInstallUser())
                     return;
-            */
+
             var config = new
             {
                 ConnectionStrings = new

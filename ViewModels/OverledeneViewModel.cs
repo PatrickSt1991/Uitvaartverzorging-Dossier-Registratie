@@ -593,7 +593,6 @@ namespace Dossier_Registratie.ViewModels
         }
         private bool CanExecuteSaveCommand(object obj)
         {
-            /*
             IsPersoonsGegevensValid = !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAchternaam) &&
                                       !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneVoornamen) &&
                                       PersoonsGegevens.OverledeneGeboortedatum != DateTime.MinValue &&
@@ -631,8 +630,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 return false;
             }
-            */
-            return true;
         }
         private void ExecuteSaveCommand(object obj)
         {

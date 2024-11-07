@@ -1855,8 +1855,8 @@ namespace Dossier_Registratie.Repositories
                                 AfscheidVoorDienst = reader["uitvaartInfoDienstAfscheid"].ToString(),
                                 KistDalen = reader["uitvaartInfoDienstKist"].ToString(),
                                 OpdrachtgeverNaam = reader["Opdrachtgever"].ToString(),
-                                OpdrachtgeverTelefoon = reader["opdrachtgeverTelefoon"].ToString(),
-                                OpdrachtgeverAdres = reader["opdrachtgeverAdres"].ToString(),
+                                OpdrachtgeverTelefoon = reader["OpdrachtgeverTelefoon"].ToString(),
+                                OpdrachtgeverAdres = reader["OpdrachtgeverAdres"].ToString(),
                             };
                         }
                     }
