@@ -25,7 +25,7 @@
             <Label x:Name="lbl_PrepositionFamilie" Content="Tussenvoegsel" HorizontalAlignment="Left" Margin="555,194,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <DatePicker 
     x:Name="input_DateOfBirthFamilie" 
-    SelectedDate="{Binding Path=OpdrachtgeverPersoonsgegevens.OpdrachtgeverGeboortedatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" 
+    SelectedDate="{Binding Path=OpdrachtgeverPersoonsgegevens.OpdrachtgeverGeboortedatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
     TabIndex="24" 
     VerticalContentAlignment="Center" 
     HorizontalAlignment="Left" 

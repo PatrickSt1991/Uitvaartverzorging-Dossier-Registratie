@@ -11,7 +11,7 @@
 		<LangVersion>12.0</LangVersion>
 		<InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<ApplicationIcon>fav.ico</ApplicationIcon>
+		<ApplicationIcon>DigiGraf_Logo_favicon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<Target Name="GenerateVersionXml" AfterTargets="Publish">
@@ -23,9 +23,6 @@
 
 	<ItemGroup>
 		<!-- Resource files -->
-		<Resource Include="fav.ico">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Resource>
 		<Resource Include="Images\compose.png" />
 		<Resource Include="Images\email.png" />
 		<Resource Include="Images\kb_asr.jpg" />
@@ -37,6 +34,7 @@
 
 	<ItemGroup>
 		<!-- Content files -->
+		<Content Include="DigiGraf_Logo_favicon.ico" />
 		<Content Include="nl_NL.aff">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
