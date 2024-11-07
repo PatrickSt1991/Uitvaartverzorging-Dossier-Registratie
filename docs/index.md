@@ -1,35 +1,26 @@
 ---
-title: Home
-layout: home
+title: Welkom
+layout: default
+nav_enabled: true
+nav_order: 1
 ---
 
-This is a *bare-minimum* template to create a Jekyll site that uses the [Just the Docs] theme. You can easily set the created site to be published on [GitHub Pages] – the [README] file explains how to do that, along with other details.
+![Screenshot of the application](./images/DigiGraf_Logo.png)
 
-If [Jekyll] is installed on your computer, you can also build and preview the created site *locally*. This lets you test changes before committing them, and avoids waiting for GitHub Pages.[^1] And you will be able to deploy your local build to a different platform than GitHub Pages.
+**Welkom bij DigiGraf - Dé Dossier Registratie Software voor de Uitvaartverzorging**
+**Deze GitHub Pagina is nog in aanbouw**
 
-More specifically, the created site:
+Bij DigiGraf begrijpen we dat nauwkeurige en efficiënte dossiervoering cruciaal is voor de uitvaartverzorging. Onze software is speciaal ontwikkeld om uitvaartondernemers te ondersteunen bij het registreren, beheren en bijwerken van dossiers op een betrouwbare en gebruiksvriendelijke manier.
 
-- uses a gem-based approach, i.e. uses a `Gemfile` and loads the `just-the-docs` gem
-- uses the [GitHub Pages / Actions workflow] to build and publish the site on GitHub Pages
+Met DigiGraf krijgt u een alles-in-één oplossing voor dossierbeheer waarmee u op één centrale plek alle gegevens van overledenen, betrokkenen, uitvaartdetails en financiële informatie kunt verzamelen. Onze software helpt u uw dienstverlening naar een hoger niveau te tillen door u te voorzien van inzicht en overzicht, zonder tijdrovende administratie.
 
-Other than that, you're free to customize sites that you create with this template, however you like. You can easily change the versions of `just-the-docs` and Jekyll it uses, as well as adding further plugins.
+## Voordelen van DigiGraf:
+- Gebruiksvriendelijke Interface: Eenvoudige navigatie en overzichtelijke schermen die het invoeren van gegevens snel en intuïtief maken.
+- Krachtige Agenda-functionaliteit: Beheer en plan uitvaarten eenvoudig in een visueel aantrekkelijke kalenderweergave, waarmee u snel de agenda en taken van uw team kunt inzien.
+- Documentbeheer op maat: DigiGraf biedt de mogelijkheid om belangrijke documenten, zoals contracten en brieven, automatisch te genereren, met branding-opties voor uw bedrijf. Ook kunt u eenvoudig afbeeldingen en logo’s toevoegen aan uw Word-sjablonen.
+- Geavanceerde Rapportage: Krijg snel inzicht in de kerncijfers van uw bedrijf. Met onze rapportagemogelijkheden kunt u trends analyseren en data gebruiken om uw bedrijfsvoering te optimaliseren.
+- Veiligheid en Betrouwbaarheid: DigiGraf is ontwikkeld met de nieuwste beveiligingsprotocollen en wordt ondersteund door een robuuste database-infrastructuur, zodat uw gegevens altijd veilig zijn.
 
-[Browse our documentation][Just the Docs] to learn more about how to use this theme.
+Laat DigiGraf u helpen om het papierwerk te minimaliseren, processen te stroomlijnen en uw focus te leggen op wat echt belangrijk is – het ondersteunen van families in moeilijke tijden.
 
-To get started with creating a site, simply:
-
-1. click "[use this template]" to create a GitHub repository
-2. go to Settings > Pages > Build and deployment > Source, and select GitHub Actions
-
-If you want to maintain your docs in the `docs` directory of an existing project repo, see [Hosting your docs from an existing project repo](https://github.com/just-the-docs/just-the-docs-template/blob/main/README.md#hosting-your-docs-from-an-existing-project-repo) in the template README.
-
-----
-
-[^1]: [It can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/creating-a-github-pages-site-with-jekyll#creating-your-site).
-
-[Just the Docs]: https://just-the-docs.github.io/just-the-docs/
-[GitHub Pages]: https://docs.github.com/en/pages
-[README]: https://github.com/just-the-docs/just-the-docs-template/blob/main/README.md
-[Jekyll]: https://jekyllrb.com
-[GitHub Pages / Actions workflow]: https://github.blog/changelog/2022-07-27-github-pages-custom-github-actions-workflows-beta/
-[use this template]: https://github.com/just-the-docs/just-the-docs-template/generate
+DigiGraf: voor een zorgeloze en efficiënte administratie in de uitvaartverzorging.
