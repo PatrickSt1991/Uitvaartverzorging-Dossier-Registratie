@@ -207,8 +207,8 @@ Datum Tijd: {DateTime.Now}"
                 try
                 {
                     var issue = await _githubClient.Issue.Create(owner, repo, newIssue);
-                    
-                    if(DataProvider.SmtpEnabled)
+
+                    if (DataProvider.SmtpEnabled)
                         SendNotificationEmailAsync(configuratieGithubViewModel.IssueType, issue.Number);
 
                     CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show("Melding aangemaakt", "Melding is met succes aangemaakt.", $"Meldingsnummer {issue.Number}", "Terug", "Blijven");

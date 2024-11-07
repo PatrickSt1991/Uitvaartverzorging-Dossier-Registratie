@@ -330,7 +330,7 @@ namespace Dossier_Registratie.Models
                    !string.IsNullOrEmpty(OpdrachtgeverHuisnummer) &&
                    !string.IsNullOrEmpty(OpdrachtgeverPostcode) &&
                    !string.IsNullOrEmpty(OpdrachtgeverWoonplaats) &&
-                   !string.IsNullOrEmpty(OpdrachtgeverTelefoon) && 
+                   !string.IsNullOrEmpty(OpdrachtgeverTelefoon) &&
                    !string.IsNullOrEmpty(OpdrachtgeverRelatieTotOverledene);
         }
 

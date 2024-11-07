@@ -166,10 +166,10 @@ namespace Dossier_Registratie.ViewModels
         public string ApplicationUnavailable
         {
             get { return _applicationUnavailable; }
-            set 
+            set
             {
-                _applicationUnavailable = value; 
-                OnPropertyChanged(nameof(ApplicationUnavailable)); 
+                _applicationUnavailable = value;
+                OnPropertyChanged(nameof(ApplicationUnavailable));
             }
         }
         public string CopyrightText
@@ -345,7 +345,7 @@ namespace Dossier_Registratie.ViewModels
 
             LoadImageFromDatabase();
             string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            
+
             Title = DataProvider.OrganizationName + " - " + DataProvider.SystemTitle;
 
             if (!string.IsNullOrEmpty(DataProvider.PdfArchiveBaseFolder))
@@ -355,7 +355,7 @@ namespace Dossier_Registratie.ViewModels
                     ArchivePath = DataProvider.PdfArchiveBaseFolder + (DateTime.Now.Year - 1);
             }
 
-            if(DataProvider.MaintenanceCheckEnabled)
+            if (DataProvider.MaintenanceCheckEnabled)
                 CheckMaintenanceWindow();
 
             VersionLabel = DataProvider.SystemTitle + " - Versie: " + version;

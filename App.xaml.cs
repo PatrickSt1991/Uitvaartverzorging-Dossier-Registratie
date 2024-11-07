@@ -49,7 +49,7 @@ namespace Dossier_Registratie
         }
         static void ClearShutdownFile()
         {
-            if(!string.IsNullOrEmpty(DataProvider.ShutdownFile))
+            if (!string.IsNullOrEmpty(DataProvider.ShutdownFile))
                 if (File.Exists(DataProvider.ShutdownFile))
                     File.WriteAllText(DataProvider.ShutdownFile, string.Empty);
         }
