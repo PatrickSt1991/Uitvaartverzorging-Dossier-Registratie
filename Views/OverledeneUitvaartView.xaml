@@ -34,7 +34,7 @@
                 <ComboBoxItem Name="begrafenis" Tag="begrafenis">Begrafenis</ComboBoxItem>
                 <ComboBoxItem Name="crematie" Tag="crematie">Crematie</ComboBoxItem>
             </ComboBox>
-            <Label x:Name="lbl_UitvaartType" Content="Begrafenis / Crematie" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_UitvaartType" Content="*Begrafenis / Crematie" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <DatePicker x:Name="input_datumUitvaart" 
             SelectedDate="{Binding OverledeneUitvaartModel.DatumUitvaart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" 
             TabIndex="6" 
@@ -77,9 +77,9 @@
 
             <Label x:Name="lbl_tijdUitvaart" Content="Tijdstip Uitvaart" HorizontalAlignment="Left" Margin="595,355,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_uitvaartLocatie" Text="{Binding OverledeneUitvaartModel.LocatieUitvaart,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="8" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,391,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
-            <Label x:Name="lbl_uitvaartLocatie" Content="Uitvaart te" HorizontalAlignment="Left" Margin="10,391,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_uitvaartLocatie" Content="*Uitvaart te" HorizontalAlignment="Left" Margin="10,391,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_dienstLocatie" Text="{Binding OverledeneUitvaartModel.LocatieDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="11" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,485,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
-            <Label x:Name="lbl_dienstLocatie" Content="Dienst te" HorizontalAlignment="Left" Margin="10,485,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_dienstLocatie" Content="*Dienst te" HorizontalAlignment="Left" Margin="10,485,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <materialDesign:TimePicker x:Name="input_dienstTijdstip" 
                             Is24Hours="True" 
                             Text="{Binding OverledeneUitvaartModel.TijdDienst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}" 
@@ -101,17 +101,17 @@
                 <ComboBoxItem x:Name="gordijnenSluiten" Tag="gordijnenSluiten" Content="Gordijnen sluiten"/>
                 <ComboBoxItem x:Name="blijftStaan" Tag="blijft staan" Content="Blijft staan"/>
             </ComboBox>
-            <Label x:Name="lbl_kistMethode" Content="Kist staan / dalen" HorizontalAlignment="Left" Margin="10,559,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_kistMethode" Content="*Kist staan / dalen" HorizontalAlignment="Left" Margin="10,559,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <ComboBox x:Name="input_afscheidNemen" Text="{Binding OverledeneUitvaartModel.AfscheidDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="754,559,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="15" FontFamily="Arial">
                 <ComboBoxItem x:Name="jafscheid" Tag="jafscheid" Content="Ja"/>
                 <ComboBoxItem x:Name="neefscheid" Tag="neeAfscheid" Content="Nee"/>
             </ComboBox>
-            <Label x:Name="lbl_afscheidNemen" Content="Afscheid nemen" HorizontalAlignment="Left" Margin="595,559,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_afscheidNemen" Content="*Afscheid nemen" HorizontalAlignment="Left" Margin="595,559,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <ComboBox x:Name="input_beslotenKring" Text="{Binding OverledeneUitvaartModel.BeslotenDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="754,595,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="17" FontFamily="Arial">
                 <ComboBoxItem x:Name="jaBesloten" Tag="jaBesloten" Content="Ja"/>
                 <ComboBoxItem x:Name="neeBesloten" Tag="neeBesloten" Content="Nee"/>
             </ComboBox>
-            <Label x:Name="lbl_beslotenKring" Content="Besloten kring" HorizontalAlignment="Left" Margin="595,595,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_beslotenKring" Content="*Besloten kring" HorizontalAlignment="Left" Margin="595,595,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <ComboBox x:Name="input_aantalVolgAuto" Text="{Binding OverledeneUitvaartModel.VolgAutoDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="208,595,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="16" FontFamily="Arial" >
                 <ComboBoxItem x:Name="auto00" Tag="auto00" Content="0"/>
                 <ComboBoxItem x:Name="auto01" Tag="auto01" Content="1"/>
@@ -125,7 +125,7 @@
                 <ComboBoxItem x:Name="auto09" Tag="auto09" Content="9"/>
                 <ComboBoxItem x:Name="auto10" Tag="auto10" Content="10"/>
             </ComboBox>
-            <Label x:Name="lbl_aantalVolgAuto" Content="Aantal volgauto's" HorizontalAlignment="Left" Margin="10,595,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_aantalVolgAuto" Content="*Aantal volgauto's" HorizontalAlignment="Left" Margin="10,595,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_consumpties" Text="{Binding OverledeneUitvaartModel.ConsumptiesDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="20" HorizontalAlignment="Left" Margin="210,676,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="115" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
             <Label x:Name="lbl_consumpties" Content="Consumpties" HorizontalAlignment="Left" Margin="11,676,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <DatePicker x:Name="input_datumDienst" 
@@ -178,7 +178,7 @@
             </Rectangle>
             <Label x:Name="lbl_uitvaartInfo_Copy" Content="Dienst informatie" HorizontalAlignment="Left" Margin="10,443,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
             <TextBox x:Name="input_muziek" Text="{Binding OverledeneUitvaartModel.MuziekDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="21" HorizontalAlignment="Left" Margin="210,796,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="115" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
-            <Label x:Name="lbl_muziek" Content="Muziekstuk" HorizontalAlignment="Left" Margin="10,796,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_muziek" Content="*Muziekstuk" HorizontalAlignment="Left" Margin="10,796,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <Rectangle Height="1" Margin="10,113,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>

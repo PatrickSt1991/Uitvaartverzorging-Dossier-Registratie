@@ -294,27 +294,7 @@ namespace Dossier_Registratie.Models
         }
         public bool HasData()
         {
-            return Id == Guid.Empty ||
-                   UitvaartId == Guid.Empty ||
-                   !string.IsNullOrEmpty(OverledeneBurgelijkestaat) ||
-                   !string.IsNullOrEmpty(OverledeneGescheidenVan) ||
-                   !string.IsNullOrEmpty(OverledeneWedenaarVan) ||
-                   !string.IsNullOrEmpty(OverledeneAantalKinderen) ||
-                   !string.IsNullOrEmpty(OverledeneKinderenMinderjarig) ||
-                   !string.IsNullOrEmpty(OverledeneKinderenMinderjarigOverleden) ||
-                   !string.IsNullOrEmpty(OverledeneEersteOuder) ||
-                   !string.IsNullOrEmpty(OverledeneEersteOuderOverleden) ||
-                   !string.IsNullOrEmpty(OverledeneTweedeOuder) ||
-                   !string.IsNullOrEmpty(OverledeneTweedeOuderOverleden) ||
-                   !string.IsNullOrEmpty(OverledeneLevensovertuiging) ||
-                   !string.IsNullOrEmpty(OverledeneExecuteur) ||
-                   !string.IsNullOrEmpty(OverledeneExecuteurTelefoon) ||
-                   !string.IsNullOrEmpty(OverledeneTestament) ||
-                   !string.IsNullOrEmpty(OverledeneTrouwboekje) ||
-                   OverledeneTrouwDatumTijd == DateTime.MinValue ||
-                   OverledeneGeregistreerdDatumTijd == DateTime.MinValue ||
-                   !string.IsNullOrEmpty(OverledeneNotaris) ||
-                   !string.IsNullOrEmpty(OverledeneNotarisTelefoon);
+            return true;
         }
 
     }
@@ -350,7 +330,8 @@ namespace Dossier_Registratie.Models
                    !string.IsNullOrEmpty(OpdrachtgeverHuisnummer) &&
                    !string.IsNullOrEmpty(OpdrachtgeverPostcode) &&
                    !string.IsNullOrEmpty(OpdrachtgeverWoonplaats) &&
-                   !string.IsNullOrEmpty(OpdrachtgeverTelefoon);
+                   !string.IsNullOrEmpty(OpdrachtgeverTelefoon) && 
+                   !string.IsNullOrEmpty(OpdrachtgeverRelatieTotOverledene);
         }
 
         public Guid Id
