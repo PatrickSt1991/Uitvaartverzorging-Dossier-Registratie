@@ -274,7 +274,11 @@
             <Label x:Name="lbl_AulaNaam" Content="Aula (Naam)" HorizontalAlignment="Left" Margin="1081,319,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_aulaPersonen" Text="{Binding OverledeneMisc.AulaPersonen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="1235,391,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="10" FontFamily="Arial" VerticalContentAlignment="Center"/>
             <Label x:Name="lbl_AulaPersonen" Content="Aantal personen" HorizontalAlignment="Left" Margin="1081,391,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_aantalBloken" Text="{Binding OverledeneUitvaartModel.AantalTijdsBlokken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="1240,522,0,0" VerticalAlignment="Top" Width="48" Height="31" FontSize="16" TabIndex="14" FontFamily="Arial">
+            <ComboBox x:Name="input_aantalBloken"
+          SelectedValue="{Binding OverledeneUitvaartModel.AantalTijdsBlokken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+          SelectedValuePath="Content"
+          HorizontalAlignment="Left" Margin="1240,522,0,0" VerticalAlignment="Top" Width="48" Height="31"
+          FontSize="16" TabIndex="14" FontFamily="Arial">
                 <ComboBoxItem Content="1"/>
                 <ComboBoxItem Content="2"/>
                 <ComboBoxItem Content="3"/>
@@ -286,7 +290,10 @@
                 <ComboBoxItem Content="9"/>
             </ComboBox>
             <Label x:Name="lbl_afscheidNemen_Copy" Content="Tijds blokken" HorizontalAlignment="Left" Margin="1081,522,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_aantalBloken_Copy" Text="{Binding OverledeneUitvaartModel.TijdBlokken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="1322,522,0,0" VerticalAlignment="Top" Width="56" Height="31" FontSize="16" TabIndex="15" FontFamily="Arial">
+            <ComboBox x:Name="input_aantalTijdsBloken" 
+                      SelectedValue="{Binding OverledeneUitvaartModel.TijdBlokken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      SelectedValuePath="Content"
+                      HorizontalAlignment="Left" Margin="1322,522,0,0" VerticalAlignment="Top" Width="56" Height="31" FontSize="16" TabIndex="15" FontFamily="Arial">
                 <ComboBoxItem Content="15"/>
                 <ComboBoxItem Content="30"/>
                 <ComboBoxItem Content="45"/>

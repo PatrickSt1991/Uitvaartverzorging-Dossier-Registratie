@@ -6,6 +6,22 @@ using System.Windows.Data;
 
 namespace Dossier_Registratie.Helper
 {
+    public class NullableIntConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return null;
+            return value.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (int.TryParse(value as string, out int result))
+                return result;
+            return null;
+        }
+    }
     public class VerzekeraarsModelToPolisVerzekeringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

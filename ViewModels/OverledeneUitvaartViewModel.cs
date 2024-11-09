@@ -152,6 +152,8 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneUitvaartModel.Spreker = uitvaartResult.Spreker;
                 OverledeneUitvaartModel.PowerPoint = OverledeneUitvaartModel.PowerPoint;
                 OverledeneUitvaartModel.CondoleanceYesNo = uitvaartResult.CondoleanceYesNo;
+                OverledeneUitvaartModel.AantalTijdsBlokken = uitvaartResult.AantalTijdsBlokken;
+                OverledeneUitvaartModel.TijdBlokken = uitvaartResult.TijdBlokken;
 
                 _originalOverledeneUitvaartModel = new OverledeneUitvaartModel
                 {
@@ -172,7 +174,9 @@ namespace Dossier_Registratie.ViewModels
                     KistDienst = OverledeneUitvaartModel.KistDienst,
                     Spreker = OverledeneUitvaartModel.Spreker,
                     CondoleanceYesNo = OverledeneUitvaartModel.CondoleanceYesNo,
-                    PowerPoint = OverledeneUitvaartModel.PowerPoint
+                    PowerPoint = OverledeneUitvaartModel.PowerPoint,
+                    TijdBlokken = OverledeneUitvaartModel.TijdBlokken,
+                    AantalTijdsBlokken = OverledeneUitvaartModel.AantalTijdsBlokken
                 };
 
                 InfoUitvaartleider.Uitvaartnummer = Globals.UitvaartCode;
@@ -273,14 +277,15 @@ namespace Dossier_Registratie.ViewModels
                         KistDienst = OverledeneUitvaartModel.KistDienst,
                         Spreker = OverledeneUitvaartModel.Spreker,
                         CondoleanceYesNo = OverledeneUitvaartModel.CondoleanceYesNo,
-                        PowerPoint = OverledeneUitvaartModel.PowerPoint
+                        PowerPoint = OverledeneUitvaartModel.PowerPoint,
+                        TijdBlokken = OverledeneUitvaartModel.TijdBlokken,
+                        AantalTijdsBlokken = OverledeneUitvaartModel.AantalTijdsBlokken
                     };
                 }
             }
 
             if (OverledeneMisc.Id == Guid.Empty)
             {
-                Debug.WriteLine("insert");
                 OverledeneMisc.Id = Guid.NewGuid();
                 OverledeneMisc.UitvaartId = Globals.UitvaartCodeGuid;
 
@@ -297,7 +302,6 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
-                Debug.WriteLine("update");
                 bool UitvaartMiscInfoChanged = modelCompare.AreValuesEqual(_originalOverledeneMisc, OverledeneMisc);
 
                 if (UitvaartMiscInfoChanged == false)

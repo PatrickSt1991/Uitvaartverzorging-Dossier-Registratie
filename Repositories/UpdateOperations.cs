@@ -490,7 +490,9 @@ namespace Dossier_Registratie.Repositories
                                         "[uitvaartInfoDienstKist] = @dienstKist," +
                                         "[uitvaartInfoCondoleanceYesNo] = @condoleanceYesNo," +
                                         "[uitvaartInfoSpreker] = @spreker," +
-                                        "[uitvaartInfoPowerPoint] = @powerpoint " +
+                                        "[uitvaartInfoPowerPoint] = @powerpoint," +
+                                        "[uitvaartTijdBlokken] = @tijdblokken," +
+                                        "[uitvaartAantalTijdsBlokken] = @aantaltijdblokken " +
                                         "WHERE [Id] = @OpbarenId " +
                                         "AND [uitvaartId] = @UitvaartId";
                 command.Parameters.AddWithValue("@condoleanceYesNo", overledeneUitvaartModel.CondoleanceYesNo != null ? overledeneUitvaartModel.CondoleanceYesNo : DBNull.Value);
@@ -509,6 +511,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@dienstVolgautos", overledeneUitvaartModel.VolgAutoDienst);
                 command.Parameters.AddWithValue("@consumptiesDienst", overledeneUitvaartModel.ConsumptiesDienst != null ? overledeneUitvaartModel.ConsumptiesDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@dienstKist", overledeneUitvaartModel.KistDienst);
+                command.Parameters.AddWithValue("@tijdblokken", overledeneUitvaartModel.TijdBlokken);
+                command.Parameters.AddWithValue("@aantaltijdblokken", overledeneUitvaartModel.AantalTijdsBlokken);
                 command.Parameters.AddWithValue("@OpbarenId", overledeneUitvaartModel.Id);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneUitvaartModel.UitvaartId);
                 if (command.ExecuteNonQuery() == 0)
