@@ -996,7 +996,9 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneFactuurModel.KostenbegrotingJson = SerializePriceComponentsToJson();
                 OverledeneFactuurModel.KostenbegrotingVerzekeraar = SelectedVerzekeraar.Id;
 
-                if (OverledeneFactuurModel.Id == Guid.Empty)
+                bool FactuurInfoExists = miscellaneousRepository.UitvaarFactuurExists(OverledeneFactuurModel.UitvaartId);
+
+                if (OverledeneFactuurModel.Id == Guid.Empty && !FactuurInfoExists)
                 {
                     OverledeneFactuurModel.Id = Guid.NewGuid();
                     try
@@ -1010,7 +1012,7 @@ namespace Dossier_Registratie.ViewModels
                         return;
                     }
                 }
-                else
+                else if (FactuurInfoExists)
                 {
                     bool factuurInfoChanged = modelCompare.AreValuesEqual(_originalFactuurModel, OverledeneFactuurModel);
 

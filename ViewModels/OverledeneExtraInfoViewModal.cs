@@ -17,6 +17,7 @@ namespace Dossier_Registratie.ViewModels
         private readonly ISearchOperations searchRepository;
         private readonly ICreateOperations createRepository;
         private readonly IUpdateOperations updateRepository;
+        private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
         private OverledeneUitvaartleiderModel _extraInfoUitvaartLeiderModel;
         private OverledeneExtraInfoModel? _overledeneExtraInfoModel;
         private OpdrachtgeverPersoonsGegevensModel? _opdrachtgeverPersoonsGegevensModel;
@@ -133,6 +134,7 @@ namespace Dossier_Registratie.ViewModels
             searchRepository = new SearchOperations();
             createRepository = new CreateOperations();
             updateRepository = new UpdateOperations();
+            miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             OverledeneExtraInfo = new OverledeneExtraInfoModel();
             OpdrachtgeverPersoonsgegevens = new OpdrachtgeverPersoonsGegevensModel();
             ExtraOpdrachtgeverPersoonsgegevens = new OpdrachtgeverPersoonsGegevensModel();
@@ -381,18 +383,21 @@ namespace Dossier_Registratie.ViewModels
             OpdrachtgeverPersoonsgegevens.UitvaartId = Globals.UitvaartCodeGuid;
             ExtraOpdrachtgeverPersoonsgegevens.UitvaartId = Globals.UitvaartCodeGuid;
 
+            bool ExtraInfoExists = miscellaneousRepository.UitvaartExtraInfoExists(OverledeneExtraInfo.UitvaartId);
+            bool OpdrachtgeverPersoonsgegevenExists = miscellaneousRepository.UitvaartOpdrachtgeverPersoonsgegevensExists(OpdrachtgeverPersoonsgegevens.UitvaartId);
+
             if (!OverledeneExtraInfo.HasData())
             {
                 new ToastWindow("Niet alle verplichte extra info velden zijn ingevuld!").Show();
                 return;
             }
-            else if (Globals.Voorregeling == false && !OpdrachtgeverPersoonsgegevens.HasData())
+            else if (!Globals.Voorregeling && !OpdrachtgeverPersoonsgegevens.HasData())
             {
                 new ToastWindow("Niet alle verplichte persoonsgegevens opdrachtgever velden zijn ingevuld! (Geen voorregeling)").Show();
                 return;
             }
 
-            if (OverledeneExtraInfo.Id == Guid.Empty)
+            if (OverledeneExtraInfo.Id == Guid.Empty && !ExtraInfoExists)
             {
                 OverledeneExtraInfo.Id = ExtraInfoId;
                 try
@@ -406,7 +411,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (ExtraInfoExists)
             {
                 bool OverlijdenExtraInfoChanged = modelCompare.AreValuesEqual(_orginalOverledeneExtraInfo, OverledeneExtraInfo);
 
@@ -452,7 +457,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            if (OpdrachtgeverPersoonsgegevens.Id == Guid.Empty)
+            if (OpdrachtgeverPersoonsgegevens.Id == Guid.Empty && !OpdrachtgeverPersoonsgegevenExists)
             {
                 OpdrachtgeverPersoonsgegevens.Id = PersoonGegevensId;
                 try
@@ -466,7 +471,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (OpdrachtgeverPersoonsgegevenExists)
             {
                 bool OpdrachtgeverGegevensInfoChanged = modelCompare.AreValuesEqual(_originalOpdrachtPersoonsGegevens, OpdrachtgeverPersoonsgegevens);
 
@@ -507,6 +512,7 @@ namespace Dossier_Registratie.ViewModels
                     };
                 }
             }
+
             if (obj != null && obj.ToString() == "VolgendeButton")
             {
                 VerzekeringInstance.RequestedDossierInformationBasedOnUitvaartId(ExtraInfoUitvaartleider.Uitvaartnummer);

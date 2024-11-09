@@ -661,7 +661,9 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (SteenhouwerijModel.SteenhouwerijId == Guid.Empty)
+            bool SteenExists = miscellaneousRepository.UitvaarSteenhouwerijExists(SteenhouwerijModel.UitvaartId);
+
+            if (SteenhouwerijModel.SteenhouwerijId == Guid.Empty && !SteenExists)
             {
                 SteenhouwerijModel.SteenhouwerijId = Guid.NewGuid();
                 SteenhouwerijModel.UitvaartId = Globals.UitvaartCodeGuid;
@@ -677,7 +679,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (SteenExists)
             {
                 bool steenhouwerjInfoChanged = modelCompare.AreValuesEqual(_originalSteenhouwerijModel, SteenhouwerijModel);
 
@@ -726,7 +728,9 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (BloemenModel.BloemenId == Guid.Empty)
+            bool BloemenExists = miscellaneousRepository.UitvaarBloemenExists(BloemenModel.UitvaartId);
+
+            if (BloemenModel.BloemenId == Guid.Empty && !BloemenExists)
             {
                 BloemenModel.BloemenId = Guid.NewGuid();
                 BloemenModel.UitvaartId = Globals.UitvaartCodeGuid;
@@ -742,7 +746,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (BloemenExists)
             {
                 bool bloemenInfoChanged = modelCompare.AreValuesEqual(_originalBloemenModel, BloemenModel);
                 if (bloemenInfoChanged == false)
@@ -819,8 +823,9 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
+            bool UrnSieradenExists = miscellaneousRepository.UitvaarKUrnSieradenExists(UrnSieradenModel.UitvaartId);
 
-            if (UrnSieradenModel.UrnId == Guid.Empty)
+            if (UrnSieradenModel.UrnId == Guid.Empty && !UrnSieradenExists)
             {
                 UrnSieradenModel.UrnId = Guid.NewGuid();
                 UrnSieradenModel.UitvaartId = Globals.UitvaartCodeGuid;
@@ -836,7 +841,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (UrnSieradenExists)
             {
 
                 bool urnSieradenInfoChanged = modelCompare.AreValuesEqual(_orginalUrnsieradenModel, UrnSieradenModel);
@@ -876,7 +881,8 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (WerkbonModel.Id == Guid.Empty)
+            bool WekbonExists = miscellaneousRepository.UitvaarKWerkbonExists(WerkbonModel.UitvaartId);
+            if (WerkbonModel.Id == Guid.Empty && !WekbonExists)
             {
                 WerkbonModel.Id = Guid.NewGuid();
 
@@ -891,7 +897,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (WekbonExists)
             {
                 bool werkbonInfoChanged = modelCompare.AreValuesEqual(_originalWerkbonModel, WerkbonModel);
                 if (werkbonInfoChanged == false)
@@ -925,7 +931,9 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (Klanttevredenheid.Id == Guid.Empty)
+            bool KlanttevredenheidExists = miscellaneousRepository.UitvaarFactuurExists(Klanttevredenheid.UitvaartId);
+
+            if (Klanttevredenheid.Id == Guid.Empty && !KlanttevredenheidExists)
             {
                 Klanttevredenheid.Id = Guid.NewGuid();
                 Klanttevredenheid.UitvaartId = Globals.UitvaartCodeGuid;
@@ -941,7 +949,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (KlanttevredenheidExists)
             {
                 try
                 {

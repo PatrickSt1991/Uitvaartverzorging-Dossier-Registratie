@@ -142,7 +142,9 @@ namespace Dossier_Registratie.ViewModels
         {
             AsbestemmingModel.UitvaartId = Globals.UitvaartCodeGuid;
 
-            if (AsbestemmingModel.AsbestemmingId == Guid.Empty)
+            bool UitvaartAsbestemmingExists = miscellaneousRepository.UitvaarAsbestemmingExists(AsbestemmingModel.UitvaartId);
+
+            if (AsbestemmingModel.AsbestemmingId == Guid.Empty && !UitvaartAsbestemmingExists)
             {
                 AsbestemmingModel.AsbestemmingId = Guid.NewGuid();
                 try
@@ -156,7 +158,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (UitvaartAsbestemmingExists)
             {
                 bool asbestemmingInfoChanged = modelCompare.AreValuesEqual(_originalAsbestemmingModel, AsbestemmingModel);
 

@@ -313,7 +313,9 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (OverledeneOpbarenModel.OpbaringId == Guid.Empty)
+            bool OpbarenInfoExists = miscellaneousRepository.UitvaartOpbarenExists(OverledeneOpbarenModel.UitvaartId);
+
+            if (OverledeneOpbarenModel.OpbaringId == Guid.Empty && !OpbarenInfoExists)
             {
                 OverledeneOpbarenModel.OpbaringId = Guid.NewGuid();
                 OverledeneOpbarenModel.UitvaartId = Globals.UitvaartCodeGuid;
@@ -329,7 +331,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (OpbarenInfoExists)
             {
                 bool opbarenInfoChanged = modelCompare.AreValuesEqual(_originalOverledeneOpbarenModel, OverledeneOpbarenModel);
 

@@ -638,6 +638,15 @@ namespace Dossier_Registratie.ViewModels
             Guid PersoonGegevensId = Guid.NewGuid();
             Guid OverlijdenInfoId = Guid.NewGuid();
 
+            bool UitvaartnummerExists = miscellaneousRepository.UitvaarnummerExists(UitvaartLeider.Uitvaartnummer);
+            bool PersoonsgegevensExists = miscellaneousRepository.UitvaartPersoonsgegevensExists(UitvaartLeider.UitvaartId);
+            bool OverlijdenInfoExists = miscellaneousRepository.UitvaartOverlijdenInfoExists(UitvaartLeider.UitvaartId);
+
+            if (UitvaartLeider.UitvaartId == Guid.Empty && UitvaartnummerExists)
+            {
+                new ToastWindow($"Uitvaartnummer {UitvaartLeider.Uitvaartnummer} is al in gebruik!").Show();
+                return;
+            }
 
             if (!UitvaartLeider.HasData() || !PersoonsGegevens.HasData())
             {
@@ -651,7 +660,7 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (UitvaartLeider.UitvaartId == Guid.Empty)
+            if (UitvaartLeider.UitvaartId == Guid.Empty && !UitvaartnummerExists)
             {
                 UitvaartLeider.UitvaartId = newGuid;
 
@@ -666,7 +675,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (UitvaartnummerExists)
             {
                 bool uitvaartleiderInfoChanged = modelCompare.AreValuesEqual(_orginalUitvaartLeiderModel, UitvaartLeider);
 
@@ -697,7 +706,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            if (PersoonsGegevens.Id == Guid.Empty)
+            if (PersoonsGegevens.Id == Guid.Empty && !PersoonsgegevensExists)
             {
                 PersoonsGegevens.Id = PersoonGegevensId;
                 PersoonsGegevens.UitvaartId = UitvaartLeider.UitvaartId;
@@ -713,7 +722,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if(!PersoonsgegevensExists)
             {
                 bool persoonsgegevensInfoChanged = modelCompare.AreValuesEqual(_oginalPersoonGegevensModel, PersoonsGegevens);
 
@@ -776,7 +785,8 @@ namespace Dossier_Registratie.ViewModels
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     return;
                 }
-                if (OverlijdenInfo.Id == Guid.Empty)
+
+                if (OverlijdenInfo.Id == Guid.Empty && !OverlijdenInfoExists)
                 {
                     OverlijdenInfo.Id = OverlijdenInfoId;
                     OverlijdenInfo.UitvaartId = UitvaartLeider.UitvaartId;
@@ -792,7 +802,7 @@ namespace Dossier_Registratie.ViewModels
                         return;
                     }
                 }
-                else
+                else if(OverlijdenInfoExists)
                 {
                     bool overlijdenInfoChanged = modelCompare.AreValuesEqual(_originalOverlijdenInfoModel, OverlijdenInfo);
 

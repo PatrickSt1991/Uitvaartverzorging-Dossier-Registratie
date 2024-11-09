@@ -12,6 +12,215 @@ namespace Dossier_Registratie.Repositories
 {
     public class MiscellaneousAndDocumentOperations : RepositoryBase, IMiscellaneousAndDocumentOperations
     {
+        public bool UitvaarnummerExists(string uitvaartnummer)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneUitvaartleider] WHERE [Uitvaartnummer] = @uitvaartnummer";
+                command.Parameters.AddWithValue("@uitvaartnummer", uitvaartnummer);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaartPersoonsgegevensExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledenePersoonsGegevens] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaartOverlijdenInfoExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneOverlijdenInfo] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaartExtraInfoExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneExtraInfo] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaartOpdrachtgeverPersoonsgegevensExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneOpdrachtgever] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaartVerzekeringExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneVerzerkeringInfo] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaartOpbarenExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneOpbaring] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarInfoExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneUitvaartInfo] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarInfoMiscExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneUitvaartInfoMisc] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarAsbestemmingExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneAsbestemming] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarFactuurExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneFacturen] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarKlanttevredenheidExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneKlantTevredenheid] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarKWerkbonExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneWerkbon] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarKUrnSieradenExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneUrnSieraden] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarBloemenExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneBloemen] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        public bool UitvaarSteenhouwerijExists(Guid UitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT COUNT(1) FROM [OverledeneSteenhouwer] WHERE [uitvaartId] = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
+
+                return (int)command.ExecuteScalar() > 0;
+            }
+        }
+        //OverledeneSteenhouwer
         public async Task<FactuurInfoCrematie> GetFactuurInfo(Guid HerkomstId)
         {
             FactuurInfoCrematie info = new();
