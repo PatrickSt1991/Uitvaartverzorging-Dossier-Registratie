@@ -4,7 +4,6 @@ using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -152,6 +151,8 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneUitvaartModel.Spreker = uitvaartResult.Spreker;
                 OverledeneUitvaartModel.PowerPoint = OverledeneUitvaartModel.PowerPoint;
                 OverledeneUitvaartModel.CondoleanceYesNo = uitvaartResult.CondoleanceYesNo;
+                OverledeneUitvaartModel.AantalTijdsBlokken = uitvaartResult.AantalTijdsBlokken;
+                OverledeneUitvaartModel.TijdBlokken = uitvaartResult.TijdBlokken;
 
                 _originalOverledeneUitvaartModel = new OverledeneUitvaartModel
                 {
@@ -172,7 +173,9 @@ namespace Dossier_Registratie.ViewModels
                     KistDienst = OverledeneUitvaartModel.KistDienst,
                     Spreker = OverledeneUitvaartModel.Spreker,
                     CondoleanceYesNo = OverledeneUitvaartModel.CondoleanceYesNo,
-                    PowerPoint = OverledeneUitvaartModel.PowerPoint
+                    PowerPoint = OverledeneUitvaartModel.PowerPoint,
+                    TijdBlokken = OverledeneUitvaartModel.TijdBlokken,
+                    AantalTijdsBlokken = OverledeneUitvaartModel.AantalTijdsBlokken
                 };
 
                 InfoUitvaartleider.Uitvaartnummer = Globals.UitvaartCode;
@@ -221,7 +224,10 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            if (OverledeneUitvaartModel.Id == Guid.Empty)
+            bool UitvaartInfoExists = miscellaneousRepository.UitvaarInfoExists(OverledeneUitvaartModel.UitvaartId);
+            bool UitvaartInfoMiscExists = miscellaneousRepository.UitvaarInfoMiscExists(OverledeneUitvaartModel.UitvaartId);
+
+            if (OverledeneUitvaartModel.Id == Guid.Empty && !UitvaartInfoExists)
             {
                 OverledeneUitvaartModel.Id = Guid.NewGuid();
                 OverledeneUitvaartModel.UitvaartId = Globals.UitvaartCodeGuid;
@@ -237,7 +243,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (UitvaartInfoExists)
             {
                 bool UitvaartInfoChanged = modelCompare.AreValuesEqual(_originalOverledeneUitvaartModel, OverledeneUitvaartModel);
 
@@ -273,14 +279,15 @@ namespace Dossier_Registratie.ViewModels
                         KistDienst = OverledeneUitvaartModel.KistDienst,
                         Spreker = OverledeneUitvaartModel.Spreker,
                         CondoleanceYesNo = OverledeneUitvaartModel.CondoleanceYesNo,
-                        PowerPoint = OverledeneUitvaartModel.PowerPoint
+                        PowerPoint = OverledeneUitvaartModel.PowerPoint,
+                        TijdBlokken = OverledeneUitvaartModel.TijdBlokken,
+                        AantalTijdsBlokken = OverledeneUitvaartModel.AantalTijdsBlokken
                     };
                 }
             }
 
-            if (OverledeneMisc.Id == Guid.Empty)
+            if (OverledeneMisc.Id == Guid.Empty && !UitvaartInfoMiscExists)
             {
-                Debug.WriteLine("insert");
                 OverledeneMisc.Id = Guid.NewGuid();
                 OverledeneMisc.UitvaartId = Globals.UitvaartCodeGuid;
 
@@ -295,9 +302,8 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (UitvaartInfoMiscExists)
             {
-                Debug.WriteLine("update");
                 bool UitvaartMiscInfoChanged = modelCompare.AreValuesEqual(_originalOverledeneMisc, OverledeneMisc);
 
                 if (UitvaartMiscInfoChanged == false)

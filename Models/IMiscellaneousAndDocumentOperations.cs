@@ -7,6 +7,22 @@ namespace Dossier_Registratie.Models
 {
     public interface IMiscellaneousAndDocumentOperations
     {
+        bool UitvaarnummerExists(string uitvaartnummer);
+        bool UitvaartPersoonsgegevensExists(Guid UitvaartId);
+        bool UitvaartOverlijdenInfoExists(Guid UitvaartId);
+        bool UitvaartExtraInfoExists(Guid UitvaartId);
+        bool UitvaartOpdrachtgeverPersoonsgegevensExists(Guid UitvaartId);
+        bool UitvaartVerzekeringExists(Guid UitvaartId);
+        bool UitvaartOpbarenExists(Guid UitvaartId);
+        bool UitvaarInfoExists(Guid UitvaartId);
+        bool UitvaarInfoMiscExists(Guid UitvaartId);
+        bool UitvaarAsbestemmingExists(Guid UitvaartId);
+        bool UitvaarFactuurExists(Guid UitvaartId);
+        bool UitvaarKlanttevredenheidExists(Guid UitvaartId);
+        bool UitvaarKWerkbonExists(Guid UitvaartId);
+        bool UitvaarKUrnSieradenExists(Guid UitvaartId);
+        bool UitvaarBloemenExists(Guid UitvaartId);
+        bool UitvaarSteenhouwerijExists(Guid UitvaartId);
         Task<FactuurInfoCrematie> GetFactuurInfo(Guid HerkomstId);
         byte[] GetLogoBlob(string AppType);
         IEnumerable<SuggestionModel> GetSuggestions();

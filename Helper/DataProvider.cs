@@ -166,7 +166,7 @@ namespace Dossier_Registratie.Helper
         }
         public static bool MaintenanceCheckEnabled
         {
-            get{ return InstanceConfig.GetValue<bool>("MaintenanceConfiguration:MaintenanceCheckEnabled"); }
+            get { return InstanceConfig.GetValue<bool>("MaintenanceConfiguration:MaintenanceCheckEnabled"); }
         }
         public static string MaintenanceUrl
         {
@@ -194,7 +194,7 @@ namespace Dossier_Registratie.Helper
         }
         public static int SmtpPort
         {
-            get{ return InstanceConfig.GetValue<int>("SmtpConfiguration:Port"); }
+            get { return InstanceConfig.GetValue<int>("SmtpConfiguration:Port"); }
         }
         public static string SmtpUsername
         {

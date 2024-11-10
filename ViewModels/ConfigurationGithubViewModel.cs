@@ -207,8 +207,8 @@ Datum Tijd: {DateTime.Now}"
                 try
                 {
                     var issue = await _githubClient.Issue.Create(owner, repo, newIssue);
-                    
-                    if(DataProvider.SmtpEnabled)
+
+                    if (DataProvider.SmtpEnabled)
                         SendNotificationEmailAsync(configuratieGithubViewModel.IssueType, issue.Number);
 
                     CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show("Melding aangemaakt", "Melding is met succes aangemaakt.", $"Meldingsnummer {issue.Number}", "Terug", "Blijven");
@@ -236,12 +236,12 @@ Datum Tijd: {DateTime.Now}"
 
             if (DataProvider.GithubEnabled)
             {
-                SelectedState = "Open";
                 _githubClient = new GitHubClient(new ProductHeaderValue(product));
                 _githubClient.Credentials = new Credentials(token);
                 CreateFeatureOrIssue = new ViewModelCommand(ExecuteCreateFeatureOrIssue);
                 ReturnToStartCommand = new RelayCommand(() => IntAggregator.Transmit(0));
                 LoadIssuesCommand = new RelayCommand(async () => await LoadIssuesAsync());
+                SelectedState = "Open";
             }
         }
         public async Task LoadIssuesAsync()

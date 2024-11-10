@@ -98,6 +98,8 @@ namespace Dossier_Registratie.Models
         private string _condoleanceYesNo;
         private string _spreker;
         private string _powerpoint;
+        private int? _aantalTijdsBlokken;
+        private int? _tijdBlokken;
 
         public Guid Id
         {
@@ -316,6 +318,17 @@ namespace Dossier_Registratie.Models
             get { return _powerpoint; }
             set { _powerpoint = value; OnPropertyChanged(nameof(PowerPoint)); }
         }
+        public int? AantalTijdsBlokken
+        {
+            get { return _aantalTijdsBlokken; }
+            set { _aantalTijdsBlokken = value; OnPropertyChanged(nameof(AantalTijdsBlokken)); }
+        }
+        public int? TijdBlokken
+        {
+            get { return _tijdBlokken; }
+            set { _tijdBlokken = value; OnPropertyChanged(nameof(TijdBlokken)); }
+        }
+
         public string Error => string.Empty;
         public string this[string columnName]
         {

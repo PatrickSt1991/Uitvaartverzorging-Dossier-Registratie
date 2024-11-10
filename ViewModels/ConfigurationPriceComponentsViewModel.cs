@@ -517,7 +517,6 @@ namespace Dossier_Registratie.ViewModels
         }
         private void FilterPriceComponentsOmschrijving()
         {
-            Debug.WriteLine(SearchOmschrijving);
             if (string.IsNullOrEmpty(SearchOmschrijving))
             {
                 PriceComponents.Clear();
@@ -534,7 +533,6 @@ namespace Dossier_Registratie.ViewModels
                 PriceComponents.Clear();
                 foreach (var component in filteredComponents)
                 {
-                    Debug.WriteLine(component.ComponentOmschrijving);
                     PriceComponents.Add(component);
                 }
             }

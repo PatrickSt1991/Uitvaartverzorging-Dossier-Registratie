@@ -439,10 +439,12 @@ namespace Dossier_Registratie.Repositories
                                         "[uitvaartInfoCondoleanceConsumpties],[uitvaartInfoType],[uitvaartInfoDatumTijdUitvaart]," +
                                         "[uitvaartInfoUitvaartLocatie],[uitvaartInfoDienstDatumTijd],[uitvaartInfoDienstLocatie]," +
                                         "[uitvaartInfoDienstAfscheid],[uitvaartInfoDienstMuziek],[uitvaartInfoDienstBesloten],[uitvaartInfoDienstVolgauto]," +
-                                        "[uitvaartInfoDienstConsumpties],[uitvaartInfoDienstKist],[uitvaartInfoSpreker],[uitvaartInfoPowerPoint],[uitvaartInfoCondoleanceYesNo]) " +
+                                        "[uitvaartInfoDienstConsumpties],[uitvaartInfoDienstKist],[uitvaartInfoSpreker],[uitvaartInfoPowerPoint]," +
+                                        "[uitvaartInfoCondoleanceYesNo],[uitvaartTijdBlokken],[uitvaartAantalTijdsBlokken]) " +
                                         "VALUES (@UitvaartInfoId, @UitvaartId, @DatumTijdCondoleance, @ConsumptiesCondoleance," +
                                         "@Type, @DatumTijdUitvaart, @LocatieUitvaart, @DatumTijdDienst, @DienstLocatie, @AfscheidDienst," +
-                                        "@MuziekDienst, @BeslotenDienst, @VolgautoDienst, @ConsumptiesDienst, @KistDienst, @spreker, @powerpoint, @condoleanceYesNo)";
+                                        "@MuziekDienst, @BeslotenDienst, @VolgautoDienst, @ConsumptiesDienst, @KistDienst, @spreker, @powerpoint," +
+                                        "@condoleanceYesNo, @TijdBlokken, @AantalTijdsBlokken)";
                 command.Parameters.AddWithValue("@condoleanceYesNo", overledeneUitvaartModel.CondoleanceYesNo != null ? overledeneUitvaartModel.CondoleanceYesNo : DBNull.Value);
                 command.Parameters.AddWithValue("@spreker", overledeneUitvaartModel.Spreker != null ? overledeneUitvaartModel.Spreker : DBNull.Value);
                 command.Parameters.AddWithValue("@powerpoint", overledeneUitvaartModel.PowerPoint != null ? overledeneUitvaartModel.PowerPoint : DBNull.Value);
@@ -461,6 +463,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@VolgautoDienst", overledeneUitvaartModel.VolgAutoDienst);
                 command.Parameters.AddWithValue("@ConsumptiesDienst", overledeneUitvaartModel.ConsumptiesDienst != null ? overledeneUitvaartModel.ConsumptiesDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@KistDienst", overledeneUitvaartModel.KistDienst);
+                command.Parameters.AddWithValue("@TijdBlokken", overledeneUitvaartModel.TijdBlokken);
+                command.Parameters.AddWithValue("@AantalTijdsBlokken", overledeneUitvaartModel.AantalTijdsBlokken);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertUitvaartFailed");

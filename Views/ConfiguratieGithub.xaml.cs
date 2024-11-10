@@ -14,7 +14,7 @@ namespace Dossier_Registratie.Views
         private void ReloadHelp(object sender, RoutedEventArgs e)
         {
             var viewModel = (ConfigurationGithubViewModel)this.DataContext;
-            if(DataProvider.GithubEnabled)
+            if (DataProvider.GithubEnabled)
                 viewModel.LoadIssuesAsync();
         }
     }

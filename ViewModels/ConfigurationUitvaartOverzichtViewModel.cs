@@ -2,7 +2,9 @@
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneViewModel;
@@ -13,41 +15,11 @@ namespace Dossier_Registratie.ViewModels
     {
         private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
         private ObservableCollection<UitvaartOverzichtModel> _uitvaartOverzicht;
+        private List<UitvaartOverzichtModel> _allItems;
         private string _selectedVoorregeling;
         private string _selectedVoornaam;
         private string _searchAchternaam;
-        public string SelectedVoorregeling
-        {
-            get { return _selectedVoorregeling; }
-            set
-            {
-                _selectedVoorregeling = value;
-                OnPropertyChanged(nameof(SelectedVoorregeling));
-                UpdateUitvaartItemsVoorregeling(SelectedVoorregeling);
-            }
-        }
-        public string SelectedVoornaam
-        {
-            get { return _selectedVoornaam; }
-            set
-            {
-                _selectedVoornaam = value;
-                OnPropertyChanged(nameof(SelectedVoornaam));
-                UpdateUitvaartItemsVoornaam(SelectedVoornaam);
-            }
-        }
-        public string SearchAchternaam
-        {
-            get { return _searchAchternaam; }
-            set
-            {
-                _searchAchternaam = value;
-                OnPropertyChanged(nameof(SearchAchternaam));
-            }
-        }
-        public ICommand OpenDossierViaOverzichtCommand { get; }
-        public ICommand SearchAchternaamCommand { get; }
-        public ICommand clearFilterCommand { get; }
+        private int _selectedYear;
         public ObservableCollection<UitvaartOverzichtModel> UitvaartOverzicht
         {
             get { return _uitvaartOverzicht; }
@@ -60,16 +32,92 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+        public string SelectedVoorregeling
+        {
+            get { return _selectedVoorregeling; }
+            set
+            {
+                _selectedVoorregeling = value;
+                OnPropertyChanged(nameof(SelectedVoorregeling));
+                //UpdateUitvaartItemsVoorregeling(SelectedVoorregeling);
+                ApplyFilters();
+            }
+        }
+        public string SelectedVoornaam
+        {
+            get { return _selectedVoornaam; }
+            set
+            {
+                _selectedVoornaam = value;
+                OnPropertyChanged(nameof(SelectedVoornaam));
+                //UpdateUitvaartItemsVoornaam(SelectedVoornaam);
+                ApplyFilters();
+            }
+        }
+        public string SearchAchternaam
+        {
+            get { return _searchAchternaam; }
+            set
+            {
+                _searchAchternaam = value;
+                OnPropertyChanged(nameof(SearchAchternaam));
+            }
+        }
+        public int SelectedYear
+        {
+            get { return _selectedYear; }
+            set
+            {
+                _selectedYear = value;
+                OnPropertyChanged(nameof(SelectedYear));
+                ApplyFilters();
+            }
+        }
+        public ObservableCollection<int> AvailableYears { get; set; }
+        public ICommand OpenDossierViaOverzichtCommand { get; }
+        public ICommand SearchAchternaamCommand { get; }
+        public ICommand ClearFilterCommand { get; }
 
         public ConfigurationUitvaartOverzichtViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             UitvaartOverzicht = new ObservableCollection<UitvaartOverzichtModel>();
+            _allItems = new List<UitvaartOverzichtModel>();
 
             OpenDossierViaOverzichtCommand = new ViewModelCommand(ExecuteOpenDossierViaOverzichtCommand);
             SearchAchternaamCommand = new ViewModelCommand(ExecuteSearchAchternaamCommand);
-            clearFilterCommand = new ViewModelCommand(ExecuteClearFilterCommand);
-            GetAllUitvaartItems();
+            ClearFilterCommand = new ViewModelCommand(ExecuteClearFilterCommand);
+
+            LoadAllItems();
+            //GetAllUitvaartItems();
+        }
+        private void LoadAllItems()
+        {
+            _allItems = miscellaneousRepository.GetUitvaartOverzicht().ToList();
+            var currentYear = DateTime.Now.Year;
+            AvailableYears = new ObservableCollection<int>(
+            _allItems.Where(item => item.DatumOverlijden.HasValue)
+                     .Select(item => item.DatumOverlijden.Value.Year)
+                     .Distinct()
+                     .OrderByDescending(year => year)
+            );
+
+            SelectedYear = currentYear;
+            ApplyFilters();
+        }
+        public void ApplyFilters()
+        {
+            UitvaartOverzicht.Clear();
+
+            var filteredItems = _allItems.Where(item =>
+                (item.DatumOverlijden?.Year == SelectedYear || item.DatumOverlijden?.Year == SelectedYear - 1) &&
+                (string.IsNullOrEmpty(SelectedVoorregeling) || item.Voorregeling && item.VoornaamOverledene.StartsWith(SelectedVoorregeling, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(SelectedVoornaam) || item.VoornaamOverledene.StartsWith(SelectedVoornaam, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(SearchAchternaam) || item.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
+            );
+
+            foreach (var item in filteredItems)
+                UitvaartOverzicht.Add(item);
         }
         public void GetAllUitvaartItems()
         {
@@ -130,30 +178,15 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSearchAchternaamCommand(object obj)
         {
-            UitvaartOverzicht.Clear();
-            foreach (var overzichtItem in miscellaneousRepository.GetUitvaartOverzicht())
-            {
-                if (overzichtItem.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
-                {
-                    UitvaartOverzicht.Add(new UitvaartOverzichtModel()
-                    {
-                        UitvaartId = overzichtItem.UitvaartId,
-                        UitvaartNr = overzichtItem.UitvaartNr,
-                        AchternaamOverledene = overzichtItem.AchternaamOverledene,
-                        VoornaamOverledene = overzichtItem.VoornaamOverledene,
-                        DatumOverlijden = overzichtItem.DatumOverlijden,
-                        UitvaartLeider = overzichtItem.UitvaartLeider,
-                        Voorregeling = overzichtItem.Voorregeling
-                    });
-                }
-            }
+            ApplyFilters();
         }
         public void ExecuteClearFilterCommand(object obj)
         {
             SelectedVoorregeling = string.Empty;
             SelectedVoornaam = string.Empty;
             SearchAchternaam = string.Empty;
-            GetAllUitvaartItems();
+            //GetAllUitvaartItems();
+            ApplyFilters();
         }
         public void ExecuteOpenDossierViaOverzichtCommand(object obj)
         {

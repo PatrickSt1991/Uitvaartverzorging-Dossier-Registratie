@@ -519,7 +519,7 @@ namespace Dossier_Registratie.Repositories
                                         "[uitvaartInfoDienstDatumTijd],[uitvaartInfoDienstLocatie]," +
                                         "[uitvaartInfoDienstAfscheid],[uitvaartInfoDienstMuziek],[uitvaartInfoDienstBesloten]," +
                                         "[uitvaartInfoDienstVolgauto],[uitvaartInfoDienstConsumpties] ,[uitvaartInfoDienstKist]," +
-                                        "[uitvaartInfoCondoleanceYesNo],[uitvaartInfoSpreker],[uitvaartInfoPowerPoint] " +
+                                        "[uitvaartInfoCondoleanceYesNo],[uitvaartInfoSpreker],[uitvaartInfoPowerPoint], [uitvaartTijdBlokken], [uitvaartAantalTijdsBlokken] " +
                                         "FROM [OverledeneUitvaartInfo] OUI " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OUI.UitvaartId " +
                                         "WHERE Uitvaartnummer = @Uitvaartnummer";
@@ -548,6 +548,8 @@ namespace Dossier_Registratie.Repositories
                             CondoleanceYesNo = reader[15].ToString(),
                             Spreker = reader[16].ToString(),
                             PowerPoint = reader[17].ToString(),
+                            TijdBlokken = reader.IsDBNull(18) ? (int?)null : (int)reader[18],
+                            AantalTijdsBlokken = reader.IsDBNull(19) ? (int?)null : (int)reader[19]
                         };
                     }
                 }

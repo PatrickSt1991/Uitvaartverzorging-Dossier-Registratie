@@ -3,7 +3,6 @@ using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Microsoft.Win32;
-using Octokit;
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -57,7 +56,7 @@ namespace Dossier_Registratie.ViewModels
         private string _smtpServer;
         private int _smtpPort;
         private string _smtpReciever;
-        
+
         public string OrganizationName
         {
             get => _organizationName;
@@ -632,7 +631,7 @@ namespace Dossier_Registratie.ViewModels
             if (!TestDatabaseConnection(ConnectionString))
                 return;
 
-            if(!DataProvider.SetupComplete)
+            if (!DataProvider.SetupComplete)
                 if (!SetupInstallUser())
                     return;
 

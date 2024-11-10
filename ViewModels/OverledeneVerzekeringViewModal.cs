@@ -280,7 +280,9 @@ namespace Dossier_Registratie.ViewModels
             VerzekeringModel.UitvaartId = Globals.UitvaartCodeGuid;
             VerzekeringModel.VerzekeringProperties = JsonConvert.SerializeObject(insuranceData);
 
-            if (VerzekeringModel.Id == Guid.Empty)
+            bool VerzekeringInfoExists = miscellaneousRepository.UitvaartVerzekeringExists(VerzekeringModel.UitvaartId);
+
+            if (VerzekeringModel.Id == Guid.Empty && !VerzekeringInfoExists)
             {
                 VerzekeringModel.Id = Guid.NewGuid();
                 try
@@ -294,7 +296,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else
+            else if (VerzekeringInfoExists)
             {
                 bool verzekeringInfoChanged = modelCompare.AreValuesEqual(_originalVerzkeringModel, VerzekeringModel);
 
