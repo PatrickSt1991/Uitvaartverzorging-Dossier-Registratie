@@ -15,16 +15,11 @@
 
     <Border Background="#ffffff">
         <Grid>
-            <!-- Define Row Definitions -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <!-- For header or other static content -->
                 <RowDefinition Height="Auto" />
-                <!-- For search panel -->
                 <RowDefinition Height="Auto" />
-                <!-- Separator and buttons -->
                 <RowDefinition Height="*" />
-                <!-- This will take up the remaining space for the DataGrid -->
             </Grid.RowDefinitions>
 
             <!-- Title -->
@@ -39,6 +34,13 @@
             <!-- Search Panel -->
             <StackPanel Orientation="Horizontal" Grid.Row="1">
                 <StackPanel Orientation="Horizontal">
+                    <Label Content="Jaar" Margin="15,0,5,0"/>
+                    <ComboBox ItemsSource="{Binding AvailableYears}" 
+                              SelectedItem="{Binding SelectedYear, Mode=TwoWay}" 
+                              Width="100" 
+                              Margin="5,0,15,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
                     <Label Content="Voorregeling" Margin="35,0,0,0"/>
                     <ComboBox x:Name="CbVoorregeling" SelectedItem="{Binding SelectedVoorregeling, Mode=TwoWay}" Width="100"/>
                 </StackPanel>
@@ -52,7 +54,7 @@
                     <Button Content="Zoeken" Margin="15,0,5,0" Width="100" Command="{Binding SearchAchternaamCommand}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="Alles Weergeven" Margin="15,0,5,0" Width="150" Command="{Binding clearFilterCommand}" />
+                    <Button Content="Alles Weergeven" Margin="15,0,5,0" Width="150" Command="{Binding ClearFilterCommand}" />
                 </StackPanel>
             </StackPanel>
 
@@ -68,7 +70,8 @@
                       x:Name="agendaDataGrid" 
                       ScrollViewer.CanContentScroll="True" 
                       VerticalAlignment="Stretch" 
-                      ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                      ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="1"/>
                     <DataGridTemplateColumn Header="Uitvaart nr" IsReadOnly="True" CanUserResize="True" Width="*">
@@ -89,7 +92,7 @@
                             <Binding Path="DatumOverlijden" StringFormat="dd-MM-yyyy" />
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Uitvaatleider" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding UitvaartLeider}"/>
+                    <DataGridTextColumn Header="Uitvaartleider" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding UitvaartLeider}"/>
                     <DataGridTemplateColumn IsReadOnly="True" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

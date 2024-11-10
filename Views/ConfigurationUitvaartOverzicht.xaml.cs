@@ -19,7 +19,8 @@ namespace Dossier_Registratie.Views
         private void ReloadOverzicht(object sender, RoutedEventArgs e)
         {
             var viewModel = (ConfigurationUitvaartOverzichtViewModel)this.DataContext;
-            viewModel.GetAllUitvaartItems();
+            //viewModel.GetAllUitvaartItems();
+            viewModel.ApplyFilters();
         }
     }
 }
