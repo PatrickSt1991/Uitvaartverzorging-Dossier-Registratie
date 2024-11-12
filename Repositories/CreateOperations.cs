@@ -55,8 +55,8 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "INSERT INTO ConfigurationPersoneel ([Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel]," +
                                         "[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager]," +
-                                        "[isChauffeur],[isOpbaren]) VALUES (@Id, @initialen, @voornaam, @roepnaam, @tussenvoegsel, @achternaam, @geboorteplaats, " +
-                                        "@geboortedatum, @email, '0', @uitvaartverzorger, @isdrager, @ischauffeur, @isopbaren)";
+                                        "[isChauffeur],[isOpbaren], [Mobiel]) VALUES (@Id, @initialen, @voornaam, @roepnaam, @tussenvoegsel, @achternaam, @geboorteplaats, " +
+                                        "@geboortedatum, @email, '0', @uitvaartverzorger, @isdrager, @ischauffeur, @isopbaren, @mobiel)";
                 command.Parameters.AddWithValue("@Id", werknemerCreate.Id);
                 command.Parameters.AddWithValue("@initialen", string.IsNullOrEmpty(werknemerCreate.Initialen) ? DBNull.Value : werknemerCreate.Initialen);
                 command.Parameters.AddWithValue("@voornaam", string.IsNullOrEmpty(werknemerCreate.Voornaam) ? DBNull.Value : werknemerCreate.Voornaam);
@@ -66,6 +66,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@geboorteplaats", string.IsNullOrEmpty(werknemerCreate.Geboorteplaats) ? DBNull.Value : werknemerCreate.Geboorteplaats);
                 command.Parameters.AddWithValue("@geboortedatum", werknemerCreate.Geboortedatum);
                 command.Parameters.AddWithValue("@email", string.IsNullOrEmpty(werknemerCreate.Email) ? DBNull.Value : werknemerCreate.Email);
+                command.Parameters.AddWithValue("@mobiel", string.IsNullOrEmpty(werknemerCreate.Mobiel) ? DBNull.Value : werknemerCreate.Mobiel);
                 command.Parameters.AddWithValue("@uitvaartverzorger", werknemerCreate.IsUitvaartverzorger);
                 command.Parameters.AddWithValue("@isdrager", werknemerCreate.IsDrager);
                 command.Parameters.AddWithValue("@ischauffeur", werknemerCreate.IsChauffeur);

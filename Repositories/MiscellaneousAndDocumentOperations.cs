@@ -627,7 +627,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum]," +
-                                        "[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur] " +
+                                        "[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[Mobiel] " +
                                         "FROM [ConfigurationPersoneel] " +
                                         "ORDER BY isDeleted, Achternaam ASC";
                 using (var reader = command.ExecuteReader())
@@ -667,6 +667,7 @@ namespace Dossier_Registratie.Repositories
                             IsUitvaartverzorger = (bool)reader[10],
                             IsDrager = (bool)reader[11],
                             IsChauffeur = (bool)reader[12],
+                            Mobiel = reader[13].ToString(),
                             BtnBrush = styleColor
                         });
                     }

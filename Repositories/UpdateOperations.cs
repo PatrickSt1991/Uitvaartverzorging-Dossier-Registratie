@@ -729,7 +729,8 @@ namespace Dossier_Registratie.Repositories
                                         "isUitvaartverzorger = @uitvaartverzorger, " +
                                         "isDrager = @isdrager, " +
                                         "isChauffeur = @ischauffeur, " +
-                                        "isOpbaren = @isopbaren " +
+                                        "isOpbaren = @isopbaren, " +
+                                        "Mobiel = @mobiel " +
                                         "WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", werknemerUpdate.Id);
                 command.Parameters.AddWithValue("@initialen", string.IsNullOrEmpty(werknemerUpdate.Initialen) ? DBNull.Value : werknemerUpdate.Initialen);
@@ -744,6 +745,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@isdrager", werknemerUpdate.IsDrager);
                 command.Parameters.AddWithValue("@ischauffeur", werknemerUpdate.IsChauffeur);
                 command.Parameters.AddWithValue("@isopbaren", werknemerUpdate.IsOpbaren);
+                command.Parameters.AddWithValue("@mobiel", string.IsNullOrEmpty(werknemerUpdate.Mobiel) ? DBNull.Value : werknemerUpdate.Mobiel);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("EmployeeUpdateFailed");

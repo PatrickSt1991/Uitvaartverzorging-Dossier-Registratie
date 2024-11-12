@@ -121,6 +121,7 @@ namespace Dossier_Registratie.Models
         private string? _geboorteplaats;
         private DateTime? _geboortedatum;
         private string? _email;
+        private string? _mobiel;
         private bool _isdeleted;
         private bool _isuitvaartverzorger;
         private bool _isdrager;
@@ -179,6 +180,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _email; }
             set { _email = value; OnPropertyChanged(nameof(Email)); }
+        }
+        public string Mobiel
+        {
+            get { return _mobiel; }
+            set { _mobiel = value; OnPropertyChanged(nameof(Mobiel)); }
         }
         public bool IsDeleted
         {
@@ -240,6 +246,7 @@ namespace Dossier_Registratie.Models
                    !string.IsNullOrEmpty(Geboorteplaats) &&
                    Geboortedatum != DateTime.MinValue &&
                    !string.IsNullOrEmpty(Email) &&
+                   !string.IsNullOrEmpty(Mobiel) &&
                    PermissionId != Guid.Empty;
         }
     }
