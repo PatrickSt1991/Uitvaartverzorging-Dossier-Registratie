@@ -16,11 +16,14 @@
                 <ComboBoxItem Content="Dhr."/>
                 <ComboBoxItem Content="Mevr."/>
                 <ComboBoxItem Content="Onzijdig"/>
+                <ComboBoxItem Content="Erven Dhr."/>
+                <ComboBoxItem Content="Erven Mevr."/>
+                <ComboBoxItem Content="Erven"/>
             </ComboBox>
             <Label x:Name="lbl_SalutationFamilie" Content="*Aanhef" HorizontalAlignment="Left" Margin="555,121,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_FirstnameFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverVoornaamen,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,231,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="23" FontFamily="Arial"/>
-            <Label x:Name="lbl_FirstnameFamilie" Content="*Voornamen" HorizontalAlignment="Left" Margin="555,231,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_FirstnameFamilie" Content="*Voornamen/Voorletters" HorizontalAlignment="Left" Margin="555,231,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_PrepositionFamilie" Text="{Binding OpdrachtgeverPersoonsgegevens.OpdrachtgeverTussenvoegsel,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,194,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" TabIndex="22" FontFamily="Arial"/>
             <Label x:Name="lbl_PrepositionFamilie" Content="Tussenvoegsel" HorizontalAlignment="Left" Margin="555,194,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <DatePicker 
