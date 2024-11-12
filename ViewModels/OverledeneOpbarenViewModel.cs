@@ -290,8 +290,14 @@ namespace Dossier_Registratie.ViewModels
             {
                 foreach (var verzorgingData in verzorging.VerzorgersData)
                 {
-                    if (verzorgingData.WerknemerId != Guid.Empty && !string.IsNullOrWhiteSpace(verzorgingData.WerknemerStartTijd) && !string.IsNullOrWhiteSpace(verzorgingData.WerknemerEindTijd))
+                    if (verzorgingData.WerknemerId != Guid.Empty)
                     {
+                        if (string.IsNullOrWhiteSpace(verzorgingData.WerknemerStartTijd))
+                            verzorgingData.WerknemerStartTijd = "00:00";
+
+                        if (string.IsNullOrWhiteSpace(verzorgingData.WerknemerEindTijd))
+                            verzorgingData.WerknemerEindTijd = "00:00";
+
                         var verzorgingDataEntry = new
                         {
                             verzorgingData.WerknemerId,
