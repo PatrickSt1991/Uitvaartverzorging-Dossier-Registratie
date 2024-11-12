@@ -757,7 +757,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[isOpbaren] " +
+                command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[isOpbaren],[Mobiel] " +
                                         "FROM [ConfigurationPersoneel] WHERE Id = @werknemerId";
                 command.Parameters.AddWithValue("@werknemerId", werknemerId);
                 using (var reader = command.ExecuteReader())
@@ -779,7 +779,8 @@ namespace Dossier_Registratie.Repositories
                             IsUitvaartverzorger = (bool)reader[10],
                             IsDrager = (bool)reader[11],
                             IsChauffeur = (bool)reader[12],
-                            IsOpbaren = reader[13] != DBNull.Value ? (bool)reader[13] : false
+                            IsOpbaren = reader[13] != DBNull.Value ? (bool)reader[13] : false,
+                            Mobiel = reader[14].ToString()
                         };
                     }
                 }
