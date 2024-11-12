@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -367,7 +368,8 @@ namespace Dossier_Registratie.Repositories
                             OpdrachtgeverAchternaam = reader[3].ToString(),
                             OpdrachtgeverVoornaamen = reader[4].ToString(),
                             OpdrachtgeverTussenvoegsel = reader[5].ToString(),
-                            OpdrachtgeverGeboortedatum = (DateTime)reader[6],
+                            //OpdrachtgeverGeboortedatum = (DateTime)reader[6],
+                            OpdrachtgeverGeboortedatum = reader[6] == DBNull.Value ? (DateTime?)null : (DateTime)reader[6],
                             OpdrachtgeverLeeftijd = reader[7].ToString(),
                             OpdrachtgeverStraat = reader[8].ToString(),
                             OpdrachtgeverHuisnummer = reader[9].ToString(),
