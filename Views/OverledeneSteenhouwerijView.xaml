@@ -81,7 +81,7 @@
                     <Grid Background="White" Height="607">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="0.75*" />
                         </Grid.RowDefinitions>
                         <TextBox x:Name="input_MoneyFlowers" Text="{Binding BloemenModel.BloemenBedrag,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Height="32" FontSize="16" TabIndex="10" FontFamily="Arial"/>
                         <Label x:Name="lbl_OpbaringLocatie_Copy2" Content="Bedrag" HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top" Height="32" Width="147" FontFamily="Arial" FontSize="16"/>
@@ -110,11 +110,11 @@
                         <Label Content="Overzicht weergave" HorizontalAlignment="Left" Margin="10,368,0,0" VerticalAlignment="Top" Width="447" BorderThickness="0,0,0,1" BorderBrush="Black"/>
                         <CheckBox x:Name="cb_FlowersCard" IsChecked="{Binding BloemenModel.BloemenKaart}" Content="Kaart" HorizontalAlignment="Left" Margin="964,127,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16" TabIndex="14"/>
                         <CheckBox x:Name="cb_LintFlowers" IsChecked="{Binding BloemenModel.BloemenLint}" Content="Lint" HorizontalAlignment="Left" Margin="1038,127,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16" TabIndex="15"/>
-                        <Button x:Name="btn_orderBloemen" Tag="{Binding BloemenModel.BloemenDocument}" Command="{Binding Path=CreateDocumentBestelBloemenCommand}" Content="Bestellen" Margin="836,226,0,0" Width="135" TabIndex="58" FontFamily="Arial" HorizontalAlignment="Left" Height="33" VerticalAlignment="Top" FontSize="12" />
-                        <ComboBox x:Name="cb_flowerPersonViewPayment" ItemsSource="{Binding WerknemerOverzicht}" SelectedValuePath="Id" SelectedValue="{Binding SelectedBloemEmployeeId}" DisplayMemberPath="VolledigeNaam" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,226,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="7" FontFamily="Arial" />
-                        <Label x:Name="lbl_flowerPersonViewPayment" Content="Persoon overzicht" HorizontalAlignment="Left" Margin="10,226,0,0" VerticalAlignment="Top" Height="31" Width="147" FontFamily="Arial" FontSize="16"/>
-                        <Label Content="Overzicht weergave" HorizontalAlignment="Left" Margin="10,190,0,0" VerticalAlignment="Top" Width="1144" BorderThickness="0,0,0,1" BorderBrush="Black"/>
-                        <Button x:Name="btn_SaveBloemen" Command="{Binding SaveBloemCommand}" Content="Opslaan Bloemen" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="57" FontFamily="Arial" Margin="1000,225,0,0" FontSize="12" HorizontalAlignment="Left" />
+                        <Button x:Name="btn_orderBloemen" Tag="{Binding BloemenModel.BloemenDocument}" Command="{Binding Path=CreateDocumentBestelBloemenCommand}" Content="Bestellen" Margin="836,302,0,0" Width="135" TabIndex="58" FontFamily="Arial" HorizontalAlignment="Left" Height="33" VerticalAlignment="Top" FontSize="12" />
+                        <ComboBox x:Name="cb_flowerPersonViewPayment" ItemsSource="{Binding WerknemerOverzicht}" SelectedValuePath="Id" SelectedValue="{Binding SelectedBloemEmployeeId}" DisplayMemberPath="VolledigeNaam" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,302,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="7" FontFamily="Arial" />
+                        <Label x:Name="lbl_flowerPersonViewPayment" Content="Persoon overzicht" HorizontalAlignment="Left" Margin="10,302,0,0" VerticalAlignment="Top" Height="31" Width="147" FontFamily="Arial" FontSize="16"/>
+                        <Label Content="Overzicht weergave" HorizontalAlignment="Left" Margin="10,266,0,0" VerticalAlignment="Top" Width="1144" BorderThickness="0,0,0,1" BorderBrush="Black"/>
+                        <Button x:Name="btn_SaveBloemen" Command="{Binding SaveBloemCommand}" Content="Opslaan Bloemen" VerticalAlignment="Top" Height="31" Width="138" TabIndex="57" FontFamily="Arial" Margin="1000,301,0,0" FontSize="12" HorizontalAlignment="Left" />
                         <DataGrid Grid.Row="1" ItemsSource="{Binding WerknemerBloemOverzicht}" IsReadOnly="True" AutoGenerateColumns="False" Margin="10,0,10,0">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Uitvaartnummer" Binding="{Binding UitvaartNummer}" Width="Auto" />

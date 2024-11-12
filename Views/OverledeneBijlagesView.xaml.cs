@@ -24,7 +24,7 @@ namespace Dossier_Registratie.Views
         {
             foreach (var bijlage in searchOperations.GetOverlijdenBijlagesByUitvaartId(Globals.UitvaartCode))
             {
-                if ((!bijlage.IsDeleted) && (!bijlage.DocumentName.StartsWith("AkteVanCessie_")) && (!bijlage.DocumentName.Equals("Bloemen")))
+                if ((!bijlage.IsDeleted) && (!bijlage.DocumentName.StartsWith("AkteVanCessie_")) && (!bijlage.DocumentName.Equals("Bloemen")) && (!bijlage.DocumentName.Equals("Verlof")))
                 {
                     ComboBox attachmentCb = (ComboBox)this.FindName("cb_Document" + bijlage.DocumentName);
 

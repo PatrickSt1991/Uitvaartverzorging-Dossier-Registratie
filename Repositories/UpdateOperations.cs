@@ -511,8 +511,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@dienstVolgautos", overledeneUitvaartModel.VolgAutoDienst);
                 command.Parameters.AddWithValue("@consumptiesDienst", overledeneUitvaartModel.ConsumptiesDienst != null ? overledeneUitvaartModel.ConsumptiesDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@dienstKist", overledeneUitvaartModel.KistDienst);
-                command.Parameters.AddWithValue("@tijdblokken", overledeneUitvaartModel.TijdBlokken);
-                command.Parameters.AddWithValue("@aantaltijdblokken", overledeneUitvaartModel.AantalTijdsBlokken);
+                command.Parameters.AddWithValue("@tijdblokken", overledeneUitvaartModel.TijdBlokken != null ? overledeneUitvaartModel.TijdBlokken : DBNull.Value);
+                command.Parameters.AddWithValue("@aantaltijdblokken", overledeneUitvaartModel.AantalTijdsBlokken != null ? overledeneUitvaartModel.AantalTijdsBlokken : DBNull.Value);
                 command.Parameters.AddWithValue("@OpbarenId", overledeneUitvaartModel.Id);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneUitvaartModel.UitvaartId);
                 if (command.ExecuteNonQuery() == 0)

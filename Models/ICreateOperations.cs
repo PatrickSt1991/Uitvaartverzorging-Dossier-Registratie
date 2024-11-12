@@ -9,7 +9,7 @@ namespace Dossier_Registratie.Models
         Task InsertKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid id, Guid verzekeraarId);
         void EmployeeCreate(WerknemersModel werknemerCreate);
         Task InsertDocumentInfoAsync(OverledeneBijlagesModel documentInfo);
-        void InsertFinishedDossier(OverledeneBijlagesModel finishDossier);
+        void InsertDossier(OverledeneBijlagesModel finishDossier);
         void AddUitvaartleider(OverledeneUitvaartleiderModel uitvaarLeiderModel);
         void AddMiscUitvaart(OverledeneMiscModel uitvaartMisc);
         void AddPersoonsGegevens(OverledenePersoonsGegevensModel GetDocumentOverdrachtInfo);

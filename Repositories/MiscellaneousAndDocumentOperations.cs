@@ -1841,6 +1841,38 @@ namespace Dossier_Registratie.Repositories
             }
             return dossier;
         }
+        public OverledeneBijlagesModel GetVerlofDossier(Guid UitvaartId)
+        {
+            OverledeneBijlagesModel dossier = new();
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT [BijlageId], [UitvaartId], [DocumentName], [DocumentType], [DocumentURL], [DocumentHash], [DocumentInconsistent], [isDeleted] " +
+                                        "FROM [OverledeneBijlages] " +
+                                        "WHERE UitvaartId = @UitvaartId " +
+                                        "AND DocumentName = 'Verlof'";
+                command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        dossier = new OverledeneBijlagesModel()
+                        {
+                            BijlageId = (Guid)reader["BijlageId"],
+                            UitvaartId = (Guid)reader["UitvaartId"],
+                            DocumentType = reader["DocumentType"].ToString(),
+                            DocumentUrl = reader["DocumentUrl"].ToString(),
+                            DocumentHash = reader["DocumentHash"].ToString(),
+                            DocumentInconsistent = (bool)reader["DocumentInconsistent"],
+                            IsDeleted = (bool)reader["isDeleted"]
+                        };
+                    }
+                }
+            }
+            return dossier;
+        }
         public ObservableCollection<WindowsAccount> GetWerknemerPermissions(Guid werknemerId)
         {
             ObservableCollection<WindowsAccount> userAccount = new();

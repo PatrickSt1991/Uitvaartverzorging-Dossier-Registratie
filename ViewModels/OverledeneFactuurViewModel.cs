@@ -498,7 +498,6 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
-                Debug.WriteLine(SelectedVerzekeraar.Name);
                 if (string.IsNullOrEmpty(SelectedVerzekeraar.Name))
                 {
                     IsPopupVisible = true;

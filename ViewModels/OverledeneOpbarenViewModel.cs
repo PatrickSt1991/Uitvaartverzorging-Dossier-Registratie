@@ -254,8 +254,6 @@ namespace Dossier_Registratie.ViewModels
                     Verzorgingen.Add(Verzorging);
                     foreach (var verzorgingJson in JsonConvert.DeserializeObject<List<VerzorgingData>>(OverledeneOpbarenModel.OpbaringVerzorgingJson))
                     {
-                        Debug.WriteLine(verzorgingJson.WerknemerStartTijd);
-                        Debug.WriteLine(verzorgingJson.WerknemerEindTijd);
                         Verzorging.VerzorgersData.Add(new VerzorgingData { WerknemerId = verzorgingJson.WerknemerId, WerknemerStartTijd = verzorgingJson.WerknemerStartTijd, WerknemerEindTijd = verzorgingJson.WerknemerEindTijd });
                         verzogingCount++;
                     }

@@ -1056,7 +1056,7 @@ namespace Dossier_Registratie.ViewModels
 
                         try
                         {
-                            createRepository.InsertFinishedDossier(Dossier);
+                            createRepository.InsertDossier(Dossier);
                         }
                         catch (Exception ex)
                         {
@@ -1200,6 +1200,9 @@ namespace Dossier_Registratie.ViewModels
         }
         private async Task CreateDocumentBestelBloemen(object obj)
         {
+            if (SaveBloemCommand.CanExecute(obj))
+                SaveBloemCommand.Execute(obj);
+
             _generatingDocumentView.Show();
             string destinationFile = string.Empty;
             bool initialCreation = false;
@@ -1295,6 +1298,11 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             _generatingDocumentView.Hide();
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = BloemenDocModel.DestinationFile,
+                UseShellExecute = true
+            });
             return;
         }
     }

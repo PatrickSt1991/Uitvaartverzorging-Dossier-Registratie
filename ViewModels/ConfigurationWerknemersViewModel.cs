@@ -199,7 +199,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveUserCommand(object obj)
         {
-            Debug.WriteLine(SelectedUser.HasData());
+
             if (!SelectedUser.HasData())
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();

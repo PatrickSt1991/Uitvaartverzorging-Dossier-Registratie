@@ -4,6 +4,7 @@ using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.Office.Interop.Word;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace Dossier_Registratie.ViewModels
         private GeneratingDocumentView _generatingDocumentView;
         private OverledeneUitvaartleiderModel _uitvaartLeiderModel;
         private OverledeneBijlagesModel _bijlageModel;
+        private OverledeneBijlagesModel _verlofDossier;
         private ObservableCollection<PolisVerzekering> _verzekeringen;
         private PolisVerzekering _selectedVerzekering;
         private ObservableCollection<PolisVerzekering> _verzekeringenWithAll;
@@ -75,6 +77,7 @@ namespace Dossier_Registratie.ViewModels
         private string _documentOption;
         private string _fileExists;
         private string _fileGenerate;
+        private string _verlofTagContent;
         string destinationFile = string.Empty;
 
         public bool CorrectAccessOrNotCompleted
@@ -110,7 +113,18 @@ namespace Dossier_Registratie.ViewModels
             get { return _fileGenerate; }
             set { _fileGenerate = value; OnPropertyChanged(nameof(FileGenerate)); }
         }
-
+        public string VerlofTagContent
+        {
+            get { return _verlofTagContent; }
+            set
+            {
+                if (_verlofTagContent != value)
+                {
+                    _verlofTagContent = value;
+                    OnPropertyChanged(nameof(VerlofTagContent));
+                }
+            }
+        }
         public ObservableCollection<PolisVerzekering> VerzekeringenWithAll
         {
             get { return _verzekeringenWithAll; }
@@ -142,6 +156,11 @@ namespace Dossier_Registratie.ViewModels
         {
             get { return _bijlageModel; }
             set { _bijlageModel = value; OnPropertyChanged(nameof(BijlageModel)); }
+        }
+        public OverledeneBijlagesModel VerlofDossier
+        {
+            get { return _verlofDossier; }
+            set { _verlofDossier = value; OnPropertyChanged(nameof(VerlofDossier)); }
         }
         public BijlageTagModel TagModel
         {
@@ -237,7 +256,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand CreateDocumentTevredenheidCommand { get; set; }
         public ICommand CreateDocumentBezittingenCommand { get; set; }
         public ICommand CreateDocumentAangifteCommand { get; set; }
-
+        public ICommand VerlofUploadenCommand { get; }
         public event EventHandler DataLoaded;
         protected virtual void OnDataLoaded()
         {
@@ -257,6 +276,7 @@ namespace Dossier_Registratie.ViewModels
             modelCompare = new ModelCompare();
             InfoUitvaartleider = new OverledeneUitvaartleiderModel();
             BijlageModel = new OverledeneBijlagesModel();
+            VerlofDossier = new OverledeneBijlagesModel();
             BijlageList = new ObservableCollection<OverledeneBijlagesModel>();
             _originalBijlageList = new ObservableCollection<OverledeneBijlagesModel>();
             TagModel = new BijlageTagModel();
@@ -275,12 +295,14 @@ namespace Dossier_Registratie.ViewModels
             TevredenheidModel = new TevredenheidDocument();
             AangifteModel = new AangifteDocument();
             _generatingDocumentView = new GeneratingDocumentView();
+            VerlofTagContent = "Verlof Uploaden";
 
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand, CanExecuteSaveCommand);
             PreviousCommand = new ViewModelCommand(ExecutePreviousCommand);
             OpenPopupCommand = new ViewModelCommand(ExecuteOpenPopupCommand);
             ClosePopupCommand = new ViewModelCommand(ExecuteClosePopupCommand);
             OpenKostenbegrotingCommand = new ViewModelCommand(ExecuteKostenbegrotingCommand);
+            VerlofUploadenCommand = new ViewModelCommand(ExecuteVerlofUploadenCommand);
             GenererenAkteVanCessieCommand = new ViewModelCommand(async (parameter) => await GenererenCreateAkteVanCessie(parameter));
             CreateDocumentKoffieCommand = new ViewModelCommand(async (parameter) => await CreateDocumentKoffie(parameter));
             CreateDocumentDocumentCommand = new ViewModelCommand(async (parameter) => await CreateDocumentDocument(parameter));
@@ -341,6 +363,15 @@ namespace Dossier_Registratie.ViewModels
 
             BijlageList.Clear();
             _originalBijlageList.Clear();
+
+            var dossierStatus = miscellaneousRepository.GetVerlofDossier(Globals.UitvaartCodeGuid);
+            if (dossierStatus.BijlageId != Guid.Empty)
+            {
+                VerlofDossier.BijlageId = dossierStatus.BijlageId;
+                VerlofDossier.UitvaartId = dossierStatus.UitvaartId;
+                VerlofDossier.DocumentUrl = dossierStatus.DocumentUrl;
+                VerlofTagContent = "Verlof Openen";
+            }
 
             var UitvaarLeiderResult = searchRepository.GetUitvaarleiderByUitvaartId(uitvaartNummer);
             if (UitvaarLeiderResult != null)
@@ -415,6 +446,61 @@ namespace Dossier_Registratie.ViewModels
             if (myPopup != null)
             {
                 myPopup.IsOpen = !myPopup.IsOpen;
+            }
+        }
+        public void ExecuteVerlofUploadenCommand(object obj)
+        {
+            if (!string.IsNullOrEmpty(VerlofDossier.DocumentUrl))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = VerlofDossier.DocumentUrl,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                var opslagLocatie = DataProvider.DocumentenOpslag;
+                if (opslagLocatie != null)
+                {
+                    string destinationFolder = Path.Combine(opslagLocatie, Globals.UitvaartCode);
+
+                    OpenFileDialog openFileDialog = new OpenFileDialog
+                    {
+                        Filter = "PDF Files|*.pdf",
+                        Title = "Selecteer verlof bestand."
+                    };
+
+                    if (openFileDialog.ShowDialog() == true)
+                    {
+                        string selectedFilePath = openFileDialog.FileName;
+                        string destinationFilePath = Path.Combine(destinationFolder, Path.GetFileName(selectedFilePath));
+                        File.Copy(selectedFilePath, destinationFilePath, true);
+
+                        VerlofDossier.BijlageId = Guid.NewGuid();
+                        VerlofDossier.UitvaartId = Globals.UitvaartCodeGuid;
+                        VerlofDossier.DocumentName = "Verlof";
+                        VerlofDossier.DocumentType = "PDF";
+                        VerlofDossier.DocumentUrl = destinationFilePath;
+                        VerlofDossier.DocumentHash = Checksum.GetMD5Checksum(selectedFilePath);
+                        VerlofDossier.DocumentInconsistent = false;
+                        VerlofDossier.IsDeleted = false;
+
+                        try
+                        {
+                            createRepository.InsertDossier(VerlofDossier);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            MessageBox.Show($"Error Inserting verlof dossier: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                            return;
+                        }
+
+                        VerlofTagContent = "Verlof Openen";
+                        VerlofDossier.DocumentUrl = destinationFilePath;
+                    }
+                }
             }
         }
         public void ExecuteClosePopupCommand(object obj)
@@ -989,14 +1075,12 @@ namespace Dossier_Registratie.ViewModels
 
             if (string.IsNullOrWhiteSpace(TagModel.ChecklistTag))
             {
-                Debug.WriteLine(TagModel.ChecklistTag);
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
             else if (!File.Exists(TagModel.ChecklistTag))
             {
-                Debug.WriteLine(TagModel.ChecklistTag);
                 deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Checklist");
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
                 documentId = Guid.NewGuid();
@@ -1004,7 +1088,6 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
-                Debug.WriteLine(TagModel.ChecklistTag);
                 var checklistDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Checklist").ConfigureAwait(false);
                 documentId = checklistDocument.BijlageId;
 
@@ -2198,7 +2281,6 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            Debug.WriteLine(distinctPolissen.Count);
             if (distinctPolissen.Count == 0)
             {
                 MessageBox.Show("Er zijn geen polissen opggeven voor dit uitvaartnummer\r\n" +

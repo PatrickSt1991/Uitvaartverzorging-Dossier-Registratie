@@ -103,7 +103,7 @@ namespace Dossier_Registratie.Repositories
                 }
             }
         }
-        public void InsertFinishedDossier(OverledeneBijlagesModel finishDossier)
+        public void InsertDossier(OverledeneBijlagesModel finishDossier)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
@@ -464,8 +464,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@VolgautoDienst", overledeneUitvaartModel.VolgAutoDienst);
                 command.Parameters.AddWithValue("@ConsumptiesDienst", overledeneUitvaartModel.ConsumptiesDienst != null ? overledeneUitvaartModel.ConsumptiesDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@KistDienst", overledeneUitvaartModel.KistDienst);
-                command.Parameters.AddWithValue("@TijdBlokken", overledeneUitvaartModel.TijdBlokken);
-                command.Parameters.AddWithValue("@AantalTijdsBlokken", overledeneUitvaartModel.AantalTijdsBlokken);
+                command.Parameters.AddWithValue("@TijdBlokken", overledeneUitvaartModel.TijdBlokken != null ? overledeneUitvaartModel.TijdBlokken : DBNull.Value);
+                command.Parameters.AddWithValue("@AantalTijdsBlokken", overledeneUitvaartModel.AantalTijdsBlokken != null ? overledeneUitvaartModel.AantalTijdsBlokken : DBNull.Value);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertUitvaartFailed");

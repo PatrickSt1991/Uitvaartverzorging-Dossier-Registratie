@@ -274,7 +274,6 @@ namespace Dossier_Registratie.ViewModels
         }
         private void FilterSuggestions(string locationInput)
         {
-            //Debug.WriteLine(DeceasedLocationFound);
 
             if (string.IsNullOrEmpty(locationInput) || DeceasedLocationFound)
             {

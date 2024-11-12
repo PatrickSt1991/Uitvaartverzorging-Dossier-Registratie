@@ -498,10 +498,9 @@ namespace Dossier_Registratie.ViewModels
             {
                 searchPattern = $"*{achternaam}*.pdf";
             }
-            Debug.WriteLine(searchPattern);
+
             return await Task.Run(() =>
             {
-                Debug.WriteLine(ArchivePath);
                 if (Directory.Exists(ArchivePath))
                 {
                     var files = Directory.GetFiles(ArchivePath, searchPattern, SearchOption.AllDirectories);
