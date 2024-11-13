@@ -533,13 +533,11 @@ namespace Dossier_Registratie.ViewModels
             if (sourceFile.Exists)
             {
                 if (!Directory.Exists(destinationLoc))
-                {
                     Directory.CreateDirectory(destinationLoc);
-                }
+
                 if (File.Exists(destinationFile))
-                {
                     File.Delete(destinationFile);
-                }
+
                 sourceFile.CopyTo(destinationFile);
             }
             return destinationFile;

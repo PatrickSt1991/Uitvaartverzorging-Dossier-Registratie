@@ -2,10 +2,12 @@
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
 using Microsoft.Office.Interop.Word;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Application = Microsoft.Office.Interop.Word.Application;
@@ -1140,6 +1142,11 @@ namespace Dossier_Registratie.Helper
             Application app = null;
             Document doc = null;
 
+            string lint1 = string.Empty;
+            string lint2 = string.Empty;
+            string lint3 = string.Empty;
+            string lint4 = string.Empty;
+
             try
             {
                 app = new Application();
@@ -1150,9 +1157,17 @@ namespace Dossier_Registratie.Helper
                 if (!string.IsNullOrEmpty(DataProvider.OrganizationHouseNumberAddition))
                     OrganizationAdress = $"{DataProvider.OrganizationStreet} {DataProvider.OrganizationHouseNumber} {DataProvider.OrganizationHouseNumberAddition}, {DataProvider.OrganizationZipcode} {DataProvider.OrganizationCity}";
 
-                var bloemenBezorgDag = bloemen.DatumBezorgen != DateTime.MinValue
-                    ? bloemen.DatumBezorgen.ToString("dd-MM-yyyy")
-                    : string.Empty;
+                if (!string.IsNullOrEmpty(bloemen.LintJson))
+                {
+                    var lintTexts = JsonConvert.DeserializeObject<List<string>>(bloemen.LintJson);
+                    if (lintTexts != null)
+                    {
+                        lint1 = lintTexts.ElementAtOrDefault(0) ?? string.Empty;
+                        lint2 = lintTexts.ElementAtOrDefault(1) ?? string.Empty;
+                        lint3 = lintTexts.ElementAtOrDefault(2) ?? string.Empty;
+                        lint4 = lintTexts.ElementAtOrDefault(3) ?? string.Empty;
+                    }
+                }
 
                 var bookmarks = new Dictionary<string, string>
         {
@@ -1162,10 +1177,14 @@ namespace Dossier_Registratie.Helper
             { "NaamOverledene", bloemen.NaamOverledene },
             { "Bloemstuk", bloemen.Bloemstuk },
             { "Lint", bloemen.Lint ? "Ja" : "Nee" },
+            { "LintTekst1", lint1 },
+            { "LintTekst2", lint2 },
+            { "LintTekst3", lint3 },
+            { "LintTekst4", lint4 },
             { "Kaartje", bloemen.Kaart ? "Ja" : "Nee" },
             { "BezorgAdres", bloemen.Bezorgadres },
             { "Telefoonnummer", bloemen.Telefoonnummer },
-            { "DatumBezorgen", bloemenBezorgDag },
+            { "DatumBezorgen", bloemen.DatumBezorgen.ToString("dd-MM-yyyy") },
             { "OrganisatieNaam", DataProvider.OrganizationName },
             { "OrganisatieAdres", OrganizationAdress },
             { "OrganisatieTelefoon", DataProvider.OrganizationPhoneNumber }

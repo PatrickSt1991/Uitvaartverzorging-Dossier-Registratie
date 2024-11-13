@@ -2326,7 +2326,8 @@ namespace Dossier_Registratie.Repositories
                                           "WHEN opg.overledeneTussenvoegsel IS NULL OR opg.overledeneTussenvoegsel = '' " +
                                           "THEN CONCAT(opg.overledeneAanhef, ' ', opg.overledeneVoornamen, ' ', opg.overledeneAchternaam) " +
                                           "ELSE CONCAT(opg.overledeneAanhef, ' ', opg.overledeneVoornamen, ' ', opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam) " +
-                                          "END AS Overledene, bloemenText, bloemenLint, bloemenKaart, oo.opdrachtgeverTelefoon " +
+                                          "END AS Overledene, bloemenText, bloemenLint, bloemenKaart, oo.opdrachtgeverTelefoon," +
+                                          "bloemenLintJson, bloemenBezorgingDatum, bloemenBezorgingAdres " +
                                           "FROM [OverledeneBloemen] ob " +
                                           "INNER JOIN [ConfigurationLeveranciers] cl ON ob.bloemenLeverancier = cl.leverancierId " +
                                           "INNER JOIN [OverledeneUitvaartleider] ou ON ob.uitvaartId = ou.UitvaartId " +
@@ -2349,7 +2350,10 @@ namespace Dossier_Registratie.Repositories
                                 Bloemstuk = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
                                 Lint = !reader.IsDBNull(5) && reader.GetBoolean(5),
                                 Kaart = !reader.IsDBNull(6) && reader.GetBoolean(6),
-                                Telefoonnummer = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
+                                Telefoonnummer = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
+                                LintJson = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                                DatumBezorgen = reader.IsDBNull(9) ? DateTime.Today : reader.GetDateTime(9),
+                                Bezorgadres = reader.IsDBNull(10) ? string.Empty : reader.GetString(10)
                             };
                         }
                     }
@@ -2690,8 +2694,8 @@ namespace Dossier_Registratie.Repositories
                                             "(CASE WHEN (OOI.overledenHuisnummerToevoeging IS NOT NULL) THEN CONCAT(OOI.overledenAdres, ' ', OOI.overledenHuisnummer, ' ', OOI.overledenHuisnummerToevoeging) " +
                                             "ELSE CONCAT(OOI.overledenAdres, ' ', OOI.overledenHuisnummer) END) AS OverledenAdres, OEI.overledeneEersteOuder, OEI.overledeneTweedeOuder, OEI.overledeneWedenaarVan, OEI.overledeneAantalKinderen," +
                                             "OEI.overledeneKinderenMinderjarig, OEI.overledeneAantalKinderenOverleden, " +
-                                            "(CASE WHEN CP.Tussenvoegsel IS NULL THEN CONCAT(CP.Initialen, ' ', CP.Achternaam) " +
-                                            "ELSE CONCAT(CP.Initialen, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Aangever," +
+                                            "(CASE WHEN CP.Tussenvoegsel IS NULL THEN CONCAT(CP.Voornaam, ' ', CP.Achternaam) " +
+                                            "ELSE CONCAT(CP.Voornam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Aangever," +
                                             "CONCAT(CP.Geboorteplaats,', ', CP.Geboortedatum) AS AangeverPlaats," +
                                             "(CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverAchternaam) " +
                                             "ELSE CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever," +

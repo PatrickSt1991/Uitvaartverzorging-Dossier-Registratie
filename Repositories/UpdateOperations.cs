@@ -611,7 +611,10 @@ namespace Dossier_Registratie.Repositories
                                         "[bloemenBedrag] = @Bedrag," +
                                         "[bloemenProvisie] = @Provisie," +
                                         "[bloemenUitbetaling] = @Uitbetaling, " +
-                                        "[bloemenLeverancier] = @Leverancier " +
+                                        "[bloemenLeverancier] = @Leverancier," +
+                                        "[bloemenLintJson] = @bloemenJson," +
+                                        "[bloemenBezorgingDatum] = @bezorgdatum," +
+                                        "[bloemenBezorgingAdres] = @bezorgadres " +
                                         "WHERE uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@BloemenId", overledeneBloemenModel.BloemenId);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneBloemenModel.UitvaartId);
@@ -622,6 +625,12 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@Provisie", overledeneBloemenModel.BloemenProvisie != null ? overledeneBloemenModel.BloemenProvisie : DBNull.Value);
                 command.Parameters.AddWithValue("@Uitbetaling", overledeneBloemenModel.BloemenUitbetaling != null ? overledeneBloemenModel.BloemenUitbetaling : DBNull.Value);
                 command.Parameters.AddWithValue("@Leverancier", overledeneBloemenModel.BloemenLeverancier);
+                command.Parameters.AddWithValue("@bloemenJson", overledeneBloemenModel.BloemenLintJson != null ? overledeneBloemenModel.BloemenLintJson : DBNull.Value);
+                command.Parameters.Add(new SqlParameter("@bezorgdatum", SqlDbType.DateTime)
+                {
+                    Value = overledeneBloemenModel.BloemenBezorgDate.HasValue ? (object)overledeneBloemenModel.BloemenBezorgDate.Value : DBNull.Value
+                });
+                command.Parameters.AddWithValue("@bezorgadres", overledeneBloemenModel.BloemenBezorgAdres != null ? overledeneBloemenModel.BloemenBezorgAdres : DBNull.Value);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("UpdateBloemenFailed");

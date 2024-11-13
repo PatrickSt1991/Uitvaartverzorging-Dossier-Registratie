@@ -551,8 +551,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneBloemen] ([Id],[uitvaartId],[bloemenText],[bloemenLint],[bloemenKaart],[bloemenBedrag],[bloemenProvisie],[bloemenUitbetaling], [bloemenLeverancier]) " +
-                                        "VALUES (@BloemenId, @UitvaartId, @Text, @Lint, @Kaart, @Bedrag, @Provisie, @Uitbetaling, @Leverancier)";
+                command.CommandText = "INSERT INTO [OverledeneBloemen] ([Id],[uitvaartId],[bloemenText],[bloemenLint],[bloemenKaart],[bloemenBedrag],[bloemenProvisie],[bloemenUitbetaling], [bloemenLeverancier], [bloemenLintJson], [bloemenBezorgingDatum], [bloemenBezorgingAdres]) " +
+                                        "VALUES (@BloemenId, @UitvaartId, @Text, @Lint, @Kaart, @Bedrag, @Provisie, @Uitbetaling, @Leverancier, @bloemenjson, @bezorgdatum, @bezorgadres)";
                 command.Parameters.AddWithValue("@BloemenId", overledeneBloemenModel.BloemenId);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneBloemenModel.UitvaartId);
                 command.Parameters.AddWithValue("@Text", overledeneBloemenModel.BloemenText != null ? overledeneBloemenModel.BloemenText : DBNull.Value);
@@ -562,6 +562,13 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@Provisie", overledeneBloemenModel.BloemenProvisie != null ? overledeneBloemenModel.BloemenProvisie : DBNull.Value);
                 command.Parameters.AddWithValue("@Uitbetaling", overledeneBloemenModel.BloemenUitbetaling != null ? overledeneBloemenModel.BloemenUitbetaling : DBNull.Value);
                 command.Parameters.AddWithValue("@Leverancier", overledeneBloemenModel.BloemenLeverancier);
+                command.Parameters.AddWithValue("@bloemenjson", overledeneBloemenModel.BloemenLintJson != null ? overledeneBloemenModel.BloemenLintJson : DBNull.Value);
+                command.Parameters.Add(new SqlParameter("@bezorgdatum", SqlDbType.DateTime)
+                {
+                    Value = overledeneBloemenModel.BloemenBezorgDate.HasValue? (object)overledeneBloemenModel.BloemenBezorgDate.Value : DBNull.Value
+                });
+                command.Parameters.AddWithValue("@bezorgadres", overledeneBloemenModel.BloemenBezorgAdres != null ? overledeneBloemenModel.BloemenBezorgAdres : DBNull.Value);
+
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertBloemenFailed");

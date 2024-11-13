@@ -1,5 +1,6 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System;
+using System.Drawing.Printing;
 
 namespace Dossier_Registratie.Models
 {
@@ -1608,6 +1609,7 @@ namespace Dossier_Registratie.Models
         private string _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string _lintJson;
 
         public string LeverancierNaam
         {
@@ -1695,6 +1697,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
+        }
+        public string LintJson
+        {
+            get { return _lintJson; }
+            set { _lintJson = value; OnPropertyChanged(nameof(LintJson)); }
         }
         public bool HasData()
         {

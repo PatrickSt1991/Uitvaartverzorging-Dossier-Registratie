@@ -876,7 +876,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],OB.uitvaartId,bloemenText,bloemenLint,bloemenKaart,bloemenBedrag,bloemenProvisie,bloemenUitbetaling,bloemenLeverancier, OBI.DocumentURL as DocUrl " +
+                command.CommandText = "SELECT [Id],OB.uitvaartId,bloemenText,bloemenLint,bloemenKaart,bloemenBedrag,bloemenProvisie,bloemenUitbetaling," +
+                                        "bloemenLeverancier, OBI.DocumentURL as DocUrl, bloemenLintJson, bloemenBezorgingDatum, bloemenBezorgingAdres " +
                                         "FROM [OverledeneBloemen] OB " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OB.UitvaartId " +
                                         "LEFT JOIN OverledeneBijlages OBI ON OB.uitvaartId = OBI.UitvaartId AND OBI.DocumentName = 'Bloemen'" +
@@ -898,6 +899,9 @@ namespace Dossier_Registratie.Repositories
                             BloemenUitbetaling = reader["bloemenUitbetaling"] != DBNull.Value ? (DateTime?)reader["bloemenUitbetaling"] : null,
                             BloemenLeverancier = reader["bloemenLeverancier"] != DBNull.Value ? (Guid)reader["bloemenLeverancier"] : Guid.Empty,
                             BloemenDocument = reader["DocUrl"] != DBNull.Value ? reader["DocUrl"].ToString() : string.Empty,
+                            BloemenLintJson = reader["bloemenLintJson"] != DBNull.Value ? reader["bloemenLintJson"].ToString() : string.Empty,
+                            BloemenBezorgAdres = reader["bloemenBezorgingAdres"] != DBNull.Value ? reader["bloemenBezorgingAdres"].ToString() : string.Empty,
+                            BloemenBezorgDate = reader["bloemenBezorgingDatum"] != DBNull.Value ? (DateTime?)reader["bloemenBezorgingDatum"] : null,
                         };
                     }
                 }
