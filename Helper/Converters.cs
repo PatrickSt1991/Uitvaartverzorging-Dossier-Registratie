@@ -197,36 +197,55 @@ namespace Dossier_Registratie.Helper
     }
     public class DecimalToStringConverter : IValueConverter
     {
+        private readonly NumberFormatInfo dutchNumberFormatInfo;
+
+        public DecimalToStringConverter()
+        {
+            // Configure Dutch NumberFormatInfo
+            dutchNumberFormatInfo = new NumberFormatInfo
+            {
+                NumberDecimalSeparator = ",", // Use ',' for decimals
+                NumberGroupSeparator = ".",  // Use '.' for thousands
+                CurrencySymbol = "€"         // Optional: Set currency symbol
+            };
+        }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is decimal decimalValue)
             {
-                // Format as a string using the specified culture
-                return decimalValue.ToString("N2", culture); // N2 formats to two decimal places
+                // If value is 0, return an empty string
+                if (decimalValue == 0m)
+                {
+                    return string.Empty;
+                }
+                // Format using the custom Dutch number format
+                return decimalValue.ToString("N2", dutchNumberFormatInfo);
             }
             return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Check if the value is null or empty
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
             {
-                return 0m; // Return 0 for empty input or handle as appropriate
+                return 0m; // Return 0 for empty input
             }
 
-            // Get the string value
             string stringValue = value.ToString().Trim();
 
-            // Use Dutch culture to parse the input
-            // Dutch culture uses ',' as the decimal separator
-            if (decimal.TryParse(stringValue, NumberStyles.Any, new CultureInfo("nl-NL"), out decimal decimalValue))
+            // Replace custom group separators with standard ones for parsing
+            stringValue = stringValue.Replace(dutchNumberFormatInfo.NumberGroupSeparator, "");
+            stringValue = stringValue.Replace(dutchNumberFormatInfo.NumberDecimalSeparator, ".");
+
+            // Parse the value using invariant culture to handle the normalized format
+            if (decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decimalValue))
             {
                 return decimalValue;
             }
 
-            // If parsing fails, return 0 or handle the error as appropriate
-            return 0m; // Or throw an exception if invalid
+            return 0m; // Or throw an exception if parsing fails
         }
     }
+
 }

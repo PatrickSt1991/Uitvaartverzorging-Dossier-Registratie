@@ -295,7 +295,7 @@ namespace Dossier_Registratie.ViewModels
             TevredenheidModel = new TevredenheidDocument();
             AangifteModel = new AangifteDocument();
             _generatingDocumentView = new GeneratingDocumentView();
-            VerlofTagContent = "Verlof Uploaden";
+            VerlofTagContent = "Verlof uploaden";
 
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand, CanExecuteSaveCommand);
             PreviousCommand = new ViewModelCommand(ExecutePreviousCommand);
@@ -370,7 +370,7 @@ namespace Dossier_Registratie.ViewModels
                 VerlofDossier.BijlageId = dossierStatus.BijlageId;
                 VerlofDossier.UitvaartId = dossierStatus.UitvaartId;
                 VerlofDossier.DocumentUrl = dossierStatus.DocumentUrl;
-                VerlofTagContent = "Verlof Openen";
+                VerlofTagContent = "Verlof openen";
             }
 
             var UitvaarLeiderResult = searchRepository.GetUitvaarleiderByUitvaartId(uitvaartNummer);

@@ -1124,8 +1124,9 @@ namespace Dossier_Registratie.Repositories
                 await connection.OpenAsync();
                 command.Connection = connection;
                 command.CommandText = "SELECT OUL.Uitvaartnummer AS UitvaartNummer, " +
-                                      "(CASE WHEN (overledeneTussenvoegsel IS NOT NULL) THEN CONCAT(overledeneAanhef,' ', overledeneTussenvoegsel, ' ', LEFT(overledeneVoornamen, 1), ' ', overledeneAchternaam) " +
-                                      "ELSE CONCAT(overledeneAanhef,' ', LEFT(overledeneVoornamen, 1), ' ',overledeneAchternaam) END) AS OverledeneNaam, " +
+                                      "overledeneAanhef, overledeneVoornamen," +
+                                      "(CASE WHEN (overledeneTussenvoegsel IS NOT NULL) THEN CONCAT(overledeneTussenvoegsel, ' ',overledeneAchternaam) " +
+                                      "ELSE overledeneAchternaam END) AS OverledeneAchternaam,  " +
                                       "(CASE WHEN (opdrachtgeverTussenvoegsel IS NOT NULL) THEN CONCAT(opdrachtgeverVoornaamen, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam) " +
                                       "ELSE CONCAT(opdrachtgeverVoornaamen, ' ',opdrachtgeverAchternaam) END) AS OpdrachtgeverNaam, " +
                                       "(CASE WHEN (opdrachtgeverHuisnummerToevoeging IS NOT NULL) THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer, ' ', opdrachtgeverHuisnummerToevoeging) " +
@@ -1145,12 +1146,15 @@ namespace Dossier_Registratie.Repositories
                         personalia = new KostenbegrotingInfoModel()
                         {
                             UitvaartNummer = reader[0].ToString(),
-                            OverledeneNaam = reader[1].ToString(),
-                            OpdrachtgeverNaam = reader[2].ToString(),
-                            OpdrachtgeverStraat = reader[3].ToString(),
-                            OpdrachtgeverPostcode = reader[4].ToString(),
-                            OpdrachtgeverWoonplaats = reader[5].ToString(),
-                            OverledenDatum = reader[6].ToString(),
+                            OverledeneAanhef = reader[1].ToString(),
+                            OverledeneVoornaam = reader[2].ToString(),
+                            OverledeneAchternaam = reader[3].ToString(),
+                            OverledeneNaam = string.Empty,
+                            OpdrachtgeverNaam = reader[4].ToString(),
+                            OpdrachtgeverStraat = reader[5].ToString(),
+                            OpdrachtgeverPostcode = reader[6].ToString(),
+                            OpdrachtgeverWoonplaats = reader[7].ToString(),
+                            OverledenDatum = reader[8].ToString(),
                         };
                     }
                 }

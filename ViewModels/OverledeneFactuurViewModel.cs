@@ -192,8 +192,12 @@ namespace Dossier_Registratie.ViewModels
                     _selectedVerzekeraar = value;
                     OnPropertyChanged(nameof(SelectedVerzekeraar));
                 }
+
+                IsExcelButtonEnabled = _selectedVerzekeraar != null && !string.IsNullOrEmpty(_selectedVerzekeraar.Name);
+                OnPropertyChanged(nameof(IsExcelButtonEnabled));
             }
         }
+
         public OverledeneUitvaartleiderModel InfoUitvaartleider
         {
             get
@@ -455,6 +459,7 @@ namespace Dossier_Registratie.ViewModels
                                 Aantal = pc.Aantal,
                                 OrgAantal = pc.OrgAantal,
                                 PmAmount = pc.PmAmount,
+                                PrintTrue = pc.PrintTrue,
                                 Verzekerd = !string.IsNullOrEmpty(pc.Aantal) && pc.Aantal != "0" ? "X" : "",
                                 Bedrag = pc.Bedrag,
                                 FactuurBedrag = pc.FactuurBedrag,
@@ -675,6 +680,7 @@ namespace Dossier_Registratie.ViewModels
                         Aantal = pc.Aantal,
                         OrgAantal = pc.Aantal,
                         PmAmount = pc.PmAmount,
+                        PrintTrue = pc.PrintTrue,
                         Verzekerd = !string.IsNullOrEmpty(pc.Aantal) && pc.Aantal != "0" ? "X" : "",
                         Bedrag = pc.Bedrag,
                         OrgBedrag = pc.Bedrag,
@@ -730,6 +736,7 @@ namespace Dossier_Registratie.ViewModels
                 OrgAantal = PriceComponents.LastOrDefault()?.OrgAantal,
                 Verzekerd = PriceComponents.LastOrDefault()?.Verzekerd,
                 Bedrag = PriceComponents.LastOrDefault()?.Bedrag,
+                PrintTrue = PriceComponents.LastOrDefault().PrintTrue,
                 FactuurBedrag = PriceComponents.LastOrDefault()?.FactuurBedrag,
                 OrgBedrag = PriceComponents.LastOrDefault()?.OrgBedrag,
                 Id = Guid.NewGuid() // Generate a unique identifier
@@ -741,9 +748,7 @@ namespace Dossier_Registratie.ViewModels
         public void ExecuteClosePopupCommand(object obj)
         {
             if (obj is Popup verzekeringPopup)
-            {
                 verzekeringPopup.IsOpen = false;
-            }
         }
         public void ExecuteOpenPopupCommand(object obj)
         {
@@ -790,9 +795,8 @@ namespace Dossier_Registratie.ViewModels
         private string EnsureTrailingSlash(string path)
         {
             if (!path.EndsWith(@"\"))
-            {
                 path += @"\";
-            }
+
             return path;
         }
         private string KostenbegrotingImages(string kbInput)
@@ -895,6 +899,16 @@ namespace Dossier_Registratie.ViewModels
                 picture.Placement = Excel.XlPlacement.xlMoveAndSize;
             }
 
+            string voorletters = string.Empty;
+            if (!string.IsNullOrEmpty(kostenbegrotingInfoResult.OverledeneVoornaam))
+            {
+                string[] words = kostenbegrotingInfoResult.OverledeneVoornaam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                voorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
+            }
+
+
+            kostenbegrotingInfoResult.OverledeneNaam = $"{kostenbegrotingInfoResult.OverledeneAanhef} {voorletters} {kostenbegrotingInfoResult.OverledeneAchternaam}";
 
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
 
@@ -912,36 +926,43 @@ namespace Dossier_Registratie.ViewModels
 
             foreach (var priceComponent in priceComponents)
             {
-                var aantalCell = (Excel.Range)worksheet.Cells[excelRow, 2];
+                if (priceComponent.PrintTrue || priceComponent.PmAmount ||
+                    (priceComponent.Bedrag.HasValue && priceComponent.Bedrag.Value != 0)
+                    || priceComponent.Verzekerd == "X" || priceComponent.Aantal != "0" )
+                {
+                    var aantalCell = (Excel.Range)worksheet.Cells[excelRow, 2];
 
-                aantalCell.Value = (int.TryParse(priceComponent.Aantal, out int aantal) && aantal > 1)
-                    ? $"Aantal: {priceComponent.Aantal}  {priceComponent.Omschrijving}"
-                    : priceComponent.Omschrijving;
+                    aantalCell.Value = (int.TryParse(priceComponent.Aantal, out int aantal) && aantal > 1)
+                        ? $"Aantal: {priceComponent.Aantal}  {priceComponent.Omschrijving}"
+                        : priceComponent.Omschrijving;
 
-                worksheet.Rows[excelRow].RowHeight = aantalCell.Value?.ToString().Length > 98 ? 36 : 15;
-                aantalCell.WrapText = aantalCell.Value?.ToString().Length > 98;
+                    worksheet.Rows[excelRow].RowHeight = aantalCell.Value?.ToString().Length > 98 ? 36 : 15;
+                    aantalCell.WrapText = aantalCell.Value?.ToString().Length > 98;
 
-                aantalCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
+                    aantalCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
-                var verzekerdOrPmCell = (Excel.Range)worksheet.Cells[excelRow, 7];
-                verzekerdOrPmCell.Value = priceComponent.PmAmount
-                    ? "pm"
-                    : (string.IsNullOrEmpty(priceComponent.Verzekerd)
-                    ? ""
-                    : priceComponent.Verzekerd);
+                    var verzekerdOrPmCell = (Excel.Range)worksheet.Cells[excelRow, 7];
+                    verzekerdOrPmCell.Value = priceComponent.PmAmount
+                        ? "pm"
+                        : (string.IsNullOrEmpty(priceComponent.Verzekerd)
+                        ? ""
+                        : priceComponent.Verzekerd);
 
-                worksheet.Cells[excelRow, 8] = priceComponent.Bedrag;
-                worksheet.Cells[excelRow, 8].NumberFormat = "€ #.##0,00";//"€ #,##0";
+                    worksheet.Cells[excelRow, 8] = priceComponent.Bedrag;
+                    //worksheet.Cells[excelRow, 8].NumberFormat = "€ #.##0,00";
+                    worksheet.Cells[excelRow, 8].NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+                    worksheet.Cells[excelRow, 8].HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
 
 
-                var mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 6]];
-                mergeRanges.Add(mergeRange);
+                    var mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 6]];
+                    mergeRanges.Add(mergeRange);
 
-                totalAmount += (double)priceComponent.Bedrag;
-                orgAmount += (double)priceComponent.OrgBedrag;
+                    totalAmount += (double)priceComponent.Bedrag;
+                    orgAmount += (double)priceComponent.OrgBedrag;
 
-                excelRow++;
-                worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                    excelRow++;
+                    worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                }
             }
 
             // Perform merging after the loop to minimize COM interactions
@@ -952,16 +973,19 @@ namespace Dossier_Registratie.ViewModels
             }
 
             worksheet.Cells[excelRow + 1, 8] = "-" + CalculatedSubtotal;
-            worksheet.Cells[excelRow + 1, 8].NumberFormat = "€ #.##0,00";// "€#,##0";
+            //worksheet.Cells[excelRow + 1, 8].NumberFormat = "€ #.##0,00";
+            worksheet.Cells[excelRow + 1, 8].NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             excelRow++;
             worksheet.Cells[excelRow + 1, 8] = totalAmount;
-            worksheet.Cells[excelRow + 1, 8].NumberFormat = "€ #.##0,00";// "€#,##0";
+            //worksheet.Cells[excelRow + 1, 8].NumberFormat = "€ #.##0,00";
+            worksheet.Cells[excelRow + 1, 8].NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             worksheet.Cells[excelRow + 5, 4] = kostenbegrotingInfoResult.OpdrachtgeverNaam;
             worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
             worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
             worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
+            worksheet.Cells[excelRow + 12, 2] = $"Dossier: {Globals.UitvaartCode}";
 
-            worksheet.PageSetup.PrintArea = $"A1:I{excelRow + 13},A{excelRow + 13}:I{excelRow + 82}";
+            worksheet.PageSetup.PrintArea = $"A1:I{excelRow + 18},A{excelRow + 19}:I{excelRow + 78}"; //82
 
             workbook.Close(true);
             excelApp.Quit();
