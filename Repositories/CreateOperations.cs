@@ -148,9 +148,9 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneUitvaartInfoMisc] ([Id],[UitvaartId],[RouwbrievenId],[AantalRouwbrieven],[AantalUitnodigingen],[AantalKennisgeving],[Advertenties],[UBS], AulaNaam, AantalPersonen) " +
+                command.CommandText = "INSERT INTO [OverledeneUitvaartInfoMisc] ([Id],[UitvaartId],[RouwbrievenId],[AantalRouwbrieven],[AantalUitnodigingen],[AantalKennisgeving],[Advertenties],[UBS], AulaNaam, AantalPersonen, BegraafplaatsGrafNr, BegraafplaatsLocatie) " +
                                         "VALUES (@id, @uitvaartid, @rouwbrievenid, @aantalrouwbrieven, @aantaluitnodiging, @aantalkennisgeving, @advertenties, @ubs, " +
-                                        "@aulanaam, @aulapersonen)";
+                                        "@aulanaam, @aulapersonen, @grafnummer, @begraafplaats)";
                 command.Parameters.AddWithValue("@id", uitvaartMisc.Id);
                 command.Parameters.AddWithValue("@uitvaartid", uitvaartMisc.UitvaartId);
                 command.Parameters.AddWithValue("@rouwbrievenid", uitvaartMisc.RouwbrievenId);
@@ -161,6 +161,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@ubs", uitvaartMisc.UBS != null ? uitvaartMisc.UBS : '0');
                 command.Parameters.AddWithValue("@aulanaam", uitvaartMisc.AulaNaam != null ? uitvaartMisc.AulaNaam : string.Empty);
                 command.Parameters.AddWithValue("@aulapersonen", uitvaartMisc.AulaPersonen != null ? uitvaartMisc.AulaPersonen : 0);
+                command.Parameters.AddWithValue("@grafnummer", uitvaartMisc.GrafNummer != null ? uitvaartMisc.GrafNummer : string.Empty);
+                command.Parameters.AddWithValue("@begraafplaats", uitvaartMisc.Begraafplaats != null ? uitvaartMisc.Begraafplaats : string.Empty);
                 if (command.ExecuteNonQuery() == 0)
                     throw new InvalidOperationException("InsertUitvaartMiscFailed");
             }

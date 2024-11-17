@@ -30,17 +30,17 @@
             <Button x:Name="lbl_SaveUitvaart" Command="{Binding Path=SaveCommand}" CommandParameter="VolgendeButton" Content="Volgende" Margin="1036,16,16,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="30" FontFamily="Arial" />
             <Button x:Name="lbl_Previous" Command="{Binding Path=PreviousCommand}" Content="Vorige" Margin="892,16,160,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="31" FontFamily="Arial" />
             <TextBox x:Name="view_AttendantIntake" Text="{Binding InfoUitvaartleider.PersoneelNaam}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="783,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial"/>
-            <ComboBox x:Name="input_UitvaartType" Text="{Binding OverledeneUitvaartModel.TypeDienst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="208,319,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="5" FontFamily="Arial">
+            <ComboBox x:Name="input_UitvaartType" Text="{Binding OverledeneUitvaartModel.TypeDienst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="208,290,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="5" FontFamily="Arial" SelectionChanged="input_UitvaartType_SelectionChanged">
                 <ComboBoxItem Name="begrafenis" Tag="begrafenis">Begrafenis</ComboBoxItem>
                 <ComboBoxItem Name="crematie" Tag="crematie">Crematie</ComboBoxItem>
             </ComboBox>
-            <Label x:Name="lbl_UitvaartType" Content="*Begrafenis / Crematie" HorizontalAlignment="Left" Margin="10,319,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_UitvaartType" Content="*Begrafenis / Crematie" HorizontalAlignment="Left" Margin="10,290,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <DatePicker x:Name="input_datumUitvaart" 
-            SelectedDate="{Binding OverledeneUitvaartModel.DatumUitvaart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" 
-            TabIndex="6" 
+            SelectedDate="{Binding OverledeneUitvaartModel.DatumUitvaart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+            TabIndex="10" 
             VerticalContentAlignment="Center" 
             HorizontalAlignment="Left" 
-            Margin="209,355,0,0" 
+            Margin="209,398,0,0" 
             Width="300" 
             Height="31" 
             FontSize="16" 
@@ -61,58 +61,58 @@
                 </DatePicker.Resources>
             </DatePicker>
 
-            <Label x:Name="lbl_datumUitvaart" Content="Datum Uitvaart" HorizontalAlignment="Left" Margin="10,355,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_datumUitvaart" Content="Datum Uitvaart" HorizontalAlignment="Left" Margin="10,398,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <materialDesign:TimePicker x:Name="input_tijdUitvaart" 
                             Is24Hours="True" 
                             Text="{Binding OverledeneUitvaartModel.TijdUitvaart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}" 
                             VerticalContentAlignment="Center" 
                             HorizontalAlignment="Left" 
-                            Margin="749,355,0,0" 
+                            Margin="749,398,0,0" 
                             VerticalAlignment="Top" 
                             Width="300" 
                             Height="32" 
                             FontSize="16" 
                             FontFamily="Arial" 
-                            TabIndex="7"/>
+                            TabIndex="11"/>
 
-            <Label x:Name="lbl_tijdUitvaart" Content="Tijdstip Uitvaart" HorizontalAlignment="Left" Margin="595,355,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_uitvaartLocatie" Text="{Binding OverledeneUitvaartModel.LocatieUitvaart,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="8" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,391,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
-            <Label x:Name="lbl_uitvaartLocatie" Content="*Uitvaart te" HorizontalAlignment="Left" Margin="10,391,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_dienstLocatie" Text="{Binding OverledeneUitvaartModel.LocatieDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="11" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,485,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
-            <Label x:Name="lbl_dienstLocatie" Content="*Dienst te" HorizontalAlignment="Left" Margin="10,485,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_tijdUitvaart" Content="Tijdstip Uitvaart" HorizontalAlignment="Left" Margin="595,398,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_uitvaartLocatie" Text="{Binding OverledeneUitvaartModel.LocatieUitvaart,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="12" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,434,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
+            <Label x:Name="lbl_uitvaartLocatie" Content="*Uitvaart te" HorizontalAlignment="Left" Margin="11,434,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_dienstLocatie" Text="{Binding OverledeneUitvaartModel.LocatieDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" TabIndex="13" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,545,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
+            <Label x:Name="lbl_dienstLocatie" Content="*Dienst te" HorizontalAlignment="Left" Margin="10,545,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <materialDesign:TimePicker x:Name="input_dienstTijdstip" 
                             Is24Hours="True" 
                             Text="{Binding OverledeneUitvaartModel.TijdDienst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}" 
                             VerticalContentAlignment="Center" 
                             HorizontalAlignment="Left" 
-                            Margin="754,521,0,0" 
+                            Margin="754,581,0,0" 
                             VerticalAlignment="Top" 
                             Width="295" 
                             Height="32" 
                             FontSize="16" 
                             FontFamily="Arial" 
-                            TabIndex="13"/>
+                            TabIndex="15"/>
 
-            <Label x:Name="lbl_dienstTijdstip" Content="Tijdstip Dienst" HorizontalAlignment="Left" Margin="595,521,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_kistMethode" Text="{Binding OverledeneUitvaartModel.KistDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="208,559,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="16" FontFamily="Arial">
+            <Label x:Name="lbl_dienstTijdstip" Content="Tijdstip Dienst" HorizontalAlignment="Left" Margin="595,581,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_kistMethode" Text="{Binding OverledeneUitvaartModel.KistDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=True}" HorizontalAlignment="Left" Margin="208,617,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="18" FontFamily="Arial">
                 <ComboBoxItem x:Name="daalt" Tag="daalt" Content="Daalt"/>
                 <ComboBoxItem x:Name="daaltTotMaaiveld" Tag="daaltTotMaaiveld" Content="Daalt tot het maaiveld"/>
                 <ComboBoxItem x:Name="kistGlijdtWeg" Tag="kistGlijdtWeg" Content="Kist glijdt weg"/>
                 <ComboBoxItem x:Name="gordijnenSluiten" Tag="gordijnenSluiten" Content="Gordijnen sluiten"/>
                 <ComboBoxItem x:Name="blijftStaan" Tag="blijft staan" Content="Blijft staan"/>
             </ComboBox>
-            <Label x:Name="lbl_kistMethode" Content="*Kist staan / dalen" HorizontalAlignment="Left" Margin="10,559,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_afscheidNemen" Text="{Binding OverledeneUitvaartModel.AfscheidDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="754,559,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="17" FontFamily="Arial">
+            <Label x:Name="lbl_kistMethode" Content="*Kist staan / dalen" HorizontalAlignment="Left" Margin="10,612,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_afscheidNemen" Text="{Binding OverledeneUitvaartModel.AfscheidDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=True}" HorizontalAlignment="Left" Margin="754,617,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="19" FontFamily="Arial">
                 <ComboBoxItem x:Name="jafscheid" Tag="jafscheid" Content="Ja"/>
                 <ComboBoxItem x:Name="neefscheid" Tag="neeAfscheid" Content="Nee"/>
             </ComboBox>
-            <Label x:Name="lbl_afscheidNemen" Content="*Afscheid nemen" HorizontalAlignment="Left" Margin="595,559,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_beslotenKring" Text="{Binding OverledeneUitvaartModel.BeslotenDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="754,595,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="19" FontFamily="Arial">
+            <Label x:Name="lbl_afscheidNemen" Content="*Afscheid nemen" HorizontalAlignment="Left" Margin="595,617,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_beslotenKring" Text="{Binding OverledeneUitvaartModel.BeslotenDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="754,653,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="21" FontFamily="Arial">
                 <ComboBoxItem x:Name="jaBesloten" Tag="jaBesloten" Content="Ja"/>
                 <ComboBoxItem x:Name="neeBesloten" Tag="neeBesloten" Content="Nee"/>
             </ComboBox>
-            <Label x:Name="lbl_beslotenKring" Content="*Besloten kring" HorizontalAlignment="Left" Margin="595,595,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_aantalVolgAuto" Text="{Binding OverledeneUitvaartModel.VolgAutoDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="208,595,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="18" FontFamily="Arial" >
+            <Label x:Name="lbl_beslotenKring" Content="*Besloten kring" HorizontalAlignment="Left" Margin="595,653,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_aantalVolgAuto" Text="{Binding OverledeneUitvaartModel.VolgAutoDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=True}" HorizontalAlignment="Left" Margin="208,653,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="20" FontFamily="Arial" >
                 <ComboBoxItem x:Name="auto00" Tag="auto00" Content="0"/>
                 <ComboBoxItem x:Name="auto01" Tag="auto01" Content="1"/>
                 <ComboBoxItem x:Name="auto02" Tag="auto02" Content="2"/>
@@ -125,15 +125,15 @@
                 <ComboBoxItem x:Name="auto09" Tag="auto09" Content="9"/>
                 <ComboBoxItem x:Name="auto10" Tag="auto10" Content="10"/>
             </ComboBox>
-            <Label x:Name="lbl_aantalVolgAuto" Content="*Aantal volgauto's" HorizontalAlignment="Left" Margin="10,595,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_consumpties" Text="{Binding OverledeneUitvaartModel.ConsumptiesDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="22" HorizontalAlignment="Left" Margin="210,676,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="115" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
-            <Label x:Name="lbl_consumpties" Content="Consumpties" HorizontalAlignment="Left" Margin="11,676,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_aantalVolgAuto" Content="*Aantal volgauto's" HorizontalAlignment="Left" Margin="9,648,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_consumpties" Text="{Binding OverledeneUitvaartModel.ConsumptiesDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="24" HorizontalAlignment="Left" Margin="208,720,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="80" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
+            <Label x:Name="lbl_consumpties" Content="Consumpties" HorizontalAlignment="Left" Margin="10,720,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <DatePicker x:Name="input_datumDienst" 
-            SelectedDate="{Binding OverledeneUitvaartModel.DatumDienst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" 
-            TabIndex="12" 
+            SelectedDate="{Binding OverledeneUitvaartModel.DatumDienst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+            TabIndex="14" 
             VerticalContentAlignment="Center" 
             HorizontalAlignment="Left" 
-            Margin="209,521,0,0" 
+            Margin="208,581,0,0" 
             Width="300" 
             Height="31" 
             FontSize="16" 
@@ -154,8 +154,8 @@
                 </DatePicker.Resources>
             </DatePicker>
 
-            <Label x:Name="lbl_datumUitvaart_Copy" Content="Datum Dienst" HorizontalAlignment="Left" Margin="10,521,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <Rectangle Height="1" Margin="10,300,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+            <Label x:Name="lbl_datumUitvaart_Copy" Content="Datum Dienst" HorizontalAlignment="Left" Margin="10,581,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Rectangle Height="1" Margin="10,284,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleY="-1"/>
@@ -165,8 +165,8 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <Label x:Name="lbl_uitvaartInfo" Content="Uitvaart informatie" HorizontalAlignment="Left" Margin="10,273,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
-            <Rectangle Height="1" Margin="10,470,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+            <Label x:Name="lbl_uitvaartInfo" Content="Uitvaart informatie" HorizontalAlignment="Left" Margin="10,257,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
+            <Rectangle Height="1" Margin="10,531,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleY="-1"/>
@@ -176,9 +176,9 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <Label x:Name="lbl_uitvaartInfo_Copy" Content="Dienst informatie" HorizontalAlignment="Left" Margin="10,443,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
-            <TextBox x:Name="input_muziek" Text="{Binding OverledeneUitvaartModel.MuziekDienst,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="23" HorizontalAlignment="Left" Margin="210,796,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="115" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
-            <Label x:Name="lbl_muziek" Content="*Muziekstuk" HorizontalAlignment="Left" Margin="10,796,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_uitvaartInfo_Copy" Content="Dienst informatie" HorizontalAlignment="Left" Margin="10,504,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
+            <TextBox x:Name="input_muziek" Text="{Binding OverledeneUitvaartModel.MuziekDienst,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=True}" TabIndex="25" HorizontalAlignment="Left" Margin="210,805,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="80" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
+            <Label x:Name="lbl_muziek" Content="*Muziekstuk" HorizontalAlignment="Left" Margin="10,805,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <Rectangle Height="1" Margin="10,113,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -191,7 +191,7 @@
             </Rectangle>
             <Label x:Name="lbl_CondoleanceInfo" Content="Condoleance informatie" HorizontalAlignment="Left" Margin="10,86,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
             <DatePicker x:Name="input_DatumCondoleance" 
-            SelectedDate="{Binding OverledeneUitvaartModel.DatumCondoleance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" 
+            SelectedDate="{Binding OverledeneUitvaartModel.DatumCondoleance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
             TabIndex="2" 
             VerticalContentAlignment="Center" 
             HorizontalAlignment="Left" 
@@ -231,20 +231,20 @@
                             TabIndex="3"/>
 
             <Label x:Name="lbl_TijdCondoleance" Content="Tijdstip Condoleance" HorizontalAlignment="Left" Margin="584,162,0,0" VerticalAlignment="Top" Height="31" Width="166" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_ConsumptiesCondoleance" Text="{Binding OverledeneUitvaartModel.ConsumptiesCondoleance}" TabIndex="4" HorizontalAlignment="Left" Margin="210,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="70" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
+            <TextBox x:Name="input_ConsumptiesCondoleance" Text="{Binding OverledeneUitvaartModel.ConsumptiesCondoleance}" TabIndex="4" HorizontalAlignment="Left" Margin="210,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="840" Height="50" FontSize="16" SelectionBrush="Red" FontFamily="Arial" AcceptsReturn="True"/>
             <Label x:Name="lbl_ConsumptiesCondoleace" Content="Consumpties" HorizontalAlignment="Left" Margin="10,202,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="cb_CondoleanceYesNo" Text="{Binding OverledeneUitvaartModel.CondoleanceYesNo, Mode=TwoWay, NotifyOnValidationError=False, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true}" HorizontalAlignment="Left" Margin="210,126,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="1" FontFamily="Arial">
+            <ComboBox x:Name="cb_CondoleanceYesNo" Text="{Binding OverledeneUitvaartModel.CondoleanceYesNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="210,126,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="1" FontFamily="Arial">
                 <ComboBoxItem x:Name="jaCondoleance" Tag="Ja" Content="Ja"/>
                 <ComboBoxItem x:Name="neeCondoleance" Tag="Nee" Content="Nee"/>
             </ComboBox>
             <Label x:Name="lbl_CondoleanceYesNo" Content="Condoleance" HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_Spreker" Text="{Binding OverledeneUitvaartModel.Spreker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="20" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,631,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
-            <Label x:Name="lbl_Spreker" Content="Spreker" HorizontalAlignment="Left" Margin="10,631,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_PowerPoint" Text="{Binding OverledeneUitvaartModel.PowerPoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="754,631,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="21" FontFamily="Arial">
+            <TextBox x:Name="input_Spreker" Text="{Binding OverledeneUitvaartModel.Spreker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TabIndex="22" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,689,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" Height="31" FontSize="16" SelectionBrush="Red" FontFamily="Arial"/>
+            <Label x:Name="lbl_Spreker" Content="Spreker" HorizontalAlignment="Left" Margin="10,684,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
+            <ComboBox x:Name="input_PowerPoint" Text="{Binding OverledeneUitvaartModel.PowerPoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="754,689,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="23" FontFamily="Arial">
                 <ComboBoxItem x:Name="jaPpt" Tag="jaPpt" Content="Ja"/>
                 <ComboBoxItem x:Name="neePpt" Tag="neePpt" Content="Nee"/>
             </ComboBox>
-            <Label x:Name="lbl_PowerPoint" Content="PowerPoint" HorizontalAlignment="Left" Margin="595,631,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_PowerPoint" Content="PowerPoint" HorizontalAlignment="Left" Margin="595,689,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <Rectangle Height="1" Margin="10,962,9,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -270,15 +270,15 @@
             <Label x:Name="lbl_rouwbriefUitnodiging" Content="Waarvan uitnodigingen" HorizontalAlignment="Left" Margin="11,1053,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_kennisgevingAantal" Text="{Binding OverledeneMisc.AantalKennisgeving, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="210,1087,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="28" FontFamily="Arial" VerticalContentAlignment="Center"/>
             <Label x:Name="lbl_kennisgeving" Content="Waarvan kennisgeving" HorizontalAlignment="Left" Margin="11,1089,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_aulaNaam" Text="{Binding OverledeneMisc.AulaNaam, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="1235,319,0,0" VerticalAlignment="Top" Width="302" Height="67" FontSize="16" TabIndex="9" FontFamily="Arial" VerticalContentAlignment="Center" AcceptsReturn="True" TextWrapping="Wrap"/>
-            <Label x:Name="lbl_AulaNaam" Content="Aula (Naam)" HorizontalAlignment="Left" Margin="1081,319,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_aulaPersonen" Text="{Binding OverledeneMisc.AulaPersonen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="1235,391,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="10" FontFamily="Arial" VerticalContentAlignment="Center"/>
-            <Label x:Name="lbl_AulaPersonen" Content="Aantal personen" HorizontalAlignment="Left" Margin="1081,391,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_aulaNaam" Text="{Binding OverledeneMisc.AulaNaam, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="210,326,0,0" VerticalAlignment="Top" Width="302" Height="30" FontSize="16" TabIndex="7" FontFamily="Arial" VerticalContentAlignment="Center" AcceptsReturn="True" TextWrapping="Wrap"/>
+            <Label x:Name="lbl_AulaNaam" Content="Aula (Naam)" HorizontalAlignment="Left" Margin="11,326,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <TextBox x:Name="input_aulaPersonen" Text="{Binding OverledeneMisc.AulaPersonen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="209,362,0,0" VerticalAlignment="Top" Width="302" Height="30" FontSize="16" TabIndex="8" FontFamily="Arial" VerticalContentAlignment="Center"/>
+            <Label x:Name="lbl_AulaPersonen" Content="Aantal personen" HorizontalAlignment="Left" Margin="10,362,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <ComboBox x:Name="input_aantalBloken"
           SelectedValue="{Binding OverledeneUitvaartModel.AantalTijdsBlokken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
           SelectedValuePath="Content"
-          HorizontalAlignment="Left" Margin="1240,522,0,0" VerticalAlignment="Top" Width="48" Height="31"
-          FontSize="16" TabIndex="14" FontFamily="Arial">
+          HorizontalAlignment="Left" Margin="1240,581,0,0" VerticalAlignment="Top" Width="48" Height="31"
+          FontSize="16" TabIndex="16" FontFamily="Arial">
                 <ComboBoxItem Content="1"/>
                 <ComboBoxItem Content="2"/>
                 <ComboBoxItem Content="3"/>
@@ -289,17 +289,21 @@
                 <ComboBoxItem Content="8"/>
                 <ComboBoxItem Content="9"/>
             </ComboBox>
-            <Label x:Name="lbl_afscheidNemen_Copy" Content="Tijds blokken" HorizontalAlignment="Left" Margin="1081,522,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
+            <Label x:Name="lbl_afscheidNemen_Copy" Content="Tijds blokken" HorizontalAlignment="Left" Margin="1081,581,0,0" VerticalAlignment="Top" Height="31" Width="154" FontFamily="Arial" FontSize="16"/>
             <ComboBox x:Name="input_aantalTijdsBloken" 
                       SelectedValue="{Binding OverledeneUitvaartModel.TijdBlokken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                       SelectedValuePath="Content"
-                      HorizontalAlignment="Left" Margin="1322,522,0,0" VerticalAlignment="Top" Width="56" Height="31" FontSize="16" TabIndex="15" FontFamily="Arial">
+                      HorizontalAlignment="Left" Margin="1322,581,0,0" VerticalAlignment="Top" Width="56" Height="31" FontSize="16" TabIndex="17" FontFamily="Arial">
                 <ComboBoxItem Content="15"/>
                 <ComboBoxItem Content="30"/>
                 <ComboBoxItem Content="45"/>
                 <ComboBoxItem Content="60"/>
             </ComboBox>
-            <Label x:Name="x" Content="x" HorizontalAlignment="Left" Margin="1293,522,0,0" VerticalAlignment="Top" Height="31" Width="24" FontFamily="Arial" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom"/>
+            <Label x:Name="x" Content="x" HorizontalAlignment="Left" Margin="1293,581,0,0" VerticalAlignment="Top" Height="31" Width="24" FontFamily="Arial" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom"/>
+            <TextBox d:Visibility="Visible" Visibility="{Binding IsBegrafenisVisable}" x:Name="input_GrafNummer" Text="{Binding OverledeneMisc.GrafNummer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="749,367,0,0" VerticalAlignment="Top" Width="302" Height="30" FontSize="16" TabIndex="9" FontFamily="Arial" VerticalContentAlignment="Center"/>
+            <Label d:Visibility="Visible" Visibility="{Binding IsBegrafenisVisable}" x:Name="lbl_GrafNummer" Content="Graf nummer" HorizontalAlignment="Left" Margin="595,367,0,0" VerticalAlignment="Top" Height="31" Width="149" FontFamily="Arial" FontSize="16"/>
+            <TextBox d:Visibility="Visible" Visibility="{Binding IsBegrafenisVisable}" x:Name="input_GrafLocatie" Text="{Binding OverledeneMisc.Begraafplaats, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="749,290,0,0" VerticalAlignment="Top" Width="302" Height="71" FontSize="16" TabIndex="6" FontFamily="Arial" VerticalContentAlignment="Top" AcceptsReturn="True"/>
+            <Label d:Visibility="Visible" Visibility="{Binding IsBegrafenisVisable}" x:Name="lbl_GrafLocatie" Content="Begraafplaats" HorizontalAlignment="Left" Margin="595,290,0,0" VerticalAlignment="Top" Height="31" Width="149" FontFamily="Arial" FontSize="16"/>
         </Grid>
     </ScrollViewer>
 </UserControl>

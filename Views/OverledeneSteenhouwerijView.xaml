@@ -41,7 +41,7 @@
                         </Grid.RowDefinitions>
                         <TextBox x:Name="input_MoneyStone" Text="{Binding SteenhouwerijModel.SteenhouwerBedrag,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Height="32" FontSize="16" TabIndex="3" FontFamily="Arial"/>
                         <Label x:Name="lbl_OpbaringLocatie" Content="Bedrag" HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top" Height="32" Width="147" FontFamily="Arial" FontSize="16"/>
-                        <TextBox x:Name="input_DescriptionStone" Text="{Binding SteenhouwerijModel.SteenhouwerText,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="162,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="957" Height="82" FontSize="16" TabIndex="2" FontFamily="Arial" AcceptsReturn="True"/>
+                        <TextBox x:Name="input_DescriptionStone" Text="{Binding SteenhouwerijModel.SteenhouwerText,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=True}" HorizontalAlignment="Left" Margin="162,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="957" Height="82" FontSize="16" TabIndex="2" FontFamily="Arial" AcceptsReturn="True"/>
                         <Label x:Name="lbl_DiscriptionKist" Content="*Omschrijving" HorizontalAlignment="Left" Margin="10,33,0,0" VerticalAlignment="Top" Height="32" Width="147" FontFamily="Arial" FontSize="16"/>
                         <TextBox x:Name="input_ProvisieStone" Text="{Binding SteenhouwerijModel.SteenhouwerProvisie,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,157,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Height="32" FontSize="16" TabIndex="4" FontFamily="Arial" Visibility="Hidden"/>
                         <Label x:Name="lbl_ProvisieStone" Content="Provisie" HorizontalAlignment="Left" Margin="10,157,0,0" VerticalAlignment="Top" Height="32" Width="147" FontFamily="Arial" FontSize="16" Visibility="Hidden"/>
@@ -59,12 +59,12 @@
                             </DatePicker.Resources>
                         </DatePicker>
                         <Label x:Name="lbl_PaymentDateStone" Content="Uitbetaling" HorizontalAlignment="Left" Margin="10,194,0,0" VerticalAlignment="Top" Height="32" Width="147" FontFamily="Arial" FontSize="16" Visibility="Hidden"/>
-                        <ComboBox x:Name="input_StoneSupplier" ItemsSource="{Binding LeveranciersSteen}" SelectedValuePath="LeverancierId" SelectedValue="{Binding SteenhouwerijModel.SteenhouwerLeverancier,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="LeverancierName" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="597,120,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="6" FontFamily="Arial" />
+                        <ComboBox x:Name="input_StoneSupplier" ItemsSource="{Binding LeveranciersSteen, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=True}" SelectedValuePath="LeverancierId" SelectedValue="{Binding SteenhouwerijModel.SteenhouwerLeverancier,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="LeverancierName" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="597,120,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="6" FontFamily="Arial" />
                         <Label x:Name="lbl_StoneSupplier" Content="*Leverancier" HorizontalAlignment="Left" Margin="462,120,0,0" VerticalAlignment="Top" Height="31" Width="130" FontFamily="Arial" FontSize="16"/>
                         <ComboBox x:Name="cb_PersonViewPayment" ItemsSource="{Binding WerknemerOverzicht}" SelectedValuePath="Id" SelectedValue="{Binding SelectedSteenhouwerEmployeeId}" DisplayMemberPath="VolledigeNaam" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,226,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="7" FontFamily="Arial" />
                         <Label x:Name="lbl_PersonViewPayment" Content="Persoon overzicht" HorizontalAlignment="Left" Margin="10,226,0,0" VerticalAlignment="Top" Height="31" Width="147" FontFamily="Arial" FontSize="16"/>
                         <Label Content="Overzicht weergave" HorizontalAlignment="Left" Margin="10,190,0,0" VerticalAlignment="Top" Width="1144" BorderThickness="0,0,0,1" BorderBrush="Black"/>
-                        <Button x:Name="btn_SaveSteenhouwerij" Command="{Binding SaveSteenCommand}" Content="Opslaan Steenhouwerij" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="57" FontFamily="Arial" Margin="1000,225,0,0" FontSize="12" HorizontalAlignment="Left" />
+                        <Button x:Name="btn_SaveSteenhouwerij" Command="{Binding SaveSteenCommand}" Content="Opslaan Steenhouwerij" VerticalAlignment="Top" Height="31" Width="138" TabIndex="57" FontFamily="Arial" Margin="981,121,0,0" FontSize="12" HorizontalAlignment="Left" />
                         <DataGrid Grid.Row="1" ItemsSource="{Binding WerknemerSteenhouwerOverzicht}" IsReadOnly="True" AutoGenerateColumns="False" Margin="10,0,10,0">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Uitvaartnummer" Binding="{Binding UitvaartNummer}" Width="Auto" />
@@ -198,7 +198,7 @@
                         <ComboBox x:Name="cb_PersonViewPaymentUrn" ItemsSource="{Binding WerknemerOverzicht}" SelectedValuePath="Id" SelectedValue="{Binding SelectedUrnSieradenEmployeeId}" DisplayMemberPath="VolledigeNaam" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="162,226,0,0" VerticalAlignment="Top" Width="295" Height="31" FontSize="16" TabIndex="7" FontFamily="Arial" />
                         <Label x:Name="lbl_PersonViewPaymentUrn" Content="Persoon overzicht" HorizontalAlignment="Left" Margin="10,226,0,0" VerticalAlignment="Top" Height="31" Width="147" FontFamily="Arial" FontSize="16"/>
                         <Label Content="Overzicht weergave" HorizontalAlignment="Left" Margin="10,190,0,0" VerticalAlignment="Top" Width="1144" BorderThickness="0,0,0,1" BorderBrush="Black"/>
-                        <Button x:Name="btn_SaveUrn" Command="{Binding SaveUrnSieradenCommand}" Content="Opslaan Urn en Sieraden" VerticalAlignment="Top" Height="31" TabIndex="57" FontFamily="Arial" Margin="985,225,0,0" FontSize="12" HorizontalAlignment="Left" Width="153" />
+                        <Button x:Name="btn_SaveUrn" Command="{Binding SaveUrnSieradenCommand}" Content="Opslaan Urn en Sieraden" VerticalAlignment="Top" Height="31" TabIndex="57" FontFamily="Arial" Margin="985,119,0,0" FontSize="12" HorizontalAlignment="Left" Width="153" />
                         <DataGrid Grid.Row="1" ItemsSource="{Binding WerknemerUrnSieradenOverzicht}" IsReadOnly="True" AutoGenerateColumns="False" Margin="10,0,10,0">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Uitvaartnummer" Binding="{Binding UitvaartNummer}" Width="Auto" />
@@ -251,8 +251,8 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Button x:Name="btn_SaveWerkbon" Command="{Binding SaveWerkbonCommand}" Content="Opslaan Werkbonnen" VerticalAlignment="Top" Height="31" Width="138" TabIndex="57" FontFamily="Arial" Margin="984,-39,0,0" FontSize="12" HorizontalAlignment="Left" />
-                        <Button x:Name="btn_PrintWerkbon" Command="{Binding PrintWerkbonCommand}" Visibility="{Binding WerkbonPrintButtonVisable}" Content="Werkbonnen Printen" VerticalAlignment="Top" Height="31" Width="138" TabIndex="57" FontFamily="Arial" Margin="1150,-39,0,0" FontSize="12" HorizontalAlignment="Left" />
+                        <Button x:Name="btn_SaveWerkbon" Command="{Binding SaveWerkbonCommand}" Content="Opslaan Werkbonnen" VerticalAlignment="Top" Height="31" Width="138" TabIndex="57" FontFamily="Arial" Margin="984,10,0,0" FontSize="12" HorizontalAlignment="Left" />
+                        <Button x:Name="btn_PrintWerkbon" Command="{Binding PrintWerkbonCommand}" Visibility="{Binding WerkbonPrintButtonVisable}" Content="Werkbonnen Printen" VerticalAlignment="Top" Height="31" Width="138" TabIndex="57" FontFamily="Arial" Margin="1150,10,0,0" FontSize="12" HorizontalAlignment="Left" />
                     </Grid>
                 </TabItem>
             </TabControl>

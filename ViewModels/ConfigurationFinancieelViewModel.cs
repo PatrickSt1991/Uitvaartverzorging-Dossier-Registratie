@@ -1463,7 +1463,7 @@ namespace Dossier_Registratie.ViewModels
 
             Excel.Range currencyCellTotal = worksheet.Cells[excelRow, 8];
             currencyCellTotal.Value = subtotalAmount;
-            currencyCellTotal.NumberFormat = "€ #,##0.00";
+            currencyCellTotal.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
             currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
             currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
@@ -1510,7 +1510,7 @@ namespace Dossier_Registratie.ViewModels
 
                     Excel.Range currencyCell = worksheet.Cells[excelRow, 8];
                     currencyCell.Value = polis.PolisBedrag;
-                    currencyCell.NumberFormat = "€ #,##0.00";
+                    currencyCell.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
                     ;
                     if (double.TryParse(polis.PolisBedrag, out double doubleValue))
                     {
@@ -1538,7 +1538,7 @@ namespace Dossier_Registratie.ViewModels
 
             Excel.Range currencyTotaalMinderingCell = worksheet.Cells[excelRow, 8];
             currencyTotaalMinderingCell.Value = minderingAmount;
-            currencyTotaalMinderingCell.NumberFormat = "€ #,##0.00";
+            currencyTotaalMinderingCell.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
             currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
             currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
@@ -1562,7 +1562,7 @@ namespace Dossier_Registratie.ViewModels
 
             Excel.Range currencyTotaalCell = worksheet.Cells[excelRow, 8];
             currencyTotaalCell.Value = totalAmount;
-            currencyTotaalCell.NumberFormat = "€ #,##0.00";
+            currencyTotaalCell.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             worksheet.Rows[excelRow].Font.Bold = true;
 
             excelRow++;

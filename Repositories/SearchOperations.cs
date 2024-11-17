@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -567,7 +566,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT Id, UitvaartId, RouwbrievenId, AantalRouwbrieven, Advertenties, UBS, AantalUitnodigingen, " +
-                                        "AantalKennisgeving, AulaNaam, AantalPersonen " +
+                                        "AantalKennisgeving, AulaNaam, AantalPersonen, BegraafplaatsLocatie, BegraafplaatsGrafNr " +
                                         "FROM [OverledeneUitvaartInfoMisc] WHERE UitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
                 using (var reader = command.ExecuteReader())
@@ -585,7 +584,9 @@ namespace Dossier_Registratie.Repositories
                             AantalUitnodigingen = reader[6].ToString(),
                             AantalKennisgeving = reader[7].ToString(),
                             AulaNaam = reader[8].ToString(),
-                            AulaPersonen = (int)reader[9]
+                            AulaPersonen = (int)reader[9],
+                            Begraafplaats = reader[10].ToString(),
+                            GrafNummer = reader[11].ToString()
                         };
                     }
                 }
@@ -1186,13 +1187,13 @@ namespace Dossier_Registratie.Repositories
                                         "OPG.overledeneAanhef, OPG.overledeneVoornamen, OPG.overledeneTussenvoegsel, OPG.overledeneAchternaam, CAST(OI.overledenDatumTijd AS DATE) AS OverledeneOpDatum, OI.overledenLidnummer, OVI.verzekeringProperties, " +
                                         "CV.factuurType, CV.addressStreet, CV.addressHousenumber, CV.addressHousenumberAddition, CV.postbusAddress, CV.postbusNaam, CV.addressZipcode, CV.addressCity, CV.correspondentieType, CV.verzekeraarNaam," +
                                         "overledeneVoorregeling " +
-                                        "FROM [OverledeneFacturen] AS OFA " +
+                                        "FROM [OverledeneFacturen] OFA " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
-                                        "INNER JOINOverledenePersoonsGegevens AS OPG ON OFA.uitvaartId = OPG.uitvaartId " +
-                                        "LEFT JOIN[OverledeneOpdrachtgever] AS OO ON OO.uitvaartId = OFA.uitvaartId " +
-                                        "INNER JOIN[OverledeneOverlijdenInfo] AS OI ON OI.uitvaartId = OFA.uitvaartId " +
-                                        "INNER JOINOverledeneVerzerkeringInfo AS OVI ON OVI.uitvaartId = OFA.uitvaartId " +
-                                        "LEFT JOIN [ConfigurationVerzekeraar] AS CV ON CV.Id = OI.overledenHerkomst " +
+                                        "INNER JOIN OverledenePersoonsGegevens OPG ON OFA.uitvaartId = OPG.uitvaartId " +
+                                        "LEFT JOIN [OverledeneOpdrachtgever] OO ON OO.uitvaartId = OFA.uitvaartId " +
+                                        "INNER JOIN [OverledeneOverlijdenInfo] OI ON OI.uitvaartId = OFA.uitvaartId " +
+                                        "INNER JOIN OverledeneVerzerkeringInfo OVI ON OVI.uitvaartId = OFA.uitvaartId " +
+                                        "LEFT JOIN [ConfigurationVerzekeraar] CV ON CV.Id = OI.overledenHerkomst " +
                                         "WHERE OPG.uitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
                 using (var reader = command.ExecuteReader())

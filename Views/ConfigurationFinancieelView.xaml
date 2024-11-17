@@ -9,7 +9,8 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:Background="White"
+             d:DesignHeight="750" d:DesignWidth="1000">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helper:StringNullOrEmptyConverter x:Key="StringNullOrEmptyConverter" />

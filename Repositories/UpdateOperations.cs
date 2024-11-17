@@ -174,7 +174,9 @@ namespace Dossier_Registratie.Repositories
                                         "[Advertenties] = @advertenties, " +
                                         "[UBS] = @ubs, " +
                                         "[AulaNaam] = @aulanaam, " +
-                                        "[AantalPersonen] = @aantalpersonen " +
+                                        "[AantalPersonen] = @aantalpersonen, " +
+                                        "[BegraafplaatsLocatie] = @begraafplaats, " +
+                                        "[BegraafplaatsGrafNr] = @grafnummer " +
                                         "WHERE [UitvaartId] = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", uitvaartMisc.UitvaartId);
                 command.Parameters.AddWithValue("@aantalrouwbrieven", uitvaartMisc.AantalRouwbrieven != null ? uitvaartMisc.AantalRouwbrieven : string.Empty);
@@ -184,6 +186,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@ubs", uitvaartMisc.UBS != null ? uitvaartMisc.UBS : '0');
                 command.Parameters.AddWithValue("@aulanaam", uitvaartMisc.AulaNaam != null ? uitvaartMisc.AulaNaam : string.Empty);
                 command.Parameters.AddWithValue("@aantalpersonen", uitvaartMisc.AulaPersonen != null ? uitvaartMisc.AulaPersonen : 0);
+                command.Parameters.AddWithValue("@begraafplaats", uitvaartMisc.Begraafplaats != null ? uitvaartMisc.Begraafplaats : string.Empty);
+                command.Parameters.AddWithValue("@grafnummer", uitvaartMisc.GrafNummer != null ? uitvaartMisc.GrafNummer : string.Empty);
                 if (command.ExecuteNonQuery() == 0)
                     throw new InvalidOperationException("UpdateUitvaartMiscFailed");
             }

@@ -31,7 +31,7 @@
             <TextBox x:Name="view_AttendantIntake" Text="{Binding InfoUitvaartleider.PersoneelNaam}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="783,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="336" Height="31" FontSize="16" IsEnabled="False" FontFamily="Arial"/>
             <ComboBox x:Name="input_KistType" DisplayMemberPath="KistTypeNummer" ItemsSource="{Binding UitvaartKisten}" SelectedValuePath="Id" SelectedValue="{Binding OverledeneOpbarenModel.OpbaringKistId, Mode=TwoWay}" SelectedItem="{Binding SelectedKist, Mode=TwoWay}" HorizontalAlignment="Left" Margin="208,122,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="2" FontFamily="Arial" />
             <Label x:Name="lbl_KistType" Content="Soort kist" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_OpbaringLocatie" Text="{Binding OverledeneOpbarenModel.OpbaringLocatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,85,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="32" FontSize="16" TabIndex="1" FontFamily="Arial"/>
+            <TextBox x:Name="input_OpbaringLocatie" Text="{Binding OverledeneOpbarenModel.OpbaringLocatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,85,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="32" FontSize="16" TabIndex="1" FontFamily="Arial"/>
             <Label x:Name="lbl_OpbaringLocatie" Content="Opbaring te" HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_DiscriptionKist" Text="{Binding SelectedKist.KistOmschrijving}" HorizontalAlignment="Left" Margin="208,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="82" FontSize="16" TabIndex="3" FontFamily="Arial" AcceptsReturn="True"/>
             <Label x:Name="lbl_DiscriptionKist" Content="Omschrijving kist" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
@@ -79,29 +79,29 @@
             <Label x:Name="lbl_ClothingBack" Content="Kleding retour" HorizontalAlignment="Left" Margin="10,533,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
             <Label x:Name="lbl_Sieraden" Content="Sieraden " HorizontalAlignment="Left" Margin="10,587,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
             <Label x:Name="lbl_SieradenRetour" Content="Sieraden retour" HorizontalAlignment="Left" Margin="10,759,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_DiscriptionSieraden" Text="{Binding OverledeneOpbarenModel.OpbaringSieradenOmschrijving, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="208,625,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="117" FontSize="16" TabIndex="9" FontFamily="Arial" AcceptsReturn="True"/>
+            <TextBox x:Name="input_DiscriptionSieraden" Text="{Binding OverledeneOpbarenModel.OpbaringSieradenOmschrijving, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="208,625,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="117" FontSize="16" TabIndex="9" FontFamily="Arial" AcceptsReturn="True"/>
             <Label x:Name="lbl_SieradenOmschrijving" Content="Sieraden omschrijving" HorizontalAlignment="Left" Margin="10,625,0,0" VerticalAlignment="Top" Height="32" Width="194" FontFamily="Arial" FontSize="16"/>
-            <ComboBox x:Name="input_Koelvoorziening" Text="{Binding OverledeneOpbarenModel.OpbaringKoeling, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,454,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="5" FontFamily="Arial" >
+            <ComboBox x:Name="input_Koelvoorziening" Text="{Binding OverledeneOpbarenModel.OpbaringKoeling, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,454,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="5" FontFamily="Arial" >
                 <ComboBoxItem Content="Ja"/>
                 <ComboBoxItem Content="Nee"/>
                 <ComboBoxItem Content="Onbekend"/>
             </ComboBox>
-            <ComboBox x:Name="input_KledingAanwezig" Text="{Binding OverledeneOpbarenModel.OpbaringKledingMee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,500,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="6" FontFamily="Arial" >
+            <ComboBox x:Name="input_KledingAanwezig" Text="{Binding OverledeneOpbarenModel.OpbaringKledingMee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,500,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="6" FontFamily="Arial" >
                 <ComboBoxItem Content="Ja"/>
                 <ComboBoxItem Content="Nee"/>
                 <ComboBoxItem Content="Onbekend"/>
             </ComboBox>
-            <ComboBox x:Name="input_KledingRetour" Text="{Binding OverledeneOpbarenModel.OpbaringKledingRetour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,527,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="7" FontFamily="Arial" >
+            <ComboBox x:Name="input_KledingRetour" Text="{Binding OverledeneOpbarenModel.OpbaringKledingRetour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,527,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="7" FontFamily="Arial" >
                 <ComboBoxItem Content="Ja"/>
                 <ComboBoxItem Content="Nee"/>
                 <ComboBoxItem Content="Onbekend"/>
             </ComboBox>
-            <ComboBox x:Name="input_Sieraden" Text="{Binding OverledeneOpbarenModel.OpbaringSieraden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,581,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="8" FontFamily="Arial" >
+            <ComboBox x:Name="input_Sieraden" Text="{Binding OverledeneOpbarenModel.OpbaringSieraden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="208,581,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="8" FontFamily="Arial" >
                 <ComboBoxItem Content="Ja"/>
                 <ComboBoxItem Content="Nee"/>
                 <ComboBoxItem Content="Onbekend"/>
             </ComboBox>
-            <ComboBox x:Name="input_SieradenRetour" Text="{Binding OverledeneOpbarenModel.OpbaringSieradenRetour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,753,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="10" FontFamily="Arial" >
+            <ComboBox x:Name="input_SieradenRetour" Text="{Binding OverledeneOpbarenModel.OpbaringSieradenRetour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="209,753,0,0" VerticalAlignment="Top" Width="301" Height="31" FontSize="16" TabIndex="10" FontFamily="Arial" >
                 <ComboBoxItem Content="Ja"/>
                 <ComboBoxItem Content="Nee"/>
                 <ComboBoxItem Content="Onbekend"/>
@@ -114,7 +114,7 @@
             </ComboBox>
             <Label x:Name="lbl_Bezoek" Content="Nabestaanden bezocht:" HorizontalAlignment="Left" Margin="10,281,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <Label x:Name="lbl_ExtraInfo" Content="Extra Informatie" HorizontalAlignment="Left" Margin="10,804,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-            <TextBox x:Name="input_ExtraInfo" Text="{Binding OverledeneOpbarenModel.OpbaringExtraInfo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}" HorizontalAlignment="Left" Margin="208,804,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="117" FontSize="16" TabIndex="11" FontFamily="Arial" AcceptsReturn="True"/>
+            <TextBox x:Name="input_ExtraInfo" Text="{Binding OverledeneOpbarenModel.OpbaringExtraInfo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="208,804,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="911" Height="117" FontSize="16" TabIndex="11" FontFamily="Arial" AcceptsReturn="True"/>
         </Grid>
     </ScrollViewer>
 </UserControl>
