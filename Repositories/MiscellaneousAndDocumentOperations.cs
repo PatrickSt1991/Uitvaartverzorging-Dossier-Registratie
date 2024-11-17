@@ -2525,12 +2525,14 @@ namespace Dossier_Registratie.Repositories
                     await connection.OpenAsync(); // Open the connection asynchronously
                     command.Connection = connection;
                     command.CommandText = "SELECT (CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverAchternaam) ELSE CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
-                                            "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging) as opdrachtgeverAdres, " +
+                                            "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging, ', ', OO.opdrachtgeverPostcode, ', ', OO.opdrachtgeverWoonplaats) as opdrachtgeverAdres, " +
                                             "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoDatumTijdUitvaart, OA.typeGraf, " +
                                             "CONCAT(Initialen, ' ', Achternaam) as UitvaartLeider, CP.Email as UitvaartLeiderEmail, " +
                                             "OPG.overledeneAchternaam, OPG.overledeneVoornamen, " +
                                             "OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, " +
-                                            "OOI.overledenDatumTijd, OOI.overledenPlaats, OPG.overledeneBSN " +
+                                            "OOI.overledenDatumTijd, OOI.overledenPlaats, OPG.overledeneBSN, " +
+                                            "uitvaartInfoDienstKist, OUIM.AulaNaam, OUIM.AantalPersonen, CP.Mobiel, " +
+                                            "OUIM.BegraafplaatsLocatie, OUIM.BegraafplaatsGrafNr " +
                                             "FROM OverledeneOpdrachtgever OO " +
                                             "INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
                                             "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
@@ -2538,6 +2540,7 @@ namespace Dossier_Registratie.Repositories
                                             "JOIN OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
                                             "LEFT JOIN OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
                                             "LEFT JOIN OverledeneAsbestemming OA ON OO.uitvaartId = OA.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfoMisc OUIM ON OO.uitvaartId = OUIM.UitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2559,7 +2562,13 @@ namespace Dossier_Registratie.Repositories
                                 PlaatsGeboorte = reader["overledeneGeboorteplaats"].ToString(),
                                 DatumOverlijden = ((DateTime)reader["overledenDatumTijd"]).Date,
                                 PlaatsOverlijden = reader["overledenPlaats"].ToString(),
-                                BsnOverledene = reader["overledeneBSN"].ToString()
+                                BsnOverledene = reader["overledeneBSN"].ToString(),
+                                KistType = reader["uitvaartInfoDienstKist"].ToString(),
+                                AulaNaam = reader["AulaNaam"].ToString(),
+                                AantalPersonen = (int)reader["AantalPersonen"],
+                                UitvaartLeiderMobiel = reader["Mobiel"].ToString(),
+                                Begraafplaats = reader["BegraafplaatsLocatie"].ToString(),
+                                NrGraf = reader["BegraafplaatsGrafNr"].ToString()
                             };
                         }
                     }

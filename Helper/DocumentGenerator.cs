@@ -806,6 +806,9 @@ namespace Dossier_Registratie.Helper
 
             try
             {
+                string HuurgrafActief = string.Empty;
+                string AulaActief = string.Empty;
+                string AantalPersonenString = string.Empty;
                 app = new Application();
                 doc = app.Documents.Open(begrafenis.DestinationFile);
 
@@ -813,6 +816,15 @@ namespace Dossier_Registratie.Helper
 
                 if (!string.IsNullOrEmpty(DataProvider.OrganizationHouseNumberAddition))
                     OrganizationAdress = $"{DataProvider.OrganizationStreet} {DataProvider.OrganizationHouseNumber} {DataProvider.OrganizationHouseNumberAddition}, {DataProvider.OrganizationZipcode} {DataProvider.OrganizationCity}";
+
+                if (begrafenis.SoortGraf == "Huurgraf")
+                    HuurgrafActief = "Ja";
+
+                if (!string.IsNullOrEmpty(begrafenis.AulaNaam))
+                    AulaActief = "Ja";
+
+                if (begrafenis.AantalPersonen != 0)
+                    AantalPersonenString = begrafenis.AantalPersonen.ToString();
 
                 var bookmarks = new Dictionary<string, string>
         {
@@ -828,9 +840,17 @@ namespace Dossier_Registratie.Helper
             { "OverledeneBSN", begrafenis.BsnOverledene },
             { "UitvaartondernemingUitvaartverzorger", begrafenis.UitvaartLeider },
             { "UitvaartondernemingUitvaartverzorgerMail", begrafenis.UitvaartLeiderEmail },
+            { "UitvaartondernemingUitvaartverzorgerMob", begrafenis.UitvaartLeiderMobiel },
             { "OrganisatieNaam", DataProvider.OrganizationName },
             { "OrganisatieAdres", OrganizationAdress},
-            { "OrganisatieTelefoon", DataProvider.OrganizationPhoneNumber}
+            { "OrganisatieTelefoon", DataProvider.OrganizationPhoneNumber},
+            { "BegraafplaatsLocatie", begrafenis.Begraafplaats },
+            { "BegraafplaatsKistDalen", begrafenis.KistType },
+            { "BegraafplaatsHuurgraf", HuurgrafActief },
+            { "DienstAula", AulaActief },
+            { "DienstPersonen", begrafenis.AantalPersonen.ToString() }
+
+
         };
 
                 foreach (var bookmark in bookmarks)

@@ -293,13 +293,14 @@ namespace Dossier_Registratie.Models
     {
         private string _naamOpdrachtgever;
         private string _adresOpdrachtgever;
-
         private string _begraafplaats;
         private DateTime _datumUitvaart;
         private DateTime _tijdUitvaart;
         private string _soortGraf;
         private string _nrGraf;
-
+        private string _kistType;
+        private string _aulaNaam;
+        private int _aantalPersonen;
         private string _naamOverledene;
         private string _voornamenOverledene;
         private DateTime _datumGeboorte;
@@ -307,9 +308,9 @@ namespace Dossier_Registratie.Models
         private DateTime _datumOverlijden;
         private string _plaatsOverlijden;
         private string _bsnOverledene;
-
         private string _uitvaartLeider;
         private string _uitvaartLeiderEmail;
+        private string _uitvaartLeiderMobiel;
         private bool _updated = false;
         private bool _initialCreation = false;
         private string _destinationFile;
@@ -349,6 +350,21 @@ namespace Dossier_Registratie.Models
         {
             get { return _nrGraf; }
             set { _nrGraf = value; OnPropertyChanged(nameof(NrGraf)); }
+        }
+        public string KistType
+        {
+            get { return _kistType; }
+            set { _kistType = value;OnPropertyChanged(nameof(KistType)); }
+        }
+        public string AulaNaam
+        {
+            get { return _aulaNaam; }
+            set { _aulaNaam = value;OnPropertyChanged(nameof(AulaNaam)); }
+        }
+        public int AantalPersonen
+        {
+            get { return _aantalPersonen; }
+            set { _aantalPersonen = value; OnPropertyChanged(nameof(AantalPersonen)); }
         }
         public string NaamOverledene
         {
@@ -394,6 +410,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _uitvaartLeiderEmail; }
             set { _uitvaartLeiderEmail = value; OnPropertyChanged(nameof(UitvaartLeiderEmail)); }
+        }
+        public string UitvaartLeiderMobiel
+        {
+            get { return _uitvaartLeiderMobiel; }
+            set { _uitvaartLeiderMobiel = value; OnPropertyChanged(nameof(UitvaartLeiderMobiel)); }
         }
         public bool Updated
         {
