@@ -1185,9 +1185,7 @@ namespace Dossier_Registratie.ViewModels
             foreach (string name in firstnames)
             {
                 if (name.Length > 0)
-                {
                     initials += name[0];
-                }
             }
 
             if (!string.IsNullOrWhiteSpace(GenerateSelectedFactuur.OpdrachtgeverTussenvoegsel))
@@ -1295,43 +1293,46 @@ namespace Dossier_Registratie.ViewModels
 
                 foreach (var priceComponent in JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson))
                 {
-                    Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
-                    cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0" ? priceComponent.Omschrijving : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
+                    if (priceComponent.Bedrag != 0m || priceComponent.PrintTrue)
+                    {
+                        Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
+                        cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0" ? priceComponent.Omschrijving : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
 
-                    if (cell.Value != null && cell.Value.ToString().Length > 98)
-                    {
-                        worksheet.Rows[excelRow].RowHeight = 36;
-                        cell.WrapText = true;
-                    }
-                    else
-                    {
-                        worksheet.Rows[excelRow].RowHeight = 15;
-                        cell.WrapText = false;
-                    }
-                    cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
+                        if (cell.Value != null && cell.Value.ToString().Length > 98)
+                        {
+                            worksheet.Rows[excelRow].RowHeight = 36;
+                            cell.WrapText = true;
+                        }
+                        else
+                        {
+                            worksheet.Rows[excelRow].RowHeight = 15;
+                            cell.WrapText = false;
+                        }
+                        cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
-                    Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
-                    if (priceComponent.FactuurBedrag.HasValue && priceComponent.FactuurBedrag != decimal.Zero)
-                    {
-                        currencyCellComp.Value = priceComponent.FactuurBedrag;
-                    }
-                    else
-                    {
+                        Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
+                        if (priceComponent.FactuurBedrag.HasValue && priceComponent.FactuurBedrag != decimal.Zero)
+                        {
+                            currencyCellComp.Value = priceComponent.FactuurBedrag;
+                        }
+                        else
+                        {
+                            currencyCellComp.Value = priceComponent.Bedrag;
+                        }
+
                         currencyCellComp.Value = priceComponent.Bedrag;
+                        currencyCellComp.NumberFormat = "€ #,##0.00";
+                        currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
+
+                        Excel.Range mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
+                        mergeRange.Merge();
+                        mergeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
+
+                        excelRow++;
+                        worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+
+                        subtotalAmount += (double)priceComponent.Bedrag;
                     }
-
-                    currencyCellComp.Value = priceComponent.Bedrag;
-                    currencyCellComp.NumberFormat = "€ #,##0.00";
-                    currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-
-                    Excel.Range mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
-                    mergeRange.Merge();
-                    mergeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-
-                    excelRow++;
-                    worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
-
-                    subtotalAmount += (double)priceComponent.Bedrag;
                 }
             }
             else if (splitFactuur == "Opdrachtgever")
@@ -1342,7 +1343,7 @@ namespace Dossier_Registratie.ViewModels
 
                 foreach (var priceComponent in JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson))
                 {
-                    if (string.IsNullOrEmpty(priceComponent.Verzekerd))
+                    if (string.IsNullOrEmpty(priceComponent.Verzekerd) && priceComponent.Bedrag != 0m)
                     {
                         Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
                         cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) ? priceComponent.Omschrijving : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
