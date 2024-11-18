@@ -8,6 +8,7 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
+             d:Background="White"
              d:DesignHeight="2450" d:DesignWidth="1800">
     <UserControl.DataContext>
         <viewmodels:ConfigurationWerknemersViewModel/>
@@ -176,10 +177,8 @@
             <Button Width="150" Height="25" Content="Nieuwe Gebruiker" Command="{Binding CreateNewEmployeeCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
-        <Separator Height="1" Grid.Row="3" Margin="0 -1 0 10"/>
-
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="gebruikersDataGrid" ItemsSource="{Binding Werknemers}" AutoGenerateColumns="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Grid.Row="4" x:Name="gebruikersDataGrid" ItemsSource="{Binding Werknemers}" AutoGenerateColumns="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>

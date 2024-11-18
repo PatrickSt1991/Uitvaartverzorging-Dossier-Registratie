@@ -1,6 +1,7 @@
 ﻿using Dossier_Registratie.Helper;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
+using Dossier_Registratie.Views;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -202,7 +203,12 @@ namespace Dossier_Registratie
                 if (selectedItemString.Contains("Start"))
                     TabHeader.SelectedIndex = 0;
                 else if (selectedItemString.Contains("Beheer"))
-                    TabHeader.SelectedIndex = 9;
+                {
+                    BeheerWindow beheerWindow = new();
+                    beheerWindow.Show();
+                    TabHeader.SelectedIndex = 0;
+                }
+                    //TabHeader.SelectedIndex = 9;
                 else if (selectedItemString.Contains("Agenda"))
                     TabHeader.SelectedIndex = 10;
                 else if (selectedItemString.Contains("Help"))

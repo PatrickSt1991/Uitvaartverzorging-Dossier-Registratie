@@ -25,7 +25,7 @@
         <TabControl x:Name="FinancieelTabControl" Margin="0,16,0,0">
             <TabItem Header="Facturen">
                 <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="facturenDataGrid" ItemsSource="{Binding Kostenbegrotingen}" AutoGenerateColumns="False" Margin="0,10,0,27">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="facturenDataGrid" ItemsSource="{Binding Kostenbegrotingen}" AutoGenerateColumns="False" Margin="0,10,0,27" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Uitvaartnummer" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding UitvaartNummer}"/>
                         <DataGridTemplateColumn IsReadOnly="True" Width="*" Header="Kostenbegroting openen">
@@ -179,7 +179,7 @@
                         </Border>
                     </Popup>
                     <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="bloemenFinancieelDataGrid" ItemsSource="{Binding FilteredBloemenFinancieel}" AutoGenerateColumns="False" Margin="0,10,0,27">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="bloemenFinancieelDataGrid" ItemsSource="{Binding FilteredBloemenFinancieel}" AutoGenerateColumns="False" Margin="0,10,0,27" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Uitvaart Nummer" IsReadOnly="True" CanUserResize="True" SortDirection="Ascending" CanUserSort="True" Width="*" Binding="{Binding UitvaartNummer}"/>
                             <DataGridTextColumn Header="Leverancier" IsReadOnly="True" CanUserResize="True" SortDirection="Ascending" CanUserSort="True" Width="*" Binding="{Binding BloemenLeverancierName}"/>
@@ -281,7 +281,7 @@
                         </Border>
                     </Popup>
                     <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="steenhouwerijFinancieelDataGrid" ItemsSource="{Binding FilteredSteenhouwerijFinancieel}" AutoGenerateColumns="False" Margin="0,10,0,27">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="steenhouwerijFinancieelDataGrid" ItemsSource="{Binding FilteredSteenhouwerijFinancieel}" AutoGenerateColumns="False" Margin="0,10,0,27" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Uitvaart Nummer" IsReadOnly="True" CanUserResize="True" SortDirection="Ascending" CanUserSort="True" Width="*" Binding="{Binding UitvaartNummer}"/>
                             <DataGridTextColumn Header="Leverancier" IsReadOnly="True" CanUserResize="True" SortDirection="Ascending" CanUserSort="True" Width="*" Binding="{Binding SteenhouwerLeverancierName}"/>
@@ -328,7 +328,7 @@
             <TabItem Header="Werkbonnen">
                 <Grid>
                     <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="werkbonnenDataGrid" ItemsSource="{Binding FilteredWerkbonnenData}" AutoGenerateColumns="False" Margin="0,10,0,27">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="werkbonnenDataGrid" ItemsSource="{Binding FilteredWerkbonnenData}" AutoGenerateColumns="False" Margin="0,10,0,27" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Uitvaartnummer" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding UitvaartNummer}"/>
                             <DataGridTextColumn Header="Werknemer" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding WerknemerName}"/>
@@ -396,7 +396,7 @@
                         </Border>
                     </Popup>
                     <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="urnSieradenFinancieelDataGrid" ItemsSource="{Binding FilteredUrnSieradenFinancieel}" AutoGenerateColumns="False" Margin="0,10,0,27">
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="urnSieradenFinancieelDataGrid" ItemsSource="{Binding FilteredUrnSieradenFinancieel}" AutoGenerateColumns="False" Margin="0,10,0,27" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Uitvaart Nummer" IsReadOnly="True" CanUserResize="True" SortDirection="Ascending" CanUserSort="True" Width="*" Binding="{Binding UitvaartNummer}"/>
                             <DataGridTextColumn Header="Leverancier" IsReadOnly="True" CanUserResize="True" SortDirection="Ascending" CanUserSort="True" Width="*" Binding="{Binding UrnLeverancierName}"/>

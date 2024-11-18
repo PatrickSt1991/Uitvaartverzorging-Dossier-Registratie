@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:Dossier_Registratie.Views"
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
              mc:Ignorable="d" 
+             d:Background="White"
              d:DesignHeight="650" d:DesignWidth="1000">
     <UserControl.DataContext>
         <viewmodels:ConfigurationVerzekeraarsViewModel/>
@@ -24,9 +25,8 @@
             <Button Width="150" Height="25" Content="Nieuwe Verzekeraar" Command="{Binding CreateNewVerzekeraarCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
-        <Separator Height="1" Grid.Row="3" Margin="0 -1 0 10"/>
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="verzekeraarsDataGrid" ItemsSource="{Binding Verzekeraars}" AutoGenerateColumns="False">
+       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="verzekeraarsDataGrid" ItemsSource="{Binding Verzekeraars}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="100" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>

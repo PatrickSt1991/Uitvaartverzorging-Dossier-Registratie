@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:Dossier_Registratie.Views"
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
              mc:Ignorable="d" 
+             d:Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.DataContext>
         <viewmodels:ConfigurationKistenViewModel/>
@@ -24,10 +25,8 @@
             <Button Width="150" Height="25" Content="Nieuwe Uitvaartkist" Command="{Binding CreateNewKistCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
-        <Separator Height="1" Grid.Row="3" Margin="0 -1 0 10"/>
-
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="kistenDataGrid" ItemsSource="{Binding Kisten}" AutoGenerateColumns="False">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="kistenDataGrid" ItemsSource="{Binding Kisten}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>
