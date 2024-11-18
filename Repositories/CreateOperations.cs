@@ -55,8 +55,8 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "INSERT INTO ConfigurationPersoneel ([Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel]," +
                                         "[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager]," +
-                                        "[isChauffeur],[isOpbaren]) VALUES (@Id, @initialen, @voornaam, @roepnaam, @tussenvoegsel, @achternaam, @geboorteplaats, " +
-                                        "@geboortedatum, @email, '0', @uitvaartverzorger, @isdrager, @ischauffeur, @isopbaren)";
+                                        "[isChauffeur],[isOpbaren], [Mobiel]) VALUES (@Id, @initialen, @voornaam, @roepnaam, @tussenvoegsel, @achternaam, @geboorteplaats, " +
+                                        "@geboortedatum, @email, '0', @uitvaartverzorger, @isdrager, @ischauffeur, @isopbaren, @mobiel)";
                 command.Parameters.AddWithValue("@Id", werknemerCreate.Id);
                 command.Parameters.AddWithValue("@initialen", string.IsNullOrEmpty(werknemerCreate.Initialen) ? DBNull.Value : werknemerCreate.Initialen);
                 command.Parameters.AddWithValue("@voornaam", string.IsNullOrEmpty(werknemerCreate.Voornaam) ? DBNull.Value : werknemerCreate.Voornaam);
@@ -66,6 +66,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@geboorteplaats", string.IsNullOrEmpty(werknemerCreate.Geboorteplaats) ? DBNull.Value : werknemerCreate.Geboorteplaats);
                 command.Parameters.AddWithValue("@geboortedatum", werknemerCreate.Geboortedatum);
                 command.Parameters.AddWithValue("@email", string.IsNullOrEmpty(werknemerCreate.Email) ? DBNull.Value : werknemerCreate.Email);
+                command.Parameters.AddWithValue("@mobiel", string.IsNullOrEmpty(werknemerCreate.Mobiel) ? DBNull.Value : werknemerCreate.Mobiel);
                 command.Parameters.AddWithValue("@uitvaartverzorger", werknemerCreate.IsUitvaartverzorger);
                 command.Parameters.AddWithValue("@isdrager", werknemerCreate.IsDrager);
                 command.Parameters.AddWithValue("@ischauffeur", werknemerCreate.IsChauffeur);
@@ -102,7 +103,7 @@ namespace Dossier_Registratie.Repositories
                 }
             }
         }
-        public void InsertFinishedDossier(OverledeneBijlagesModel finishDossier)
+        public void InsertDossier(OverledeneBijlagesModel finishDossier)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
@@ -147,9 +148,9 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneUitvaartInfoMisc] ([Id],[UitvaartId],[RouwbrievenId],[AantalRouwbrieven],[AantalUitnodigingen],[AantalKennisgeving],[Advertenties],[UBS], AulaNaam, AantalPersonen) " +
+                command.CommandText = "INSERT INTO [OverledeneUitvaartInfoMisc] ([Id],[UitvaartId],[RouwbrievenId],[AantalRouwbrieven],[AantalUitnodigingen],[AantalKennisgeving],[Advertenties],[UBS], AulaNaam, AantalPersonen, BegraafplaatsGrafNr, BegraafplaatsLocatie) " +
                                         "VALUES (@id, @uitvaartid, @rouwbrievenid, @aantalrouwbrieven, @aantaluitnodiging, @aantalkennisgeving, @advertenties, @ubs, " +
-                                        "@aulanaam, @aulapersonen)";
+                                        "@aulanaam, @aulapersonen, @grafnummer, @begraafplaats)";
                 command.Parameters.AddWithValue("@id", uitvaartMisc.Id);
                 command.Parameters.AddWithValue("@uitvaartid", uitvaartMisc.UitvaartId);
                 command.Parameters.AddWithValue("@rouwbrievenid", uitvaartMisc.RouwbrievenId);
@@ -160,6 +161,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@ubs", uitvaartMisc.UBS != null ? uitvaartMisc.UBS : '0');
                 command.Parameters.AddWithValue("@aulanaam", uitvaartMisc.AulaNaam != null ? uitvaartMisc.AulaNaam : string.Empty);
                 command.Parameters.AddWithValue("@aulapersonen", uitvaartMisc.AulaPersonen != null ? uitvaartMisc.AulaPersonen : 0);
+                command.Parameters.AddWithValue("@grafnummer", uitvaartMisc.GrafNummer != null ? uitvaartMisc.GrafNummer : string.Empty);
+                command.Parameters.AddWithValue("@begraafplaats", uitvaartMisc.Begraafplaats != null ? uitvaartMisc.Begraafplaats : string.Empty);
                 if (command.ExecuteNonQuery() == 0)
                     throw new InvalidOperationException("InsertUitvaartMiscFailed");
             }
@@ -463,8 +466,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@VolgautoDienst", overledeneUitvaartModel.VolgAutoDienst);
                 command.Parameters.AddWithValue("@ConsumptiesDienst", overledeneUitvaartModel.ConsumptiesDienst != null ? overledeneUitvaartModel.ConsumptiesDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@KistDienst", overledeneUitvaartModel.KistDienst);
-                command.Parameters.AddWithValue("@TijdBlokken", overledeneUitvaartModel.TijdBlokken);
-                command.Parameters.AddWithValue("@AantalTijdsBlokken", overledeneUitvaartModel.AantalTijdsBlokken);
+                command.Parameters.AddWithValue("@TijdBlokken", overledeneUitvaartModel.TijdBlokken != null ? overledeneUitvaartModel.TijdBlokken : DBNull.Value);
+                command.Parameters.AddWithValue("@AantalTijdsBlokken", overledeneUitvaartModel.AantalTijdsBlokken != null ? overledeneUitvaartModel.AantalTijdsBlokken : DBNull.Value);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertUitvaartFailed");
@@ -550,8 +553,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneBloemen] ([Id],[uitvaartId],[bloemenText],[bloemenLint],[bloemenKaart],[bloemenBedrag],[bloemenProvisie],[bloemenUitbetaling], [bloemenLeverancier]) " +
-                                        "VALUES (@BloemenId, @UitvaartId, @Text, @Lint, @Kaart, @Bedrag, @Provisie, @Uitbetaling, @Leverancier)";
+                command.CommandText = "INSERT INTO [OverledeneBloemen] ([Id],[uitvaartId],[bloemenText],[bloemenLint],[bloemenKaart],[bloemenBedrag],[bloemenProvisie],[bloemenUitbetaling], [bloemenLeverancier], [bloemenLintJson], [bloemenBezorgingDatum], [bloemenBezorgingAdres]) " +
+                                        "VALUES (@BloemenId, @UitvaartId, @Text, @Lint, @Kaart, @Bedrag, @Provisie, @Uitbetaling, @Leverancier, @bloemenjson, @bezorgdatum, @bezorgadres)";
                 command.Parameters.AddWithValue("@BloemenId", overledeneBloemenModel.BloemenId);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneBloemenModel.UitvaartId);
                 command.Parameters.AddWithValue("@Text", overledeneBloemenModel.BloemenText != null ? overledeneBloemenModel.BloemenText : DBNull.Value);
@@ -561,6 +564,13 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@Provisie", overledeneBloemenModel.BloemenProvisie != null ? overledeneBloemenModel.BloemenProvisie : DBNull.Value);
                 command.Parameters.AddWithValue("@Uitbetaling", overledeneBloemenModel.BloemenUitbetaling != null ? overledeneBloemenModel.BloemenUitbetaling : DBNull.Value);
                 command.Parameters.AddWithValue("@Leverancier", overledeneBloemenModel.BloemenLeverancier);
+                command.Parameters.AddWithValue("@bloemenjson", overledeneBloemenModel.BloemenLintJson != null ? overledeneBloemenModel.BloemenLintJson : DBNull.Value);
+                command.Parameters.Add(new SqlParameter("@bezorgdatum", SqlDbType.DateTime)
+                {
+                    Value = overledeneBloemenModel.BloemenBezorgDate.HasValue? (object)overledeneBloemenModel.BloemenBezorgDate.Value : DBNull.Value
+                });
+                command.Parameters.AddWithValue("@bezorgadres", overledeneBloemenModel.BloemenBezorgAdres != null ? overledeneBloemenModel.BloemenBezorgAdres : DBNull.Value);
+
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertBloemenFailed");

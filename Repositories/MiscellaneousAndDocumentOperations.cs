@@ -627,7 +627,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum]," +
-                                        "[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur] " +
+                                        "[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[Mobiel] " +
                                         "FROM [ConfigurationPersoneel] " +
                                         "ORDER BY isDeleted, Achternaam ASC";
                 using (var reader = command.ExecuteReader())
@@ -667,6 +667,7 @@ namespace Dossier_Registratie.Repositories
                             IsUitvaartverzorger = (bool)reader[10],
                             IsDrager = (bool)reader[11],
                             IsChauffeur = (bool)reader[12],
+                            Mobiel = reader[13].ToString(),
                             BtnBrush = styleColor
                         });
                     }
@@ -756,7 +757,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[isOpbaren] " +
+                command.CommandText = "SELECT [Id],[Initialen],[Voornaam],[Roepnaam],[Tussenvoegsel],[Achternaam],[Geboorteplaats],[Geboortedatum],[Email],[isDeleted],[isUitvaartverzorger],[isDrager],[isChauffeur],[isOpbaren],[Mobiel] " +
                                         "FROM [ConfigurationPersoneel] WHERE Id = @werknemerId";
                 command.Parameters.AddWithValue("@werknemerId", werknemerId);
                 using (var reader = command.ExecuteReader())
@@ -778,7 +779,8 @@ namespace Dossier_Registratie.Repositories
                             IsUitvaartverzorger = (bool)reader[10],
                             IsDrager = (bool)reader[11],
                             IsChauffeur = (bool)reader[12],
-                            IsOpbaren = reader[13] != DBNull.Value ? (bool)reader[13] : false
+                            IsOpbaren = reader[13] != DBNull.Value ? (bool)reader[13] : false,
+                            Mobiel = reader[14].ToString()
                         };
                     }
                 }
@@ -1122,8 +1124,9 @@ namespace Dossier_Registratie.Repositories
                 await connection.OpenAsync();
                 command.Connection = connection;
                 command.CommandText = "SELECT OUL.Uitvaartnummer AS UitvaartNummer, " +
-                                      "(CASE WHEN (overledeneTussenvoegsel IS NOT NULL) THEN CONCAT(overledeneAanhef,' ', overledeneTussenvoegsel, ' ', LEFT(overledeneVoornamen, 1), ' ', overledeneAchternaam) " +
-                                      "ELSE CONCAT(overledeneAanhef,' ', LEFT(overledeneVoornamen, 1), ' ',overledeneAchternaam) END) AS OverledeneNaam, " +
+                                      "overledeneAanhef, overledeneVoornamen," +
+                                      "(CASE WHEN (overledeneTussenvoegsel IS NOT NULL) THEN CONCAT(overledeneTussenvoegsel, ' ',overledeneAchternaam) " +
+                                      "ELSE overledeneAchternaam END) AS OverledeneAchternaam,  " +
                                       "(CASE WHEN (opdrachtgeverTussenvoegsel IS NOT NULL) THEN CONCAT(opdrachtgeverVoornaamen, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam) " +
                                       "ELSE CONCAT(opdrachtgeverVoornaamen, ' ',opdrachtgeverAchternaam) END) AS OpdrachtgeverNaam, " +
                                       "(CASE WHEN (opdrachtgeverHuisnummerToevoeging IS NOT NULL) THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer, ' ', opdrachtgeverHuisnummerToevoeging) " +
@@ -1143,12 +1146,15 @@ namespace Dossier_Registratie.Repositories
                         personalia = new KostenbegrotingInfoModel()
                         {
                             UitvaartNummer = reader[0].ToString(),
-                            OverledeneNaam = reader[1].ToString(),
-                            OpdrachtgeverNaam = reader[2].ToString(),
-                            OpdrachtgeverStraat = reader[3].ToString(),
-                            OpdrachtgeverPostcode = reader[4].ToString(),
-                            OpdrachtgeverWoonplaats = reader[5].ToString(),
-                            OverledenDatum = reader[6].ToString(),
+                            OverledeneAanhef = reader[1].ToString(),
+                            OverledeneVoornaam = reader[2].ToString(),
+                            OverledeneAchternaam = reader[3].ToString(),
+                            OverledeneNaam = string.Empty,
+                            OpdrachtgeverNaam = reader[4].ToString(),
+                            OpdrachtgeverStraat = reader[5].ToString(),
+                            OpdrachtgeverPostcode = reader[6].ToString(),
+                            OpdrachtgeverWoonplaats = reader[7].ToString(),
+                            OverledenDatum = reader[8].ToString(),
                         };
                     }
                 }
@@ -1839,6 +1845,38 @@ namespace Dossier_Registratie.Repositories
             }
             return dossier;
         }
+        public OverledeneBijlagesModel GetVerlofDossier(Guid UitvaartId)
+        {
+            OverledeneBijlagesModel dossier = new();
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT [BijlageId], [UitvaartId], [DocumentName], [DocumentType], [DocumentURL], [DocumentHash], [DocumentInconsistent], [isDeleted] " +
+                                        "FROM [OverledeneBijlages] " +
+                                        "WHERE UitvaartId = @UitvaartId " +
+                                        "AND DocumentName = 'Verlof'";
+                command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        dossier = new OverledeneBijlagesModel()
+                        {
+                            BijlageId = (Guid)reader["BijlageId"],
+                            UitvaartId = (Guid)reader["UitvaartId"],
+                            DocumentType = reader["DocumentType"].ToString(),
+                            DocumentUrl = reader["DocumentUrl"].ToString(),
+                            DocumentHash = reader["DocumentHash"].ToString(),
+                            DocumentInconsistent = (bool)reader["DocumentInconsistent"],
+                            IsDeleted = (bool)reader["isDeleted"]
+                        };
+                    }
+                }
+            }
+            return dossier;
+        }
         public ObservableCollection<WindowsAccount> GetWerknemerPermissions(Guid werknemerId)
         {
             ObservableCollection<WindowsAccount> userAccount = new();
@@ -2292,7 +2330,8 @@ namespace Dossier_Registratie.Repositories
                                           "WHEN opg.overledeneTussenvoegsel IS NULL OR opg.overledeneTussenvoegsel = '' " +
                                           "THEN CONCAT(opg.overledeneAanhef, ' ', opg.overledeneVoornamen, ' ', opg.overledeneAchternaam) " +
                                           "ELSE CONCAT(opg.overledeneAanhef, ' ', opg.overledeneVoornamen, ' ', opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam) " +
-                                          "END AS Overledene, bloemenText, bloemenLint, bloemenKaart, oo.opdrachtgeverTelefoon " +
+                                          "END AS Overledene, bloemenText, bloemenLint, bloemenKaart, oo.opdrachtgeverTelefoon," +
+                                          "bloemenLintJson, bloemenBezorgingDatum, bloemenBezorgingAdres " +
                                           "FROM [OverledeneBloemen] ob " +
                                           "INNER JOIN [ConfigurationLeveranciers] cl ON ob.bloemenLeverancier = cl.leverancierId " +
                                           "INNER JOIN [OverledeneUitvaartleider] ou ON ob.uitvaartId = ou.UitvaartId " +
@@ -2315,7 +2354,10 @@ namespace Dossier_Registratie.Repositories
                                 Bloemstuk = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
                                 Lint = !reader.IsDBNull(5) && reader.GetBoolean(5),
                                 Kaart = !reader.IsDBNull(6) && reader.GetBoolean(6),
-                                Telefoonnummer = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
+                                Telefoonnummer = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
+                                LintJson = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                                DatumBezorgen = reader.IsDBNull(9) ? DateTime.Today : reader.GetDateTime(9),
+                                Bezorgadres = reader.IsDBNull(10) ? string.Empty : reader.GetString(10)
                             };
                         }
                     }
@@ -2483,12 +2525,14 @@ namespace Dossier_Registratie.Repositories
                     await connection.OpenAsync(); // Open the connection asynchronously
                     command.Connection = connection;
                     command.CommandText = "SELECT (CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverAchternaam) ELSE CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
-                                            "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging) as opdrachtgeverAdres, " +
+                                            "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging, ', ', OO.opdrachtgeverPostcode, ', ', OO.opdrachtgeverWoonplaats) as opdrachtgeverAdres, " +
                                             "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoDatumTijdUitvaart, OA.typeGraf, " +
                                             "CONCAT(Initialen, ' ', Achternaam) as UitvaartLeider, CP.Email as UitvaartLeiderEmail, " +
                                             "OPG.overledeneAchternaam, OPG.overledeneVoornamen, " +
                                             "OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, " +
-                                            "OOI.overledenDatumTijd, OOI.overledenPlaats, OPG.overledeneBSN " +
+                                            "OOI.overledenDatumTijd, OOI.overledenPlaats, OPG.overledeneBSN, " +
+                                            "uitvaartInfoDienstKist, OUIM.AulaNaam, OUIM.AantalPersonen, CP.Mobiel, " +
+                                            "OUIM.BegraafplaatsLocatie, OUIM.BegraafplaatsGrafNr " +
                                             "FROM OverledeneOpdrachtgever OO " +
                                             "INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
                                             "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
@@ -2496,6 +2540,7 @@ namespace Dossier_Registratie.Repositories
                                             "JOIN OverledeneOverlijdenInfo OOI ON OOI.UitvaartId = OPG.uitvaartId " +
                                             "LEFT JOIN OverledeneUitvaartInfo OUI ON OUI.uitvaartId = OPG.uitvaartId " +
                                             "LEFT JOIN OverledeneAsbestemming OA ON OO.uitvaartId = OA.uitvaartId " +
+                                            "LEFT JOIN OverledeneUitvaartInfoMisc OUIM ON OO.uitvaartId = OUIM.UitvaartId " +
                                             "WHERE OPG.uitvaartId = @UitvaartId";
                     command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
@@ -2517,7 +2562,13 @@ namespace Dossier_Registratie.Repositories
                                 PlaatsGeboorte = reader["overledeneGeboorteplaats"].ToString(),
                                 DatumOverlijden = ((DateTime)reader["overledenDatumTijd"]).Date,
                                 PlaatsOverlijden = reader["overledenPlaats"].ToString(),
-                                BsnOverledene = reader["overledeneBSN"].ToString()
+                                BsnOverledene = reader["overledeneBSN"].ToString(),
+                                KistType = reader["uitvaartInfoDienstKist"].ToString(),
+                                AulaNaam = reader["AulaNaam"].ToString(),
+                                AantalPersonen = (int)reader["AantalPersonen"],
+                                UitvaartLeiderMobiel = reader["Mobiel"].ToString(),
+                                Begraafplaats = reader["BegraafplaatsLocatie"].ToString(),
+                                NrGraf = reader["BegraafplaatsGrafNr"].ToString()
                             };
                         }
                     }
@@ -2656,8 +2707,8 @@ namespace Dossier_Registratie.Repositories
                                             "(CASE WHEN (OOI.overledenHuisnummerToevoeging IS NOT NULL) THEN CONCAT(OOI.overledenAdres, ' ', OOI.overledenHuisnummer, ' ', OOI.overledenHuisnummerToevoeging) " +
                                             "ELSE CONCAT(OOI.overledenAdres, ' ', OOI.overledenHuisnummer) END) AS OverledenAdres, OEI.overledeneEersteOuder, OEI.overledeneTweedeOuder, OEI.overledeneWedenaarVan, OEI.overledeneAantalKinderen," +
                                             "OEI.overledeneKinderenMinderjarig, OEI.overledeneAantalKinderenOverleden, " +
-                                            "(CASE WHEN CP.Tussenvoegsel IS NULL THEN CONCAT(CP.Initialen, ' ', CP.Achternaam) " +
-                                            "ELSE CONCAT(CP.Initialen, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Aangever," +
+                                            "(CASE WHEN CP.Tussenvoegsel IS NULL THEN CONCAT(CP.Voornaam, ' ', CP.Achternaam) " +
+                                            "ELSE CONCAT(CP.Voornam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Aangever," +
                                             "CONCAT(CP.Geboorteplaats,', ', CP.Geboortedatum) AS AangeverPlaats," +
                                             "(CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverAchternaam) " +
                                             "ELSE CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever," +

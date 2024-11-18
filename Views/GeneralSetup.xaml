@@ -360,7 +360,7 @@ Style="{StaticResource TextBoxStyle}" />
                         <Button Command="{Binding UploadLogoCommand}" CommandParameter="Document" Content="Upload Document Logo" Width="250" HorizontalContentAlignment="Left" HorizontalAlignment="Left"/>
                     </StackPanel>
                 </StackPanel>
-                <Button Content="Opslaan en opnieuw opstarten" Command="{Binding SaveCommand}" 
+                <Button Content="{Binding SaveReboot}" Command="{Binding SaveCommand}" 
                     Width="200" Height="30" Margin="0,20,0,0" HorizontalAlignment="Right"/>
             </StackPanel>
         </Border>

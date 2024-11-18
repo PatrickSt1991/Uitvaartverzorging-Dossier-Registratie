@@ -93,10 +93,8 @@
             </StackPanel>
         </Grid>
 
-        <Separator Height="1" Grid.Row="3" Margin="0 -1 0 10"/>
-
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="priceComponentsDataGrid" ItemsSource="{Binding PriceComponents}" AutoGenerateColumns="False">
+       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="priceComponentsDataGrid" ItemsSource="{Binding PriceComponents}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="100" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>

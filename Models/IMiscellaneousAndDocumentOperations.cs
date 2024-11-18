@@ -71,6 +71,7 @@ namespace Dossier_Registratie.Models
         LeveranciersModel GetLeverancierBeheer(Guid leverancierId);
         OverledeneRouwbrieven GetRouwbriefBeheer(Guid rouwbrievenId);
         OverledeneBijlagesModel GetFinishedDossier(Guid UitvaartId);
+        OverledeneBijlagesModel GetVerlofDossier(Guid UitvaartId);
         ObservableCollection<WindowsAccount> GetWerknemerPermissions(Guid werknemerId);
         ObservableCollection<PermissionsModel> GetPermissions();
         ObservableCollection<RapportageKlantWerknemerScores> GetAllEmployeeScore();

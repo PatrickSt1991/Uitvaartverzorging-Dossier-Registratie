@@ -16,6 +16,8 @@ namespace Dossier_Registratie.Models
         private string _ubs;
         private string _aulaNaam;
         private int _aulaPersonen;
+        private string _begraafplaats;
+        private string _grafnummer;
 
         public Guid Id
         {
@@ -39,8 +41,8 @@ namespace Dossier_Registratie.Models
         }
         public string AantalUitnodigingen
         {
-            get { return _aantalKennisgeving; }
-            set { _aantalKennisgeving = value; OnPropertyChanged(nameof(AantalUitnodigingen)); }
+            get { return _aantalUitnodigingen; }
+            set { _aantalUitnodigingen = value; OnPropertyChanged(nameof(AantalUitnodigingen)); }
         }
         public string AantalKennisgeving
         {
@@ -67,14 +69,18 @@ namespace Dossier_Registratie.Models
             get { return _aulaPersonen; }
             set { _aulaPersonen = value; OnPropertyChanged(nameof(AulaPersonen)); }
         }
-
+        public string Begraafplaats
+        {
+            get { return _begraafplaats; }
+            set { _begraafplaats = value; OnPropertyChanged(nameof(Begraafplaats)); }
+        }
+        public string GrafNummer
+        {
+            get { return _grafnummer; }
+            set { _grafnummer = value; OnPropertyChanged(nameof(GrafNummer));}
+        }
         public bool HasData()
         {
-            /*
-            return !string.IsNullOrEmpty(AantalRouwbrieven) ||
-                   !string.IsNullOrEmpty(Advertenties) ||
-                   !string.IsNullOrEmpty(UBS);
-            */
             return true;
         }
     }

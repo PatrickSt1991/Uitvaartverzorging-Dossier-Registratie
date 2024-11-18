@@ -4,6 +4,7 @@ using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -28,6 +29,7 @@ namespace Dossier_Registratie.ViewModels
         private OverledeneMiscModel _originalOverledeneMisc;
         private bool _correctAccessOrNotCompleted = true;
         public bool initialLoadDone;
+        private Visibility isBegrafenisVisable = Visibility.Collapsed;
         public bool CorrectAccessOrNotCompleted
         {
             get { return _correctAccessOrNotCompleted; }
@@ -37,7 +39,15 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(CorrectAccessOrNotCompleted));
             }
         }
-
+        public Visibility IsBegrafenisVisable
+        {
+            get { return isBegrafenisVisable; }
+            set
+            {
+                isBegrafenisVisable = value;
+                OnPropertyChanged(nameof(IsBegrafenisVisable));
+            }
+        }
         public OverledeneUitvaartleiderModel InfoUitvaartleider
         {
             get
@@ -65,6 +75,7 @@ namespace Dossier_Registratie.ViewModels
             {
                 _overledeneUitvaartModel = value;
                 OnPropertyChanged(nameof(OverledeneUitvaartModel));
+                Debug.WriteLine(OverledeneUitvaartModel.TypeDienst);
             }
         }
         public ObservableCollection<OverledeneRouwbrieven> RouwbrievenData
@@ -154,6 +165,9 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneUitvaartModel.AantalTijdsBlokken = uitvaartResult.AantalTijdsBlokken;
                 OverledeneUitvaartModel.TijdBlokken = uitvaartResult.TijdBlokken;
 
+                if (OverledeneUitvaartModel.TypeDienst == "Begrafenis")
+                    IsBegrafenisVisable = Visibility.Visible;
+
                 _originalOverledeneUitvaartModel = new OverledeneUitvaartModel
                 {
                     Id = OverledeneUitvaartModel.Id,
@@ -195,6 +209,8 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneMisc.UBS = miscResult.UBS;
                 OverledeneMisc.AulaNaam = miscResult.AulaNaam;
                 OverledeneMisc.AulaPersonen = miscResult.AulaPersonen;
+                OverledeneMisc.GrafNummer = miscResult.GrafNummer;
+                OverledeneMisc.Begraafplaats = miscResult.Begraafplaats;
 
                 _originalOverledeneMisc = new OverledeneMiscModel
                 {
@@ -207,7 +223,9 @@ namespace Dossier_Registratie.ViewModels
                     AantalKennisgeving = OverledeneMisc.AantalKennisgeving,
                     UBS = OverledeneMisc.UBS,
                     AulaNaam = OverledeneMisc.AulaNaam,
-                    AulaPersonen = OverledeneMisc.AulaPersonen
+                    AulaPersonen = OverledeneMisc.AulaPersonen,
+                    GrafNummer = OverledeneMisc.GrafNummer,
+                    Begraafplaats = OverledeneMisc.Begraafplaats
                 };
             }
         }

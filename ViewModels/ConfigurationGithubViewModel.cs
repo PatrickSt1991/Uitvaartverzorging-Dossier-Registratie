@@ -291,6 +291,7 @@ Datum Tijd: {DateTime.Now}"
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.StackTrace);
                 // Ensure this runs on the UI thread as well
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {

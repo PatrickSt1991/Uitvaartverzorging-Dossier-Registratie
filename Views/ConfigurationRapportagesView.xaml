@@ -10,6 +10,7 @@
              xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels" 
              mc:Ignorable="d" 
+             d:Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.DataContext>
         <viewmodels:ConfigurationRapportagesViewModel />

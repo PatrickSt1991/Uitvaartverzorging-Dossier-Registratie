@@ -21,5 +21,14 @@ namespace Dossier_Registratie.Views
             var viewModel = (OverledeneUitvaartViewModel)this.DataContext;
             viewModel.RefresDynamicElements();
         }
+
+        private void input_UitvaartType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = (OverledeneUitvaartViewModel)this.DataContext;
+            if (sender is ComboBox comboBox)
+                if (comboBox.SelectedItem is ComboBoxItem selectedItem)
+                    viewModel.IsBegrafenisVisable = selectedItem.Name == "begrafenis" ? Visibility.Visible : Visibility.Collapsed;
+        }
+
     }
 }

@@ -30,13 +30,19 @@ namespace Dossier_Registratie.ViewModels
         private readonly IDeleteAndActivateDisableOperations deleteAndActivateDisableOperations;
         readonly DocumentGenerator documentGenerator = new DocumentGenerator();
 
+        private bool _isLintChecked = false;
         private bool isFinishPopupOpen;
         private bool _correctAccessOrNotCompleted = true;
         private string dossierTagContent;
+        private string _lint1 = string.Empty;
+        private string _lint2 = string.Empty;
+        private string _lint3 = string.Empty;
+        private string _lint4 = string.Empty;
         private Guid selectedSteenhouwerEmployeeId;
         private Guid selectedUrnSieradenEmployeeId;
         private Guid selectedBloemEmployeeId;
         private Visibility werkbonPrintButtonVisable = Visibility.Collapsed;
+        private Visibility _lintTextVisable = Visibility.Collapsed;
 
         private OverledeneUitvaartleiderModel _uitvaartLeiderModel;
         private OverledeneSteenhouwerijModel _steenhouwerijModel;
@@ -91,7 +97,11 @@ namespace Dossier_Registratie.ViewModels
         public OverledeneBloemenModel BloemenModel
         {
             get { return _bloemenModel; }
-            set { _bloemenModel = value; OnPropertyChanged(nameof(BloemenModel)); }
+            set 
+            { 
+                _bloemenModel = value; 
+                OnPropertyChanged(nameof(BloemenModel));
+            }
         }
         public OverledeneWerkbonUitvaart WerkbonModel
         {
@@ -129,6 +139,20 @@ namespace Dossier_Registratie.ViewModels
                 {
                     isFinishPopupOpen = value;
                     OnPropertyChanged(nameof(IsFinishPopupOpen));
+                }
+            }
+        }
+        public bool IsLintChecked
+        {
+            get { return _isLintChecked; }
+            set
+            {
+                if(_isLintChecked != value)
+                {
+                    _isLintChecked = value;
+                    OnPropertyChanged(nameof(IsLintChecked));
+                    OnPropertyChanged(nameof(LintTextVisable));
+                    BloemenModel.BloemenLint = IsLintChecked;
                 }
             }
         }
@@ -175,6 +199,33 @@ namespace Dossier_Registratie.ViewModels
         {
             get { return werkbonPrintButtonVisable; }
             set { werkbonPrintButtonVisable = value; OnPropertyChanged(nameof(WerkbonPrintButtonVisable)); }
+        }
+        public Visibility LintTextVisable
+        {
+            get
+            {
+                return (IsLintChecked) ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+        public string Lint1
+        {
+            get => _lint1;
+            set { _lint1 = value; OnPropertyChanged(nameof(Lint1)); }
+        }
+        public string Lint2
+        {
+            get => _lint2;
+            set { _lint2 = value; OnPropertyChanged(nameof(Lint2)); }
+        }
+        public string Lint3
+        {
+            get => _lint3;
+            set { _lint3 = value; OnPropertyChanged(nameof(Lint3)); }
+        }
+        public string Lint4
+        {
+            get => _lint4;
+            set { _lint4 = value; OnPropertyChanged(nameof(Lint4)); }
         }
         public string DossierTagContent
         {
@@ -341,7 +392,6 @@ namespace Dossier_Registratie.ViewModels
                     {
                         if (leverancier.UrnSieraden)
                         {
-                            //MessageBox.Show(leverancier.LeverancierName + " - " + leverancier.Steenhouwer + " - " + leverancier.Bloemist + " - " + leverancier.UrnSieraden);
                             LeveranciersUrnSieraden.Add(new LeveranciersModel
                             {
                                 LeverancierId = leverancier.LeverancierId,
@@ -459,7 +509,11 @@ namespace Dossier_Registratie.ViewModels
             WerknemerBloemOverzicht.Clear();
             WerknemerSteenhouwerOverzicht.Clear();
             WerknemerUrnSieradenOverzicht.Clear();
-
+            IsLintChecked = false;
+            Lint1 = string.Empty;
+            Lint2 = string.Empty;
+            Lint3 = string.Empty;
+            Lint4 = string.Empty;
 
             InfoUitvaartleider.Uitvaartnummer = Globals.UitvaartCode;
             InfoUitvaartleider.PersoneelNaam = Globals.UitvaarLeider;
@@ -516,6 +570,7 @@ namespace Dossier_Registratie.ViewModels
                 BloemenModel.UitvaartId = bloemenResult.UitvaartId;
                 BloemenModel.BloemenText = bloemenResult.BloemenText;
                 BloemenModel.BloemenLint = bloemenResult.BloemenLint;
+                IsLintChecked = (bool)bloemenResult.BloemenLint;
                 BloemenModel.BloemenKaart = bloemenResult.BloemenKaart;
                 BloemenModel.BloemenBedrag = bloemenResult.BloemenBedrag;
                 BloemenModel.BloemenProvisie = bloemenResult.BloemenProvisie;
@@ -523,6 +578,9 @@ namespace Dossier_Registratie.ViewModels
                 BloemenModel.BloemenLeverancier = bloemenResult.BloemenLeverancier;
                 BloemenModel.BloemenPaid = bloemenResult.BloemenPaid;
                 BloemenModel.BloemenDocument = bloemenResult.BloemenDocument;
+                BloemenModel.BloemenLintJson = bloemenResult.BloemenLintJson;
+                BloemenModel.BloemenBezorgAdres = bloemenResult.BloemenBezorgAdres;
+                BloemenModel.BloemenBezorgDate = bloemenResult.BloemenBezorgDate;
 
                 _originalBloemenModel = new OverledeneBloemenModel
                 {
@@ -536,8 +594,23 @@ namespace Dossier_Registratie.ViewModels
                     BloemenUitbetaling = BloemenModel.BloemenUitbetaling,
                     BloemenLeverancier = BloemenModel.BloemenLeverancier,
                     BloemenPaid = BloemenModel.BloemenPaid,
-                    BloemenDocument = BloemenModel.BloemenDocument
+                    BloemenDocument = BloemenModel.BloemenDocument,
+                    BloemenLintJson = BloemenModel.BloemenLintJson,
+                    BloemenBezorgAdres = BloemenModel.BloemenBezorgAdres,
+                    BloemenBezorgDate = BloemenModel.BloemenBezorgDate
                 };
+            }
+
+            if (!string.IsNullOrEmpty(BloemenModel.BloemenLintJson))
+            {
+                var lintTexts = JsonConvert.DeserializeObject<List<string>>(BloemenModel.BloemenLintJson);
+                if (lintTexts != null)
+                {
+                    Lint1 = lintTexts.ElementAtOrDefault(0) ?? string.Empty;
+                    Lint2 = lintTexts.ElementAtOrDefault(1) ?? string.Empty;
+                    Lint3 = lintTexts.ElementAtOrDefault(2) ?? string.Empty;
+                    Lint4 = lintTexts.ElementAtOrDefault(3) ?? string.Empty;
+                }
             }
 
             var werkbonResult = searchRepository.GetOverlijdenWerkbonnenByUitvaartId(uitvaartNummer);
@@ -671,6 +744,7 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddSteenhouwerij(SteenhouwerijModel);
+                    new ToastWindow("Steenhouwerij is opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -688,6 +762,7 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditSteenhouwerij(SteenhouwerijModel);
+                        new ToastWindow("Steenhouwerij is geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -728,6 +803,10 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
+            var lintValues = new List<string> { Lint1, Lint2, Lint3, Lint4 };
+            BloemenModel.BloemenLintJson = JsonConvert.SerializeObject(lintValues);
+
+
             bool BloemenExists = miscellaneousRepository.UitvaarBloemenExists(BloemenModel.UitvaartId);
 
             if (BloemenModel.BloemenId == Guid.Empty && !BloemenExists)
@@ -738,6 +817,7 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddBloemen(BloemenModel);
+                    new ToastWindow("Bloemen zijn opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -754,6 +834,7 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditBloemen(BloemenModel);
+                        new ToastWindow("Bloemen zijn geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -771,7 +852,8 @@ namespace Dossier_Registratie.ViewModels
                         BloemenKaart = BloemenModel.BloemenKaart,
                         BloemenBedrag = BloemenModel.BloemenBedrag,
                         BloemenProvisie = BloemenModel.BloemenProvisie,
-                        BloemenUitbetaling = BloemenModel.BloemenUitbetaling
+                        BloemenUitbetaling = BloemenModel.BloemenUitbetaling,
+                        BloemenLintJson = BloemenModel.BloemenLintJson
                     };
                 }
             }
@@ -833,6 +915,7 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddUrnSieraden(UrnSieradenModel);
+                    new ToastWindow("Urn & Gedenksieraden zijn opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -850,6 +933,7 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditUrnSieraden(UrnSieradenModel);
+                        new ToastWindow("Urn & Gedenksieraden zijn geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -889,6 +973,7 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddWerkbonnen(WerkbonModel);
+                    new ToastWindow("Werkbonnen zijn opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -905,6 +990,7 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditWerkbonnen(WerkbonModel);
+                        new ToastWindow("Werkbonnen zijn geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -1056,7 +1142,7 @@ namespace Dossier_Registratie.ViewModels
 
                         try
                         {
-                            createRepository.InsertFinishedDossier(Dossier);
+                            createRepository.InsertDossier(Dossier);
                         }
                         catch (Exception ex)
                         {
@@ -1200,14 +1286,17 @@ namespace Dossier_Registratie.ViewModels
         }
         private async Task CreateDocumentBestelBloemen(object obj)
         {
-            _generatingDocumentView.Show();
+            if (SaveBloemCommand.CanExecute(obj))
+                SaveBloemCommand.Execute(obj);
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             string destinationFile = string.Empty;
             bool initialCreation = false;
             Guid documentId = Guid.Empty;
 
             if (string.IsNullOrWhiteSpace(BloemenModel.BloemenDocument))
             {
-                destinationFile = await OverledeneBijlagesViewModel.BijlagesInstance.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx").ConfigureAwait(true);
+                destinationFile = await OverledeneBijlagesViewModel.BijlagesInstance.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx");//.ConfigureAwait(true);
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
@@ -1215,11 +1304,11 @@ namespace Dossier_Registratie.ViewModels
             {
                 var bloemenDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Bloemen").ConfigureAwait(false);
                 documentId = bloemenDocument.BijlageId;
-                string savedHash = bloemenDocument.DocumentHash;
 
                 if (File.Exists(BloemenModel.BloemenDocument))
                 {
-                    _generatingDocumentView.Hide();
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                     MessageBoxResult openExisting = MessageBox.Show("Wil je de bestaande openen?", "Bestaande openen", MessageBoxButton.YesNo);
                     if (openExisting == MessageBoxResult.Yes)
                     {
@@ -1231,12 +1320,13 @@ namespace Dossier_Registratie.ViewModels
                     }
                     else
                     {
-                        _generatingDocumentView.Show();
+                        System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                         File.Delete(BloemenModel.BloemenDocument);
                         BloemenModel.BloemenDocumentUpdated = true;
                     }
                 }
-                destinationFile = await OverledeneBijlagesViewModel.BijlagesInstance.CreateDirectory(Globals.UitvaartCode, "Aanvraaag.Bloemen.docx").ConfigureAwait(true);
+                destinationFile = await OverledeneBijlagesViewModel.BijlagesInstance.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx").ConfigureAwait(true);
+
             }
 
             BloemenDocModel = await miscellaneousRepository.GetDocumentBloemenInfoAsync(Globals.UitvaartCodeGuid);
@@ -1254,7 +1344,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateBloemen(BloemenDocModel).ConfigureAwait(true);
@@ -1266,6 +1356,7 @@ namespace Dossier_Registratie.ViewModels
                 docResults.DocumentType = "Word";
                 docResults.DocumentName = "Bloemen";
                 docResults.DocumentUrl = BloemenDocModel.DestinationFile;
+                docResults.DocumentHash = Checksum.GetMD5Checksum(BloemenDocModel.DestinationFile);
 
                 if (initialCreation)
                 {
@@ -1294,7 +1385,12 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
             }
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>{ _generatingDocumentView.Hide(); });
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = BloemenDocModel.DestinationFile,
+                UseShellExecute = true
+            });
             return;
         }
     }

@@ -367,7 +367,8 @@ namespace Dossier_Registratie.Repositories
                             OpdrachtgeverAchternaam = reader[3].ToString(),
                             OpdrachtgeverVoornaamen = reader[4].ToString(),
                             OpdrachtgeverTussenvoegsel = reader[5].ToString(),
-                            OpdrachtgeverGeboortedatum = (DateTime)reader[6],
+                            //OpdrachtgeverGeboortedatum = (DateTime)reader[6],
+                            OpdrachtgeverGeboortedatum = reader[6] == DBNull.Value ? (DateTime?)null : (DateTime)reader[6],
                             OpdrachtgeverLeeftijd = reader[7].ToString(),
                             OpdrachtgeverStraat = reader[8].ToString(),
                             OpdrachtgeverHuisnummer = reader[9].ToString(),
@@ -565,7 +566,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT Id, UitvaartId, RouwbrievenId, AantalRouwbrieven, Advertenties, UBS, AantalUitnodigingen, " +
-                                        "AantalKennisgeving, AulaNaam, AantalPersonen " +
+                                        "AantalKennisgeving, AulaNaam, AantalPersonen, BegraafplaatsLocatie, BegraafplaatsGrafNr " +
                                         "FROM [OverledeneUitvaartInfoMisc] WHERE UitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
                 using (var reader = command.ExecuteReader())
@@ -583,7 +584,9 @@ namespace Dossier_Registratie.Repositories
                             AantalUitnodigingen = reader[6].ToString(),
                             AantalKennisgeving = reader[7].ToString(),
                             AulaNaam = reader[8].ToString(),
-                            AulaPersonen = (int)reader[9]
+                            AulaPersonen = (int)reader[9],
+                            Begraafplaats = reader[10].ToString(),
+                            GrafNummer = reader[11].ToString()
                         };
                     }
                 }
@@ -874,7 +877,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],OB.uitvaartId,bloemenText,bloemenLint,bloemenKaart,bloemenBedrag,bloemenProvisie,bloemenUitbetaling,bloemenLeverancier, OBI.DocumentURL as DocUrl " +
+                command.CommandText = "SELECT [Id],OB.uitvaartId,bloemenText,bloemenLint,bloemenKaart,bloemenBedrag,bloemenProvisie,bloemenUitbetaling," +
+                                        "bloemenLeverancier, OBI.DocumentURL as DocUrl, bloemenLintJson, bloemenBezorgingDatum, bloemenBezorgingAdres " +
                                         "FROM [OverledeneBloemen] OB " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OB.UitvaartId " +
                                         "LEFT JOIN OverledeneBijlages OBI ON OB.uitvaartId = OBI.UitvaartId AND OBI.DocumentName = 'Bloemen'" +
@@ -896,6 +900,9 @@ namespace Dossier_Registratie.Repositories
                             BloemenUitbetaling = reader["bloemenUitbetaling"] != DBNull.Value ? (DateTime?)reader["bloemenUitbetaling"] : null,
                             BloemenLeverancier = reader["bloemenLeverancier"] != DBNull.Value ? (Guid)reader["bloemenLeverancier"] : Guid.Empty,
                             BloemenDocument = reader["DocUrl"] != DBNull.Value ? reader["DocUrl"].ToString() : string.Empty,
+                            BloemenLintJson = reader["bloemenLintJson"] != DBNull.Value ? reader["bloemenLintJson"].ToString() : string.Empty,
+                            BloemenBezorgAdres = reader["bloemenBezorgingAdres"] != DBNull.Value ? reader["bloemenBezorgingAdres"].ToString() : string.Empty,
+                            BloemenBezorgDate = reader["bloemenBezorgingDatum"] != DBNull.Value ? (DateTime?)reader["bloemenBezorgingDatum"] : null,
                         };
                     }
                 }
@@ -1180,13 +1187,13 @@ namespace Dossier_Registratie.Repositories
                                         "OPG.overledeneAanhef, OPG.overledeneVoornamen, OPG.overledeneTussenvoegsel, OPG.overledeneAchternaam, CAST(OI.overledenDatumTijd AS DATE) AS OverledeneOpDatum, OI.overledenLidnummer, OVI.verzekeringProperties, " +
                                         "CV.factuurType, CV.addressStreet, CV.addressHousenumber, CV.addressHousenumberAddition, CV.postbusAddress, CV.postbusNaam, CV.addressZipcode, CV.addressCity, CV.correspondentieType, CV.verzekeraarNaam," +
                                         "overledeneVoorregeling " +
-                                        "FROM [OverledeneFacturen] AS OFA " +
+                                        "FROM [OverledeneFacturen] OFA " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
-                                        "INNER JOINOverledenePersoonsGegevens AS OPG ON OFA.uitvaartId = OPG.uitvaartId " +
-                                        "LEFT JOIN[OverledeneOpdrachtgever] AS OO ON OO.uitvaartId = OFA.uitvaartId " +
-                                        "INNER JOIN[OverledeneOverlijdenInfo] AS OI ON OI.uitvaartId = OFA.uitvaartId " +
-                                        "INNER JOINOverledeneVerzerkeringInfo AS OVI ON OVI.uitvaartId = OFA.uitvaartId " +
-                                        "LEFT JOIN [ConfigurationVerzekeraar] AS CV ON CV.Id = OI.overledenHerkomst " +
+                                        "INNER JOIN OverledenePersoonsGegevens OPG ON OFA.uitvaartId = OPG.uitvaartId " +
+                                        "LEFT JOIN [OverledeneOpdrachtgever] OO ON OO.uitvaartId = OFA.uitvaartId " +
+                                        "INNER JOIN [OverledeneOverlijdenInfo] OI ON OI.uitvaartId = OFA.uitvaartId " +
+                                        "INNER JOIN OverledeneVerzerkeringInfo OVI ON OVI.uitvaartId = OFA.uitvaartId " +
+                                        "LEFT JOIN [ConfigurationVerzekeraar] CV ON CV.Id = OI.overledenHerkomst " +
                                         "WHERE OPG.uitvaartId = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", UitvaartId);
                 using (var reader = command.ExecuteReader())

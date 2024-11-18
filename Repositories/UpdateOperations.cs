@@ -174,7 +174,9 @@ namespace Dossier_Registratie.Repositories
                                         "[Advertenties] = @advertenties, " +
                                         "[UBS] = @ubs, " +
                                         "[AulaNaam] = @aulanaam, " +
-                                        "[AantalPersonen] = @aantalpersonen " +
+                                        "[AantalPersonen] = @aantalpersonen, " +
+                                        "[BegraafplaatsLocatie] = @begraafplaats, " +
+                                        "[BegraafplaatsGrafNr] = @grafnummer " +
                                         "WHERE [UitvaartId] = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", uitvaartMisc.UitvaartId);
                 command.Parameters.AddWithValue("@aantalrouwbrieven", uitvaartMisc.AantalRouwbrieven != null ? uitvaartMisc.AantalRouwbrieven : string.Empty);
@@ -184,6 +186,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@ubs", uitvaartMisc.UBS != null ? uitvaartMisc.UBS : '0');
                 command.Parameters.AddWithValue("@aulanaam", uitvaartMisc.AulaNaam != null ? uitvaartMisc.AulaNaam : string.Empty);
                 command.Parameters.AddWithValue("@aantalpersonen", uitvaartMisc.AulaPersonen != null ? uitvaartMisc.AulaPersonen : 0);
+                command.Parameters.AddWithValue("@begraafplaats", uitvaartMisc.Begraafplaats != null ? uitvaartMisc.Begraafplaats : string.Empty);
+                command.Parameters.AddWithValue("@grafnummer", uitvaartMisc.GrafNummer != null ? uitvaartMisc.GrafNummer : string.Empty);
                 if (command.ExecuteNonQuery() == 0)
                     throw new InvalidOperationException("UpdateUitvaartMiscFailed");
             }
@@ -511,8 +515,8 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@dienstVolgautos", overledeneUitvaartModel.VolgAutoDienst);
                 command.Parameters.AddWithValue("@consumptiesDienst", overledeneUitvaartModel.ConsumptiesDienst != null ? overledeneUitvaartModel.ConsumptiesDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@dienstKist", overledeneUitvaartModel.KistDienst);
-                command.Parameters.AddWithValue("@tijdblokken", overledeneUitvaartModel.TijdBlokken);
-                command.Parameters.AddWithValue("@aantaltijdblokken", overledeneUitvaartModel.AantalTijdsBlokken);
+                command.Parameters.AddWithValue("@tijdblokken", overledeneUitvaartModel.TijdBlokken != null ? overledeneUitvaartModel.TijdBlokken : DBNull.Value);
+                command.Parameters.AddWithValue("@aantaltijdblokken", overledeneUitvaartModel.AantalTijdsBlokken != null ? overledeneUitvaartModel.AantalTijdsBlokken : DBNull.Value);
                 command.Parameters.AddWithValue("@OpbarenId", overledeneUitvaartModel.Id);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneUitvaartModel.UitvaartId);
                 if (command.ExecuteNonQuery() == 0)
@@ -611,7 +615,10 @@ namespace Dossier_Registratie.Repositories
                                         "[bloemenBedrag] = @Bedrag," +
                                         "[bloemenProvisie] = @Provisie," +
                                         "[bloemenUitbetaling] = @Uitbetaling, " +
-                                        "[bloemenLeverancier] = @Leverancier " +
+                                        "[bloemenLeverancier] = @Leverancier," +
+                                        "[bloemenLintJson] = @bloemenJson," +
+                                        "[bloemenBezorgingDatum] = @bezorgdatum," +
+                                        "[bloemenBezorgingAdres] = @bezorgadres " +
                                         "WHERE uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@BloemenId", overledeneBloemenModel.BloemenId);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneBloemenModel.UitvaartId);
@@ -622,6 +629,12 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@Provisie", overledeneBloemenModel.BloemenProvisie != null ? overledeneBloemenModel.BloemenProvisie : DBNull.Value);
                 command.Parameters.AddWithValue("@Uitbetaling", overledeneBloemenModel.BloemenUitbetaling != null ? overledeneBloemenModel.BloemenUitbetaling : DBNull.Value);
                 command.Parameters.AddWithValue("@Leverancier", overledeneBloemenModel.BloemenLeverancier);
+                command.Parameters.AddWithValue("@bloemenJson", overledeneBloemenModel.BloemenLintJson != null ? overledeneBloemenModel.BloemenLintJson : DBNull.Value);
+                command.Parameters.Add(new SqlParameter("@bezorgdatum", SqlDbType.DateTime)
+                {
+                    Value = overledeneBloemenModel.BloemenBezorgDate.HasValue ? (object)overledeneBloemenModel.BloemenBezorgDate.Value : DBNull.Value
+                });
+                command.Parameters.AddWithValue("@bezorgadres", overledeneBloemenModel.BloemenBezorgAdres != null ? overledeneBloemenModel.BloemenBezorgAdres : DBNull.Value);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("UpdateBloemenFailed");
@@ -729,7 +742,8 @@ namespace Dossier_Registratie.Repositories
                                         "isUitvaartverzorger = @uitvaartverzorger, " +
                                         "isDrager = @isdrager, " +
                                         "isChauffeur = @ischauffeur, " +
-                                        "isOpbaren = @isopbaren " +
+                                        "isOpbaren = @isopbaren, " +
+                                        "Mobiel = @mobiel " +
                                         "WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", werknemerUpdate.Id);
                 command.Parameters.AddWithValue("@initialen", string.IsNullOrEmpty(werknemerUpdate.Initialen) ? DBNull.Value : werknemerUpdate.Initialen);
@@ -744,6 +758,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@isdrager", werknemerUpdate.IsDrager);
                 command.Parameters.AddWithValue("@ischauffeur", werknemerUpdate.IsChauffeur);
                 command.Parameters.AddWithValue("@isopbaren", werknemerUpdate.IsOpbaren);
+                command.Parameters.AddWithValue("@mobiel", string.IsNullOrEmpty(werknemerUpdate.Mobiel) ? DBNull.Value : werknemerUpdate.Mobiel);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("EmployeeUpdateFailed");

@@ -7,6 +7,9 @@ namespace Dossier_Registratie.Models
     {
         private string _uitvaartNummer;
         private string _overledeneNaam;
+        private string _overledeneAanhef;
+        private string _overledeneVoornaam;
+        private string _overledeneAchternaam;
         private string _opdrachtgeverNaam;
         private string _opdrachtgeverStraat;
         private string _opdrachtgeverPostcode;
@@ -21,6 +24,21 @@ namespace Dossier_Registratie.Models
         {
             get { return _overledeneNaam; }
             set { _overledeneNaam = value; OnPropertyChanged(nameof(OverledeneNaam)); }
+        }
+        public string OverledeneAanhef
+        {
+            get { return _overledeneAanhef; }
+            set { _overledeneAanhef = value; OnPropertyChanged(nameof(OverledeneAanhef)); }
+        }
+        public string OverledeneVoornaam
+        {
+            get { return _overledeneVoornaam; }
+            set { _overledeneVoornaam = value; OnPropertyChanged(nameof(OverledeneVoornaam)); }
+        }
+        public string OverledeneAchternaam
+        {
+            get { return _overledeneAchternaam; }
+            set { _overledeneAchternaam = value; OnPropertyChanged(nameof(OverledeneAchternaam)); }
         }
         public string OpdrachtgeverNaam
         {
@@ -422,6 +440,7 @@ namespace Dossier_Registratie.Models
         private Guid _componentId;
         private int? _sortOrder;
         private bool _pmAmount = false;
+        private bool _printTrue = false;
 
         public bool SpecificCrematie
         {
@@ -506,6 +525,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _pmAmount; }
             set { _pmAmount = value; OnPropertyChanged(nameof(PmAmount)); }
+        }
+        public bool PrintTrue
+        {
+            get { return _printTrue; }
+            set { _printTrue = value; OnPropertyChanged(nameof(PrintTrue)); }
         }
     }
 }

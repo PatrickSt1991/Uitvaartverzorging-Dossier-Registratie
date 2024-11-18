@@ -254,8 +254,6 @@ namespace Dossier_Registratie.ViewModels
                     Verzorgingen.Add(Verzorging);
                     foreach (var verzorgingJson in JsonConvert.DeserializeObject<List<VerzorgingData>>(OverledeneOpbarenModel.OpbaringVerzorgingJson))
                     {
-                        Debug.WriteLine(verzorgingJson.WerknemerStartTijd);
-                        Debug.WriteLine(verzorgingJson.WerknemerEindTijd);
                         Verzorging.VerzorgersData.Add(new VerzorgingData { WerknemerId = verzorgingJson.WerknemerId, WerknemerStartTijd = verzorgingJson.WerknemerStartTijd, WerknemerEindTijd = verzorgingJson.WerknemerEindTijd });
                         verzogingCount++;
                     }
@@ -290,8 +288,14 @@ namespace Dossier_Registratie.ViewModels
             {
                 foreach (var verzorgingData in verzorging.VerzorgersData)
                 {
-                    if (verzorgingData.WerknemerId != Guid.Empty && !string.IsNullOrWhiteSpace(verzorgingData.WerknemerStartTijd) && !string.IsNullOrWhiteSpace(verzorgingData.WerknemerEindTijd))
+                    if (verzorgingData.WerknemerId != Guid.Empty)
                     {
+                        if (string.IsNullOrWhiteSpace(verzorgingData.WerknemerStartTijd))
+                            verzorgingData.WerknemerStartTijd = "00:00";
+
+                        if (string.IsNullOrWhiteSpace(verzorgingData.WerknemerEindTijd))
+                            verzorgingData.WerknemerEindTijd = "00:00";
+
                         var verzorgingDataEntry = new
                         {
                             verzorgingData.WerknemerId,

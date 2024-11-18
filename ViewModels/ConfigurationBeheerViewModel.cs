@@ -16,6 +16,7 @@ namespace Dossier_Registratie.ViewModels
         private ImageSource _imageSource;
         private bool _isAdminButtonActive = false;
         private object _currentView;
+        private string _windowTitle;
 
         public ImageSource ImageSource
         {
@@ -46,8 +47,12 @@ namespace Dossier_Registratie.ViewModels
                 _currentView = value; OnPropertyChanged(nameof(CurrentView));
             }
         }
+        public string WindowTitle
+        {
+            get => _windowTitle;
+            set { _windowTitle = value;OnPropertyChanged(nameof(WindowTitle)); }
+        }
 
-        //public ICommand ShowBeheerStartViewCommand { get; }
         public ICommand ShowWerknemersViewCommand { get; }
         public ICommand ShowVerzekeraarsViewCommand { get; }
         public ICommand ShowHerkostenViewCommand { get; }
@@ -63,7 +68,6 @@ namespace Dossier_Registratie.ViewModels
         public ConfigurationBeheerViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
-            //ShowBeheerStartViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationStartView());
             ShowWerknemersViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationWerknemersView());
             ShowVerzekeraarsViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationVerzekeraarsView());
             ShowHerkostenViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationHerkomstenView());
@@ -78,7 +82,7 @@ namespace Dossier_Registratie.ViewModels
             ShowRouwbrievenViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationRouwbrievenView());
 
             CurrentView = new ConfigurationWerknemersView();
-
+            WindowTitle = DataProvider.OrganizationName + " - " + DataProvider.SystemTitle + " - " + "Beheer";
             LoadImageFromDatabase();
 
             if (Globals.PermissionLevelName == "System" || Globals.PermissionLevelName == "Financieel")

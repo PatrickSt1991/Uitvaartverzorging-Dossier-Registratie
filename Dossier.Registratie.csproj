@@ -11,7 +11,8 @@
 		<LangVersion>12.0</LangVersion>
 		<InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<ApplicationIcon>DigiGraf_Logo_favicon.ico</ApplicationIcon>
+		<ApplicationIcon>favicon (3).ico</ApplicationIcon>
+		<PackageIcon>favicon.png</PackageIcon>
 	</PropertyGroup>
 
 	<Target Name="GenerateVersionXml" AfterTargets="Publish">
@@ -34,7 +35,7 @@
 
 	<ItemGroup>
 		<!-- Content files -->
-		<Content Include="DigiGraf_Logo_favicon.ico" />
+		<Content Include="favicon (3).ico" />
 		<Content Include="nl_NL.aff">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -75,6 +76,13 @@
 			<Isolated>false</Isolated>
 			<EmbedInteropTypes>true</EmbedInteropTypes>
 		</COMReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\..\Downloads\favicon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>

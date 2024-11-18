@@ -50,10 +50,16 @@
                     <DataGridTextColumn MinWidth="900" Width="Auto" Header="Omschrijving" Binding="{Binding Omschrijving}" />
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Aantal" Binding="{Binding Aantal}" />
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Verzekerd" Binding="{Binding Verzekerd}" />
-                    <DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag" 
-                    Binding="{Binding Bedrag, Converter={StaticResource DecimalToStringConverter}, Mode=TwoWay}" />
-
+                    <!--<DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag" Binding="{Binding Bedrag, Converter={StaticResource DecimalToStringConverter}, Mode=TwoWay}" />-->
+                    <DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag">
+                        <DataGridTextColumn.Binding>
+                            <Binding Path="Bedrag" Mode="TwoWay" Converter="{StaticResource DecimalToStringConverter}" TargetNullValue="">
+                                <Binding.FallbackValue>0</Binding.FallbackValue>
+                            </Binding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
                     <DataGridCheckBoxColumn MinWidth="75" Width="Auto" Header="PM" Binding="{Binding PmAmount}" />
+                    <DataGridCheckBoxColumn MinWidth="75" Width="Auto" Header="Print" Binding="{Binding PrintTrue}" />
                     <DataGridTextColumn Visibility="Hidden" Binding="{Binding OrgAantal}" />
                     <DataGridTextColumn Visibility="Hidden" Binding="{Binding OrgBedrag}" />
                     <DataGridTextColumn Visibility="Hidden" Binding="{Binding Id}" />

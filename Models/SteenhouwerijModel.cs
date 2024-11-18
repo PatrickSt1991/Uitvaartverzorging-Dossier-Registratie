@@ -1,5 +1,6 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System;
+using System.Diagnostics;
 
 namespace Dossier_Registratie.Models
 {
@@ -241,6 +242,9 @@ namespace Dossier_Registratie.Models
         private bool? _bloemenPaid;
         private string? _bloemenDocument;
         private bool _bloemenDocumentUpdated;
+        private string? _bloemenLintJson;
+        private string? _bloemenBezorgAdres;
+        private DateTime? _bloemenBezorgDatum;
         public Guid BloemenId
         {
             get { return _bloemenId; }
@@ -320,6 +324,21 @@ namespace Dossier_Registratie.Models
         {
             get { return _bloemenDocumentUpdated; }
             set { _bloemenDocumentUpdated = value; OnPropertyChanged(nameof(BloemenDocumentUpdated)); }
+        }
+        public string? BloemenLintJson
+        {
+            get { return _bloemenLintJson; }
+            set { _bloemenLintJson = value; OnPropertyChanged(nameof(BloemenLintJson)); }
+        }
+        public string? BloemenBezorgAdres
+        {
+            get { return _bloemenBezorgAdres; }
+            set { _bloemenBezorgAdres = value; OnPropertyChanged(nameof(BloemenBezorgAdres)); }
+        }
+        public DateTime? BloemenBezorgDate
+        {
+            get { return _bloemenBezorgDatum; }
+            set { _bloemenBezorgDatum = value; OnPropertyChanged(nameof(BloemenBezorgDate)); }
         }
         public bool HasData()
         {

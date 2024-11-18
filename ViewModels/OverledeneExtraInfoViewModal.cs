@@ -386,6 +386,9 @@ namespace Dossier_Registratie.ViewModels
             bool ExtraInfoExists = miscellaneousRepository.UitvaartExtraInfoExists(OverledeneExtraInfo.UitvaartId);
             bool OpdrachtgeverPersoonsgegevenExists = miscellaneousRepository.UitvaartOpdrachtgeverPersoonsgegevensExists(OpdrachtgeverPersoonsgegevens.UitvaartId);
 
+            if (string.IsNullOrEmpty(OpdrachtgeverPersoonsgegevens.OpdrachtgeverRelatieTotOverledene))
+                OpdrachtgeverPersoonsgegevens.OpdrachtgeverRelatieTotOverledene = "-";
+
             if (!OverledeneExtraInfo.HasData())
             {
                 new ToastWindow("Niet alle verplichte extra info velden zijn ingevuld!").Show();

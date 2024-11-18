@@ -56,6 +56,7 @@ namespace Dossier_Registratie.ViewModels
         private string _smtpServer;
         private int _smtpPort;
         private string _smtpReciever;
+        private string saveReboot = "Opslaan en opnieuw opstarten";
 
         public string OrganizationName
         {
@@ -426,7 +427,15 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(SmtpReciever));
             }
         }
-
+        public string SaveReboot
+        {
+            get => saveReboot;
+            set
+            {
+                saveReboot = value;
+                OnPropertyChanged(nameof(SaveReboot));
+            }
+        }
         public ICommand SaveCommand { get; }
         public ICommand UploadLogoCommand { get; }
 
@@ -436,6 +445,9 @@ namespace Dossier_Registratie.ViewModels
             ConfigurationTitle = ApplicationName + " Configuratie";
             SaveCommand = new RelayCommand(SaveSettings);
             UploadLogoCommand = new AdminRelayCommand(obj => UploadImage(obj));
+
+            if (DataProvider.SetupComplete)
+                SaveReboot = "Opslaan";
         }
         private static async Task UploadImage(object appType)
         {
@@ -698,8 +710,11 @@ namespace Dossier_Registratie.ViewModels
             {
                 File.WriteAllText("AppConnectionSettings.json", jsonString);
 
-                Process.Start(Environment.ProcessPath);
-                System.Windows.Application.Current.Shutdown();
+                if (!DataProvider.SetupComplete)
+                {
+                    Process.Start(Environment.ProcessPath);
+                    System.Windows.Application.Current.Shutdown();
+                }
             }
             catch (Exception ex)
             {

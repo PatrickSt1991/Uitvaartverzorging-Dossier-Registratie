@@ -156,6 +156,7 @@ namespace Dossier_Registratie.ViewModels
             selectedUser.Geboorteplaats = werknemer.Geboorteplaats;
             selectedUser.Geboortedatum = werknemer.Geboortedatum?.Date;
             selectedUser.Email = werknemer.Email;
+            selectedUser.Mobiel = werknemer.Mobiel;
             selectedUser.IsUitvaartverzorger = werknemer.IsUitvaartverzorger;
             selectedUser.IsDrager = werknemer.IsDrager;
             selectedUser.IsChauffeur = werknemer.IsChauffeur;
@@ -198,7 +199,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveUserCommand(object obj)
         {
-            Debug.WriteLine(SelectedUser.HasData());
+
             if (!SelectedUser.HasData())
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
@@ -269,6 +270,7 @@ namespace Dossier_Registratie.ViewModels
             selectedUser.Geboorteplaats = string.Empty;
             selectedUser.Geboortedatum = DateTime.MinValue;
             selectedUser.Email = string.Empty;
+            selectedUser.Mobiel = string.Empty;
             selectedUser.IsUitvaartverzorger = false;
             selectedUser.IsDrager = false;
             selectedUser.IsChauffeur = false;
@@ -293,6 +295,7 @@ namespace Dossier_Registratie.ViewModels
                     Geboorteplaats = werknemer.Geboorteplaats,
                     Geboortedatum = werknemer.Geboortedatum?.Date,
                     Email = werknemer.Email,
+                    Mobiel = werknemer.Mobiel,
                     IsDeleted = werknemer.IsDeleted,
                     IsUitvaartverzorger = werknemer.IsUitvaartverzorger,
                     IsDrager = werknemer.IsDrager,
