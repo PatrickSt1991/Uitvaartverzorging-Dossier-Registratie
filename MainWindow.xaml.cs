@@ -201,20 +201,33 @@ namespace Dossier_Registratie
                 string selectedItemString = selectedItem.ToString();
 
                 if (selectedItemString.Contains("Start"))
+                {
                     TabHeader.SelectedIndex = 0;
+                    MainComboBox.SelectedItem = null;
+                }    
                 else if (selectedItemString.Contains("Beheer"))
                 {
                     BeheerWindow beheerWindow = new();
                     beheerWindow.Show();
                     TabHeader.SelectedIndex = 0;
-                }
+                    MainComboBox.SelectedItem = null;
                     //TabHeader.SelectedIndex = 9;
+                }
                 else if (selectedItemString.Contains("Agenda"))
+                {
                     TabHeader.SelectedIndex = 10;
+                    MainComboBox.SelectedItem = null;
+                }   
                 else if (selectedItemString.Contains("Help"))
+                {
                     TabHeader.SelectedIndex = 12;
+                    MainComboBox.SelectedItem = null;
+                }
                 else if (selectedItemString.Contains("Alle Uitvaarten"))
+                {
                     TabHeader.SelectedIndex = 13;
+                    MainComboBox.SelectedItem = null;
+                }
                 else if (selectedItemString.Contains("Handleiding"))
                 {
                     try
@@ -236,6 +249,10 @@ namespace Dossier_Registratie
                     catch (Exception ex)
                     {
                         MessageBox.Show("An error occurred while trying to open the PDF: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    finally
+                    {
+                        MainComboBox.SelectedItem = null;
                     }
                 }
             }

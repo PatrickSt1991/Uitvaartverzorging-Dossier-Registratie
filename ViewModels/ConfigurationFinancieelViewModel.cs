@@ -1255,7 +1255,7 @@ namespace Dossier_Registratie.ViewModels
             overledenCell.Characters[aanhefLength + 2, aanhefLength + 2 + voornamenLength].Font.Bold = true;
             overledenCell.Characters[aanhefLength + 3 + voornamenLength, aanhefLength + 3 + voornamenLength + achternaamLength].Font.Bold = true;
             overledenCell.Characters[aanhefLength + 3 + voornamenLength + achternaamLength + 2, aanhefLength + 3 + voornamenLength + achternaamLength + 2 + opDatumLength].Font.Bold = true;
-            overledenCell.EntireColumn.AutoFit();
+            overledenCell.EntireColumn.AutoFit();            
 
             if (splitFactuur == string.Empty)
             {
@@ -1286,6 +1286,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
+
                     worksheet.Cells[12, 6] = Opdrachtgever;
                     worksheet.Cells[13, 6] = GenerateSelectedFactuur.OpdrachtgeverStraat + " " + huisnummer;
                     worksheet.Cells[14, 6] = GenerateSelectedFactuur.OpdrachtgeverPostcode + " " + GenerateSelectedFactuur.OpdrachtgeverWoonplaats;
@@ -1293,7 +1294,7 @@ namespace Dossier_Registratie.ViewModels
 
                 foreach (var priceComponent in JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson))
                 {
-                    if (priceComponent.Bedrag != 0m || priceComponent.PrintTrue)
+                    if ((priceComponent.Bedrag.HasValue && priceComponent.Bedrag.Value != 0m) || priceComponent.PrintTrue)
                     {
                         Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
                         cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0" ? priceComponent.Omschrijving : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
@@ -1311,17 +1312,13 @@ namespace Dossier_Registratie.ViewModels
                         cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
                         Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
-                        if (priceComponent.FactuurBedrag.HasValue && priceComponent.FactuurBedrag != decimal.Zero)
-                        {
-                            currencyCellComp.Value = priceComponent.FactuurBedrag;
-                        }
-                        else
-                        {
-                            currencyCellComp.Value = priceComponent.Bedrag;
-                        }
+                        // Use a null check for FactuurBedrag and assign default value if needed
+                        currencyCellComp.Value = priceComponent.FactuurBedrag.HasValue && priceComponent.FactuurBedrag != decimal.Zero
+                            ? priceComponent.FactuurBedrag.Value
+                            : priceComponent.Bedrag ?? 0m;  // Use the null-coalescing operator to ensure a valid value
 
-                        currencyCellComp.Value = priceComponent.Bedrag;
-                        currencyCellComp.NumberFormat = "€ #,##0.00";
+                        currencyCellComp.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
+
                         currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
                         Excel.Range mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
@@ -1331,7 +1328,7 @@ namespace Dossier_Registratie.ViewModels
                         excelRow++;
                         worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
 
-                        subtotalAmount += (double)priceComponent.Bedrag;
+                        subtotalAmount += (double)(priceComponent.Bedrag ?? 0m);  // Safe handling for null
                     }
                 }
             }
@@ -1362,7 +1359,8 @@ namespace Dossier_Registratie.ViewModels
 
                         Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
                         currencyCellComp.Value = priceComponent.Bedrag;
-                        currencyCellComp.NumberFormat = "€ #,##0.00";
+
+                        currencyCellComp.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
 
                         worksheet.Cells[excelRow, 9] = priceComponent.Verzekerd;
 
@@ -1425,7 +1423,7 @@ namespace Dossier_Registratie.ViewModels
 
                         Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
                         currencyCellComp.Value = priceComponent.Bedrag;
-                        currencyCellComp.NumberFormat = "€ #,##0.00";
+                        currencyCellComp.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
                         currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
 
@@ -1464,7 +1462,7 @@ namespace Dossier_Registratie.ViewModels
 
             Excel.Range currencyCellTotal = worksheet.Cells[excelRow, 8];
             currencyCellTotal.Value = subtotalAmount;
-            currencyCellTotal.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            currencyCellTotal.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
             currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
             currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
             currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
@@ -1511,7 +1509,7 @@ namespace Dossier_Registratie.ViewModels
 
                     Excel.Range currencyCell = worksheet.Cells[excelRow, 8];
                     currencyCell.Value = polis.PolisBedrag;
-                    currencyCell.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+                    currencyCell.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
                     ;
                     if (double.TryParse(polis.PolisBedrag, out double doubleValue))
                     {
@@ -1539,7 +1537,7 @@ namespace Dossier_Registratie.ViewModels
 
             Excel.Range currencyTotaalMinderingCell = worksheet.Cells[excelRow, 8];
             currencyTotaalMinderingCell.Value = minderingAmount;
-            currencyTotaalMinderingCell.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            currencyTotaalMinderingCell.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
             currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
             currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
             currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
@@ -1563,7 +1561,7 @@ namespace Dossier_Registratie.ViewModels
 
             Excel.Range currencyTotaalCell = worksheet.Cells[excelRow, 8];
             currencyTotaalCell.Value = totalAmount;
-            currencyTotaalCell.NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            currencyTotaalCell.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
             worksheet.Rows[excelRow].Font.Bold = true;
 
             excelRow++;
