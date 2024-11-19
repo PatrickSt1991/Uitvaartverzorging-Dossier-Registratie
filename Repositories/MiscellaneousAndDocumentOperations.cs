@@ -1397,7 +1397,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
 
-                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.[SpecificPakket], FC1.DefaultPM " +
+                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.DefaultPM " +
                                       "FROM [ConfigurationFactuurComponent] FC1 " +
                                       "LEFT JOIN [ConfigurationFactuurComponent] FC2 " +
                                       "ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +

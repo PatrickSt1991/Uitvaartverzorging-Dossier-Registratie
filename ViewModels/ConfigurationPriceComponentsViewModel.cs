@@ -4,7 +4,6 @@ using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -446,7 +445,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteFilterPriceComponentCommand()
         {
-            if (PriceComponentFilter.ComponentVerzekering != null && !string.IsNullOrEmpty(PriceComponentFilter.ComponentVerzekering))
+            if (!string.IsNullOrEmpty(PriceComponentFilter.ComponentVerzekering))
             {
                 PriceComponents.Clear();
 
@@ -469,6 +468,25 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
+                    var filteredComponents = miscellaneousRepository
+                        .GetFilterdPriceComponentsBeheer(PriceComponentFilter.ComponentVerzekering);
+                        //.Where(pc => pc.SpecificPakket != PriceComponentFilter.SpecificPakket);
+
+                    foreach (var PriceComponent in filteredComponents)
+                    {
+                        PriceComponents.Add(new KostenbegrotingModel
+                        {
+                            ComponentId = PriceComponent.ComponentId,
+                            ComponentOmschrijving = PriceComponent.ComponentOmschrijving,
+                            ComponentBedrag = PriceComponent.ComponentBedrag,
+                            ComponentAantal = PriceComponent.ComponentAantal,
+                            ComponentVerzekering = PriceComponent.ComponentVerzekering,
+                            DefaultPM = PriceComponent.DefaultPM,
+                            IsDeleted = PriceComponent.IsDeleted,
+                            BtnBrush = PriceComponent.BtnBrush
+                        });
+                    }
+                    /* Deprecated
                     if (PriceComponentFilter.SpecificPakket == true)
                     {
                         var filteredComponents = miscellaneousRepository
@@ -512,6 +530,7 @@ namespace Dossier_Registratie.ViewModels
                             });
                         }
                     }
+                    */
                 }
             }
         }
