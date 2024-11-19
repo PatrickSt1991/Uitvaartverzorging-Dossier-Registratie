@@ -19,23 +19,23 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Popup IsOpen="{Binding IsEditPriceComponentPopupOpen}" Placement="Center" StaysOpen="False" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="725" Height="Auto" CornerRadius="5">
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="1025" Height="Auto" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
                         <Label Content="Omschrijving: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentOmschrijving, UpdateSourceTrigger=PropertyChanged}" Width="500" Height="50" AcceptsReturn="True" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentOmschrijving, UpdateSourceTrigger=PropertyChanged}" Width="800" Height="50" AcceptsReturn="True" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="500"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Factuur Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="500"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Verzekerd Aantal: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentAantal, UpdateSourceTrigger=PropertyChanged}" Width="500"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentAantal, UpdateSourceTrigger=PropertyChanged}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <StackPanel Orientation="Vertical">
@@ -45,7 +45,7 @@
 
                         </StackPanel>
 
-                        <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" DisplayMemberPath="Name" SelectionMode="Multiple" Width="500">
+                        <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" DisplayMemberPath="Name" SelectionMode="Multiple" Width="800">
                             <ListBox.Resources>
                                 <Style TargetType="ListBoxItem">
                                     <Setter Property="OverridesDefaultStyle" Value="true" />
@@ -70,7 +70,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Sortering: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.SortOrder, UpdateSourceTrigger=PropertyChanged}" Width="500"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.SortOrder, UpdateSourceTrigger=PropertyChanged}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,15,5,5">
                         <Button Content="Sluiten" Command="{Binding CloseEditPriceComponentPopupCommand}" Margin="0,0,10,10" Width="120" Height="30" />
