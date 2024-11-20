@@ -187,38 +187,62 @@
                 <Grid Background="#FFFFFF" >
                     <Label x:Name="lbl_Intro" Content="{Binding VersionLabel}" HorizontalAlignment="Center" Margin="0,0,0,25" VerticalAlignment="Bottom" Height="25" Width="811" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontFamily="Arial"/>
                     <Label x:Name="lbl_IntroDigiGraf" Content="Welkom terug bij DigiGraf" HorizontalAlignment="Center" Margin="0,47,0,0" VerticalAlignment="Top" Height="43" Width="811" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="20"/>
-                    <Button x:Name="NewDossier" Command="{Binding NieuwDossierAanmakenCommand}" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,144,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="NewDossier_Click" HorizontalContentAlignment="Right" >
-                        <Button.Content>
-                            <StackPanel>
-                                <TextBlock Text="Dossier aanmaken" FontSize="20" />
-                                <TextBlock Text="Nieuwe overlijden" FontSize="12"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="OpenDossier" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,206,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="OpenDossier_Click">
-                        <Button.Content>
-                            <StackPanel>
-                                <TextBlock Text="Dossier openen" FontSize="20" Width="158" />
-                                <TextBlock Text="Via uitvaartnummer" FontSize="12"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="SearchDossier" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,268,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="SearchDossier_Click">
-                        <Button.Content>
-                            <StackPanel>
-                                <TextBlock Text="Dossier opzoeken" FontSize="20"/>
-                                <TextBlock Text="Op achternaam" FontSize="12"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="AlleUitvaarten" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,330,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="AlleUitvaarten_Click">
-                        <Button.Content>
-                            <StackPanel>
-                                <TextBlock Text="Alle uitvaarten     " FontSize="20"/>
-                                <TextBlock Text="Totaal overzicht" FontSize="12"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="NewDossier" Command="{Binding NieuwDossierAanmakenCommand}" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,144,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="NewDossier_Click" HorizontalContentAlignment="Right" >
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="Dossier aanmaken" FontSize="20" Width="160" />
+                                        <TextBlock Text="Nieuwe overlijden" FontSize="12"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="OpenDossier" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="10,144,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="OpenDossier_Click">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="Dossier openen" FontSize="20" Width="160" />
+                                        <TextBlock Text="Via uitvaartnummer" FontSize="12"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="SearchDossier" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="SearchDossier_Click">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="Dossier opzoeken" FontSize="20" Width="160"/>
+                                        <TextBlock Text="Op achternaam" FontSize="12"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="AlleUitvaarten" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="10,10,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="AlleUitvaarten_Click">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="Alle uitvaarten     " FontSize="20" Width="160"/>
+                                        <TextBlock Text="Totaal overzicht" FontSize="12"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="AgendaUitvaarten" Style="{StaticResource StartingButtons}" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="AgendaUitvaarten_Click">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="Uitvaart agenda     " FontSize="20" Width="160"/>
+                                        <TextBlock Text="Komende 7 dagen" FontSize="12"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="Beheer" Style="{StaticResource StartingButtons}" Visibility="{Binding BeheerButtonVisable}" HorizontalAlignment="Center" Margin="10,10,0,0" VerticalAlignment="Top" Height="50" Width="328" Click="BeheerOpenen_Click">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="Beheer " FontSize="20" Width="160"/>
+                                        <TextBlock Text="Beheer sectie" FontSize="12"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
                     <Label x:Name="lbl_SubIntro" Content="Kies uit onderstaande opties om te beginnen" HorizontalAlignment="Center" Margin="0,90,0,0" VerticalAlignment="Top" Height="43" Width="811" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontFamily="Arial" FontSize="14"/>
                     <Label x:Name="lbl_copyright" Content="{Binding CopyrightText}" HorizontalAlignment="Center" Width="811" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Arial" FontSize="10" Height="25" VerticalAlignment="Bottom"/>
                 </Grid>

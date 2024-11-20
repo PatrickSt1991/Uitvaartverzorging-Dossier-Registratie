@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Newtonsoft.Json.Bson;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -23,6 +25,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand SaveHerkomstCommand { get; }
         public ICommand CreateNewHerkomstCommand { get; }
         public ICommand RefreshHerkomstGridCommand { get; set; }
+        public ICommand UploadHerkomstLogo { get; }
 
         private bool isEditHerkomstPopupOpen;
         private bool newHerkomst;
@@ -84,6 +87,7 @@ namespace Dossier_Registratie.ViewModels
             CloseEditHerkomstPopupCommand = new RelayCommand(() => IsEditHerkomstPopupOpen = false);
             RefreshHerkomstGridCommand = new RelayCommand(HerkomstGridData);
             SaveHerkomstCommand = new ViewModelCommand(ExecuteSaveHerkomstCommand);
+            UploadHerkomstLogo = new ViewModelCommand(ExecuteUploadHerkomstLogoCommand);
             CreateNewHerkomstCommand = new ViewModelCommand(ExecuteCreateNewHerkomst);
 
             HerkomstGridData();
@@ -213,6 +217,11 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             HerkomstGridData();
+        }
+        public void ExecuteUploadHerkomstLogoCommand(object obj)
+        {
+            new ToastWindow("Afbeelding is geupload.").Show();
+            return;
         }
         public void ExecuteCreateNewHerkomst(object obj)
         {

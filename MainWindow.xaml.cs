@@ -188,6 +188,15 @@ namespace Dossier_Registratie
         {
             TabHeader.SelectedIndex = 13;
         }
+        private void AgendaUitvaarten_Click(object sender, RoutedEventArgs e)
+        {
+            TabHeader.SelectedIndex = 10;
+        }
+        private void BeheerOpenen_Click(object sender, RoutedEventArgs e)
+        {
+            BeheerWindow beheerWindow = new();
+            beheerWindow.Show();
+        }
         private void CloseApplication_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();

@@ -49,7 +49,6 @@ namespace Dossier_Registratie.ViewModels
                                 "Licensed under GNU Affero General Public License v3.0 ";
 
         private static readonly string configLocation = Path.Combine(Directory.GetCurrentDirectory(), "AppConnectionSettings.json");
-        private static readonly string parentDirectory = Directory.GetParent(configLocation).FullName;
 
         private int _selectedIndex;
 
@@ -64,6 +63,7 @@ namespace Dossier_Registratie.ViewModels
         private bool _searchOldDatabaseNummer = false;
         private bool _searchArchiveFolder = false;
         private bool _archiveSearchResult = false;
+        private Visibility _beheerButtonVisable = Visibility.Hidden;
 
         private readonly ISearchOperations searchRepository;
         private readonly ICreateOperations createRepository;
@@ -286,6 +286,11 @@ namespace Dossier_Registratie.ViewModels
             get { return _archiveSearchResult; }
             set { _archiveSearchResult = value; OnPropertyChanged(nameof(ArchiveSearchResult)); }
         }
+        public Visibility BeheerButtonVisable
+        {
+            get { return _beheerButtonVisable; }
+            set { _beheerButtonVisable = value; OnPropertyChanged(nameof(BeheerButtonVisable)); }
+        }
         public string ArchivePath
         {
             get { return _archivePath; }
@@ -357,6 +362,16 @@ namespace Dossier_Registratie.ViewModels
 
             if (DataProvider.MaintenanceCheckEnabled)
                 CheckMaintenanceWindow();
+
+            switch (Globals.PermissionLevelId.ToUpper())
+            {
+                case "A224C94E-2F54-4D43-A976-11E24287A8E0": //Beheerder
+                //case "D8454762-9245-4B6C-9D29-293B9BC2FFB2": //System
+                case "D3BD7AE6-978D-4F1A-972C-B033CFC801E3": //Uitvaartleider - Limited
+                case "8DBB3112-153D-4592-ABE2-77C79D61F81A": //Financieel
+                    BeheerButtonVisable = Visibility.Visible;
+                    break;
+            }
 
             VersionLabel = DataProvider.SystemTitle + " - Versie: " + version;
             UpdateTime();
