@@ -5,7 +5,7 @@ nav_enabled: true
 nav_order: 1
 ---
 
-![Screenshot of the application](./images/DigiGraf_Logo.png)
+![Screenshot of the application](../favicon%20(3).ico)
 
 **Welkom bij DigiGraf - Dé Dossier Registratie Software voor de Uitvaartverzorging**
 **Deze GitHub Pagina is nog in aanbouw**
