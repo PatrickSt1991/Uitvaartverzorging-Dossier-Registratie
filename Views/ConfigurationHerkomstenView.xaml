@@ -103,7 +103,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <Popup IsOpen="{Binding IsEditHerkomstPopupOpen}" Placement="Center" StaysOpen="True">
-            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="465" CornerRadius="5">
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="485" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5" Visibility="Collapsed">
                         <Label Content="Afkorting: " Width="100"/>
@@ -165,6 +165,10 @@
                             <ComboBoxItem>Opdrachtgever &amp; Vereniging</ComboBoxItem>
                             <ComboBoxItem>Vereniging</ComboBoxItem>
                         </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Logo: " Width="100"/>
+                        <Button Content="Uploaden" Command="{Binding UploadHerkomstLogo}" Width="250" Height="30"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,15,5,5">
                         <Button Content="Sluiten" Command="{Binding CloseEditHerkomstPopupCommand}" Margin="0,0,10,10" Width="120" Height="30" />

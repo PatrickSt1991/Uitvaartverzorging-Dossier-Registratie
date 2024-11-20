@@ -155,7 +155,15 @@ namespace Dossier_Registratie.ViewModels
         private ObservableCollection<GeneratedKostenbegrotingModel> _priceComponents;
         public ObservableCollection<GeneratedKostenbegrotingModel> PriceComponents
         {
-            get { return _priceComponents; }
+            get
+            {
+                if (_priceComponents == null)
+                {
+                    _priceComponents = new ObservableCollection<GeneratedKostenbegrotingModel>();
+                    _priceComponents.CollectionChanged += PriceComponents_CollectionChanged;
+                }
+                return _priceComponents;
+            }
             set
             {
                 if (_priceComponents != null)
@@ -470,6 +478,10 @@ namespace Dossier_Registratie.ViewModels
                     //.ThenBy(pc => Math.Abs((decimal)pc.Bedrag))
                     );
                 }
+                else
+                {
+                    PriceComponents = new ObservableCollection<GeneratedKostenbegrotingModel>();
+                }
                 var polisList = JsonConvert.DeserializeObject<List<PolisVerzekering>>(OverledeneFactuurModel.PolisJson);
                 if (polisList != null)
                 {
@@ -644,6 +656,11 @@ namespace Dossier_Registratie.ViewModels
         }
         private void ExecuteGenererenKostenbegrotingCommand(object parameter)
         {
+            if (SelectedVerzekeraar.Id == Guid.Empty)
+            {
+                new ToastWindow("Er is geen herkomst gekozen!").Show();
+                return;
+            }
             string verzekeringMaatschapij = SelectedVerzekeraar?.Afkorting;
             bool pakketVerzekering = SelectedVerzekeraar?.Pakket ?? false;
 
@@ -747,8 +764,15 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteClosePopupCommand(object obj)
         {
-            if (obj is Popup verzekeringPopup)
-                verzekeringPopup.IsOpen = false;
+            if(SelectedVerzekeraar.Id != Guid.Empty)
+            {
+                if (obj is Popup verzekeringPopup)
+                    verzekeringPopup.IsOpen = false;
+            }
+            else
+            {
+                new ToastWindow("Er is geen herkomst gekozen!").Show();
+            }
         }
         public void ExecuteOpenPopupCommand(object obj)
         {
