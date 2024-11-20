@@ -11,8 +11,8 @@
 		<LangVersion>12.0</LangVersion>
 		<InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<ApplicationIcon>favicon (3).ico</ApplicationIcon>
-		<PackageIcon>favicon.png</PackageIcon>
+		<ApplicationIcon>logo.ico</ApplicationIcon>
+		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<Target Name="GenerateVersionXml" AfterTargets="Publish">
@@ -35,7 +35,7 @@
 
 	<ItemGroup>
 		<!-- Content files -->
-		<Content Include="favicon (3).ico" />
+		<Content Include="logo.ico" />
 		<Content Include="nl_NL.aff">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -79,7 +79,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\..\..\Downloads\favicon.png">
+	  <None Include="..\..\..\Documents\logo.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
