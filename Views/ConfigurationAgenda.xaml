@@ -22,9 +22,7 @@
 
             <TextBlock Text="Uitvaarten komende 7 dagen:" Grid.Row="2" Margin="30 0 0 0" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-            <Separator Height="2" Grid.Row="3" Margin="0,12,0,24"/>
-
-            <DataGrid Style="{DynamicResource DataGridStyle1}" ItemsSource="{Binding Agenda}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="3" x:Name="agendaDataGrid" Margin="0,16,0,-6" ScrollViewer.CanContentScroll="True">
+            <DataGrid Style="{DynamicResource DataGridStyle1}" ItemsSource="{Binding Agenda}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="3" x:Name="agendaDataGrid" Margin="0,16,0,-6" ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="1"/>
                     <DataGridTemplateColumn Header="Uitvaart nr" IsReadOnly="True" CanUserResize="True" Width="*">
