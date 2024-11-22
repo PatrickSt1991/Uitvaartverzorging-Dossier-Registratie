@@ -798,8 +798,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO ConfigurationVerzekeraar (Id, verzekeraarNaam, verzekeraarAfkorting, isHerkomst, isVerzekeraar, hasLidnummer, postbusAddress, postbusNaam, addressStreet, addressHousenumber, addressHousenumberAddition, addressZipcode,  addressCity, factuurType, correspondentieType, isDeleted, isPakket, OverrideFactuurAdress, verzekeraarTelefoon) " +
-                    "VALUES (@Id, @naam, @afkorting, @herkomst, @verzekeraar, @lidnummer, @postbusAdres, @postbusNaam, @street, @housenumber, @addition, @zipcode, @city, @factuurtype, @correspondentieType, 0, @isPakket, @isOverrideAddress, @telefoon)";
+                command.CommandText = "INSERT INTO ConfigurationVerzekeraar (Id, verzekeraarNaam, verzekeraarAfkorting, isHerkomst, isVerzekeraar, hasLidnummer, postbusAddress, postbusNaam, addressStreet, addressHousenumber, addressHousenumberAddition, addressZipcode,  addressCity, factuurType, correspondentieType, isDeleted, isPakket, OverrideFactuurAdress, verzekeraarTelefoon, CustomLogo) " +
+                    "VALUES (@Id, @naam, @afkorting, @herkomst, @verzekeraar, @lidnummer, @postbusAdres, @postbusNaam, @street, @housenumber, @addition, @zipcode, @city, @factuurtype, @correspondentieType, 0, @isPakket, @isOverrideAddress, @telefoon, @customLogo)";
                 command.Parameters.AddWithValue("@Id", verzekeringCreate.Id);
                 command.Parameters.AddWithValue("@naam", verzekeringCreate.Name);
                 command.Parameters.AddWithValue("@afkorting", verzekeringCreate.Afkorting);
@@ -818,6 +818,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@isPakket", verzekeringCreate.Pakket);
                 command.Parameters.AddWithValue("@isOverrideAddress", verzekeringCreate.IsOverrideFactuurAdress);
                 command.Parameters.AddWithValue("@telefoon", string.IsNullOrEmpty(verzekeringCreate.Telefoon) ? (object)DBNull.Value : verzekeringCreate.Telefoon);
+                command.Parameters.AddWithValue("@customLogo", verzekeringCreate.CustomLogo);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("CreateVerzekeringFailed");

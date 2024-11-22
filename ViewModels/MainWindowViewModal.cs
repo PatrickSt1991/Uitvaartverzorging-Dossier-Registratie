@@ -48,8 +48,6 @@ namespace Dossier_Registratie.ViewModels
         private string _copyrightText = "© " + DateTime.Now.ToString("yyyy") + " - Patrick Stel - All Rights Reserved - " +
                                 "Licensed under GNU Affero General Public License v3.0 ";
 
-        private static readonly string configLocation = Path.Combine(Directory.GetCurrentDirectory(), "AppConnectionSettings.json");
-
         private int _selectedIndex;
 
         private bool _isSearchVisible = false;
@@ -887,11 +885,11 @@ namespace Dossier_Registratie.ViewModels
         }
         public void LoadImageFromDatabase()
         {
-            var imageBlob = miscellaneousRepository.GetLogoBlob("Frontend");
+            var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Frontend");
 
-            if (imageBlob != null)
+            if (documentData != null && documentData.Length > 0)
             {
-                using (var stream = new MemoryStream(imageBlob))
+                using (var stream = new MemoryStream(documentData))
                 {
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();

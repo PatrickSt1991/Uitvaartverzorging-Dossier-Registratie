@@ -7,7 +7,7 @@ namespace Dossier_Registratie.Models
 {
     public interface IMiscellaneousAndDocumentOperations
     {
-        (Guid herkomstId, string herkomstName, string herkomstAfkorting) GetHerkomstByUitvaartId(Guid uitvaartId);
+        (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId);
         bool UitvaarnummerExists(string uitvaartnummer);
         bool UitvaartPersoonsgegevensExists(Guid UitvaartId);
         bool UitvaartOverlijdenInfoExists(Guid UitvaartId);
@@ -25,7 +25,7 @@ namespace Dossier_Registratie.Models
         bool UitvaarBloemenExists(Guid UitvaartId);
         bool UitvaarSteenhouwerijExists(Guid UitvaartId);
         Task<FactuurInfoCrematie> GetFactuurInfo(Guid HerkomstId);
-        byte[] GetLogoBlob(string AppType);
+        (byte[] DocumentData, string DocumentType) GetLogoBlob(string AppType);
         IEnumerable<SuggestionModel> GetSuggestions();
         SuggestionModel GetSuggestionBeheer(Guid suggestionId);
         ObservableCollection<SuggestionModel> GetSuggestionsBeheer();

@@ -88,11 +88,11 @@ namespace Dossier_Registratie.ViewModels
         }
         public void LoadImageFromDatabase()
         {
-            var imageBlob = miscellaneousRepository.GetLogoBlob("Backend");
+            var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Backend");
 
-            if (imageBlob != null)
+            if (documentData != null && documentData.Length > 0)
             {
-                using (var stream = new MemoryStream(imageBlob))
+                using (var stream = new MemoryStream(documentData))
                 {
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();

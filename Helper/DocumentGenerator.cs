@@ -57,12 +57,13 @@ namespace Dossier_Registratie.Helper
                     doc.Bookmarks.Add(bookmark.Key, range);
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
+
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -72,6 +73,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -193,12 +195,12 @@ namespace Dossier_Registratie.Helper
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Document or Bookmarks collection is null"));
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -208,6 +210,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -291,12 +294,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -398,12 +401,12 @@ namespace Dossier_Registratie.Helper
                     doc.Bookmarks.Add(bookmark.Key, range);
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -413,6 +416,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -495,12 +499,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -510,6 +514,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -593,12 +598,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -608,6 +613,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -737,12 +743,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.",documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -752,6 +758,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -868,12 +875,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.",documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -883,6 +890,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -994,12 +1002,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.",documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1009,6 +1017,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -1095,12 +1104,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.",documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1110,6 +1119,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -1226,12 +1236,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.",documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1241,6 +1251,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -1373,12 +1384,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.",documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1388,6 +1399,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();

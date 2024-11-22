@@ -285,6 +285,11 @@ namespace Dossier_Registratie
                             saveCommand.Execute(null);
                             tabControlChecked = true;
                         }
+                        else
+                        {
+                            tabControlChecked = false;
+                            return;
+                        }
                     }
                 }
 

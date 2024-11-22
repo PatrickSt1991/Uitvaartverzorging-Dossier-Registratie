@@ -13,14 +13,14 @@ namespace Dossier_Registratie.Repositories
 {
     public class MiscellaneousAndDocumentOperations : RepositoryBase, IMiscellaneousAndDocumentOperations
     {
-        public (Guid herkomstId, string herkomstName, string herkomstAfkorting) GetHerkomstByUitvaartId(Guid uitvaartId)
+        public (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT overledenHerkomst, verzekeraarNaam, verzekeraarAfkorting " +
+                command.CommandText = "SELECT overledenHerkomst, verzekeraarNaam, verzekeraarAfkorting, CustomLogo " +
                     "FROM OverledeneOverlijdenInfo " +
                     "INNER JOIN ConfigurationVerzekeraar on overledenHerkomst = ConfigurationVerzekeraar.Id " +
                     "WHERE UitvaartId = @uitvaartId";
@@ -31,9 +31,10 @@ namespace Dossier_Registratie.Repositories
                     var herkomstId = reader.IsDBNull(0) ? Guid.Empty : reader.GetGuid(0);
                     var herkomstNamee = reader.IsDBNull(1) ? "None" : reader.GetString(1);
                     var herkomstAfkorting = reader.IsDBNull(2) ? "None" : reader.GetString(2);
-                    return (herkomstId, herkomstNamee, herkomstAfkorting);
+                    var herkomstCustomLogo = reader.IsDBNull(3) ? false : reader.GetBoolean(3);
+                    return (herkomstId, herkomstNamee, herkomstAfkorting, herkomstCustomLogo);
                 }
-                return (Guid.Empty, "None", "None");
+                return (Guid.Empty, "None", "None", false);
             }
         }
         public bool UitvaarnummerExists(string uitvaartnummer)
@@ -284,18 +285,27 @@ namespace Dossier_Registratie.Repositories
             }
             return info;
         }
-        public byte[] GetLogoBlob(string AppType)
+        public (byte[] DocumentData, string DocumentType) GetLogoBlob(string AppType)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT DocumentData FROM ConfigurationBlob WHERE AppType = @AppType";
+                command.CommandText = "SELECT DocumentData, DocumentType FROM ConfigurationBlob WHERE AppType = @AppType";
                 command.Parameters.AddWithValue("@AppType", AppType);
-                var result = command.ExecuteScalar();
-                return result as byte[] ?? Array.Empty<byte>();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        var documentData = reader["DocumentData"] as byte[] ?? Array.Empty<byte>();
+                        var documentType = reader["DocumentType"] as string ?? string.Empty;
+                        return (documentData, documentType);
+                    }
+                }
             }
+            return (Array.Empty<byte>(), string.Empty);
         }
         public IEnumerable<SuggestionModel> GetSuggestions()
         {
@@ -552,7 +562,7 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connecion;
                 command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
                                         "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType]," +
-                                        "postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon], isPakket  " +
+                                        "postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon], isPakket, CustomLogo " +
                                         "FROM ConfigurationVerzekeraar WHERE id = @verzekeraarId";
                 command.Parameters.AddWithValue("@verzekeraarId", verzekeringId);
                 using (var reader = command.ExecuteReader())
@@ -579,7 +589,8 @@ namespace Dossier_Registratie.Repositories
                             CorrespondentieType = reader["correspondentieType"].ToString(),
                             IsOverrideFactuurAdress = (bool)reader["OverrideFactuurAdress"],
                             Telefoon = reader["verzekeraarTelefoon"].ToString(),
-                            Pakket = reader.IsDBNull(18) ? false : reader.GetBoolean(18)
+                            Pakket = reader.IsDBNull(18) ? false : reader.GetBoolean(18),
+                            CustomLogo = reader.IsDBNull(19) ? false : reader.GetBoolean(19)
                         };
                     }
                 }

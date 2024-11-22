@@ -1,9 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,6 +28,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand SaveLeverancierCommand { get; }
         public ICommand CreateNewLeverancierCommand { get; }
         public ICommand RefreshLeverancierGridCommand { get; set; }
+        public ICommand UploadLogoCommand { get; }
 
         private bool isEditLeverancierPopupOpen;
         private bool newLeverancier;
@@ -99,6 +104,7 @@ namespace Dossier_Registratie.ViewModels
             RefreshLeverancierGridCommand = new RelayCommand(LeverancierGridData);
             SaveLeverancierCommand = new ViewModelCommand(ExecuteSaveLeverancierCommand);
             CreateNewLeverancierCommand = new ViewModelCommand(ExecuteCreateNewLeverancier);
+
             LeverancierGridData();
         }
         public void ExecuteActivateLeverancierCommand(object obj)

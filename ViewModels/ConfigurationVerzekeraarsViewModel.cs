@@ -2,9 +2,13 @@
 using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,7 +29,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand SaveVerzekeringCommand { get; }
         public ICommand CreateNewVerzekeraarCommand { get; }
         public ICommand RefreshVerzekeraarGridCommand { get; set; }
-        public ICommand UploadLogo { get; }
+        public ICommand UploadLogoCommand { get; }
 
         private bool isEditVerzekeringPopupOpen;
         private bool newVerzekering;
@@ -87,11 +91,52 @@ namespace Dossier_Registratie.ViewModels
             RefreshVerzekeraarGridCommand = new RelayCommand(() => VerzekeringGridData());
             SaveVerzekeringCommand = new ViewModelCommand(ExecuteSaveVerzekeringCommand);
             CreateNewVerzekeraarCommand = new ViewModelCommand(ExecuteCreateNewVerzekeraar);
-            UploadLogo = new ViewModelCommand(ExecuteUploadLogoCommand);
+            UploadLogoCommand = new ViewModelCommand(obj => UploadImage(obj));
 
             CloseEditVerzekeringPopupCommand = new RelayCommand(() => IsEditVerzekeringPopupOpen = false);
 
             VerzekeringGridData();
+        }
+        public async Task UploadImage(object VerzekeringName)
+        {
+
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Select an image",
+                Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var filePath = openFileDialog.FileName;
+                var fileExtension = Path.GetExtension(filePath)?.TrimStart('.') ?? "unknown";
+
+                byte[] imageData = File.ReadAllBytes(filePath);
+
+                try
+                {
+                    var searchRepo = new SearchOperations();
+                    bool appBlobCheck = await searchRepo.SearchBlobLogo(VerzekeringName.ToString());
+
+                    if (appBlobCheck)
+                    {
+                        await updateRepository.UpdateBlobLogo(filePath, fileExtension, imageData, VerzekeringName.ToString());
+                        new ToastWindow("Afbeelding is geupload.").Show();
+                        selectedVerzekering.CustomLogo = true;
+                    }
+                    else
+                    {
+                        await createRepository.InsertBlobLogo(filePath, fileExtension, imageData, VerzekeringName.ToString());
+                        new ToastWindow("Afbeelding is geupload.").Show();
+                        selectedVerzekering.CustomLogo = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error saving image to database: " + ex.Message);
+                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                }
+            }
         }
         public void VerzekeringGridData()
         {
@@ -196,6 +241,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveVerzekeringCommand(object obj)
         {
+            Debug.WriteLine(selectedVerzekering.CustomLogo);
             CloseEditVerzekeringPopupCommand.Execute(null);
 
             if (!newVerzekering)
@@ -271,11 +317,6 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.Telefoon = string.Empty;
 
             IsEditVerzekeringPopupOpen = true;
-        }
-        public static void ExecuteUploadLogoCommand(object obj)
-        {
-            new ToastWindow("Afbeelding is geupload.").Show();
-            return;
         }
     }
 }

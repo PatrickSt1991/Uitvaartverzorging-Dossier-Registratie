@@ -26,8 +26,6 @@
 		<!-- Resource files -->
 		<Resource Include="Images\compose.png" />
 		<Resource Include="Images\email.png" />
-		<Resource Include="Images\kb_asr.jpg" />
-		<Resource Include="Images\kb_yarden.jpg" />
 		<Resource Include="Images\PersonUser.png" />
 		<Resource Include="Images\printer.png" />
 		<Resource Include="Images\word.png" />

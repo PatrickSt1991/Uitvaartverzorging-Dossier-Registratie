@@ -86,6 +86,7 @@ namespace Dossier_Registratie.Models
         private bool _isSelected;
         private bool _isOverrideFactuurAdress;
         private string? _telefoon;
+        private bool? _customLogo;
 
         public Guid Id
         {
@@ -244,6 +245,11 @@ namespace Dossier_Registratie.Models
                 _telefoon = value;
                 OnPropertyChanged(nameof(Telefoon));
             }
+        }
+        public bool? CustomLogo
+        {
+            get { return _customLogo; }
+            set { _customLogo = value; OnPropertyChanged(nameof(CustomLogo)); }
         }
     }
 }

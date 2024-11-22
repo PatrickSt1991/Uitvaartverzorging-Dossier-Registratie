@@ -823,7 +823,8 @@ namespace Dossier_Registratie.Repositories
                                         "correspondentieType = @correspondentieType," +
                                         "isPakket = @isPakket," +
                                         "OverrideFactuurAdress = @isOverrideAddress," +
-                                        "verzekeraarTelefoon = @telefoon " +
+                                        "verzekeraarTelefoon = @telefoon," +
+                                        "CustomLogo = @customLogo " +
                                         "WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", verzekeringUpdate.Id);
                 command.Parameters.AddWithValue("@naam", verzekeringUpdate.Name);
@@ -843,6 +844,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@isPakket", verzekeringUpdate.Pakket);
                 command.Parameters.AddWithValue("@isOverrideAddress", verzekeringUpdate.IsOverrideFactuurAdress);
                 command.Parameters.AddWithValue("@telefoon", string.IsNullOrEmpty(verzekeringUpdate.Telefoon) ? (object)DBNull.Value : verzekeringUpdate.Telefoon);
+                command.Parameters.AddWithValue("@customLogo", verzekeringUpdate.CustomLogo);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("UpdateVerzekeringFailed");
