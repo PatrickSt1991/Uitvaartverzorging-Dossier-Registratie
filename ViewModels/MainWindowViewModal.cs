@@ -48,8 +48,6 @@ namespace Dossier_Registratie.ViewModels
         private string _copyrightText = "© " + DateTime.Now.ToString("yyyy") + " - Patrick Stel - All Rights Reserved - " +
                                 "Licensed under GNU Affero General Public License v3.0 ";
 
-        private static readonly string configLocation = Path.Combine(Directory.GetCurrentDirectory(), "AppConnectionSettings.json");
-
         private int _selectedIndex;
 
         private bool _isSearchVisible = false;
@@ -366,7 +364,7 @@ namespace Dossier_Registratie.ViewModels
             switch (Globals.PermissionLevelId.ToUpper())
             {
                 case "A224C94E-2F54-4D43-A976-11E24287A8E0": //Beheerder
-                //case "D8454762-9245-4B6C-9D29-293B9BC2FFB2": //System
+                case "D8454762-9245-4B6C-9D29-293B9BC2FFB2": //System
                 case "D3BD7AE6-978D-4F1A-972C-B033CFC801E3": //Uitvaartleider - Limited
                 case "8DBB3112-153D-4592-ABE2-77C79D61F81A": //Financieel
                     BeheerButtonVisable = Visibility.Visible;
@@ -887,11 +885,11 @@ namespace Dossier_Registratie.ViewModels
         }
         public void LoadImageFromDatabase()
         {
-            var imageBlob = miscellaneousRepository.GetLogoBlob("Frontend");
+            var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Frontend");
 
-            if (imageBlob != null)
+            if (documentData != null && documentData.Length > 0)
             {
-                using (var stream = new MemoryStream(imageBlob))
+                using (var stream = new MemoryStream(documentData))
                 {
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();

@@ -50,12 +50,11 @@ namespace Dossier_Registratie.ViewModels
         public string WindowTitle
         {
             get => _windowTitle;
-            set { _windowTitle = value;OnPropertyChanged(nameof(WindowTitle)); }
+            set { _windowTitle = value; OnPropertyChanged(nameof(WindowTitle)); }
         }
 
         public ICommand ShowWerknemersViewCommand { get; }
         public ICommand ShowVerzekeraarsViewCommand { get; }
-        public ICommand ShowHerkostenViewCommand { get; }
         public ICommand ShowOverlijdenLocatiesViewCommand { get; }
         public ICommand ShowLeveranciersViewCommand { get; }
         public ICommand ShowKistenViewCommand { get; }
@@ -70,7 +69,6 @@ namespace Dossier_Registratie.ViewModels
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             ShowWerknemersViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationWerknemersView());
             ShowVerzekeraarsViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationVerzekeraarsView());
-            ShowHerkostenViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationHerkomstenView());
             ShowLeveranciersViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationLeveranciersView());
             ShowOverlijdenLocatiesViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationOverlijdenLocatiesView());
             ShowKistenViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationKistenView());
@@ -90,11 +88,11 @@ namespace Dossier_Registratie.ViewModels
         }
         public void LoadImageFromDatabase()
         {
-            var imageBlob = miscellaneousRepository.GetLogoBlob("Backend");
+            var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Backend");
 
-            if (imageBlob != null)
+            if (documentData != null && documentData.Length > 0)
             {
-                using (var stream = new MemoryStream(imageBlob))
+                using (var stream = new MemoryStream(documentData))
                 {
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();

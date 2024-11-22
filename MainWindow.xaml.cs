@@ -213,7 +213,7 @@ namespace Dossier_Registratie
                 {
                     TabHeader.SelectedIndex = 0;
                     MainComboBox.SelectedItem = null;
-                }    
+                }
                 else if (selectedItemString.Contains("Beheer"))
                 {
                     BeheerWindow beheerWindow = new();
@@ -226,7 +226,7 @@ namespace Dossier_Registratie
                 {
                     TabHeader.SelectedIndex = 10;
                     MainComboBox.SelectedItem = null;
-                }   
+                }
                 else if (selectedItemString.Contains("Help"))
                 {
                     TabHeader.SelectedIndex = 12;
@@ -284,6 +284,11 @@ namespace Dossier_Registratie
                         {
                             saveCommand.Execute(null);
                             tabControlChecked = true;
+                        }
+                        else
+                        {
+                            tabControlChecked = false;
+                            return;
                         }
                     }
                 }

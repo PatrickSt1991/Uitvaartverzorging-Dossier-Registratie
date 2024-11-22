@@ -766,7 +766,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                     catch (JsonException ex)
                     {
-                        Debug.WriteLine(ex.Message);
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 

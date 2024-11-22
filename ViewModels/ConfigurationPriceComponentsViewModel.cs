@@ -470,7 +470,7 @@ namespace Dossier_Registratie.ViewModels
                 {
                     var filteredComponents = miscellaneousRepository
                         .GetFilterdPriceComponentsBeheer(PriceComponentFilter.ComponentVerzekering);
-                        //.Where(pc => pc.SpecificPakket != PriceComponentFilter.SpecificPakket);
+                    //.Where(pc => pc.SpecificPakket != PriceComponentFilter.SpecificPakket);
 
                     foreach (var PriceComponent in filteredComponents)
                     {

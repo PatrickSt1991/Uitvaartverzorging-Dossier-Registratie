@@ -97,9 +97,9 @@ namespace Dossier_Registratie.ViewModels
         public OverledeneBloemenModel BloemenModel
         {
             get { return _bloemenModel; }
-            set 
-            { 
-                _bloemenModel = value; 
+            set
+            {
+                _bloemenModel = value;
                 OnPropertyChanged(nameof(BloemenModel));
             }
         }
@@ -147,7 +147,7 @@ namespace Dossier_Registratie.ViewModels
             get { return _isLintChecked; }
             set
             {
-                if(_isLintChecked != value)
+                if (_isLintChecked != value)
                 {
                     _isLintChecked = value;
                     OnPropertyChanged(nameof(IsLintChecked));
@@ -1385,7 +1385,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
             }
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>{ _generatingDocumentView.Hide(); });
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             Process.Start(new ProcessStartInfo
             {
                 FileName = BloemenDocModel.DestinationFile,

@@ -60,13 +60,9 @@
                     <Button Style="{StaticResource menuButton}" Command="{Binding ShowVerzekeraarsViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Icon:PackIconMaterial Kind="ContactsOutline" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Verzekeraars"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource menuButton}" Command="{Binding ShowHerkostenViewCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <Icon:PackIconMaterial Kind="Origin" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Herkomsten"/>
+                            <TextBlock>
+                            Verzekeraars &amp; <LineBreak/>Herkomsten
+                            </TextBlock>
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource menuButton}" Command="{Binding ShowOverlijdenLocatiesViewCommand}">

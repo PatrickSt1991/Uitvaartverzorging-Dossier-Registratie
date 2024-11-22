@@ -1,6 +1,6 @@
-﻿using Microsoft.Office.Interop.Access;
+﻿using Dossier_Registratie.ViewModels;
+using Microsoft.Office.Interop.Access;
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -33,21 +33,14 @@ namespace Dossier_Registratie.Helper
                     myForm.GetType().InvokeMember("FilterOn", BindingFlags.SetProperty, null, myForm, new object[] { false });
                     myForm.GetType().InvokeMember("FilterOn", BindingFlags.SetProperty, null, myForm, new object[] { true });
                 }
-                else
-                {
-                    Debug.WriteLine("No records found with the provided uitvaartnummer.");
-                }
             }
             catch (COMException comEx)
             {
-                Debug.WriteLine($"COMException: {comEx.Message}");
-                Debug.WriteLine($"Error Code: {comEx.ErrorCode}");
-                Debug.WriteLine($"Stack Trace: {comEx.StackTrace}");
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(comEx);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception: {ex.Message}");
-                Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
         }
 

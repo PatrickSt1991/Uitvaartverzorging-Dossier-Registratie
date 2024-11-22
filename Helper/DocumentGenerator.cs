@@ -5,7 +5,6 @@ using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -57,12 +56,13 @@ namespace Dossier_Registratie.Helper
                     doc.Bookmarks.Add(bookmark.Key, range);
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
+
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -72,6 +72,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -193,12 +194,12 @@ namespace Dossier_Registratie.Helper
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Document or Bookmarks collection is null"));
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -208,6 +209,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -291,12 +293,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -398,12 +400,12 @@ namespace Dossier_Registratie.Helper
                     doc.Bookmarks.Add(bookmark.Key, range);
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -413,6 +415,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -495,12 +498,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -510,6 +513,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -593,12 +597,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -608,6 +612,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -737,12 +742,12 @@ namespace Dossier_Registratie.Helper
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -752,6 +757,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -864,16 +870,17 @@ namespace Dossier_Registratie.Helper
                     }
                     else
                     {
-                        Debug.WriteLine($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        Exception ex = new Exception($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -883,6 +890,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -990,16 +998,17 @@ namespace Dossier_Registratie.Helper
                     }
                     else
                     {
-                        Debug.WriteLine($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        Exception ex = new Exception($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1009,6 +1018,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -1091,16 +1101,17 @@ namespace Dossier_Registratie.Helper
                     }
                     else
                     {
-                        Debug.WriteLine($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        Exception ex = new Exception($"Bookmark '{bookmark.Key}' does not exist in the document Tevredenheid.");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1110,6 +1121,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -1222,16 +1234,17 @@ namespace Dossier_Registratie.Helper
                     }
                     else
                     {
-                        Debug.WriteLine($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        Exception ex = new Exception($"Bookmark '{bookmark.Key}' does not exist in the document Bloemen.");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1241,6 +1254,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -1369,16 +1383,17 @@ namespace Dossier_Registratie.Helper
                     }
                     else
                     {
-                        Debug.WriteLine($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                        Exception ex = new Exception($"Bookmark '{bookmark.Key}' does not exist in the document Aangifte.");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
-                byte[] imageBlob = miscellaneousRepository.GetLogoBlob("Document");
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
-                if (imageBlob != null)
+                if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.png");
-                    File.WriteAllBytes(tempImagePath, imageBlob);
+                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
+                    File.WriteAllBytes(tempImagePath, documentData);
 
                     foreach (Section section in doc.Sections)
                     {
@@ -1388,6 +1403,7 @@ namespace Dossier_Registratie.Helper
                     }
                     File.Delete(tempImagePath);
                 }
+
 
                 doc.Save();
                 doc.Close();

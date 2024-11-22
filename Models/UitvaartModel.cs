@@ -77,7 +77,7 @@ namespace Dossier_Registratie.Models
         public string GrafNummer
         {
             get { return _grafnummer; }
-            set { _grafnummer = value; OnPropertyChanged(nameof(GrafNummer));}
+            set { _grafnummer = value; OnPropertyChanged(nameof(GrafNummer)); }
         }
         public bool HasData()
         {

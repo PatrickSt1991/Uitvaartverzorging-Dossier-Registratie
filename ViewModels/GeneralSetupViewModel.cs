@@ -482,7 +482,6 @@ namespace Dossier_Registratie.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error saving image to database: " + ex.Message);
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                 }
             }
@@ -718,7 +717,6 @@ namespace Dossier_Registratie.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error saving settings: {ex.Message}");
                 ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
         }

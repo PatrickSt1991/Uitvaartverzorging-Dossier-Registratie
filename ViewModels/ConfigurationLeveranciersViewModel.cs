@@ -24,6 +24,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand SaveLeverancierCommand { get; }
         public ICommand CreateNewLeverancierCommand { get; }
         public ICommand RefreshLeverancierGridCommand { get; set; }
+        public ICommand UploadLogoCommand { get; }
 
         private bool isEditLeverancierPopupOpen;
         private bool newLeverancier;
@@ -99,6 +100,7 @@ namespace Dossier_Registratie.ViewModels
             RefreshLeverancierGridCommand = new RelayCommand(LeverancierGridData);
             SaveLeverancierCommand = new ViewModelCommand(ExecuteSaveLeverancierCommand);
             CreateNewLeverancierCommand = new ViewModelCommand(ExecuteCreateNewLeverancier);
+
             LeverancierGridData();
         }
         public void ExecuteActivateLeverancierCommand(object obj)

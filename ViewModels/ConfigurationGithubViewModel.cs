@@ -5,7 +5,6 @@ using Dossier_Registratie.Views;
 using Octokit;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -291,7 +290,6 @@ Datum Tijd: {DateTime.Now}"
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.StackTrace);
                 // Ensure this runs on the UI thread as well
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -361,7 +359,7 @@ Datum Tijd: {DateTime.Now}"
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"An error occurred while sending the email: {ex.Message}");
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
         }
     }

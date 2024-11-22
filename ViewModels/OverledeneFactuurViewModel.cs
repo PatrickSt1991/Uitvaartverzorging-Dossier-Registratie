@@ -390,7 +390,7 @@ namespace Dossier_Registratie.ViewModels
 
             foreach (var el in miscellaneousRepository.GetVerzekeraars())
             {
-                if (el.IsDeleted == false && el.IsVerzekeraar == true && el.Name != "Default")
+                if (el.IsDeleted == false && el.IsHerkomst == true && el.Name != "Default")
                     Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting });
             }
         }
@@ -398,7 +398,7 @@ namespace Dossier_Registratie.ViewModels
         {
             foreach (var el in miscellaneousRepository.GetVerzekeraars())
             {
-                if (!Verzekeraars.Any(u => u.Id == el.Id) && el.IsDeleted == false && el.IsVerzekeraar == true && el.Name != "Default")
+                if (!Verzekeraars.Any(u => u.Id == el.Id) && el.IsDeleted == false && el.IsHerkomst == true && el.Name != "Default")
                     Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting });
             }
         }
@@ -412,6 +412,15 @@ namespace Dossier_Registratie.ViewModels
             InfoUitvaartleider.PersoneelNaam = Globals.UitvaarLeider;
             IsPopupVisible = true;
             IsExcelButtonEnabled = false;
+
+            var selectedHerkomst = miscellaneousRepository.GetHerkomstByUitvaartId(Globals.UitvaartCodeGuid);
+            if (selectedHerkomst.herkomstId != Guid.Empty)
+            {
+                SelectedVerzekeraar.Id = selectedHerkomst.herkomstId;
+                SelectedVerzekeraar.Name = selectedHerkomst.herkomstName;
+                SelectedVerzekeraar.Afkorting = selectedHerkomst.herkomstAfkorting;
+                SelectedVerzekeraar.CustomLogo = selectedHerkomst.herkomstLogo;
+            }
         }
         public void RequestedDossierInformationBasedOnUitvaartId(string uitvaartNummer)
         {
@@ -440,9 +449,11 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneFactuurModel.PolisJson = factuurResult.PolisJson;
 
                 var previouslySelected = miscellaneousRepository.GetVerzekeraarsById(OverledeneFactuurModel.KostenbegrotingVerzekeraar);
+
                 SelectedVerzekeraar.Id = previouslySelected.Id;
                 SelectedVerzekeraar.Name = previouslySelected.Name;
                 SelectedVerzekeraar.Afkorting = previouslySelected.Afkorting;
+                SelectedVerzekeraar.CustomLogo = previouslySelected.CustomLogo;
 
                 _originalFactuurModel = new FactuurModel
                 {
@@ -515,10 +526,15 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
-                if (string.IsNullOrEmpty(SelectedVerzekeraar.Name))
+                var selectedHerkomst = miscellaneousRepository.GetHerkomstByUitvaartId(Globals.UitvaartCodeGuid);
+                if (selectedHerkomst.herkomstId != Guid.Empty)
                 {
-                    IsPopupVisible = true;
+                    var matchingVerzekeraar = Verzekeraars.FirstOrDefault(v => v.Id == selectedHerkomst.herkomstId);
+                    if (matchingVerzekeraar != null)
+                        SelectedVerzekeraar = matchingVerzekeraar;
                 }
+
+                IsPopupVisible = true;
                 IsExcelButtonEnabled = false;
             }
         }
@@ -764,15 +780,9 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteClosePopupCommand(object obj)
         {
-            if(SelectedVerzekeraar.Id != Guid.Empty)
-            {
-                if (obj is Popup verzekeringPopup)
-                    verzekeringPopup.IsOpen = false;
-            }
-            else
-            {
-                new ToastWindow("Er is geen herkomst gekozen!").Show();
-            }
+            if (obj is Popup verzekeringPopup)
+                verzekeringPopup.IsOpen = false;
+            IntAggregator.Transmit(7);
         }
         public void ExecuteOpenPopupCommand(object obj)
         {
@@ -823,46 +833,37 @@ namespace Dossier_Registratie.ViewModels
 
             return path;
         }
-        private string KostenbegrotingImages(string kbInput)
+        public string LoadImageFromDatabase()
         {
-            string tempPath = null;
-
             try
             {
-                // Create the resource URI
-                Uri resourceUri = new Uri($"pack://application:,,,/Images/{kbInput}", UriKind.RelativeOrAbsolute);
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob(SelectedVerzekeraar.Name);
 
-                // Get the resource stream
-                var streamResourceInfo = System.Windows.Application.GetResourceStream(resourceUri);
-
-                if (streamResourceInfo == null)
+                if (documentData == null || documentData.Length == 0)
                 {
-                    throw new FileNotFoundException($"Image file '{kbInput}' not found in resources.");
+                    throw new InvalidOperationException("No image data found for the specified Verzekeraar.");
                 }
 
-                // Load the image into a BitmapImage
-                BitmapImage bitmapImage;
-                using (var stream = streamResourceInfo.Stream)
+                BitmapImage bitmap;
+                using (var stream = new MemoryStream(documentData))
                 {
-                    bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = stream;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
+                    bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
                 }
 
-                // Create a temporary file path
                 string tempDirectory = Path.GetTempPath(); // Use the system temp directory for safety
-                string tempFileName = Path.GetRandomFileName() + ".jpg";
-                tempPath = Path.Combine(tempDirectory, tempFileName);
-                // Save the image to the temp path
+                string tempFileName = Path.GetRandomFileName() + "." + documentType; // Use documentType from the database
+                string tempPath = Path.Combine(tempDirectory, tempFileName);
+
                 try
                 {
-                    // Convert BitmapImage to a format that can be saved
                     using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
                     {
-                        var encoder = new PngBitmapEncoder(); // Using PNG as it supports lossless compression
-                        encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
+                        var encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(bitmap));
                         encoder.Save(fileStream);
                     }
                 }
@@ -896,22 +897,11 @@ namespace Dossier_Registratie.ViewModels
             var workbook = excelApp.Workbooks.Open(kostenbegrotingUrl);
             var worksheet = (Excel.Worksheet)workbook.ActiveSheet;
 
-            switch (SelectedVerzekeraar.Name)
-            {
-                case string verzekeraarNaam when verzekeraarNaam.Contains("Yarden"):
-                    kbImage = KostenbegrotingImages("kb_yarden.jpg");
-                    break;
-                case string verzekeraarNaam when verzekeraarNaam.Contains("Dela"):
-                    kbImage = KostenbegrotingImages("kb_yarden.jpg");
-                    break;
-                case string verzekeraarNaam when verzekeraarNaam.Contains("Ardanta"):
-                    kbImage = KostenbegrotingImages("kb_asr.jpg");
-                    break;
-            }
+            if (SelectedVerzekeraar.CustomLogo == true)
+                kbImage = LoadImageFromDatabase();
 
             if (!string.IsNullOrEmpty(kbImage))
             {
-                // Add the picture as an embedded picture (not linked)
                 var pictures = worksheet.Shapes;
                 var picture = pictures.AddPicture(kbImage,
                                                   Microsoft.Office.Core.MsoTriState.msoFalse, // LinkToFile
@@ -952,7 +942,7 @@ namespace Dossier_Registratie.ViewModels
             {
                 if (priceComponent.PrintTrue || priceComponent.PmAmount ||
                     (priceComponent.Bedrag.HasValue && priceComponent.Bedrag.Value != 0)
-                    || priceComponent.Verzekerd == "X" || priceComponent.Aantal != "0" )
+                    || priceComponent.Verzekerd == "X" || priceComponent.Aantal != "0")
                 {
                     var aantalCell = (Excel.Range)worksheet.Cells[excelRow, 2];
 

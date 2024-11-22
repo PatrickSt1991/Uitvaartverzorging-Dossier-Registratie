@@ -721,7 +721,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else if(!PersoonsgegevensExists)
+            else if (!PersoonsgegevensExists)
             {
                 bool persoonsgegevensInfoChanged = modelCompare.AreValuesEqual(_oginalPersoonGegevensModel, PersoonsGegevens);
 
@@ -801,7 +801,7 @@ namespace Dossier_Registratie.ViewModels
                         return;
                     }
                 }
-                else if(OverlijdenInfoExists)
+                else if (OverlijdenInfoExists)
                 {
                     bool overlijdenInfoChanged = modelCompare.AreValuesEqual(_originalOverlijdenInfoModel, OverlijdenInfo);
 

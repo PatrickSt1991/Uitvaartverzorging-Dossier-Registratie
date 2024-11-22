@@ -1236,7 +1236,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error accessing TextBox3: {ex.Message}");
+                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                 }
             }
             else
@@ -1255,7 +1255,7 @@ namespace Dossier_Registratie.ViewModels
             overledenCell.Characters[aanhefLength + 2, aanhefLength + 2 + voornamenLength].Font.Bold = true;
             overledenCell.Characters[aanhefLength + 3 + voornamenLength, aanhefLength + 3 + voornamenLength + achternaamLength].Font.Bold = true;
             overledenCell.Characters[aanhefLength + 3 + voornamenLength + achternaamLength + 2, aanhefLength + 3 + voornamenLength + achternaamLength + 2 + opDatumLength].Font.Bold = true;
-            overledenCell.EntireColumn.AutoFit();            
+            overledenCell.EntireColumn.AutoFit();
 
             if (splitFactuur == string.Empty)
             {
