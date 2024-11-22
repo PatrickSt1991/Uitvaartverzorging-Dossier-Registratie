@@ -55,7 +55,6 @@ namespace Dossier_Registratie.ViewModels
 
         public ICommand ShowWerknemersViewCommand { get; }
         public ICommand ShowVerzekeraarsViewCommand { get; }
-        public ICommand ShowHerkostenViewCommand { get; }
         public ICommand ShowOverlijdenLocatiesViewCommand { get; }
         public ICommand ShowLeveranciersViewCommand { get; }
         public ICommand ShowKistenViewCommand { get; }
@@ -70,7 +69,6 @@ namespace Dossier_Registratie.ViewModels
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             ShowWerknemersViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationWerknemersView());
             ShowVerzekeraarsViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationVerzekeraarsView());
-            ShowHerkostenViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationHerkomstenView());
             ShowLeveranciersViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationLeveranciersView());
             ShowOverlijdenLocatiesViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationOverlijdenLocatiesView());
             ShowKistenViewCommand = new AdminRelayCommand(() => CurrentView = new ConfigurationKistenView());

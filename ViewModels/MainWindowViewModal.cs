@@ -366,7 +366,7 @@ namespace Dossier_Registratie.ViewModels
             switch (Globals.PermissionLevelId.ToUpper())
             {
                 case "A224C94E-2F54-4D43-A976-11E24287A8E0": //Beheerder
-                //case "D8454762-9245-4B6C-9D29-293B9BC2FFB2": //System
+                case "D8454762-9245-4B6C-9D29-293B9BC2FFB2": //System
                 case "D3BD7AE6-978D-4F1A-972C-B033CFC801E3": //Uitvaartleider - Limited
                 case "8DBB3112-153D-4592-ABE2-77C79D61F81A": //Financieel
                     BeheerButtonVisable = Visibility.Visible;

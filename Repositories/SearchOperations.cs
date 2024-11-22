@@ -1182,7 +1182,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT OPG.uitvaartId,OU.Uitvaartnummer,[kostenbegrotingJson],OO.opdrachtgeverAanhef, OO.opdrachtgeverVoornaamen, OO.opdrachtgeverTussenvoegsel, OO.opdrachtgeverAchternaam, " +
+                command.CommandText = "SELECT TOP(1) OPG.uitvaartId,OU.Uitvaartnummer,[kostenbegrotingJson],OO.opdrachtgeverAanhef, OO.opdrachtgeverVoornaamen, OO.opdrachtgeverTussenvoegsel, OO.opdrachtgeverAchternaam, " +
                                         "OO.opdrachtgeverStraat, OO.opdrachtgeverHuisnummer, oo.opdrachtgeverHuisnummerToevoeging, OO.opdrachtgeverPostcode, OO.opdrachtgeverWoonplaats, " +
                                         "OPG.overledeneAanhef, OPG.overledeneVoornamen, OPG.overledeneTussenvoegsel, OPG.overledeneAchternaam, CAST(OI.overledenDatumTijd AS DATE) AS OverledeneOpDatum, OI.overledenLidnummer, OVI.verzekeringProperties, " +
                                         "CV.factuurType, CV.addressStreet, CV.addressHousenumber, CV.addressHousenumberAddition, CV.postbusAddress, CV.postbusNaam, CV.addressZipcode, CV.addressCity, CV.correspondentieType, CV.verzekeraarNaam," +

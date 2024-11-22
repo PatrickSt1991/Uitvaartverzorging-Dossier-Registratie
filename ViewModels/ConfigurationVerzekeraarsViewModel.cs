@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
@@ -24,6 +25,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand SaveVerzekeringCommand { get; }
         public ICommand CreateNewVerzekeraarCommand { get; }
         public ICommand RefreshVerzekeraarGridCommand { get; set; }
+        public ICommand UploadLogo { get; }
 
         private bool isEditVerzekeringPopupOpen;
         private bool newVerzekering;
@@ -85,6 +87,7 @@ namespace Dossier_Registratie.ViewModels
             RefreshVerzekeraarGridCommand = new RelayCommand(() => VerzekeringGridData());
             SaveVerzekeringCommand = new ViewModelCommand(ExecuteSaveVerzekeringCommand);
             CreateNewVerzekeraarCommand = new ViewModelCommand(ExecuteCreateNewVerzekeraar);
+            UploadLogo = new ViewModelCommand(ExecuteUploadLogoCommand);
 
             CloseEditVerzekeringPopupCommand = new RelayCommand(() => IsEditVerzekeringPopupOpen = false);
 
@@ -95,30 +98,27 @@ namespace Dossier_Registratie.ViewModels
             Verzekeraars.Clear();
             foreach (var verzekeraar in miscellaneousRepository.GetVerzekeraars())
             {
-                if (verzekeraar.IsVerzekeraar == true)
+                Verzekeraars.Add(new VerzekeraarsModel
                 {
-                    Verzekeraars.Add(new VerzekeraarsModel
-                    {
-                        Id = verzekeraar.Id,
-                        Name = verzekeraar.Name,
-                        Afkorting = verzekeraar.Afkorting,
-                        HasLidnummer = verzekeraar.HasLidnummer,
-                        IsDeleted = verzekeraar.IsDeleted,
-                        BtnBrush = verzekeraar.BtnBrush,
-                        AddressStreet = verzekeraar.AddressStreet,
-                        AddressHousenumber = verzekeraar.AddressHousenumber,
-                        AddressHousenumberAddition = verzekeraar.AddressHousenumberAddition,
-                        AddressCity = verzekeraar.AddressCity,
-                        AddressZipCode = verzekeraar.AddressZipCode,
-                        FactuurType = verzekeraar.FactuurType,
-                        Pakket = verzekeraar.Pakket,
-                    });
-                }
+                    Id = verzekeraar.Id,
+                    Name = verzekeraar.Name,
+                    Afkorting = verzekeraar.Afkorting,
+                    HasLidnummer = verzekeraar.HasLidnummer,
+                    IsDeleted = verzekeraar.IsDeleted,
+                    BtnBrush = verzekeraar.BtnBrush,
+                    AddressStreet = verzekeraar.AddressStreet,
+                    AddressHousenumber = verzekeraar.AddressHousenumber,
+                    AddressHousenumberAddition = verzekeraar.AddressHousenumberAddition,
+                    AddressCity = verzekeraar.AddressCity,
+                    AddressZipCode = verzekeraar.AddressZipCode,
+                    FactuurType = verzekeraar.FactuurType,
+                    Pakket = verzekeraar.Pakket,
+                });
             }
         }
         public void ExecuteActivateVerzekeringCommand(object obj)
         {
-            MessageBoxResult activeQuestion = MessageBox.Show("Wil je deze verzekering activeren?", "Verzekering activeren", MessageBoxButton.YesNo);
+            MessageBoxResult activeQuestion = MessageBox.Show("Wil je deze activeren?", "Activeren", MessageBoxButton.YesNo);
             if (activeQuestion == MessageBoxResult.Yes)
             {
                 if (Guid.TryParse(obj?.ToString(), out Guid verzekeringId))
@@ -129,7 +129,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error activating verzekering: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error activating: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         return;
                     }
@@ -138,7 +138,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Invalid verzekering ID.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Invalid ID.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -150,8 +150,9 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.Afkorting = verzekering.Afkorting;
             selectedVerzekering.Name = verzekering.Name;
             selectedVerzekering.HasLidnummer = verzekering.HasLidnummer;
-            selectedVerzekering.IsHerkomst = false;
-            selectedVerzekering.IsVerzekeraar = true;
+            selectedVerzekering.IsHerkomst = verzekering.IsHerkomst;
+            selectedVerzekering.IsVerzekeraar = verzekering.IsVerzekeraar;
+            selectedVerzekering.CorrespondentieType = verzekering.CorrespondentieType;
             selectedVerzekering.AddressHousenumber = verzekering.AddressHousenumber;
             selectedVerzekering.AddressCity = verzekering.AddressCity;
             selectedVerzekering.AddressStreet = verzekering.AddressStreet;
@@ -160,15 +161,16 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.PostbusAddress = verzekering.PostbusAddress;
             selectedVerzekering.PostbusName = verzekering.PostbusName;
             selectedVerzekering.FactuurType = System.Net.WebUtility.HtmlDecode(verzekering.FactuurType);
-            selectedVerzekering.CorrespondentieType = verzekering.CorrespondentieType;
             selectedVerzekering.Pakket = verzekering.Pakket;
+            selectedVerzekering.IsOverrideFactuurAdress = verzekering.IsOverrideFactuurAdress;
+            selectedVerzekering.Telefoon = verzekering.Telefoon;
 
             newVerzekering = false;
             IsEditVerzekeringPopupOpen = true;
         }
         public void ExecuteDisableVerzekeringCommand(object obj)
         {
-            MessageBoxResult disableQuestion = MessageBox.Show("Wil je deze verzekeraar deactiveren?", "Verzekeraar deactiveren", MessageBoxButton.YesNo);
+            MessageBoxResult disableQuestion = MessageBox.Show("Wil je deze deactiveren?", "Deactiveren", MessageBoxButton.YesNo);
             if (disableQuestion == MessageBoxResult.Yes)
             {
                 if (Guid.TryParse(obj?.ToString(), out Guid verzekeraarId))
@@ -179,7 +181,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error disableling verzekering: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error disableling: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         return;
                     }
@@ -188,7 +190,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Invalid employee ID.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Invalid ID.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -212,7 +214,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating verzekering: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error updating: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     return;
                 }
@@ -238,7 +240,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error creating verzekering: {ex.Message}", "Creating Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error creating: {ex.Message}", "Creating Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     return;
                 }
@@ -254,7 +256,7 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.Name = string.Empty;
             selectedVerzekering.HasLidnummer = false;
             selectedVerzekering.IsHerkomst = false;
-            SelectedVerzekering.IsVerzekeraar = true;
+            SelectedVerzekering.IsVerzekeraar = false;
             selectedVerzekering.Pakket = false;
             selectedVerzekering.PostbusAddress = string.Empty;
             selectedVerzekering.PostbusName = string.Empty;
@@ -263,8 +265,17 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.AddressHousenumberAddition = string.Empty;
             selectedVerzekering.AddressZipCode = string.Empty;
             selectedVerzekering.AddressStreet = string.Empty;
+            selectedVerzekering.FactuurType = string.Empty;
+            selectedVerzekering.CorrespondentieType = string.Empty;
+            selectedVerzekering.IsOverrideFactuurAdress = false;
+            selectedVerzekering.Telefoon = string.Empty;
 
             IsEditVerzekeringPopupOpen = true;
+        }
+        public static void ExecuteUploadLogoCommand(object obj)
+        {
+            new ToastWindow("Afbeelding is geupload.").Show();
+            return;
         }
     }
 }

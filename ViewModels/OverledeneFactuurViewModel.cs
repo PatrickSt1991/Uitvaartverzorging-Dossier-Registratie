@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -390,7 +391,7 @@ namespace Dossier_Registratie.ViewModels
 
             foreach (var el in miscellaneousRepository.GetVerzekeraars())
             {
-                if (el.IsDeleted == false && el.IsVerzekeraar == true && el.Name != "Default")
+                if (el.IsDeleted == false && el.IsHerkomst == true && el.Name != "Default")
                     Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting });
             }
         }
@@ -398,7 +399,7 @@ namespace Dossier_Registratie.ViewModels
         {
             foreach (var el in miscellaneousRepository.GetVerzekeraars())
             {
-                if (!Verzekeraars.Any(u => u.Id == el.Id) && el.IsDeleted == false && el.IsVerzekeraar == true && el.Name != "Default")
+                if (!Verzekeraars.Any(u => u.Id == el.Id) && el.IsDeleted == false && el.IsHerkomst == true && el.Name != "Default")
                     Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting });
             }
         }
@@ -412,6 +413,14 @@ namespace Dossier_Registratie.ViewModels
             InfoUitvaartleider.PersoneelNaam = Globals.UitvaarLeider;
             IsPopupVisible = true;
             IsExcelButtonEnabled = false;
+
+            var selectedHerkomst = miscellaneousRepository.GetHerkomstByUitvaartId(Globals.UitvaartCodeGuid);
+            if (selectedHerkomst.herkomstId != Guid.Empty)
+            {
+                SelectedVerzekeraar.Id = selectedHerkomst.herkomstId;
+                SelectedVerzekeraar.Name = selectedHerkomst.herkomstName;
+                SelectedVerzekeraar.Afkorting = selectedHerkomst.herkomstAfkorting;
+            }
         }
         public void RequestedDossierInformationBasedOnUitvaartId(string uitvaartNummer)
         {
@@ -515,10 +524,15 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
-                if (string.IsNullOrEmpty(SelectedVerzekeraar.Name))
+                var selectedHerkomst = miscellaneousRepository.GetHerkomstByUitvaartId(Globals.UitvaartCodeGuid);
+                if (selectedHerkomst.herkomstId != Guid.Empty)
                 {
-                    IsPopupVisible = true;
+                    var matchingVerzekeraar = Verzekeraars.FirstOrDefault(v => v.Id == selectedHerkomst.herkomstId);
+                    if (matchingVerzekeraar != null)
+                        SelectedVerzekeraar = matchingVerzekeraar;
                 }
+
+                IsPopupVisible = true;
                 IsExcelButtonEnabled = false;
             }
         }
@@ -764,15 +778,9 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteClosePopupCommand(object obj)
         {
-            if(SelectedVerzekeraar.Id != Guid.Empty)
-            {
-                if (obj is Popup verzekeringPopup)
-                    verzekeringPopup.IsOpen = false;
-            }
-            else
-            {
-                new ToastWindow("Er is geen herkomst gekozen!").Show();
-            }
+            if (obj is Popup verzekeringPopup)
+                verzekeringPopup.IsOpen = false;
+            IntAggregator.Transmit(7);
         }
         public void ExecuteOpenPopupCommand(object obj)
         {

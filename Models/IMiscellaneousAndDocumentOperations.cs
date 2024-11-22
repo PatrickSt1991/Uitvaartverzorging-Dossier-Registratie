@@ -7,6 +7,7 @@ namespace Dossier_Registratie.Models
 {
     public interface IMiscellaneousAndDocumentOperations
     {
+        (Guid herkomstId, string herkomstName, string herkomstAfkorting) GetHerkomstByUitvaartId(Guid uitvaartId);
         bool UitvaarnummerExists(string uitvaartnummer);
         bool UitvaartPersoonsgegevensExists(Guid UitvaartId);
         bool UitvaartOverlijdenInfoExists(Guid UitvaartId);

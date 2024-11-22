@@ -5,6 +5,7 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dossier_Registratie.Views"
+             xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
              mc:Ignorable="d" 
              d:Background="White"
@@ -12,6 +13,9 @@
     <UserControl.DataContext>
         <viewmodels:ConfigurationVerzekeraarsViewModel/>
     </UserControl.DataContext>
+    <UserControl.Resources>
+        <helper:RadioButtonValueConverter x:Key="RadioButtonValueConverter" />
+    </UserControl.Resources>
     <Grid x:Name="VerzekeraarGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -21,8 +25,8 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <TextBlock Text="Verzekeraars" Grid.Row="1" FontSize="20" FontWeight="SemiBold" Margin="0 20 0 0" HorizontalAlignment="Left" Foreground="#121518"/>
-            <Button Width="150" Height="25" Content="Nieuwe Verzekeraar" Command="{Binding CreateNewVerzekeraarCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
+            <TextBlock Text="Verzekeraars &amp; Herkomsten" Grid.Row="1" FontSize="20" FontWeight="SemiBold" Margin="0 20 0 0" HorizontalAlignment="Left" Foreground="#121518"/>
+            <Button Width="150" Height="25" Content="Nieuwe toevoegen" Command="{Binding CreateNewVerzekeraarCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
@@ -39,10 +43,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Naam" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Naam" IsReadOnly="True" CanUserResize="True" Width="auto" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Afkorting" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding Afkorting}"/>
-                <DataGridCheckBoxColumn Header="Lidnummer" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding HasLidnummer}"/>
-                <DataGridCheckBoxColumn Header="Pakket Verzekering" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding Pakket}"/>
+                <DataGridCheckBoxColumn Header="Herkomst" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding IsHerkomst}"/>
+                <DataGridCheckBoxColumn Header="Verzekeraar" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding IsVerzekeraar}"/>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -98,52 +102,77 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Popup IsOpen="{Binding IsEditVerzekeringPopupOpen}" Placement="Center" StaysOpen="False">
-            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="400" Height="400" CornerRadius="5">
+        <Popup IsOpen="{Binding IsEditVerzekeringPopupOpen}" Placement="Center" StaysOpen="True">
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="550" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
-                        <Label Content="Afkorting: " Width="125"/>
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5" Visibility="Visible">
+                        <Label Content="Afkorting: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.Afkorting}" Width="250"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Naam: " Width="125"/>
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
+                        <Label Content="Naam: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.Name}" Width="250"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Lidnummer: " Width="125"/>
-                        <CheckBox IsChecked="{Binding SelectedVerzekering.HasLidnummer}" />
+                        <Label Content="Lidnummer: " Width="100"/>
+                        <CheckBox IsChecked="{Binding SelectedVerzekering.HasLidnummer}" Margin="0,5,0,0" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Pakket Verzekeraar: " Width="125"/>
                         <CheckBox IsChecked="{Binding SelectedVerzekering.Pakket}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Adres: " Width="125"/>
+                        <Label Content="Correspondentie:" Width="100"/>
+                        <RadioButton Margin="5,5,10,0" Content="Postbus" IsChecked="{Binding SelectedVerzekering.CorrespondentieType, Mode=TwoWay, Converter={StaticResource RadioButtonValueConverter}, ConverterParameter=Postbus}" />
+                        <RadioButton Margin="5" Content="Adres" IsChecked="{Binding SelectedVerzekering.CorrespondentieType, Mode=TwoWay, Converter={StaticResource RadioButtonValueConverter}, ConverterParameter=Adres}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Postbus Naam: " Width="100"/>
+                        <TextBox Text="{Binding SelectedVerzekering.PostbusName}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Postbus Adres: " Width="100"/>
+                        <TextBox Text="{Binding SelectedVerzekering.PostbusAddress}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Adres: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.AddressStreet}" Width="250"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Huisnummer: " Width="125"/>
+                        <Label Content="Huisnummer: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.AddressHousenumber}" Width="250"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Toevoeging: " Width="125"/>
+                        <Label Content="Toevoeging: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.AddressHousenumberAddition}" Width="250"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Plaats: " Width="125"/>
+                        <Label Content="Plaats: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.AddressCity}" Width="250"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Postcode: " Width="125"/>
+                        <Label Content="Postcode: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.AddressZipCode}" Width="250"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
-                        <Label Content="Factuur Type: " Width="125"/>
+                        <Label Content="Telefoon: " Width="100"/>
+                        <TextBox Text="{Binding SelectedVerzekering.Telefoon}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Factuur Adres: " Width="100"/>
+                        <CheckBox IsChecked="{Binding SelectedVerzekering.IsOverrideFactuurAdress}" Margin="0,5,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Factuur Type: " Width="100"/>
                         <ComboBox SelectedValue="{Binding SelectedVerzekering.FactuurType}" SelectedValuePath="Content" Width="250">
                             <ComboBoxItem>Opdrachtgever</ComboBoxItem>
                             <ComboBoxItem>Opdrachtgever &amp; Vereniging</ComboBoxItem>
                             <ComboBoxItem>Vereniging</ComboBoxItem>
                         </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Logo: " Width="100"/>
+                        <Button Content="Uploaden" Command="{Binding UploadLogo}" Width="250" Height="30"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,15,5,5">
                         <Button Content="Sluiten" Command="{Binding CloseEditVerzekeringPopupCommand}" Margin="0,0,10,10" Width="120" Height="30" />
