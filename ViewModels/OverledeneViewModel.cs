@@ -5,12 +5,10 @@ using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using static Dossier_Registratie.MainWindow;
-using static Dossier_Registratie.ViewModels.MainWindowViewModal;
 using static Dossier_Registratie.ViewModels.OverledeneExtraInfoViewModal;
 
 namespace Dossier_Registratie.ViewModels
@@ -723,7 +721,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else if(!PersoonsgegevensExists)
+            else if (!PersoonsgegevensExists)
             {
                 bool persoonsgegevensInfoChanged = modelCompare.AreValuesEqual(_oginalPersoonGegevensModel, PersoonsGegevens);
 
@@ -803,7 +801,7 @@ namespace Dossier_Registratie.ViewModels
                         return;
                     }
                 }
-                else if(OverlijdenInfoExists)
+                else if (OverlijdenInfoExists)
                 {
                     bool overlijdenInfoChanged = modelCompare.AreValuesEqual(_originalOverlijdenInfoModel, OverlijdenInfo);
 

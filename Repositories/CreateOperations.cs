@@ -567,7 +567,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@bloemenjson", overledeneBloemenModel.BloemenLintJson != null ? overledeneBloemenModel.BloemenLintJson : DBNull.Value);
                 command.Parameters.Add(new SqlParameter("@bezorgdatum", SqlDbType.DateTime)
                 {
-                    Value = overledeneBloemenModel.BloemenBezorgDate.HasValue? (object)overledeneBloemenModel.BloemenBezorgDate.Value : DBNull.Value
+                    Value = overledeneBloemenModel.BloemenBezorgDate.HasValue ? (object)overledeneBloemenModel.BloemenBezorgDate.Value : DBNull.Value
                 });
                 command.Parameters.AddWithValue("@bezorgadres", overledeneBloemenModel.BloemenBezorgAdres != null ? overledeneBloemenModel.BloemenBezorgAdres : DBNull.Value);
 

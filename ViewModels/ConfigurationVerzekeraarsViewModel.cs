@@ -6,7 +6,6 @@ using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -133,7 +132,6 @@ namespace Dossier_Registratie.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error saving image to database: " + ex.Message);
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                 }
             }
@@ -241,7 +239,6 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveVerzekeringCommand(object obj)
         {
-            Debug.WriteLine(selectedVerzekering.CustomLogo);
             CloseEditVerzekeringPopupCommand.Execute(null);
 
             if (!newVerzekering)

@@ -4,7 +4,6 @@ using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -75,7 +74,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 _overledeneUitvaartModel = value;
                 OnPropertyChanged(nameof(OverledeneUitvaartModel));
-                Debug.WriteLine(OverledeneUitvaartModel.TypeDienst);
             }
         }
         public ObservableCollection<OverledeneRouwbrieven> RouwbrievenData

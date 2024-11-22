@@ -837,7 +837,6 @@ namespace Dossier_Registratie.ViewModels
         {
             try
             {
-                Debug.WriteLine(SelectedVerzekeraar.Name);
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob(SelectedVerzekeraar.Name);
 
                 if (documentData == null || documentData.Length == 0)
@@ -858,7 +857,6 @@ namespace Dossier_Registratie.ViewModels
                 string tempDirectory = Path.GetTempPath(); // Use the system temp directory for safety
                 string tempFileName = Path.GetRandomFileName() + "." + documentType; // Use documentType from the database
                 string tempPath = Path.Combine(tempDirectory, tempFileName);
-                Debug.WriteLine(tempPath);
 
                 try
                 {
@@ -944,7 +942,7 @@ namespace Dossier_Registratie.ViewModels
             {
                 if (priceComponent.PrintTrue || priceComponent.PmAmount ||
                     (priceComponent.Bedrag.HasValue && priceComponent.Bedrag.Value != 0)
-                    || priceComponent.Verzekerd == "X" || priceComponent.Aantal != "0" )
+                    || priceComponent.Verzekerd == "X" || priceComponent.Aantal != "0")
                 {
                     var aantalCell = (Excel.Range)worksheet.Cells[excelRow, 2];
 

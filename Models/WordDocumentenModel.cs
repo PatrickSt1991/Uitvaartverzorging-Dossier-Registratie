@@ -1,6 +1,5 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System;
-using System.Drawing.Printing;
 
 namespace Dossier_Registratie.Models
 {
@@ -354,12 +353,12 @@ namespace Dossier_Registratie.Models
         public string KistType
         {
             get { return _kistType; }
-            set { _kistType = value;OnPropertyChanged(nameof(KistType)); }
+            set { _kistType = value; OnPropertyChanged(nameof(KistType)); }
         }
         public string AulaNaam
         {
             get { return _aulaNaam; }
-            set { _aulaNaam = value;OnPropertyChanged(nameof(AulaNaam)); }
+            set { _aulaNaam = value; OnPropertyChanged(nameof(AulaNaam)); }
         }
         public int AantalPersonen
         {

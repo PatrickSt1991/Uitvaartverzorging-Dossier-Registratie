@@ -50,7 +50,7 @@ namespace Dossier_Registratie.ViewModels
         public string WindowTitle
         {
             get => _windowTitle;
-            set { _windowTitle = value;OnPropertyChanged(nameof(WindowTitle)); }
+            set { _windowTitle = value; OnPropertyChanged(nameof(WindowTitle)); }
         }
 
         public ICommand ShowWerknemersViewCommand { get; }

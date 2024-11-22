@@ -4,7 +4,6 @@ using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using static Dossier_Registratie.MainWindow;
