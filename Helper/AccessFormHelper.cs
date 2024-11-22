@@ -3,7 +3,6 @@ using Microsoft.Office.Interop.Access;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace Dossier_Registratie.Helper
 {
