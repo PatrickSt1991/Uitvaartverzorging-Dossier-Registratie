@@ -410,7 +410,6 @@ namespace Dossier_Registratie.ViewModels
             IsPopupVisible = true;
             InfoUitvaartleider.Uitvaartnummer = Globals.UitvaartCode;
             InfoUitvaartleider.PersoneelNaam = Globals.UitvaarLeider;
-            IsPopupVisible = true;
             IsExcelButtonEnabled = false;
 
             var selectedHerkomst = miscellaneousRepository.GetHerkomstByUitvaartId(Globals.UitvaartCodeGuid);
@@ -531,11 +530,20 @@ namespace Dossier_Registratie.ViewModels
                 {
                     var matchingVerzekeraar = Verzekeraars.FirstOrDefault(v => v.Id == selectedHerkomst.herkomstId);
                     if (matchingVerzekeraar != null)
+                    {
                         SelectedVerzekeraar = matchingVerzekeraar;
+                    }
+                    else
+                    {
+                        IsPopupVisible = true;
+                        IsExcelButtonEnabled = false;
+                    }
                 }
-
-                IsPopupVisible = true;
-                IsExcelButtonEnabled = false;
+                else
+                {
+                    IsPopupVisible = true;
+                    IsExcelButtonEnabled = false;
+                }
             }
         }
         private async void ExecuteCreateKostenbegrotingFileCommand(object parameter)
@@ -724,16 +732,29 @@ namespace Dossier_Registratie.ViewModels
                     })
                 );
 
-                var polisList = JsonConvert.DeserializeObject<List<PolisVerzekering>>(factuurResult.PolisJson);
+                List<PolisVerzekering> polisList = null;
+
+                try
+                {
+                    if (!string.IsNullOrEmpty(factuurResult.PolisJson))
+                        polisList = JsonConvert.DeserializeObject<List<PolisVerzekering>>(factuurResult.PolisJson);
+                }
+                catch (JsonException ex)
+                {
+                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                    Debug.WriteLine($"Error deserializing PolisJson: {ex.Message}");
+                }
+
+                // Proceed only if the list is not null
                 if (polisList != null)
                 {
                     foreach (var verzekering in polisList)
                     {
-                        if (verzekering.VerzekeringName != null && verzekering.PolisInfoList != null)
+                        if (verzekering?.VerzekeringName != null && verzekering.PolisInfoList != null)
                         {
                             foreach (var polis in verzekering.PolisInfoList)
                             {
-                                if (!string.IsNullOrEmpty(polis.PolisNr) && !string.IsNullOrEmpty(polis.PolisBedrag))
+                                if (!string.IsNullOrEmpty(polis?.PolisNr) && !string.IsNullOrEmpty(polis?.PolisBedrag))
                                 {
                                     if (decimal.TryParse(polis.PolisBedrag, out decimal parsedBedrag))
                                     {
