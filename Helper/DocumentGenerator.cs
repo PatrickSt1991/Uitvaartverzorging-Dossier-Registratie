@@ -5,6 +5,7 @@ using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -56,21 +57,54 @@ namespace Dossier_Registratie.Helper
                     doc.Bookmarks.Add(bookmark.Key, range);
                 }
 
-
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -141,6 +175,7 @@ namespace Dossier_Registratie.Helper
                 }
                 catch (Exception ex)
                 {
+                    Debug.WriteLine(ex);
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Error opening document: " + ex.Message));
                     throw;
                 }
@@ -150,6 +185,7 @@ namespace Dossier_Registratie.Helper
 
                 // Create the bookmarks dictionary
                 var bookmarks = new Dictionary<string, string>
+                
         {
             { "OverledeneNaam", checklist.VolledigeNaam },
             { "UitvaartDatum", formattedUitvaartDate },
@@ -198,18 +234,49 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
-                    }
-                    File.Delete(tempImagePath);
-                }
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
 
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
+                }
 
                 doc.Save();
                 doc.Close();
@@ -297,17 +364,52 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -404,16 +506,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -502,17 +638,52 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
+
 
 
                 doc.Save();
@@ -601,16 +772,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -746,16 +951,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -879,16 +1118,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -1007,16 +1280,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -1110,16 +1417,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -1243,16 +1584,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 
@@ -1392,16 +1767,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                            }
+                        }
+                    }
                 }
 
 

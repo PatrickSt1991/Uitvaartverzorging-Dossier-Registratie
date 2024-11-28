@@ -1079,8 +1079,10 @@ namespace Dossier_Registratie.ViewModels
             }
             else if (!File.Exists(TagModel.ChecklistTag))
             {
+                Debug.WriteLine("hier");
                 deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Checklist");
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
+                Debug.WriteLine(destinationFile);
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
@@ -1144,7 +1146,7 @@ namespace Dossier_Registratie.ViewModels
             ChecklistModel = await miscellaneousRepository.GetDocumentChecklistInfoAsync(Globals.UitvaartCodeGuid);
             ChecklistModel.DocumentId = documentId;
             ChecklistModel.DestinationFile = destinationFile;
-            ChecklistModel.UitvaartNummer = Globals._uitvaartCode;
+            ChecklistModel.UitvaartNummer = Globals.UitvaartCode;
             ChecklistModel.UitvartLeider = Globals.UitvaarLeider;
 
             var werknemers = new List<ChecklistOpbarenDocument>();
@@ -1155,6 +1157,7 @@ namespace Dossier_Registratie.ViewModels
 
                 foreach (var werknemer in werknemers)
                 {
+                    Debug.WriteLine(werknemer);
                     var searchEmployeeName = miscellaneousRepository.GetWerknemer(werknemer.WerknemerId);
 
                     if (searchEmployeeName != null)
@@ -1184,9 +1187,13 @@ namespace Dossier_Registratie.ViewModels
                     _generatingDocumentView.Show();
                 }
             }
+
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateChecklist(ChecklistModel, werknemers);
+            
             if (docResults != null)
             {
+                Debug.WriteLine("niet leeg");
+                Debug.WriteLine(docResults);
                 docResults.DocumentInconsistent = false;
                 docResults.IsDeleted = false;
                 docResults.DocumentType = "Word";

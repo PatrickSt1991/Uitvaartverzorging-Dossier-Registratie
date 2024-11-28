@@ -2748,7 +2748,7 @@ namespace Dossier_Registratie.Repositories
                                             "ELSE CONCAT(OOI.overledenAdres, ' ', OOI.overledenHuisnummer) END) AS OverledenAdres, OEI.overledeneEersteOuder, OEI.overledeneTweedeOuder, OEI.overledeneWedenaarVan, OEI.overledeneAantalKinderen," +
                                             "OEI.overledeneKinderenMinderjarig, OEI.overledeneAantalKinderenOverleden, " +
                                             "(CASE WHEN CP.Tussenvoegsel IS NULL THEN CONCAT(CP.Voornaam, ' ', CP.Achternaam) " +
-                                            "ELSE CONCAT(CP.Voornam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Aangever," +
+                                            "ELSE CONCAT(CP.Voornaam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) END) as Aangever," +
                                             "CONCAT(CP.Geboorteplaats,', ', CP.Geboortedatum) AS AangeverPlaats," +
                                             "(CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverAchternaam) " +
                                             "ELSE CONCAT(OO.opdrachtgeverAanhef, ' ', OO.opdrachtgeverVoornaamen, ' ', OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever," +
