@@ -760,7 +760,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            if (IsOverlijdenInfoValid)
+            if (IsOverlijdenInfoValid && !OverledeneThuisOverleden)
             {
                 try
                 {
