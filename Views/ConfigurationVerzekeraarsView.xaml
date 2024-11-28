@@ -44,7 +44,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Naam" IsReadOnly="True" CanUserResize="True" Width="auto" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Afkorting" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding Afkorting}"/>
+                <DataGridTextColumn Header="Afkorting" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding Afkorting}" Visibility="Hidden"/>
                 <DataGridCheckBoxColumn Header="Herkomst" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding IsHerkomst}"/>
                 <DataGridCheckBoxColumn Header="Verzekeraar" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding IsVerzekeraar}"/>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*">
@@ -102,7 +102,7 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Popup IsOpen="{Binding IsEditVerzekeringPopupOpen}" Placement="Center" StaysOpen="True">
+        <Popup IsOpen="{Binding IsEditVerzekeringPopupOpen}" Placement="Center" StaysOpen="False">
             <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="550" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5" Visibility="Visible">

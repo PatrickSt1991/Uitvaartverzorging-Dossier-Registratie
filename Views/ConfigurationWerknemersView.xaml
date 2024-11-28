@@ -20,7 +20,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Popup IsOpen="{Binding IsEditUserPopupOpen}" Placement="Center" StaysOpen="True">
+        <Popup IsOpen="{Binding IsEditUserPopupOpen}" Placement="Center" StaysOpen="False">
             <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="385" Height="475" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">

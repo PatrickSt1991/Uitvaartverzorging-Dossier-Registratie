@@ -427,7 +427,7 @@
             <Label x:Name="lbl_extraInfo" Content="Extra Informatie Overledene" HorizontalAlignment="Left" Margin="555,696,0,0" VerticalAlignment="Top" Height="31" Width="530" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
             <Button x:Name="lbl_extraContactPersoon" Command="{Binding OpenCreateExtraContactPopupCommand}" Content="Extra Contactpersoon / Opdrachtgever" Margin="862,879,0,0" VerticalAlignment="Top" Height="31" TabIndex="37" FontFamily="Arial" HorizontalAlignment="Left" Width="223" />
 
-            <Popup x:Name="extaContactPopup" Placement="Center" StaysOpen="True" IsOpen="{Binding IsCreateExtraContactPopupOpen}">
+            <Popup x:Name="extaContactPopup" Placement="Center" StaysOpen="False" IsOpen="{Binding IsCreateExtraContactPopupOpen}">
                 <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="425" Height="555" CornerRadius="5">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal" Margin="5,5,0,5">

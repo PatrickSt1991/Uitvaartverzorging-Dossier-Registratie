@@ -18,7 +18,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Popup IsOpen="{Binding IsEditPriceComponentPopupOpen}" Placement="Center" StaysOpen="False" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <Popup IsOpen="{Binding IsEditPriceComponentPopupOpen}" Placement="Center" StaysOpen="False" ScrollViewer.VerticalScrollBarVisibility="Auto" >
             <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="1025" Height="Auto" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
@@ -45,24 +45,17 @@
 
                         </StackPanel>
 
-                        <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" DisplayMemberPath="Name" SelectionMode="Multiple" Width="800">
-                            <ListBox.Resources>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="OverridesDefaultStyle" Value="true" />
-                                    <Setter Property="SnapsToDevicePixels" Value="true" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListBoxItem">
-                                                <CheckBox Margin="5,2" IsChecked="{Binding IsSelected, Mode=TwoWay}" 
-                                                          Command="{Binding DataContext.VerzekeringCheckCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}">
-                                                    <ContentPresenter />
-                                                </CheckBox>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListBox.Resources>
+                        <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" SelectionMode="Multiple" Width="800" >
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalAlignment="Center" Margin="5,0" />
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
                         </ListBox>
+
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Standaard PM: " Width="200"/>
@@ -107,7 +100,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Omschrijving" IsReadOnly="True" CanUserResize="True" Width="750" Binding="{Binding ComponentOmschrijving}">
+                <DataGridTextColumn Header="Omschrijving" IsReadOnly="True" CanUserResize="True" Width="1000" Binding="{Binding ComponentOmschrijving}">
                     <DataGridTextColumn.ElementStyle>
                         <Style>
                             <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
@@ -116,10 +109,10 @@
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Bedrag" IsReadOnly="True" CanUserResize="True" Width="100" Binding="{Binding ComponentBedrag, StringFormat=N2}"/>
-                <DataGridTextColumn Header="Factuur Bedrag" IsReadOnly="True" CanUserResize="True" Width="100" Binding="{Binding ComponentFactuurBedrag, StringFormat=N2}"/>
+                <DataGridTextColumn Header="Factuur Bedrag" IsReadOnly="True" CanUserResize="True" Width="100" Binding="{Binding ComponentFactuurBedrag, StringFormat=N2}" Visibility="Hidden"/>
                 <DataGridCheckBoxColumn Header="PM" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="50" Binding="{Binding DefaultPM}"/>
                 <DataGridTextColumn Header="Verzekerd Aantal" IsReadOnly="True" CanUserResize="True" Width="200" Binding="{Binding ComponentAantal}"/>
-                <DataGridTextColumn Header="Verzekering (Afkorting)" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding ComponentVerzekering}" />
+                <DataGridTextColumn Header="Verzekering (Afkorting)" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding ComponentVerzekering}" Visibility="Hidden" />
                 <DataGridTemplateColumn IsReadOnly="True" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

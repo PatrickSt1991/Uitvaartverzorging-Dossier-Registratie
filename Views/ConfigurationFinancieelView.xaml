@@ -129,7 +129,7 @@
             </TabItem>
             <TabItem Header="Bloemen">
                 <Grid>
-                    <Popup IsOpen="{Binding IsBloemenUitbetalingPopupOpen}" Placement="Center" StaysOpen="True">
+                    <Popup IsOpen="{Binding IsBloemenUitbetalingPopupOpen}" Placement="Center" StaysOpen="False">
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="430" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
@@ -226,7 +226,7 @@
             </TabItem>
             <TabItem Header="Steenhouwerij">
                 <Grid>
-                    <Popup IsOpen="{Binding IsSteenhouwerUitbetalingPopupOpen}" Placement="Center" StaysOpen="True">
+                    <Popup IsOpen="{Binding IsSteenhouwerUitbetalingPopupOpen}" Placement="Center" StaysOpen="False">
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="430" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal" Margin="5,15,0,5">
@@ -345,7 +345,7 @@
             </TabItem>
             <TabItem Header="Urnen &amp; Gedenksieraden">
                 <Grid>
-                    <Popup IsOpen="{Binding IsUrnSieradenUitbetalingPopupOpen}" Placement="Center" StaysOpen="True">
+                    <Popup IsOpen="{Binding IsUrnSieradenUitbetalingPopupOpen}" Placement="Center" StaysOpen="False">
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="430" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal" Margin="5,15,0,5">

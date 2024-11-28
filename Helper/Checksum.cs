@@ -14,7 +14,6 @@ namespace Dossier_Registratie.Helper
                 var hash = md5.ComputeHash(stream);
                 return BitConverter.ToString(hash).Replace("-", "");
             }
-
         }
     }
 }
