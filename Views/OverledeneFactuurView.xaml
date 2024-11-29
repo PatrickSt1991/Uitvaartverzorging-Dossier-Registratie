@@ -8,7 +8,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="950.96" d:DesignWidth="1400"
              DataContext="{x:Static local:OverledeneFactuurViewModel.KostenbegrotingInstance}"
-             Loaded="ReloadDynamicElements">
+             Loaded="ReloadDynamicElements"
+             KeyboardNavigation.TabNavigation="Cycle">
     <UserControl.Resources>
         <CollectionViewSource x:Key="PriceComponentsViewSource" Source="{Binding PriceComponents}" />
         <helper:CurrencyConverter x:Key="CurrencyConverter"/>

@@ -8,7 +8,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="696.96" d:DesignWidth="1190.257"
              DataContext="{x:Static local:OverledeneVerzekeringViewModal.VerzekeringInstance}"
-             Loaded="ReloadDynamicElements">
+             Loaded="ReloadDynamicElements"
+             KeyboardNavigation.TabNavigation="Cycle">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid x:Name="MainGrid" Background="White" ScrollViewer.CanContentScroll="True" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
             <Button x:Name="lbl_SaveVerzekering" Command="{Binding Path=SaveCommand}" CommandParameter="VolgendeButton" Content="Volgende" Margin="1035,16,15,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="33" FontFamily="Arial" />

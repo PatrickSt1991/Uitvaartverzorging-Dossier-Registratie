@@ -760,29 +760,32 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            if (IsOverlijdenInfoValid && !OverledeneThuisOverleden)
+            if (IsOverlijdenInfoValid)
             {
-                try
+                if (!OverledeneThuisOverleden)
                 {
-                    //Add the newly found to the database
-                    NewSuggestion.Id = Guid.NewGuid();
-                    NewSuggestion.ShortName = string.Empty;
-                    NewSuggestion.LongName = OverlijdenLocatieLocal;
-                    NewSuggestion.Street = OverlijdenInfo.OverledenAdres;
-                    NewSuggestion.HouseNumber = OverlijdenInfo.OverledenHuisnummer;
-                    NewSuggestion.ZipCode = OverlijdenInfo.OverledenPostcode;
-                    NewSuggestion.City = OverlijdenInfo.OverledenPlaats;
-                    NewSuggestion.County = OverlijdenInfo.OverledenGemeente;
+                    try
+                    {
+                        //Add the newly found to the database
+                        NewSuggestion.Id = Guid.NewGuid();
+                        NewSuggestion.ShortName = string.Empty;
+                        NewSuggestion.LongName = OverlijdenLocatieLocal;
+                        NewSuggestion.Street = OverlijdenInfo.OverledenAdres;
+                        NewSuggestion.HouseNumber = OverlijdenInfo.OverledenHuisnummer;
+                        NewSuggestion.ZipCode = OverlijdenInfo.OverledenPostcode;
+                        NewSuggestion.City = OverlijdenInfo.OverledenPlaats;
+                        NewSuggestion.County = OverlijdenInfo.OverledenGemeente;
 
-                    int locationCheck = miscellaneousRepository.CheckLocationExistance(NewSuggestion);
+                        int locationCheck = miscellaneousRepository.CheckLocationExistance(NewSuggestion);
 
-                    if (locationCheck == 0)
-                        createRepository.CreateSuggestion(NewSuggestion);
-                }
-                catch (Exception ex)
-                {
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    return;
+                        if (locationCheck == 0)
+                            createRepository.CreateSuggestion(NewSuggestion);
+                    }
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        return;
+                    }
                 }
 
                 if (OverlijdenInfo.Id == Guid.Empty && !OverlijdenInfoExists)

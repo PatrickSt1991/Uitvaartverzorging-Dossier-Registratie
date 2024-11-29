@@ -532,6 +532,7 @@ namespace Dossier_Registratie.ViewModels
                     if (matchingVerzekeraar != null)
                     {
                         SelectedVerzekeraar = matchingVerzekeraar;
+                        ExecuteGenererenKostenbegrotingCommand(matchingVerzekeraar);
                     }
                     else
                     {

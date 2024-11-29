@@ -8,7 +8,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="950.96" d:DesignWidth="1800"
              DataContext="{x:Static local:OverledeneSteenhouwerijViewModel.SteenhouwerijInstance}"
-             Loaded="ReloadDynamicElements">
+             Loaded="ReloadDynamicElements"
+             KeyboardNavigation.TabNavigation="Cycle">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Background="White" ScrollViewer.CanContentScroll="True" Name="SteenBloemBon" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
             <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>

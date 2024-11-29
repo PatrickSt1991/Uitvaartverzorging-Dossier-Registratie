@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dossier_Registratie.ViewModels"
              mc:Ignorable="d" d:DesignHeight="696.96" d:DesignWidth="1190.257"
-             DataContext="{x:Static local:OverledeneBijlagesViewModel.BijlagesInstance}">
+             DataContext="{x:Static local:OverledeneBijlagesViewModel.BijlagesInstance}"
+             KeyboardNavigation.TabNavigation="Cycle">
     <UserControl.Resources>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
