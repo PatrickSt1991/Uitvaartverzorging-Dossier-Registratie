@@ -121,7 +121,7 @@
                 </Grid>
             </Border>
         </Popup>
-        <Popup x:Name="accountCreationPopup" Placement="Center" StaysOpen="True" IsOpen="{Binding IsCreateUserPopupOpen}">
+        <Popup x:Name="accountCreationPopup" Placement="Center" StaysOpen="False" IsOpen="{Binding IsCreateUserPopupOpen}">
             <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="410" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">

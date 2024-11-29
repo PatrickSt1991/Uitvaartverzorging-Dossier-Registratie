@@ -1144,7 +1144,7 @@ namespace Dossier_Registratie.ViewModels
             ChecklistModel = await miscellaneousRepository.GetDocumentChecklistInfoAsync(Globals.UitvaartCodeGuid);
             ChecklistModel.DocumentId = documentId;
             ChecklistModel.DestinationFile = destinationFile;
-            ChecklistModel.UitvaartNummer = Globals._uitvaartCode;
+            ChecklistModel.UitvaartNummer = Globals.UitvaartCode;
             ChecklistModel.UitvartLeider = Globals.UitvaarLeider;
 
             var werknemers = new List<ChecklistOpbarenDocument>();
@@ -1184,7 +1184,9 @@ namespace Dossier_Registratie.ViewModels
                     _generatingDocumentView.Show();
                 }
             }
+
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateChecklist(ChecklistModel, werknemers);
+            
             if (docResults != null)
             {
                 docResults.DocumentInconsistent = false;

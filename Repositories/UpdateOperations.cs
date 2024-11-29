@@ -505,7 +505,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@datumTijdCondoleance", overledeneUitvaartModel.DatumTijdCondoleance != null ? overledeneUitvaartModel.DatumTijdCondoleance : DBNull.Value);
                 command.Parameters.AddWithValue("@consumptiesCondoleance", overledeneUitvaartModel.ConsumptiesCondoleance != null ? overledeneUitvaartModel.ConsumptiesCondoleance : DBNull.Value);
                 command.Parameters.AddWithValue("@Type", overledeneUitvaartModel.TypeDienst);
-                command.Parameters.AddWithValue("@datumTijdUitvaart", overledeneUitvaartModel.DatumTijdUitvaart);
+                command.Parameters.AddWithValue("@datumTijdUitvaart", overledeneUitvaartModel.DatumTijdUitvaart != null ? overledeneUitvaartModel.DatumTijdUitvaart : DBNull.Value);
                 command.Parameters.AddWithValue("@locatieUitvaart", overledeneUitvaartModel.LocatieUitvaart);
                 command.Parameters.AddWithValue("@datumTijdDienst", overledeneUitvaartModel.DatumTijdDienst != null ? overledeneUitvaartModel.DatumTijdDienst : DBNull.Value);
                 command.Parameters.AddWithValue("@locatieDienst", overledeneUitvaartModel.LocatieDienst);

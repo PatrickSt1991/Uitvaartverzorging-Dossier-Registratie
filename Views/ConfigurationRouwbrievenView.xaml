@@ -94,7 +94,7 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Popup IsOpen="{Binding IsEditRouwbrievenPopupOpen}" Placement="Center" StaysOpen="True">
+        <Popup IsOpen="{Binding IsEditRouwbrievenPopupOpen}" Placement="Center" StaysOpen="False">
             <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="480" Height="120" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">

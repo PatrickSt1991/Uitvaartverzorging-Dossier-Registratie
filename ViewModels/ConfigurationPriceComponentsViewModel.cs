@@ -4,6 +4,7 @@ using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -33,6 +34,7 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditPriceComponentPopupOpen;
         private bool newPriceComponent;
+        private bool _keepFilterActive = false;
         private string searchOmschrijving;
 
         private KostenbegrotingModel _selectedPriceComponent;
@@ -331,6 +333,7 @@ namespace Dossier_Registratie.ViewModels
         public void PriceComponentGridData()
         {
             string verzekeraarNaam = string.Empty;
+
             SelectedVerzekeraarsPriceComponents.Clear();
             PriceComponentsVerzekeraars.Clear();
             PriceComponents.Clear();
@@ -391,6 +394,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSavePriceComponentCommand(object obj)
         {
+            string InsuranceAfkorting = string.Empty;
             if (!newPriceComponent)
             {
                 try
@@ -421,7 +425,24 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             CloseEditPriceComponentPopupCommand.Execute(null);
-            PriceComponentGridData();
+
+            if (SelectedPriceComponentVerzekeraar != null &&
+                !string.IsNullOrEmpty(SelectedPriceComponentVerzekeraar.Name) &&
+                SelectedPriceComponentVerzekeraar.Name != "Geen Filter")
+            {
+                _keepFilterActive = true;
+                ExecuteFilterPriceComponentCommand();
+            }
+            else if (!string.IsNullOrEmpty(SearchOmschrijving))
+            {
+                _keepFilterActive = true;
+                FilterPriceComponentsOmschrijving();
+            }
+            else
+            {
+                PriceComponentGridData();
+            }
+
         }
         public void ExecuteCreateNewPriceComponentCommand(object obj)
         {
@@ -470,7 +491,6 @@ namespace Dossier_Registratie.ViewModels
                 {
                     var filteredComponents = miscellaneousRepository
                         .GetFilterdPriceComponentsBeheer(PriceComponentFilter.ComponentVerzekering);
-                    //.Where(pc => pc.SpecificPakket != PriceComponentFilter.SpecificPakket);
 
                     foreach (var PriceComponent in filteredComponents)
                     {
@@ -486,51 +506,6 @@ namespace Dossier_Registratie.ViewModels
                             BtnBrush = PriceComponent.BtnBrush
                         });
                     }
-                    /* Deprecated
-                    if (PriceComponentFilter.SpecificPakket == true)
-                    {
-                        var filteredComponents = miscellaneousRepository
-                            .GetFilterdPriceComponentsBeheer(PriceComponentFilter.ComponentVerzekering)
-                            .Where(pc => pc.SpecificPakket == PriceComponentFilter.SpecificPakket);
-
-                        foreach (var PriceComponent in filteredComponents)
-                        {
-                            PriceComponents.Add(new KostenbegrotingModel
-                            {
-                                ComponentId = PriceComponent.ComponentId,
-                                ComponentOmschrijving = PriceComponent.ComponentOmschrijving,
-                                ComponentBedrag = PriceComponent.ComponentBedrag,
-                                ComponentAantal = PriceComponent.ComponentAantal,
-                                ComponentVerzekering = PriceComponent.ComponentVerzekering,
-                                DefaultPM = PriceComponent.DefaultPM,
-                                IsDeleted = PriceComponent.IsDeleted,
-                                BtnBrush = PriceComponent.BtnBrush
-                            });
-                        }
-                    }
-
-                    if (PriceComponentFilter.SpecificPakket != true)
-                    {
-                        var filteredComponents = miscellaneousRepository
-                            .GetFilterdPriceComponentsBeheer(PriceComponentFilter.ComponentVerzekering)
-                            .Where(pc => pc.SpecificPakket != PriceComponentFilter.SpecificPakket);
-
-                        foreach (var PriceComponent in filteredComponents)
-                        {
-                            PriceComponents.Add(new KostenbegrotingModel
-                            {
-                                ComponentId = PriceComponent.ComponentId,
-                                ComponentOmschrijving = PriceComponent.ComponentOmschrijving,
-                                ComponentBedrag = PriceComponent.ComponentBedrag,
-                                ComponentAantal = PriceComponent.ComponentAantal,
-                                ComponentVerzekering = PriceComponent.ComponentVerzekering,
-                                DefaultPM = PriceComponent.DefaultPM,
-                                IsDeleted = PriceComponent.IsDeleted,
-                                BtnBrush = PriceComponent.BtnBrush
-                            });
-                        }
-                    }
-                    */
                 }
             }
         }

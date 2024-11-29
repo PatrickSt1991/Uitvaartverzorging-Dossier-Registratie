@@ -5,6 +5,7 @@ using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -56,21 +57,52 @@ namespace Dossier_Registratie.Helper
                     doc.Bookmarks.Add(bookmark.Key, range);
                 }
 
-
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -150,6 +182,7 @@ namespace Dossier_Registratie.Helper
 
                 // Create the bookmarks dictionary
                 var bookmarks = new Dictionary<string, string>
+                
         {
             { "OverledeneNaam", checklist.VolledigeNaam },
             { "UitvaartDatum", formattedUitvaartDate },
@@ -198,18 +231,47 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
-                    }
-                    File.Delete(tempImagePath);
-                }
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
 
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw;
+                    }
+                    finally
+                    {
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
+                }
 
                 doc.Save();
                 doc.Close();
@@ -297,17 +359,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
+
 
                 doc.Save();
                 doc.Close();
@@ -404,16 +499,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -502,17 +629,50 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
+
 
 
                 doc.Save();
@@ -601,16 +761,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -746,16 +938,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -879,16 +1103,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -1007,16 +1263,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -1110,16 +1398,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -1243,16 +1563,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 
@@ -1392,16 +1744,48 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = Path.Combine(Path.GetTempPath(), "headerImage.", documentType);
-                    File.WriteAllBytes(tempImagePath, documentData);
+                    string tempImagePath = string.Empty;
 
-                    foreach (Section section in doc.Sections)
+                    try
                     {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        InlineShape headerImage = headerRange.InlineShapes.AddPicture(tempImagePath);
+                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                        string tempDir = Path.GetDirectoryName(tempImagePath);
+                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                        {
+                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                        }
+
+                        File.WriteAllBytes(tempImagePath, documentData);
+
+                        // Add the image to each section's header
+                        foreach (Section section in doc.Sections)
+                        {
+                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                            Range headerRange = header.Range;
+                            headerRange.InlineShapes.AddPicture(tempImagePath);
+                        }
                     }
-                    File.Delete(tempImagePath);
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        throw; // Re-throw the exception to be handled by the calling method
+                    }
+                    finally
+                    {
+                        // Ensure the temporary file is deleted
+                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                        {
+                            try
+                            {
+                                File.Delete(tempImagePath);
+                            }
+                            catch (Exception deleteEx)
+                            {
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                            }
+                        }
+                    }
                 }
 
 

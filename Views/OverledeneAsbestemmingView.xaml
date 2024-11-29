@@ -7,7 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="950.96" d:DesignWidth="1190.257"
              DataContext="{x:Static local:OverledeneAsbestemmingViewModel.AsbestemmingInstance}"
-             Loaded="ReloadDynamicElements">
+             Loaded="ReloadDynamicElements"
+             KeyboardNavigation.TabNavigation="Cycle">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Name="AsbestemmingGrid" Background="White" ScrollViewer.CanContentScroll="True" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
             <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>
