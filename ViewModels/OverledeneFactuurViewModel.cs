@@ -742,7 +742,6 @@ namespace Dossier_Registratie.ViewModels
                 catch (JsonException ex)
                 {
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    Debug.WriteLine($"Error deserializing PolisJson: {ex.Message}");
                 }
 
                 // Proceed only if the list is not null

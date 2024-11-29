@@ -74,7 +74,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -86,7 +85,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -97,11 +96,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -175,7 +173,6 @@ namespace Dossier_Registratie.Helper
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex);
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Error opening document: " + ex.Message));
                     throw;
                 }
@@ -247,7 +244,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         foreach (Section section in doc.Sections)
                         {
@@ -258,7 +254,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw;
                     }
                     finally
@@ -268,11 +264,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -377,7 +372,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -389,7 +383,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -400,11 +394,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -519,7 +512,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -531,7 +523,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -542,11 +534,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -651,7 +642,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -663,7 +653,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -674,11 +664,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -785,7 +774,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -797,7 +785,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -808,11 +796,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -964,7 +951,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -976,7 +962,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -987,11 +973,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -1131,7 +1116,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -1143,7 +1127,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -1154,11 +1138,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -1293,7 +1276,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -1305,7 +1287,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -1316,11 +1298,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -1430,7 +1411,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -1442,7 +1422,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -1453,11 +1433,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -1597,7 +1576,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -1609,7 +1587,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -1620,11 +1598,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
@@ -1780,7 +1757,6 @@ namespace Dossier_Registratie.Helper
                         }
 
                         File.WriteAllBytes(tempImagePath, documentData);
-                        Debug.WriteLine($"Temporary header image created at: {tempImagePath}");
 
                         // Add the image to each section's header
                         foreach (Section section in doc.Sections)
@@ -1792,7 +1768,7 @@ namespace Dossier_Registratie.Helper
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error processing header image: {ex.Message}");
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         throw; // Re-throw the exception to be handled by the calling method
                     }
                     finally
@@ -1803,11 +1779,10 @@ namespace Dossier_Registratie.Helper
                             try
                             {
                                 File.Delete(tempImagePath);
-                                Debug.WriteLine($"Temporary file deleted: {tempImagePath}");
                             }
                             catch (Exception deleteEx)
                             {
-                                Debug.WriteLine($"Failed to delete temporary file: {deleteEx.Message}");
+                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
                             }
                         }
                     }
