@@ -1712,7 +1712,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [Id],[UitvaartId],[Cijfer] FROM [OverledeneKlantTevredenheid] WHERE [UitvaartId] = @uitvaartId";
+                command.CommandText = "SELECT [Id],[UitvaartId],[Cijfer],NotificatieOverleden FROM [OverledeneKlantTevredenheid] WHERE [UitvaartId] = @uitvaartId";
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
@@ -1723,6 +1723,7 @@ namespace Dossier_Registratie.Repositories
                             Id = (Guid)reader[0],
                             UitvaartId = (Guid)reader[1],
                             CijferScore = (int)reader[2],
+                            IsNotificationEnabled = (bool)reader[3]
                         };
                     }
                 }

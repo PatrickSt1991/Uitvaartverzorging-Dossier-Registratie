@@ -10,8 +10,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!--<materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Red" SecondaryColor="Lime" />-->
+                <!--<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />-->
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Red" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ControlTemplate x:Key="ListBoxNoBorder" TargetType="{x:Type ListBox}">
             <Border BorderBrush="Transparent" BorderThickness="0">

@@ -257,22 +257,67 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <Popup IsOpen="{Binding IsFinishPopupOpen}" Placement="Center" StaysOpen="True">
-                <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="580" Height="160" CornerRadius="5">
-                    <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
-                            <Label x:Name="lbl_Cijfer" Content="Klant Tevredenheids Cijfer: " HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Height="30" Width="210" FontFamily="Arial" BorderThickness="1,1,0,1" BorderBrush="Red" FontSize="16"/>
-                            <TextBox x:Name="input_Cijfer" Text="{Binding Klanttevredenheid.CijferScore, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="0,20,0,0" BorderThickness="1,1,1,1" HorizontalContentAlignment="Center" BorderBrush="Red" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="30" FontSize="16" TabIndex="11" FontFamily="Arial"/>
 
-                            <Button x:Name="btn_UploadDossier" Content="{Binding DossierTagContent}" Tag="{Binding Dossier.DocumentUrl}" HorizontalAlignment="Left" Margin="100,20,0,0" VerticalAlignment="Top" Height="30" Width="189" Command="{Binding UploadDossierCommand}" TabIndex="12"/>
+            <Popup IsOpen="{Binding IsFinishPopupOpen}" Placement="Center" StaysOpen="True">
+                <Border BorderBrush="#FF888888" BorderThickness="2" Background="#FFFDFDFD" Width="600" Height="350" CornerRadius="10" Padding="15">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="10">
+                        <TextBlock Text="Dossier Afronden" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,20" TextAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,15">
+                            <Label Content="Klant Cijfer:" FontFamily="Segoe UI" FontSize="16" Foreground="#333333" Width="240" VerticalAlignment="Center" />
+                            <Border CornerRadius="5" BorderBrush="#FFCCCCCC" BorderThickness="1" Background="White" Width="80" Height="35">
+                                <TextBox Text="{Binding Klanttevredenheid.CijferScore, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontFamily="Segoe UI" FontSize="16" Foreground="#333333" Background="Transparent" Padding="5" BorderThickness="0" />
+                            </Border>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,35,5,5">
-                            <Button Content="Sluiten" Command="{Binding CloseFinishPopupOpenCommand}" Margin="0,0,10,10" Width="120" Height="30" />
-                            <Button Content="Afronden" Command="{Binding FinishCommand}" CommandParameter="AfrondenButton" Margin="0,0,0,10" Width="120" Height="30" />
+
+                        <!-- Dossier Upload -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,15">
+                            <Label Content="Dossier Uploaden:" 
+                       FontFamily="Segoe UI" 
+                       FontSize="16" 
+                       Foreground="#333333" 
+                       Width="240" 
+                       VerticalAlignment="Center" />
+                            <Button Content="{Binding DossierTagContent}" 
+                        Tag="{Binding Dossier.DocumentUrl}" 
+                        Command="{Binding UploadDossierCommand}" 
+                        FontFamily="Segoe UI" 
+                        FontSize="14" 
+                        HorizontalAlignment="Left" 
+                        Width="200" 
+                        Height="35" 
+                        Padding="5" />
+                        </StackPanel>
+
+                        <!-- Notification Checkbox -->
+                        <CheckBox Content="Notificatie na 1 jaar overlijden?" 
+                      IsChecked="{Binding Klanttevredenheid.IsNotificationEnabled , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      FontFamily="Segoe UI" 
+                      FontSize="14" 
+                      Foreground="#333333" 
+                      Margin="0,10,0,15" 
+                      VerticalAlignment="Center" />
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="Sluiten" 
+                        Command="{Binding CloseFinishPopupOpenCommand}" 
+                        Width="130" 
+                        Height="40" 
+                        Margin="0,0,15,0" 
+                        FontFamily="Segoe UI" 
+                        FontSize="14" />
+                            <Button Content="Afronden" 
+                        Command="{Binding FinishCommand}" 
+                        CommandParameter="AfrondenButton" 
+                        Width="130" 
+                        Height="40" 
+                        FontFamily="Segoe UI" 
+                        FontSize="14" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
             </Popup>
+
             <Button x:Name="lbl_SluitenUitvaart" Command="{Binding SaveCommand}" CommandParameter="SaveButton" Content="Opslaan" Margin="1036,16,16,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="57" FontFamily="Arial" />
             <Button x:Name="lbl_FinishUitvaart" Command="{Binding OpenFinishPopupOpenCommand}" Content="Afronden" Margin="1182,16,-130,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="57" FontFamily="Arial" />
         </Grid>

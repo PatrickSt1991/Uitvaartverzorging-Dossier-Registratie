@@ -648,10 +648,11 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO OverledeneKlantTevredenheid (Id, UitvaartId, Cijfer) VALUES (@id, @uitvaartId, @cijfer)";
+                command.CommandText = "INSERT INTO OverledeneKlantTevredenheid (Id, UitvaartId, Cijfer, NotificatieOverleden) VALUES (@id, @uitvaartId, @cijfer, @notificatie)";
                 command.Parameters.AddWithValue("@id", klanttevredenheid.Id);
                 command.Parameters.AddWithValue("@UitvaartId", klanttevredenheid.UitvaartId);
                 command.Parameters.AddWithValue("@cijfer", klanttevredenheid.CijferScore);
+                command.Parameters.AddWithValue("@notificatie", (klanttevredenheid.IsNotificationEnabled == true) ? true : false);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertKlanttevredenheidFailed");
