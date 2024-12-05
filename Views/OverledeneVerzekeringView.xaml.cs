@@ -1,7 +1,7 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using static Dossier_Registratie.MainWindow;
+using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie.Views
 {

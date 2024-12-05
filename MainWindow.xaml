@@ -6,13 +6,13 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Dossier_Registratie.Models"
         xmlns:localview="clr-namespace:Dossier_Registratie.Views"
-        xmlns:viewModel="clr-namespace:Dossier_Registratie.ViewModels"
+        xmlns:ViewModel="clr-namespace:Dossier_Registratie.ViewModels"
         mc:Ignorable="d"
         Width="{x:Static SystemParameters.PrimaryScreenWidth}"  
         Height="{x:Static SystemParameters.PrimaryScreenHeight}"  
         Title="{Binding Title}" WindowState="Maximized" d:DesignHeight="696.96" d:DesignWidth="1190.257" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
-        <viewModel:MainWindowViewModal/>
+        <ViewModel:MainWindowViewModal/>
     </Window.DataContext>
     <Window.Resources>
         <Style x:Key="chevronTabItemStyle" TargetType="{x:Type TabItem}">
@@ -42,7 +42,6 @@
             </Setter>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
-
         <Style TargetType="{x:Type Button}" x:Key="StartingButtons">
             <Setter Property="Background" Value="#FFC92F39" />
             <Setter Property="Foreground" Value="White" />

@@ -1,8 +1,43 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System;
+using System.Windows.Forms;
 
 namespace Dossier_Registratie.Models
 {
+    public class NotificatieOverzichtModel : ViewModelBase
+    {
+        private Guid _uitvaartId;
+        private string _uitvaartNr;
+        private string _overledeneNaam;
+        private DateTime _overledenDatumTijd;
+        private string _opdrachtTelefoon;
+
+        public Guid UitvaartId
+        {
+            get { return _uitvaartId; }
+            set { _uitvaartId = value; OnPropertyChanged(nameof(UitvaartId)); }
+        }
+        public string UitvaartNr
+        {
+            get { return _uitvaartNr; }
+            set { _uitvaartNr = value; OnPropertyChanged(nameof(UitvaartNr)); }
+        }
+        public string OverledeneNaam
+        {
+            get { return _overledeneNaam; }
+            set { _overledeneNaam = value; OnPropertyChanged(nameof(OverledeneNaam)); }
+        }
+        public DateTime OverledenDatumTijd
+        {
+            get { return _overledenDatumTijd; }
+            set { _overledenDatumTijd = value; OnPropertyChanged(nameof(OverledenDatumTijd)); }
+        }
+        public string OpdrachtTelefoon
+        {
+            get { return _opdrachtTelefoon; }
+            set { _opdrachtTelefoon = value; OnPropertyChanged(nameof(OpdrachtTelefoon)); }
+        }
+    }
     public class UitvaartOverzichtModel : ViewModelBase
     {
         private Guid _uitvaartId;

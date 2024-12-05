@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using static Dossier_Registratie.MainWindow;
+using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie.Views
 {

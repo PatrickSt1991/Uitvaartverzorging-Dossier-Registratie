@@ -1,6 +1,8 @@
-﻿using Dossier_Registratie.Helper;
+﻿using CommunityToolkit.Mvvm.Input;
+using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,6 +36,7 @@ namespace Dossier_Registratie.ViewModels
     public class MainWindowViewModal : ViewModelBase
     {
         private ImageSource _imageSource;
+        private OverledeneNotification notificatieWindow;
         private string _zoekenUitvaartnummer = null;
         private string _ZoekenAchternaam = null;
         private string _ZoekenDoB = null;
@@ -61,6 +64,7 @@ namespace Dossier_Registratie.ViewModels
         private bool _searchOldDatabaseNummer = false;
         private bool _searchArchiveFolder = false;
         private bool _archiveSearchResult = false;
+        private bool _notificationYearVisable = false;
         private Visibility _beheerButtonVisable = Visibility.Hidden;
 
         private readonly ISearchOperations searchRepository;
@@ -69,6 +73,7 @@ namespace Dossier_Registratie.ViewModels
         private ObservableCollection<OverledeneSearchSurname> _searchUitvaartSurname;
         private List<OverledeneSearchSurname> combinedResults;
         private WerknemersModel newUser;
+        private ObservableCollection<NotificatieOverzichtModel> _yearPassedNotification;
 
         public ImageSource ImageSource
         {
@@ -98,6 +103,15 @@ namespace Dossier_Registratie.ViewModels
             {
                 _searchUitvaartSurname = value;
                 OnPropertyChanged(nameof(SearchUitvaartSurname));
+            }
+        }
+        public ObservableCollection<NotificatieOverzichtModel> YearPassedNotification
+        {
+            get => _yearPassedNotification;
+            set
+            {
+                _yearPassedNotification = value;
+                OnPropertyChanged(nameof(YearPassedNotification));
             }
         }
         public string ZoekenUitvaartnummer
@@ -284,6 +298,14 @@ namespace Dossier_Registratie.ViewModels
             get { return _archiveSearchResult; }
             set { _archiveSearchResult = value; OnPropertyChanged(nameof(ArchiveSearchResult)); }
         }
+        public bool NotificationYearVisable
+        {
+            get => _notificationYearVisable;
+            set
+            {
+                _notificationYearVisable = value; OnPropertyChanged(nameof(NotificationYearVisable));
+            }
+        }
         public Visibility BeheerButtonVisable
         {
             get { return _beheerButtonVisable; }
@@ -334,6 +356,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand OpenAchternaamCommand { get; }
         public ICommand CreateNewUserCommand { get; }
         public ICommand ClearAllModelsCommand { get; }
+        //public ICommand OpenYearDeceasedPopupCommand { get; }
 
         public MainWindowViewModal()
         {
@@ -343,6 +366,10 @@ namespace Dossier_Registratie.ViewModels
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             combinedResults = new List<OverledeneSearchSurname>();
 
+            Debug.WriteLine("called");
+
+            //OpenYearDeceasedPopupCommand = new RelayCommand(OpenYearDeceasedPopup);
+
             string MainApplicationName = !string.IsNullOrEmpty(DataProvider.ApplicationName) ? "DigiGraf" : DataProvider.ApplicationName;
             ApplicationUnavailable = MainApplicationName + " is op het moment niet beschikbaar vanwege onderhoud.";
 
@@ -350,6 +377,8 @@ namespace Dossier_Registratie.ViewModels
             string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             Title = DataProvider.OrganizationName + " - " + DataProvider.SystemTitle;
+
+            DeceasedYearAgoCheck();
 
             if (!string.IsNullOrEmpty(DataProvider.PdfArchiveBaseFolder))
             {
@@ -372,6 +401,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             VersionLabel = DataProvider.SystemTitle + " - Versie: " + version;
+            
             UpdateTime();
             CheckTabControl();
             ComboAggregator.OnDataTransmitted += ResetCombobox;
@@ -562,6 +592,27 @@ namespace Dossier_Registratie.ViewModels
                 return false;
             }
         }
+        private async Task DeceasedYearAgoCheck()
+        {
+            try
+            {
+                YearPassedNotification = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
+                if (YearPassedNotification != null && YearPassedNotification.Count > 0)
+                {
+                    if (notificatieWindow == null || !notificatieWindow.IsVisible)
+                    {
+                        notificatieWindow = new OverledeneNotification();
+                        notificatieWindow.DataContext = this;
+                        notificatieWindow.ShowDialog();
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                Debug.WriteLine(ex);
+            }
+        }
         private async void ExecuteSearchUitvaartnummerCommand(object obj)
         {
             try
@@ -620,6 +671,7 @@ namespace Dossier_Registratie.ViewModels
             }
             catch (Exception ex)
             {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                 MessageBox.Show($"Error occurred during search: {ex.Message}");
             }
         }

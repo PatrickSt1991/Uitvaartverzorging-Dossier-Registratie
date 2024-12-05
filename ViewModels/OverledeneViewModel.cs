@@ -5,6 +5,7 @@ using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -617,11 +618,7 @@ namespace Dossier_Registratie.ViewModels
             {
                 return true;
             }
-            else if (IsPersoonsGegevensValid && IsOverlijdenInfoValid && PersoonsGegevens.OverledeneVoorregeling)
-            {
-                return true;
-            }
-            else if (IsPersoonsGegevensValid && !IsOverlijdenInfoValid && PersoonsGegevens.OverledeneVoorregeling)
+            else if (IsPersoonsGegevensValid && PersoonsGegevens.OverledeneVoorregeling)
             {
                 return true;
             }

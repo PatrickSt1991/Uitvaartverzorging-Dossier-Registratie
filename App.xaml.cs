@@ -6,7 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using static Dossier_Registratie.MainWindow;
+using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie
 {

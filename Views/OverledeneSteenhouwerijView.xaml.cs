@@ -1,7 +1,7 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using static Dossier_Registratie.MainWindow;
+using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie.Views
 {
@@ -17,7 +17,7 @@ namespace Dossier_Registratie.Views
         }
         private void Previous_Click(object sender, RoutedEventArgs e)
         {
-            this.RaiseEvent(new RoutedEventArgs(PreviousClickedEvent));
+            this.RaiseEvent(new RoutedEventArgs(MainWindow.PreviousClickedEvent));
         }
         private void ReloadDynamicElements(object sender, RoutedEventArgs e)
         {

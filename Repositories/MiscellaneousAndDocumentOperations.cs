@@ -12,6 +12,54 @@ namespace Dossier_Registratie.Repositories
 {
     public class MiscellaneousAndDocumentOperations : RepositoryBase, IMiscellaneousAndDocumentOperations
     {
+        public async Task<ObservableCollection<NotificatieOverzichtModel>> NotificationDeceasedAfterYearPassedAsync()
+        {
+            ObservableCollection<NotificatieOverzichtModel> notificatie = new();
+
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync(); // Open connection asynchronously
+                command.Connection = connection;
+                command.CommandText = @"
+            SELECT 
+                oul.UitvaartId, 
+                Uitvaartnummer, 
+                CASE 
+                    WHEN overledeneTussenvoegsel IS NULL OR overledeneTussenvoegsel = '' 
+                    THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) 
+                    ELSE CONCAT(overledeneAanhef, ' ', overledeneTussenvoegsel, ' ', overledeneAchternaam) 
+                END AS VolledigeAchternaam, 
+                ooi.overledenDatumTijd,
+                oo.opdrachtgeverTelefoon
+            FROM OverledeneKlantTevredenheid okt 
+            INNER JOIN OverledeneUitvaartleider oul ON okt.UitvaartId = oul.UitvaartId 
+            INNER JOIN ConfigurationPersoneel cp ON oul.PersoneelId = cp.Id 
+            INNER JOIN ConfigurationUsers cu ON cp.Id = cu.PersoneelId 
+            INNER JOIN OverledenePersoonsGegevens opg ON oul.UitvaartId = opg.UitvaartId 
+            INNER JOIN OverledeneOverlijdenInfo ooi ON opg.uitvaartId = ooi.UitvaartId 
+            INNER JOIN OverledeneOpdrachtgever oo ON opg.uitvaartId = oo.uitvaartId
+            WHERE okt.NotificatieOverleden = 1 
+                AND overledenDatumTijd <= DATEADD(YEAR, -1, GETDATE())";
+
+                using (var reader = await command.ExecuteReaderAsync()) // Execute reader asynchronously
+                {
+                    while (await reader.ReadAsync()) // Read rows asynchronously
+                    {
+                        notificatie.Add(new NotificatieOverzichtModel
+                        {
+                            UitvaartId = (Guid)reader[0],
+                            UitvaartNr = reader[1].ToString(),
+                            OverledeneNaam = reader[2].ToString(),
+                            OverledenDatumTijd = (DateTime)reader[3],
+                            OpdrachtTelefoon = reader[4].ToString()
+                        });
+                    }
+                }
+            }
+
+            return notificatie;
+        }
         public (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId)
         {
             using (var connection = GetConnection())
