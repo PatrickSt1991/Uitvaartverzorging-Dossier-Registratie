@@ -5,6 +5,7 @@ namespace Dossier_Registratie.Models
 {
     public interface IUpdateOperations
     {
+        Task UpdateNotification(Guid uitvaartId);
         Task UpdateBlobLogo(string imageName, string imageType, byte[] imageData, string appType);
         void SetDocumentInconsistent(Guid DocumentId);
         void UpdateLeverancier(LeveranciersModel leverancier);

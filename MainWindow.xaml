@@ -178,6 +178,7 @@
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Start"/>
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Agenda"/>
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Alle Uitvaarten"/>
+            <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Notificaties"/>
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Help" />
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Handleiding" />
         </ComboBox>

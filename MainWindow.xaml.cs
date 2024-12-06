@@ -159,13 +159,20 @@ namespace Dossier_Registratie
                     TabHeader.SelectedIndex = 0;
                     MainComboBox.SelectedItem = null;
                 }
+                else if(selectedItemString.Contains("Notificaties"))
+                {
+                    var notificatieViewModel = new OverledeneNotificationViewModel();
+                    OverledeneNotification notificatieWindow = new();
+                    notificatieWindow.DataContext = notificatieViewModel;
+                    notificatieWindow.Show();
+                    MainComboBox.SelectedItem = null;
+                }
                 else if (selectedItemString.Contains("Beheer"))
                 {
                     BeheerWindow beheerWindow = new();
                     beheerWindow.Show();
                     TabHeader.SelectedIndex = 0;
                     MainComboBox.SelectedItem = null;
-                    //TabHeader.SelectedIndex = 9;
                 }
                 else if (selectedItemString.Contains("Agenda"))
                 {

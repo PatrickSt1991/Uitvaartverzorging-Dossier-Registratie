@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using Dossier_Registratie.Helper;
+﻿using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
@@ -20,7 +19,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
-using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneAsbestemmingViewModel;
 using static Dossier_Registratie.ViewModels.OverledeneBijlagesViewModel;
 using static Dossier_Registratie.ViewModels.OverledeneExtraInfoViewModal;
@@ -356,7 +354,6 @@ namespace Dossier_Registratie.ViewModels
         public ICommand OpenAchternaamCommand { get; }
         public ICommand CreateNewUserCommand { get; }
         public ICommand ClearAllModelsCommand { get; }
-        //public ICommand OpenYearDeceasedPopupCommand { get; }
 
         public MainWindowViewModal()
         {
@@ -366,10 +363,6 @@ namespace Dossier_Registratie.ViewModels
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             combinedResults = new List<OverledeneSearchSurname>();
 
-            Debug.WriteLine("called");
-
-            //OpenYearDeceasedPopupCommand = new RelayCommand(OpenYearDeceasedPopup);
-
             string MainApplicationName = !string.IsNullOrEmpty(DataProvider.ApplicationName) ? "DigiGraf" : DataProvider.ApplicationName;
             ApplicationUnavailable = MainApplicationName + " is op het moment niet beschikbaar vanwege onderhoud.";
 
@@ -377,8 +370,6 @@ namespace Dossier_Registratie.ViewModels
             string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             Title = DataProvider.OrganizationName + " - " + DataProvider.SystemTitle;
-
-            DeceasedYearAgoCheck();
 
             if (!string.IsNullOrEmpty(DataProvider.PdfArchiveBaseFolder))
             {
@@ -389,6 +380,8 @@ namespace Dossier_Registratie.ViewModels
 
             if (DataProvider.MaintenanceCheckEnabled)
                 CheckMaintenanceWindow();
+
+            DeceasedYearAgoCheck();
 
             switch (Globals.PermissionLevelId.ToUpper())
             {

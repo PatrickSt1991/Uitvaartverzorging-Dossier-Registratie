@@ -8,6 +8,21 @@ namespace Dossier_Registratie.Repositories
 {
     public class UpdateOperations : RepositoryBase, IUpdateOperations
     {
+        public async Task UpdateNotification(Guid uitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync();
+                command.Connection = connection;
+                command.CommandText = "UPDATE [EeftingDossierRegistratieRik].[dbo].[OverledeneKlantTevredenheid] " +
+                                        "SET NotificatieOverleden = 0 " +
+                                        "WHERE UitvaartId = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
         public async Task UpdateBlobLogo(string imageName, string imageType, byte[] imageData, string appType)
         {
             using (var connection = GetConnection())
