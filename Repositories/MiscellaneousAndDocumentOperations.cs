@@ -30,8 +30,7 @@ namespace Dossier_Registratie.Repositories
                     THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) 
                     ELSE CONCAT(overledeneAanhef, ' ', overledeneTussenvoegsel, ' ', overledeneAchternaam) 
                 END AS VolledigeAchternaam, 
-                ooi.overledenDatumTijd,
-                oo.opdrachtgeverTelefoon
+                ooi.overledenDatumTijd, oo.opdrachtgeverTelefoon, cu.WindowsUsername, okt.Cijfer
             FROM OverledeneKlantTevredenheid okt 
             INNER JOIN OverledeneUitvaartleider oul ON okt.UitvaartId = oul.UitvaartId 
             INNER JOIN ConfigurationPersoneel cp ON oul.PersoneelId = cp.Id 
@@ -52,7 +51,9 @@ namespace Dossier_Registratie.Repositories
                             UitvaartNr = reader[1].ToString(),
                             OverledeneNaam = reader[2].ToString(),
                             OverledenDatumTijd = (DateTime)reader[3],
-                            OpdrachtTelefoon = reader[4].ToString()
+                            OpdrachtTelefoon = reader[4].ToString(),
+                            WindowsAccount = reader[5].ToString(),
+                            Cijfer = reader[6].ToString()
                         });
                     }
                 }

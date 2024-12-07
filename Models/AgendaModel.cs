@@ -1,6 +1,5 @@
 ﻿using Dossier_Registratie.ViewModels;
 using System;
-using System.Windows.Forms;
 
 namespace Dossier_Registratie.Models
 {
@@ -11,6 +10,8 @@ namespace Dossier_Registratie.Models
         private string _overledeneNaam;
         private DateTime _overledenDatumTijd;
         private string _opdrachtTelefoon;
+        private string _windowsAccount;
+        private string _cijfer;
 
         public Guid UitvaartId
         {
@@ -36,6 +37,16 @@ namespace Dossier_Registratie.Models
         {
             get { return _opdrachtTelefoon; }
             set { _opdrachtTelefoon = value; OnPropertyChanged(nameof(OpdrachtTelefoon)); }
+        }
+        public string WindowsAccount
+        {
+            get { return _windowsAccount; }
+            set { _windowsAccount = value; OnPropertyChanged(nameof(WindowsAccount)); }
+        }
+        public string Cijfer
+        {
+            get { return _cijfer; }
+            set { _cijfer = value; OnPropertyChanged(nameof(Cijfer));}
         }
     }
     public class UitvaartOverzichtModel : ViewModelBase

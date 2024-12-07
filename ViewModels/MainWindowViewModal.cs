@@ -589,7 +589,17 @@ namespace Dossier_Registratie.ViewModels
         {
             try
             {
-                YearPassedNotification = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
+                var startDate = DateTime.Today.AddYears(-1).AddDays(-7);
+                var endDate = DateTime.Today.AddYears(-1).AddDays(7);
+                //var activeUser = Environment.UserName;
+                var activeUser = "hille";
+
+                var filteredNotifications = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
+
+                YearPassedNotification = new ObservableCollection<NotificatieOverzichtModel>(
+                    filteredNotifications.Where(x => x.OverledenDatumTijd >= startDate && x.OverledenDatumTijd <= endDate && x.WindowsAccount == activeUser)
+                );
+
                 if (YearPassedNotification != null && YearPassedNotification.Count > 0)
                 {
                     if (notificatieWindow == null || !notificatieWindow.IsVisible)

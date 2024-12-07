@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:OverledeneNotificationViewModel}"
         mc:Ignorable="d"
-        Title="Jaar geleden overleden notificatie" Height="350" Width="Auto">
+        Title="Jaar geleden overleden" Height="350" Width="Auto">
     <Grid>
         <!-- ListView content -->
         <ListView ItemsSource="{Binding YearPassedNotification}" Margin="10" 
@@ -59,6 +59,14 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding OpdrachtTelefoon}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Tevredenheid" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Cijfer}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
