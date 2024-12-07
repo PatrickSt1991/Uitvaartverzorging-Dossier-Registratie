@@ -1,4 +1,5 @@
 ﻿using Dossier_Registratie.Helper;
+using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
 using System;
@@ -6,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie
 {

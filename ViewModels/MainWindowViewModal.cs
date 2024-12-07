@@ -37,7 +37,7 @@ namespace Dossier_Registratie.ViewModels
         private OverledeneNotification notificatieWindow;
         private string _zoekenUitvaartnummer = null;
         private string _ZoekenAchternaam = null;
-        private string _ZoekenDoB = null;
+        private DateTime _ZoekenDoB = DateTime.MinValue;
         private string _errorMessageUitvaartnummer = "Uitvaartnummer is verplicht";
         private string _errorMessageSurname = "* Verplicht veld";
         private string _currentTime;
@@ -130,7 +130,7 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(ZoekenAchternaam));
             }
         }
-        public string ZoekenDoB
+        public DateTime ZoekenDoB
         {
             get => _ZoekenDoB;
             set
@@ -394,7 +394,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             VersionLabel = DataProvider.SystemTitle + " - Versie: " + version;
-            
+
             UpdateTime();
             CheckTabControl();
             ComboAggregator.OnDataTransmitted += ResetCombobox;
@@ -592,7 +592,7 @@ namespace Dossier_Registratie.ViewModels
                 var startDate = DateTime.Today.AddYears(-1).AddDays(-7);
                 var endDate = DateTime.Today.AddYears(-1).AddDays(7);
                 //var activeUser = Environment.UserName;
-                
+
                 var activeUser = "hille";
 
                 var filteredNotifications = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
@@ -611,7 +611,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                 Debug.WriteLine(ex);
@@ -712,7 +712,7 @@ namespace Dossier_Registratie.ViewModels
                     }
 
                     ZoekenAchternaam = null;
-                    ZoekenDoB = null;
+                    ZoekenDoB = DateTime.MinValue;
                     IsSearchVisible = false;
                     return;
                 }
@@ -739,7 +739,7 @@ namespace Dossier_Registratie.ViewModels
                 }
 
                 ZoekenAchternaam = null;
-                ZoekenDoB = null;
+                ZoekenDoB = DateTime.MinValue;
                 IsSearchVisible = false;
             }
             catch (Exception ex)
@@ -935,7 +935,7 @@ namespace Dossier_Registratie.ViewModels
 
             ZoekenUitvaartnummer = string.Empty;
             ZoekenAchternaam = string.Empty;
-            ZoekenDoB = string.Empty;
+            ZoekenDoB = DateTime.MinValue;
 
             UitvaartNummerEnabled = false;
         }

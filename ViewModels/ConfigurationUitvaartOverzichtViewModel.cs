@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneViewModel;
 
 namespace Dossier_Registratie.ViewModels

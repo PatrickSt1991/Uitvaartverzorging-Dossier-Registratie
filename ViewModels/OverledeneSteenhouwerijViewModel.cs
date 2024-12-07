@@ -16,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using Task = System.Threading.Tasks.Task;
 
 namespace Dossier_Registratie.ViewModels
@@ -1023,8 +1022,7 @@ namespace Dossier_Registratie.ViewModels
                 MessageBox.Show("Er is geen totaal dossier (pdf) geupload, je kunt het dossier niet afronden zonder.", "Geen dossier PDF", MessageBoxButton.OK);
                 return;
             }
-            Debug.WriteLine(Dossier.DocumentUrl);
-            return;
+
             bool KlanttevredenheidExists = miscellaneousRepository.UitvaarKlanttevredenheidExists(Klanttevredenheid.UitvaartId);
 
             if (Klanttevredenheid.Id == Guid.Empty && !KlanttevredenheidExists)
@@ -1141,11 +1139,12 @@ namespace Dossier_Registratie.ViewModels
                         {
                             File.Copy(selectedFilePath, destinationFilePath, true);
                             Dossier.DocumentUrl = destinationFilePath;
-                        }catch (IOException)
+                        }
+                        catch (IOException)
                         {
                             Dossier.DocumentUrl = selectedFilePath;
                         }
-                        
+
 
                         Dossier.BijlageId = Guid.NewGuid();
                         Dossier.UitvaartId = Globals.UitvaartCodeGuid;

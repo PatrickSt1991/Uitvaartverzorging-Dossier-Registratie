@@ -1,4 +1,5 @@
 ﻿using Dossier_Registratie.Helper;
+using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
 using Dossier_Registratie.Views;
@@ -10,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie
 {
@@ -159,7 +159,7 @@ namespace Dossier_Registratie
                     TabHeader.SelectedIndex = 0;
                     MainComboBox.SelectedItem = null;
                 }
-                else if(selectedItemString.Contains("Notificaties"))
+                else if (selectedItemString.Contains("Notificaties"))
                 {
                     var notificatieViewModel = new OverledeneNotificationViewModel();
                     OverledeneNotification notificatieWindow = new();

@@ -20,7 +20,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using static Dossier_Registratie.MainWindow;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Dossier_Registratie.ViewModels

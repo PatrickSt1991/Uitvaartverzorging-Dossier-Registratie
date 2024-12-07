@@ -21,7 +21,6 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneFactuurViewModel;
 using static Dossier_Registratie.ViewModels.OverledeneSteenhouwerijViewModel;
 using Range = Microsoft.Office.Interop.Word.Range;
@@ -1186,7 +1185,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateChecklist(ChecklistModel, werknemers);
-            
+
             if (docResults != null)
             {
                 docResults.DocumentInconsistent = false;

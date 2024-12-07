@@ -5,11 +5,9 @@ using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneExtraInfoViewModal;
 
 namespace Dossier_Registratie.ViewModels
@@ -593,6 +591,7 @@ namespace Dossier_Registratie.ViewModels
         }
         private bool CanExecuteSaveCommand(object obj)
         {
+            /*
             IsPersoonsGegevensValid = !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAchternaam) &&
                                       !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneVoornamen) &&
                                       PersoonsGegevens.OverledeneGeboortedatum != DateTime.MinValue &&
@@ -626,33 +625,80 @@ namespace Dossier_Registratie.ViewModels
             {
                 return false;
             }
+            */
+            return true;
         }
         private void ExecuteSaveCommand(object obj)
         {
+            IsPersoonsGegevensValid = !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAchternaam) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneVoornamen) &&
+                                      PersoonsGegevens.OverledeneGeboortedatum != DateTime.MinValue &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneGeboorteplaats) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAdres) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledenePostcode) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneWoonplaats) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneBSN) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneHuisnummer) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneGemeente) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneLeeftijd) &&
+                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAanhef);
+
+            IsOverlijdenInfoValid = OverlijdenInfo.OverledenDatumTijd != DateTime.MinValue &&
+                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenAdres) &&
+                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisnummer) &&
+                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenPlaats) &&
+                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenGemeente) &&
+                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenLijkvinding) &&
+                                    OverlijdenInfo.OverledenHerkomst != Guid.Empty;
+
             Globals.Voorregeling = PersoonsGegevens.OverledeneVoorregeling;
             Guid newGuid = Guid.NewGuid();
             Guid PersoonGegevensId = Guid.NewGuid();
             Guid OverlijdenInfoId = Guid.NewGuid();
 
+            if (string.IsNullOrEmpty(UitvaartLeider.Uitvaartnummer))
+            {
+                new ToastWindow("Geen uitvaartnummer ingevoerd.").Show();
+                return;
+            }
+
             bool UitvaartnummerExists = miscellaneousRepository.UitvaarnummerExists(UitvaartLeider.Uitvaartnummer);
             bool PersoonsgegevensExists = miscellaneousRepository.UitvaartPersoonsgegevensExists(UitvaartLeider.UitvaartId);
             bool OverlijdenInfoExists = miscellaneousRepository.UitvaartOverlijdenInfoExists(UitvaartLeider.UitvaartId);
 
-            if (UitvaartLeider.UitvaartId == Guid.Empty && UitvaartnummerExists)
+            if (UitvaartnummerExists && UitvaartLeider.UitvaartId == Guid.Empty)
             {
                 new ToastWindow($"Uitvaartnummer {UitvaartLeider.Uitvaartnummer} is al in gebruik!").Show();
                 return;
             }
 
-            if (!UitvaartLeider.HasData() || !PersoonsGegevens.HasData())
+            if (!UitvaartLeider.HasData())
             {
-                new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
+                new ToastWindow("Missende uitvaartleider of uitvaartnummer gegevens.").Show();
+                return;
+            }
+
+            if (!IsPersoonsGegevensValid)
+            {
+                new ToastWindow("Missende Persoonsgegevens Overledene").Show();
                 return;
             }
 
             if (!PersoonsGegevens.OverledeneVoorregeling && !IsOverlijdenInfoValid)
             {
-                new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
+                new ToastWindow("Geen voorregeling maar overlijden gegevens zijn niet compleet.").Show();
+                return;
+            }
+
+            if (!IsPersoonsGegevensValid && !IsOverlijdenInfoValid)
+            {
+                new ToastWindow("Missende persoonsgegevens en overlijden gegevens.").Show();
+                return;
+            }
+
+            if (PersoonsGegevens.OverledeneVoorregeling && OverlijdenInfo.OverledenHerkomst == Guid.Empty)
+            {
+                new ToastWindow("De herkomst is niet ingevuld, er moet altijd een herkomst gekozen worden.").Show();
                 return;
             }
 

@@ -1237,7 +1237,7 @@ namespace Dossier_Registratie.Repositories
             }
             return factuurGegevens;
         }
-        public IEnumerable<OverledeneSearchSurname> GetUitvaartleiderBySurnameOverledene(string overledeneAchternaam, string overledeneGeboortedatum)
+        public IEnumerable<OverledeneSearchSurname> GetUitvaartleiderBySurnameOverledene(string overledeneAchternaam, DateTime overledeneGeboortedatum)
         {
             var overledeneList = new List<OverledeneSearchSurname>();
             using (var connection = GetConnection())
@@ -1253,7 +1253,7 @@ namespace Dossier_Registratie.Repositories
                                       "AND (OPG.overledeneGeboortedatum LIKE @overledeneGeboortedatum OR @overledeneGeboortedatum IS NULL)";
 
                 command.Parameters.AddWithValue("@overledeneAchternaam", "%" + overledeneAchternaam + "%");
-                command.Parameters.AddWithValue("@overledeneGeboortedatum", string.IsNullOrEmpty(overledeneGeboortedatum) ? (object)DBNull.Value : "%" + overledeneGeboortedatum + "%");
+                command.Parameters.AddWithValue("@overledeneGeboortedatum", overledeneGeboortedatum == default(DateTime) ? (object)DBNull.Value : overledeneGeboortedatum);
 
                 using (var reader = command.ExecuteReader())
                 {

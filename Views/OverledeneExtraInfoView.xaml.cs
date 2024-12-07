@@ -1,8 +1,8 @@
-﻿using Dossier_Registratie.ViewModels;
+﻿using Dossier_Registratie.Models;
+using Dossier_Registratie.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using Dossier_Registratie.Models;
 
 namespace Dossier_Registratie.Views
 {

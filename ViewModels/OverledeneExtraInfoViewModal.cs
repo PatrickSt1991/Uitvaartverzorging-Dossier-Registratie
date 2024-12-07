@@ -7,7 +7,6 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneVerzekeringViewModal;
 
 namespace Dossier_Registratie.ViewModels

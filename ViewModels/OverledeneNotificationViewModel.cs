@@ -1,15 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
-using Dossier_Registratie.Views;
-using Octokit;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -62,7 +56,7 @@ namespace Dossier_Registratie.ViewModels
                 await updateRepository.UpdateNotification(uitvaartId);
                 LoadNotifications();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }

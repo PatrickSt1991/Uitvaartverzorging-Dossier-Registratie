@@ -43,7 +43,7 @@ namespace Dossier_Registratie.Repositories
                                     WHERE okt.NotificatieOverleden = 1 
                                         AND overledenDatumTijd <= DATEADD(YEAR, -1, GETDATE())";
 
-                using (var reader = await command.ExecuteReaderAsync()) 
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {

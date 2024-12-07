@@ -6,7 +6,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 
 namespace Dossier_Registratie.ViewModels
 {

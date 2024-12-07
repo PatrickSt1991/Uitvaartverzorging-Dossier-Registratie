@@ -11,7 +11,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 
 namespace Dossier_Registratie.ViewModels
 {
