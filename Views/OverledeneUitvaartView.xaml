@@ -257,9 +257,7 @@
                 </Rectangle.RenderTransform>
             </Rectangle>
             <Label x:Name="lbl_advertentie" Content="Rouwbrieven / Advertenties &amp; UBS" HorizontalAlignment="Left" Margin="10,935,0,0" VerticalAlignment="Top" Width="429" FontFamily="Arial" FontSize="16" FontStyle="Italic"/>
-            <ComboBox Name="input_rouwbriefType" Text="{Binding Path=RouwbrievenData.RouwbrievenName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                ItemsSource="{Binding Path=RouwbrievenData}" DisplayMemberPath="RouwbrievenName" 
-                SelectedValuePath="RouwbrievenId" SelectedValue="{Binding OverledeneMisc.RouwbrievenId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="209,979,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="24" FontFamily="Arial"/>
+            <ComboBox Name="input_rouwbriefType" ItemsSource="{Binding Path=RouwbrievenData}" DisplayMemberPath="RouwbrievenName" SelectedValuePath="RouwbrievenId" SelectedValue="{Binding OverledeneMisc.RouwbrievenId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="209,979,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="24" FontFamily="Arial"/>
             <Label x:Name="lbl_rouwbriefType" Content="Type Rouwbrieven" HorizontalAlignment="Left" Margin="10,981,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>
             <TextBox x:Name="input_rouwbriefAantal" Text="{Binding OverledeneMisc.AantalRouwbrieven, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="210,1015,0,0" VerticalAlignment="Top" Width="302" Height="31" FontSize="16" TabIndex="26" FontFamily="Arial" VerticalContentAlignment="Center"/>
             <Label x:Name="lbl_rouwbriefAantal" Content="Aantal Rouwbrieven" HorizontalAlignment="Left" Margin="11,1017,0,0" VerticalAlignment="Top" Height="31" Width="194" FontFamily="Arial" FontSize="16"/>

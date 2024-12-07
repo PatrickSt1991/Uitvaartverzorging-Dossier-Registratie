@@ -3,6 +3,57 @@ using System;
 
 namespace Dossier_Registratie.Models
 {
+    public class NotificatieOverzichtModel : ViewModelBase
+    {
+        private Guid _uitvaartId;
+        private string _uitvaartNr;
+        private string _overledeneNaam;
+        private DateTime _overledenDatumTijd;
+        private string _opdrachtTelefoon;
+        private string _windowsAccount;
+        private string _cijfer;
+        private string _opdrachtgever;
+        public Guid UitvaartId
+        {
+            get { return _uitvaartId; }
+            set { _uitvaartId = value; OnPropertyChanged(nameof(UitvaartId)); }
+        }
+        public string UitvaartNr
+        {
+            get { return _uitvaartNr; }
+            set { _uitvaartNr = value; OnPropertyChanged(nameof(UitvaartNr)); }
+        }
+        public string OverledeneNaam
+        {
+            get { return _overledeneNaam; }
+            set { _overledeneNaam = value; OnPropertyChanged(nameof(OverledeneNaam)); }
+        }
+        public DateTime OverledenDatumTijd
+        {
+            get { return _overledenDatumTijd; }
+            set { _overledenDatumTijd = value; OnPropertyChanged(nameof(OverledenDatumTijd)); }
+        }
+        public string OpdrachtTelefoon
+        {
+            get { return _opdrachtTelefoon; }
+            set { _opdrachtTelefoon = value; OnPropertyChanged(nameof(OpdrachtTelefoon)); }
+        }
+        public string WindowsAccount
+        {
+            get { return _windowsAccount; }
+            set { _windowsAccount = value; OnPropertyChanged(nameof(WindowsAccount)); }
+        }
+        public string Cijfer
+        {
+            get { return _cijfer; }
+            set { _cijfer = value; OnPropertyChanged(nameof(Cijfer)); }
+        }
+        public string Opdrachtgever
+        {
+            get { return _opdrachtgever; }
+            set { _opdrachtgever = value; OnPropertyChanged(nameof(Opdrachtgever)); }
+        }
+    }
     public class UitvaartOverzichtModel : ViewModelBase
     {
         private Guid _uitvaartId;

@@ -3,7 +3,6 @@ using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
 using System;
 using System.Windows.Controls;
-using static Dossier_Registratie.MainWindow;
 
 namespace Dossier_Registratie.Views
 {

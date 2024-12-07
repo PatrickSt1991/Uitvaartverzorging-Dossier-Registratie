@@ -5,6 +5,7 @@ using Dossier_Registratie.Views;
 using Octokit;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -222,7 +223,13 @@ Datum Tijd: {DateTime.Now}"
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error tijdens het aanmaken van de melding: {ex.Message}");
+                    MessageBox.Show($"Error tijdens het aanmaken van de melding, we proberen nu een mail te openen.");
+
+                    // Fallback to email client
+                    OpenEmailClientFallback(
+                        $"[Fallback] {configuratieGithubViewModel.IssueType} {configuratieGithubViewModel.OnderwerpText}",
+                        configuratieGithubViewModel.OmschrijvingText
+                    );
                 }
             }
         }
@@ -248,20 +255,16 @@ Datum Tijd: {DateTime.Now}"
             try
             {
                 var issueState = SelectedState == "Closed" ? ItemState.Closed : ItemState.Open;
-
-                // Fetch all issues with the selected state
                 var issues = await _githubClient.Issue.GetAllForRepository(owner, repo, new RepositoryIssueRequest
                 {
                     State = (ItemStateFilter)issueState
                 });
 
-                // Fetch all open issues to get the count
                 var openIssues = await _githubClient.Issue.GetAllForRepository(owner, repo, new RepositoryIssueRequest
                 {
                     State = ItemStateFilter.Open
                 });
 
-                // Fetch all closed issues to get the count
                 var closedIssues = await _githubClient.Issue.GetAllForRepository(owner, repo, new RepositoryIssueRequest
                 {
                     State = ItemStateFilter.Closed
@@ -269,7 +272,6 @@ Datum Tijd: {DateTime.Now}"
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    // Update the issue list
                     Issues.Clear();
 
                     foreach (var issue in issues)
@@ -290,7 +292,6 @@ Datum Tijd: {DateTime.Now}"
             }
             catch (Exception ex)
             {
-                // Ensure this runs on the UI thread as well
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     Issues.Add(new GitHubModel
@@ -360,6 +361,21 @@ Datum Tijd: {DateTime.Now}"
             catch (Exception ex)
             {
                 ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+            }
+        }
+        private void OpenEmailClientFallback(string subjectTemplate, string subjectInformation)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = $"mailto:patrick.stel@kpnmail.nl?subject={subjectTemplate}&body={subjectInformation}",
+                    UseShellExecute = true // Ensures the default email client is used
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Melden is niet gelukt, mail openen is ook niet gelukt, bel of app maar...");
             }
         }
     }

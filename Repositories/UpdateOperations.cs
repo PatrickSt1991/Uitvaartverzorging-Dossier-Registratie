@@ -8,6 +8,21 @@ namespace Dossier_Registratie.Repositories
 {
     public class UpdateOperations : RepositoryBase, IUpdateOperations
     {
+        public async Task UpdateNotification(Guid uitvaartId)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync();
+                command.Connection = connection;
+                command.CommandText = "UPDATE [EeftingDossierRegistratieRik].[dbo].[OverledeneKlantTevredenheid] " +
+                                        "SET NotificatieOverleden = 0 " +
+                                        "WHERE UitvaartId = @uitvaartId";
+                command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
         public async Task UpdateBlobLogo(string imageName, string imageType, byte[] imageData, string appType)
         {
             using (var connection = GetConnection())
@@ -714,9 +729,10 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "UPDATE OverledeneKlantTevredenheid SET Cijfer = @cijfer WHERE uitvaartId = @UitvaartId";
+                command.CommandText = "UPDATE OverledeneKlantTevredenheid SET Cijfer = @cijfer, NotificatieOverleden = @notificatie WHERE uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", klanttevredenheid.UitvaartId);
                 command.Parameters.AddWithValue("@cijfer", klanttevredenheid.CijferScore);
+                command.Parameters.AddWithValue("@notificatie", (klanttevredenheid.IsNotificationEnabled == true) ? true : false);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("UpdateKlanttevredenheidFailed");

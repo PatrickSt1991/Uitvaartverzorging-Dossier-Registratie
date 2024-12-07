@@ -16,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using Task = System.Threading.Tasks.Task;
 
 namespace Dossier_Registratie.ViewModels
@@ -524,6 +523,7 @@ namespace Dossier_Registratie.ViewModels
                 Klanttevredenheid.Id = klantCijfer.Id;
                 Klanttevredenheid.CijferScore = klantCijfer.CijferScore;
                 Klanttevredenheid.UitvaartId = klantCijfer.UitvaartId;
+                Klanttevredenheid.IsNotificationEnabled = klantCijfer.IsNotificationEnabled;
             }
 
             var dossierStatus = miscellaneousRepository.GetFinishedDossier(Globals.UitvaartCodeGuid);
@@ -1013,11 +1013,17 @@ namespace Dossier_Registratie.ViewModels
         {
             if (Klanttevredenheid.CijferScore == 0)
             {
-                MessageBox.Show("Er is geen klant tevredenheids scrore opgegeven, je kunt het dossier niet afronden zonder.", "Geen Klant Tevredenheids Score", MessageBoxButton.OK);
+                MessageBox.Show("Er is geen klant tevredenheids scrore opgegeven, je kunt het dossier niet afronden zonder.", "Geen tevredenheids score", MessageBoxButton.OK);
                 return;
             }
 
-            bool KlanttevredenheidExists = miscellaneousRepository.UitvaarFactuurExists(Klanttevredenheid.UitvaartId);
+            if (string.IsNullOrEmpty(Dossier.DocumentUrl))
+            {
+                MessageBox.Show("Er is geen totaal dossier (pdf) geupload, je kunt het dossier niet afronden zonder.", "Geen dossier PDF", MessageBoxButton.OK);
+                return;
+            }
+
+            bool KlanttevredenheidExists = miscellaneousRepository.UitvaarKlanttevredenheidExists(Klanttevredenheid.UitvaartId);
 
             if (Klanttevredenheid.Id == Guid.Empty && !KlanttevredenheidExists)
             {
@@ -1129,14 +1135,22 @@ namespace Dossier_Registratie.ViewModels
                     {
                         string selectedFilePath = openFileDialog.FileName;
                         string destinationFilePath = Path.Combine(destinationFolder, Path.GetFileName(selectedFilePath));
-                        File.Copy(selectedFilePath, destinationFilePath, true);
+                        try
+                        {
+                            File.Copy(selectedFilePath, destinationFilePath, true);
+                            Dossier.DocumentUrl = destinationFilePath;
+                        }
+                        catch (IOException)
+                        {
+                            Dossier.DocumentUrl = selectedFilePath;
+                        }
+
 
                         Dossier.BijlageId = Guid.NewGuid();
                         Dossier.UitvaartId = Globals.UitvaartCodeGuid;
                         Dossier.DocumentName = "Dossier";
                         Dossier.DocumentType = "PDF";
-                        Dossier.DocumentUrl = destinationFilePath;
-                        Dossier.DocumentHash = Checksum.GetMD5Checksum(selectedFilePath);
+                        Dossier.DocumentHash = string.Empty;
                         Dossier.DocumentInconsistent = false;
                         Dossier.IsDeleted = false;
 

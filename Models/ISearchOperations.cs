@@ -42,7 +42,7 @@ namespace Dossier_Registratie.Models
         FactuurModel GetOverlijdenKostenbegrotingByUitvaartId(string UitvaartId);
         Task<string> GetOverlijdenKostenbegrotingAsync(Guid UitvaartId);
         GenerateFactuur GetGenerateFactuurDataByUitvaartId(Guid UitvaartId);
-        IEnumerable<OverledeneSearchSurname> GetUitvaartleiderBySurnameOverledene(string overledeneAchternaam, string overledeneGeboortedatum);
+        IEnumerable<OverledeneSearchSurname> GetUitvaartleiderBySurnameOverledene(string overledeneAchternaam, DateTime overledeneGeboortedatum);
     }
 
 }

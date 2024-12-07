@@ -6,13 +6,13 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Dossier_Registratie.Models"
         xmlns:localview="clr-namespace:Dossier_Registratie.Views"
-        xmlns:viewModel="clr-namespace:Dossier_Registratie.ViewModels"
+        xmlns:vm="clr-namespace:Dossier_Registratie.ViewModels"
         mc:Ignorable="d"
         Width="{x:Static SystemParameters.PrimaryScreenWidth}"  
         Height="{x:Static SystemParameters.PrimaryScreenHeight}"  
         Title="{Binding Title}" WindowState="Maximized" d:DesignHeight="696.96" d:DesignWidth="1190.257" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
-        <viewModel:MainWindowViewModal/>
+        <vm:MainWindowViewModal/>
     </Window.DataContext>
     <Window.Resources>
         <Style x:Key="chevronTabItemStyle" TargetType="{x:Type TabItem}">
@@ -42,7 +42,6 @@
             </Setter>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
-
         <Style TargetType="{x:Type Button}" x:Key="StartingButtons">
             <Setter Property="Background" Value="#FFC92F39" />
             <Setter Property="Foreground" Value="White" />
@@ -179,6 +178,7 @@
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Start"/>
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Agenda"/>
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Alle Uitvaarten"/>
+            <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Notificaties"/>
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Help" />
             <ComboBoxItem Background="#FFC92F39" Foreground="White" Height="38" FontSize="14" Content="Handleiding" />
         </ComboBox>
@@ -372,7 +372,7 @@
                             <StackPanel x:Name="SearchDoBInput" Orientation="Horizontal" VerticalAlignment="Bottom">
                                 <Label Margin="25,3,3,3" Height="31" VerticalAlignment="Top" Content="Geboortedatum : " FontFamily="Arial" FontSize="16"/>
                                 <DatePicker x:Name="input_DateOfBirthOverledenenew" Width="200" Margin="10,-10,25,5" FontFamily="Arial" FontSize="16"
-            SelectedDate="{Binding Path=SelectedUser.Geboortedatum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}"
+            SelectedDate="{Binding Path=ZoekenDoB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true, NotifyOnValidationError=False}"
             Style="{StaticResource MaterialDesignFloatingHintDatePicker}">
                                     <DatePicker.Resources>
                                         <Style TargetType="DatePickerTextBox">

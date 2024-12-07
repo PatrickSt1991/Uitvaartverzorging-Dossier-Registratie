@@ -1,0 +1,94 @@
+﻿<Window x:Class="Dossier_Registratie.Views.OverledeneNotification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dossier_Registratie.Views" 
+        xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:OverledeneNotificationViewModel}"
+        mc:Ignorable="d"
+        Title="Jaar geleden overleden" Height="350" Width="Auto">
+    <Grid>
+        <ListView ItemsSource="{Binding YearPassedNotification}" Margin="10" 
+          HorizontalContentAlignment="Stretch"
+          Style="{StaticResource MaterialDesignListView}">
+            <ListView.Resources>
+                <!-- Align all ListViewItem contents to the right -->
+                <Style TargetType="TextBlock">
+                    <Setter Property="TextAlignment" Value="Right" />
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <!-- Style for headers -->
+                    <GridView.ColumnHeaderContainerStyle>
+                        <Style TargetType="GridViewColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            <Setter Property="Padding" Value="8,4" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </GridView.ColumnHeaderContainerStyle>
+
+                    <GridViewColumn Header="Dossier nr." Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding UitvaartNr}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Naam overledene" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OverledeneNaam}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Overleden op" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OverledenDatumTijd, StringFormat={}{0:dd-MM-yyyy HH:mm}}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Telefoon nr." Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OpdrachtTelefoon}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Opdrachtgever" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Opdrachtgever}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Tevredenheid" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Cijfer}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Notificatie uitzetten" Padding="5" 
+                                Command="{Binding DataContext.DisabledNotification, RelativeSource={RelativeSource AncestorType=ListView}}" 
+                                CommandParameter="{Binding UitvaartId}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

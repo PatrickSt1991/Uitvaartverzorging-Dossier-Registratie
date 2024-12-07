@@ -5,7 +5,6 @@ using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -182,7 +181,7 @@ namespace Dossier_Registratie.Helper
 
                 // Create the bookmarks dictionary
                 var bookmarks = new Dictionary<string, string>
-                
+
         {
             { "OverledeneNaam", checklist.VolledigeNaam },
             { "UitvaartDatum", formattedUitvaartDate },

@@ -3,7 +3,6 @@ using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using static Dossier_Registratie.MainWindow;
 using static Dossier_Registratie.ViewModels.OverledeneViewModel;
 
 namespace Dossier_Registratie.ViewModels

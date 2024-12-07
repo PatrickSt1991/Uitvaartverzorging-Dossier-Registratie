@@ -425,7 +425,7 @@
                 </ComboBoxItem>
             </ComboBox>
             <Label x:Name="lbl_DocumentAangifte" Content="Aangifte" HorizontalAlignment="Left" Margin="10,365,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
-            <Button x:Name="btn_VerlofToevoegen" Content="{Binding VerlofTagContent}" Tag="{Binding Verlof.DocumentUrl}" HorizontalAlignment="Left" Margin="797,355,0,0" VerticalAlignment="Top" Height="40" Width="185" TabIndex="7" Command="{Binding VerlofUploadenCommand}"/>
+            <Button x:Name="btn_VerlofToevoegen" Content="{Binding VerlofTagContent}" Tag="{Binding VerlofDossier.DocumentUrl}" HorizontalAlignment="Left" Margin="797,355,0,0" VerticalAlignment="Top" Height="40" Width="185" TabIndex="7" Command="{Binding VerlofUploadenCommand}"/>
             <Label x:Name="lbl_VerlofToevoegen" Content="Verlof uitvaart" HorizontalAlignment="Left" Margin="570,365,0,0" VerticalAlignment="Top" Height="30" Width="208" BorderThickness="0,0,0,1" BorderBrush="Red" FontFamily="Arial" FontSize="16"/>
         </Grid>
     </ScrollViewer>

@@ -7,6 +7,7 @@ namespace Dossier_Registratie.Models
 {
     public interface IMiscellaneousAndDocumentOperations
     {
+        Task<ObservableCollection<NotificatieOverzichtModel>> NotificationDeceasedAfterYearPassedAsync();
         (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId);
         bool UitvaarnummerExists(string uitvaartnummer);
         bool UitvaartPersoonsgegevensExists(Guid UitvaartId);

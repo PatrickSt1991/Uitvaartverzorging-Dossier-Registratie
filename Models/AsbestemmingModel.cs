@@ -40,6 +40,7 @@ namespace Dossier_Registratie.Models
         private Guid _id;
         private Guid _uitvaartId;
         private int _cijferScore;
+        private bool _isNotificationEnabled;
 
         public Guid Id
         {
@@ -61,6 +62,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _cijferScore; }
             set { _cijferScore = value; OnPropertyChanged(nameof(CijferScore)); }
+        }
+        public bool IsNotificationEnabled
+        {
+            get { return _isNotificationEnabled; }
+            set { _isNotificationEnabled = value; OnPropertyChanged(nameof(IsNotificationEnabled)); }
         }
     }
     public class OverledeneAsbestemmingModel : ViewModelBase
