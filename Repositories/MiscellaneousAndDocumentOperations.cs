@@ -19,31 +19,33 @@ namespace Dossier_Registratie.Repositories
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
-                await connection.OpenAsync(); // Open connection asynchronously
+                await connection.OpenAsync();
                 command.Connection = connection;
-                command.CommandText = @"
-            SELECT 
-                oul.UitvaartId, 
-                Uitvaartnummer, 
-                CASE 
-                    WHEN overledeneTussenvoegsel IS NULL OR overledeneTussenvoegsel = '' 
-                    THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) 
-                    ELSE CONCAT(overledeneAanhef, ' ', overledeneTussenvoegsel, ' ', overledeneAchternaam) 
-                END AS VolledigeAchternaam, 
-                ooi.overledenDatumTijd, oo.opdrachtgeverTelefoon, cu.WindowsUsername, okt.Cijfer
-            FROM OverledeneKlantTevredenheid okt 
-            INNER JOIN OverledeneUitvaartleider oul ON okt.UitvaartId = oul.UitvaartId 
-            INNER JOIN ConfigurationPersoneel cp ON oul.PersoneelId = cp.Id 
-            INNER JOIN ConfigurationUsers cu ON cp.Id = cu.PersoneelId 
-            INNER JOIN OverledenePersoonsGegevens opg ON oul.UitvaartId = opg.UitvaartId 
-            INNER JOIN OverledeneOverlijdenInfo ooi ON opg.uitvaartId = ooi.UitvaartId 
-            INNER JOIN OverledeneOpdrachtgever oo ON opg.uitvaartId = oo.uitvaartId
-            WHERE okt.NotificatieOverleden = 1 
-                AND overledenDatumTijd <= DATEADD(YEAR, -1, GETDATE())";
+                command.CommandText = @"SELECT oul.UitvaartId, Uitvaartnummer, 
+                                        CASE 
+                                            WHEN overledeneTussenvoegsel IS NULL OR overledeneTussenvoegsel = '' 
+                                            THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) 
+                                            ELSE CONCAT(overledeneAanhef, ' ', overledeneTussenvoegsel, ' ', overledeneAchternaam) 
+                                        END AS VolledigeAchternaam, 
+                                        ooi.overledenDatumTijd, oo.opdrachtgeverTelefoon, cu.WindowsUsername, okt.Cijfer,
+	                                    CASE
+		                                    WHEN opdrachtgeverTussenvoegsel IS NULL OR opdrachtgeverTussenvoegsel = ''
+		                                    THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverAchternaam)
+		                                    ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam) 
+	                                    END AS Opdrachtgever
+                                    FROM OverledeneKlantTevredenheid okt 
+                                    INNER JOIN OverledeneUitvaartleider oul ON okt.UitvaartId = oul.UitvaartId 
+                                    INNER JOIN ConfigurationPersoneel cp ON oul.PersoneelId = cp.Id 
+                                    INNER JOIN ConfigurationUsers cu ON cp.Id = cu.PersoneelId 
+                                    INNER JOIN OverledenePersoonsGegevens opg ON oul.UitvaartId = opg.UitvaartId 
+                                    INNER JOIN OverledeneOverlijdenInfo ooi ON opg.uitvaartId = ooi.UitvaartId 
+                                    INNER JOIN OverledeneOpdrachtgever oo ON opg.uitvaartId = oo.uitvaartId
+                                    WHERE okt.NotificatieOverleden = 1 
+                                        AND overledenDatumTijd <= DATEADD(YEAR, -1, GETDATE())";
 
-                using (var reader = await command.ExecuteReaderAsync()) // Execute reader asynchronously
+                using (var reader = await command.ExecuteReaderAsync()) 
                 {
-                    while (await reader.ReadAsync()) // Read rows asynchronously
+                    while (await reader.ReadAsync())
                     {
                         notificatie.Add(new NotificatieOverzichtModel
                         {
@@ -53,7 +55,8 @@ namespace Dossier_Registratie.Repositories
                             OverledenDatumTijd = (DateTime)reader[3],
                             OpdrachtTelefoon = reader[4].ToString(),
                             WindowsAccount = reader[5].ToString(),
-                            Cijfer = reader[6].ToString()
+                            Cijfer = reader[6].ToString(),
+                            Opdrachtgever = reader[7].ToString()
                         });
                     }
                 }

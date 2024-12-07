@@ -592,6 +592,7 @@ namespace Dossier_Registratie.ViewModels
                 var startDate = DateTime.Today.AddYears(-1).AddDays(-7);
                 var endDate = DateTime.Today.AddYears(-1).AddDays(7);
                 //var activeUser = Environment.UserName;
+                
                 var activeUser = "hille";
 
                 var filteredNotifications = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
@@ -605,7 +606,7 @@ namespace Dossier_Registratie.ViewModels
                     if (notificatieWindow == null || !notificatieWindow.IsVisible)
                     {
                         notificatieWindow = new OverledeneNotification();
-                        notificatieWindow.DataContext = this;
+                        notificatieWindow.DataContext = new OverledeneNotificationViewModel();
                         notificatieWindow.ShowDialog();
                     }
                 }

@@ -12,7 +12,7 @@ namespace Dossier_Registratie.Models
         private string _opdrachtTelefoon;
         private string _windowsAccount;
         private string _cijfer;
-
+        private string _opdrachtgever;
         public Guid UitvaartId
         {
             get { return _uitvaartId; }
@@ -46,7 +46,12 @@ namespace Dossier_Registratie.Models
         public string Cijfer
         {
             get { return _cijfer; }
-            set { _cijfer = value; OnPropertyChanged(nameof(Cijfer));}
+            set { _cijfer = value; OnPropertyChanged(nameof(Cijfer)); }
+        }
+        public string Opdrachtgever
+        {
+            get { return _opdrachtgever; }
+            set { _opdrachtgever = value; OnPropertyChanged(nameof(Opdrachtgever)); }
         }
     }
     public class UitvaartOverzichtModel : ViewModelBase

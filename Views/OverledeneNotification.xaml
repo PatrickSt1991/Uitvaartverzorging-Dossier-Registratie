@@ -9,7 +9,6 @@
         mc:Ignorable="d"
         Title="Jaar geleden overleden" Height="350" Width="Auto">
     <Grid>
-        <!-- ListView content -->
         <ListView ItemsSource="{Binding YearPassedNotification}" Margin="10" 
           HorizontalContentAlignment="Stretch"
           Style="{StaticResource MaterialDesignListView}">
@@ -63,6 +62,14 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
+                    <GridViewColumn Header="Opdrachtgever" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Opdrachtgever}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
                     <GridViewColumn Header="Tevredenheid" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -83,6 +90,5 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
     </Grid>
 </Window>

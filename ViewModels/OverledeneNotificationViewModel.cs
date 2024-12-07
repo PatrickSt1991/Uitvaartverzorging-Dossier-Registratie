@@ -1,6 +1,8 @@
-﻿using Dossier_Registratie.Models;
+﻿using CommunityToolkit.Mvvm.Input;
+using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
+using Octokit;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,43 +32,41 @@ namespace Dossier_Registratie.ViewModels
         public ICommand DisabledNotification { get; }
         public OverledeneNotificationViewModel()
         {
-            DisabledNotification = new ViewModelCommand(DisableNotification);
+            DisabledNotification = new RelayCommand<Guid>(ExecuteDisabledNotification);
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             updateRepository = new UpdateOperations();
-            DeceasedYearAgoCheck();
+            LoadNotifications();
         }
-        private async Task DeceasedYearAgoCheck()
+        private async void LoadNotifications()
         {
             try
             {
                 var startDate = DateTime.Today.AddYears(-1).AddDays(-7);
                 var endDate = DateTime.Today.AddYears(-1).AddDays(7);
-                //var activeUser = Environment.UserName;
-                var activeUser = "hille";
+                var activeUser = Environment.UserName;
 
-                var filteredNotifications = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
-
+                var notifications = await miscellaneousRepository.NotificationDeceasedAfterYearPassedAsync();
                 YearPassedNotification = new ObservableCollection<NotificatieOverzichtModel>(
-                    filteredNotifications.Where(x => x.OverledenDatumTijd >= startDate && x.OverledenDatumTijd <= endDate && x.WindowsAccount == activeUser)
+                    notifications.Where(x => x.OverledenDatumTijd >= startDate && x.OverledenDatumTijd <= endDate && x.WindowsAccount == activeUser)
                 );
-
             }
             catch (Exception ex)
             {
                 ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
         }
-        public void DisableNotification(object obj)
+        private async void ExecuteDisabledNotification(Guid uitvaartId)
         {
             try
             {
-                if (Guid.TryParse(obj?.ToString(), out Guid uitvaartId))
-                    updateRepository.UpdateNotification(uitvaartId);
+                await updateRepository.UpdateNotification(uitvaartId);
+                LoadNotifications();
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
+
         }
     }
 }
