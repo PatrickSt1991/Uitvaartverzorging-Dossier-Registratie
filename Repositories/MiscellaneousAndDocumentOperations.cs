@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Dossier_Registratie.Repositories
@@ -2478,7 +2479,8 @@ namespace Dossier_Registratie.Repositories
                     command.CommandText = "SELECT OUL.Uitvaartnummer, OPG.overledeneAchternaam, OPG.overledeneVoornamen, OPG.overledeneGeboortedatum, " +
                                             "OOI.overledenDatumTijd, OO.opbaringLocatie, OOI.overledenPlaats, OOG.opdrachtgeverRelatieTotOverledene, " +
                                             "OO.opbaringSieradenOmschrijving, OO.opbaringSieradenRetour," +
-                                            "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAchternaam, ', ', LEFT(ISNULL(opdrachtgeverVoornaamen, ''), 1) ) ELSE CONCAT(OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam, ', ', LEFT(ISNULL(opdrachtgeverVoornaamen, ''), 1)) END) as Opdrachtgever, " +
+                                            "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAchternaam, ', ') ELSE CONCAT(OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam, ', ') END) as Opdrachtgever, " +
+                                            "opdrachtgeverVoornaamen," +
                                             "(CASE WHEN opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) ELSE CONCAT(opdrachtgeverStraat, ' ', TRIM(opdrachtgeverHuisnummer), ' ', TRIM(opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever " +
                                             "FROM OverledenePersoonsGegevens OPG " +
                                             "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
@@ -2492,6 +2494,14 @@ namespace Dossier_Registratie.Repositories
                     {
                         while (await reader.ReadAsync()) // ReadAsync for asynchronous read
                         {
+                            string voorletters = string.Empty;
+                            if (!string.IsNullOrEmpty(reader["opdrachtgeverVoornaamen"].ToString()))
+                            {
+                                string[] words = reader["opdrachtgeverVoornaamen"].ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                                voorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
+                            }
+
                             bezittingInfo = new BezittingenDocument()
                             {
                                 DossierNummer = reader["Uitvaartnummer"].ToString(),
@@ -2505,7 +2515,7 @@ namespace Dossier_Registratie.Repositories
                                 OverledeneBezittingen = reader["opbaringSieradenOmschrijving"].ToString(),
                                 OverledeneRetour = reader["opbaringSieradenRetour"].ToString(),
                                 OpdrachtgeverAdres = reader["AdresOpdrachtgever"].ToString(),
-                                OpdrachtgeverNaamVoorletters = reader["Opdrachtgever"].ToString()
+                                OpdrachtgeverNaamVoorletters = reader["Opdrachtgever"].ToString() + voorletters
                             };
                         }
                     }

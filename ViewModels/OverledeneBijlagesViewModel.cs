@@ -733,8 +733,9 @@ namespace Dossier_Registratie.ViewModels
             DateTime overledenOp = DateTime.MinValue;
 
             conn.Open();
-            SqlDataAdapter da = new("SELECT (CASE WHEN opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverAchternaam, ', ', LEFT(ISNULL(opdrachtgeverVoornaamen, ''), 1)) " +
-                "ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam, ', ', LEFT(ISNULL(opdrachtgeverVoornaamen, ''), 1)) END) AS NaamOpdrachtgever, " +
+            SqlDataAdapter da = new("SELECT (CASE WHEN opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverAchternaam, ', ')  " +
+                "ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam, ', ') END) AS NaamOpdrachtgever,  " +
+                "opdrachtgeverVoornaamen," +
                 "(CASE WHEN opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) ELSE CONCAT(opdrachtgeverStraat, ' ', TRIM(opdrachtgeverHuisnummer), ' ', TRIM(opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever, " +
                 "opdrachtgeverRelatieTotOverledene, " +
                 "(CASE WHEN overledeneTussenvoegsel IS NULL THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) " +
@@ -748,9 +749,18 @@ namespace Dossier_Registratie.ViewModels
             DataSet ds = new();
             da.Fill(ds, "AkteInfo");
 
+            string voorletters = string.Empty;
             if (ds.Tables[0].Rows.Count > 0)
             {
-                opdrachtgeverNaam = ds.Tables[0].Rows[0]["NaamOpdrachtgever"].ToString();
+
+                if (!string.IsNullOrEmpty(ds.Tables[0].Rows[0]["opdrachtgeverVoornaamen"].ToString()))
+                {
+                    string[] words = ds.Tables[0].Rows[0]["opdrachtgeverVoornaamen"].ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    voorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
+                }
+
+                opdrachtgeverNaam = ds.Tables[0].Rows[0]["NaamOpdrachtgever"].ToString() + " " + voorletters;
                 opdrachtgeverAdres = ds.Tables[0].Rows[0]["AdresOpdrachtgever"].ToString();
                 opdrachtgeverRelatie = ds.Tables[0].Rows[0]["opdrachtgeverRelatieTotOverledene"].ToString();
                 geslotenOpLevenVan = ds.Tables[0].Rows[0]["NaamOverledene"].ToString();
@@ -969,6 +979,7 @@ namespace Dossier_Registratie.ViewModels
                             OverdrachtModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Overdracht.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -1120,6 +1131,7 @@ namespace Dossier_Registratie.ViewModels
                             ChecklistModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -1294,6 +1306,7 @@ namespace Dossier_Registratie.ViewModels
                             DienstAanvraagModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -1444,6 +1457,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentModel.InitialCreation = false;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Document.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -1596,6 +1610,7 @@ namespace Dossier_Registratie.ViewModels
                             KoffieKamerModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -1747,6 +1762,7 @@ namespace Dossier_Registratie.ViewModels
                             BezittingenModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Bezittingen.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -1895,6 +1911,7 @@ namespace Dossier_Registratie.ViewModels
                             CrematieModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Crematie.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -2046,6 +2063,7 @@ namespace Dossier_Registratie.ViewModels
                             BegrafenisModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Begrafenis.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -2212,6 +2230,7 @@ namespace Dossier_Registratie.ViewModels
                             }
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else
@@ -2245,6 +2264,7 @@ namespace Dossier_Registratie.ViewModels
                             TerugmeldingModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
             }
@@ -2430,7 +2450,7 @@ namespace Dossier_Registratie.ViewModels
             }
             else if (!File.Exists(TagModel.TevredenheidTag))
             {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Tevredenheidsonderzoek");
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Tevredenheid");
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
                 documentId = Guid.NewGuid();
                 initialCreation = true;
@@ -2472,6 +2492,7 @@ namespace Dossier_Registratie.ViewModels
                             TevredenheidModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)
@@ -2622,6 +2643,7 @@ namespace Dossier_Registratie.ViewModels
                             AangifteModel.Updated = true;
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aangifte.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
                     }
                 }
                 else if (savedHash == documentHash)

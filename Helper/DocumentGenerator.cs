@@ -1,6 +1,7 @@
 ﻿using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
@@ -80,6 +81,7 @@ namespace Dossier_Registratie.Helper
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -249,6 +251,7 @@ namespace Dossier_Registratie.Helper
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -378,6 +381,7 @@ namespace Dossier_Registratie.Helper
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -512,12 +516,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -642,12 +646,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -774,12 +778,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -1067,12 +1071,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -1227,12 +1231,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -1362,12 +1366,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -1527,12 +1531,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
@@ -1708,12 +1712,12 @@ namespace Dossier_Registratie.Helper
 
                         File.WriteAllBytes(tempImagePath, documentData);
 
-                        // Add the image to each section's header
                         foreach (Section section in doc.Sections)
                         {
                             HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
                             Range headerRange = header.Range;
                             headerRange.InlineShapes.AddPicture(tempImagePath);
+                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
                         }
                     }
                     catch (Exception ex)
