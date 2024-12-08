@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -1247,7 +1248,7 @@ namespace Dossier_Registratie.Repositories
                             OpdrachtgeverStraat = reader[5].ToString(),
                             OpdrachtgeverPostcode = reader[6].ToString(),
                             OpdrachtgeverWoonplaats = reader[7].ToString(),
-                            OverledenDatum = reader[8].ToString(),
+                            OverledenDatum = reader[8] != DBNull.Value ? (DateTime)reader[8] : default(DateTime),
                         };
                     }
                 }

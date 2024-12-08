@@ -599,13 +599,15 @@ namespace Dossier_Registratie.ViewModels
             }
 
             _generatingDocumentView.Show();
-
+            
             string kostenbegrotingUrl = await CreateKostenbegrotingFileAsync(Globals.UitvaartCode);
+
             OverledeneFactuurModel.UitvaartId = Globals.UitvaartCodeGuid;
             OverledeneFactuurModel.KostenbegrotingUrl = kostenbegrotingUrl;
             OverledeneFactuurModel.KostenbegrotingJson = JsonConvert.SerializeObject(PriceComponents);
 
             var priceComponentsOnly = SerializePriceComponentsToJson();
+
             await Task.Run(() => FillKostenbegrotingFile(Globals.UitvaartCodeGuid, kostenbegrotingUrl, OverledeneFactuurModel.KostenbegrotingJson, priceComponentsOnly));
 
             _generatingDocumentView.Hide();
@@ -917,20 +919,23 @@ namespace Dossier_Registratie.ViewModels
             var workbook = excelApp.Workbooks.Open(kostenbegrotingUrl);
             var worksheet = (Excel.Worksheet)workbook.ActiveSheet;
 
-            if (SelectedVerzekeraar.CustomLogo == true)
-                kbImage = LoadImageFromDatabase();
+            Debug.WriteLine(SelectedVerzekeraar.CustomLogo);
 
-            if (!string.IsNullOrEmpty(kbImage))
+            if (SelectedVerzekeraar.CustomLogo == true)
             {
-                var pictures = worksheet.Shapes;
-                var picture = pictures.AddPicture(kbImage,
-                                                  Microsoft.Office.Core.MsoTriState.msoFalse, // LinkToFile
-                                                  Microsoft.Office.Core.MsoTriState.msoCTrue, // SaveWithDocument
-                                                  (float)worksheet.Cells[2, 3].Left,
-                                                  (float)worksheet.Cells[2, 3].Top,
-                                                  -1, // Width, -1 to keep original width
-                                                  -1); // Height, -1 to keep original height
-                picture.Placement = Excel.XlPlacement.xlMoveAndSize;
+                kbImage = LoadImageFromDatabase();
+                if (!string.IsNullOrEmpty(kbImage))
+                {
+                    var pictures = worksheet.Shapes;
+                    var picture = pictures.AddPicture(kbImage,
+                                                      Microsoft.Office.Core.MsoTriState.msoFalse, // LinkToFile
+                                                      Microsoft.Office.Core.MsoTriState.msoCTrue, // SaveWithDocument
+                                                      (float)worksheet.Cells[2, 3].Left,
+                                                      (float)worksheet.Cells[2, 3].Top,
+                                                      -1, // Width, -1 to keep original width
+                                                      -1); // Height, -1 to keep original height
+                    picture.Placement = Excel.XlPlacement.xlMoveAndSize;
+                }
             }
 
             string voorletters = string.Empty;
@@ -945,15 +950,8 @@ namespace Dossier_Registratie.ViewModels
             kostenbegrotingInfoResult.OverledeneNaam = $"{kostenbegrotingInfoResult.OverledeneAanhef} {voorletters} {kostenbegrotingInfoResult.OverledeneAchternaam}";
 
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
+            worksheet.Cells[7, 8] = kostenbegrotingInfoResult.OverledenDatum != default ? kostenbegrotingInfoResult.OverledenDatum.ToString("dd-MM-yyyy") : string.Empty;
 
-            if (DateTime.TryParse(kostenbegrotingInfoResult.OverledenDatum, out DateTime dateTime))
-            {
-                worksheet.Cells[7, 8] = dateTime.ToString("dd-MM-yyyy");
-            }
-            else
-            {
-                worksheet.Cells[7, 8] = kostenbegrotingInfoResult.OverledenDatum;
-            }
 
             var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson);
             var mergeRanges = new List<Excel.Range>();
@@ -983,13 +981,14 @@ namespace Dossier_Registratie.ViewModels
                         : priceComponent.Verzekerd);
 
                     worksheet.Cells[excelRow, 8] = priceComponent.Bedrag;
-                    //worksheet.Cells[excelRow, 8].NumberFormat = "€ #.##0,00";
                     worksheet.Cells[excelRow, 8].NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
                     worksheet.Cells[excelRow, 8].HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
 
 
                     var mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 6]];
                     mergeRanges.Add(mergeRange);
+
+                    priceComponent.OrgBedrag ??= 0;
 
                     totalAmount += (double)priceComponent.Bedrag;
                     orgAmount += (double)priceComponent.OrgBedrag;

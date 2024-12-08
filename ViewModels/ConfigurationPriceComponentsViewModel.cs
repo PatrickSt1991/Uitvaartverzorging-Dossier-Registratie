@@ -4,6 +4,7 @@ using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -143,7 +144,7 @@ namespace Dossier_Registratie.ViewModels
                 if (_priceComponents != value)
                 {
                     _priceComponents = value;
-                    OnPropertyChanged(nameof(_priceComponents));
+                    OnPropertyChanged(nameof(PriceComponents));
                 }
             }
         }
@@ -305,6 +306,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+
         private void OnVerzekeringCheckBoxCheckedChanged(VerzekeraarsModel component)
         {
             if (component.IsSelected)
@@ -322,6 +324,7 @@ namespace Dossier_Registratie.ViewModels
                 {
                     SelectedAfkortingen.CollectionChanged -= SelectedAfkortingen_CollectionChanged;
                     SelectedAfkortingen.Remove(component.Afkorting);
+                    Debug.WriteLine(component.Afkorting);
                     SelectedAfkortingen.CollectionChanged += SelectedAfkortingen_CollectionChanged;
                 }
             }
