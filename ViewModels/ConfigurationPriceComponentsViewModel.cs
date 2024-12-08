@@ -324,7 +324,6 @@ namespace Dossier_Registratie.ViewModels
                 {
                     SelectedAfkortingen.CollectionChanged -= SelectedAfkortingen_CollectionChanged;
                     SelectedAfkortingen.Remove(component.Afkorting);
-                    Debug.WriteLine(component.Afkorting);
                     SelectedAfkortingen.CollectionChanged += SelectedAfkortingen_CollectionChanged;
                 }
             }
