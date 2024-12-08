@@ -863,7 +863,8 @@ namespace Dossier_Registratie.ViewModels
         }
         private async Task GenererenCreateAkteVanCessie(object parameter)
         {
-            _generatingDocumentView.Show();
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
             bool sendMail = false;
             bool akteStatus = false;
@@ -911,7 +912,7 @@ namespace Dossier_Registratie.ViewModels
                     ExecuteClosePopupCommand("close");
                 }
             }
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
         }
         public async Task CreateDocumentOverdracht(object obj)
         {
@@ -988,7 +989,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
             OverdrachtModel = await miscellaneousRepository.GetDocumentOverdrachtInfoAsync(Globals.UitvaartCodeGuid);
             OverdrachtModel.DocumentId = documentId;
@@ -998,7 +999,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (!OverdrachtModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -1006,7 +1007,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateOverdracht(OverdrachtModel).ConfigureAwait(true);
@@ -1048,7 +1049,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             TagModel.OverdrachtTag = docResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -1139,7 +1140,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             ChecklistModel = await miscellaneousRepository.GetDocumentChecklistInfoAsync(Globals.UitvaartCodeGuid);
             ChecklistModel.DocumentId = documentId;
             ChecklistModel.DestinationFile = destinationFile;
@@ -1172,7 +1173,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (!ChecklistModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -1180,7 +1181,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
 
@@ -1224,7 +1225,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             TagModel.ChecklistTag = docResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -1313,7 +1314,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
             DienstAanvraagModel = await miscellaneousRepository.GetDienstInfoAsync(Globals.UitvaartCodeGuid);
             DienstAanvraagModel.DocumentId = documentId;
@@ -1321,7 +1322,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (!DienstAanvraagModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult dienstaanvraag = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (dienstaanvraag == MessageBoxResult.No)
                 {
@@ -1329,7 +1330,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateDienst(DienstAanvraagModel).ConfigureAwait(true);
@@ -1373,7 +1374,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             TagModel.AanvraagDienstTag = docResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -1462,7 +1463,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
             DocumentModel = await miscellaneousRepository.GetDocumentDocumentInfoAsync(Globals.UitvaartCodeGuid);
             DocumentModel.DocumentId = documentId;
@@ -1472,7 +1473,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (!DocumentModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -1480,7 +1481,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
             OverledeneBijlagesModel docResults = await documentGenerator.UpdateDocument(DocumentModel).ConfigureAwait(true);
@@ -1523,7 +1524,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             TagModel.DocumentTag = docResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
 
             switch (documentOption)
             {
@@ -1616,14 +1617,14 @@ namespace Dossier_Registratie.ViewModels
 
             }
 
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             KoffieKamerModel = await miscellaneousRepository.GetKoffieKamerInfoAsync(Globals.UitvaartCodeGuid);
             KoffieKamerModel.DocumentId = documentId;
             KoffieKamerModel.DestinationFile = destinationFile;
 
             if (!KoffieKamerModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -1631,7 +1632,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Hide();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 }
             }
 
@@ -1676,7 +1677,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             TagModel.KoffiekamerTag = koffieResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -1765,14 +1766,14 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             BezittingenModel = await miscellaneousRepository.GetDocumentBezittingInfoAsync(Globals.UitvaartCodeGuid);
             BezittingenModel.DocumentId = documentId;
             BezittingenModel.DestinationFile = destinationFile;
 
             if (!BezittingenModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -1780,7 +1781,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
 
@@ -1824,7 +1825,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             TagModel.BezittingenTag = bezittingResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -1913,14 +1914,14 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             CrematieModel = await miscellaneousRepository.GetDocumentCrematieInfoAsync(Globals.UitvaartCodeGuid);
             CrematieModel.DocumentId = documentId;
             CrematieModel.DestinationFile = destinationFile;
 
             if (!CrematieModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -1928,7 +1929,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
             Guid HerkomstId = Guid.Parse(CrematieModel.Herkomst);
@@ -1975,7 +1976,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             TagModel.OpdrachtCrematieTag = crematieResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -2064,14 +2065,14 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             BegrafenisModel = await miscellaneousRepository.GetDocumentBegrafenisInfoAsync(Globals.UitvaartCodeGuid);
             BegrafenisModel.DocumentId = documentId;
             BegrafenisModel.DestinationFile = destinationFile;
 
             if (!BegrafenisModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -2079,7 +2080,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
 
@@ -2124,7 +2125,7 @@ namespace Dossier_Registratie.ViewModels
             }
             ButtonContentModel.OpdrachtBegrafenisContent = "Bewerken";
             TagModel.OpdrachtBegrafenisTag = begrafenisResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -2253,7 +2254,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (!TerugmeldingModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -2261,7 +2262,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
 
@@ -2336,7 +2337,7 @@ namespace Dossier_Registratie.ViewModels
                         }
                     }
                 }
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 switch (documentOption)
                 {
                     case "Print":
@@ -2398,7 +2399,7 @@ namespace Dossier_Registratie.ViewModels
                         }
                     }
                 }
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 switch (documentOption)
                 {
                     case "Print":
@@ -2490,14 +2491,14 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
             TevredenheidModel = await miscellaneousRepository.GetDocumentTevredenheidsInfoAsync(Globals.UitvaartCodeGuid);
             TevredenheidModel.DocumentId = documentId;
             TevredenheidModel.DestinationFile = destinationFile;
 
             if (!TevredenheidModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -2505,7 +2506,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
 
@@ -2550,7 +2551,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             TagModel.TevredenheidTag = tevredenheidResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
@@ -2640,7 +2641,7 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            _generatingDocumentView.Show();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
             AangifteModel = await miscellaneousRepository.GetDocumentAangifteInfoAsync(Globals.UitvaartCodeGuid);
             AangifteModel.DocumentId = documentId;
@@ -2649,7 +2650,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (!AangifteModel.HasData())
             {
-                _generatingDocumentView.Hide();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                 {
@@ -2657,7 +2658,7 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else
                 {
-                    _generatingDocumentView.Show();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
 
@@ -2701,7 +2702,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             TagModel.AangifteTag = aangifteResults.DocumentUrl;
-            _generatingDocumentView.Hide();
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
             switch (documentOption)
             {
                 case "Print":
