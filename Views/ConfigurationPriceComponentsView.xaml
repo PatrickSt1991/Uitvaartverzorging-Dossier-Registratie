@@ -49,7 +49,7 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalAlignment="Center" Margin="5,0" />
+                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Command="{Binding DataContext.VerzekeringCheckCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}" VerticalAlignment="Center" Margin="5,0" />
                                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0" />
                                     </StackPanel>
                                 </DataTemplate>

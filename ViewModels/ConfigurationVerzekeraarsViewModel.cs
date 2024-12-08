@@ -156,6 +156,7 @@ namespace Dossier_Registratie.ViewModels
                     AddressZipCode = verzekeraar.AddressZipCode,
                     FactuurType = verzekeraar.FactuurType,
                     Pakket = verzekeraar.Pakket,
+                    CustomLogo = verzekeraar.CustomLogo,
                 });
             }
         }
@@ -207,6 +208,7 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.Pakket = verzekering.Pakket;
             selectedVerzekering.IsOverrideFactuurAdress = verzekering.IsOverrideFactuurAdress;
             selectedVerzekering.Telefoon = verzekering.Telefoon;
+            selectedVerzekering.CustomLogo = verzekering.CustomLogo;
 
             newVerzekering = false;
             IsEditVerzekeringPopupOpen = true;
@@ -301,6 +303,7 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.IsHerkomst = false;
             SelectedVerzekering.IsVerzekeraar = false;
             selectedVerzekering.Pakket = false;
+            selectedVerzekering.CustomLogo = false;
             selectedVerzekering.PostbusAddress = string.Empty;
             selectedVerzekering.PostbusName = string.Empty;
             selectedVerzekering.AddressCity = string.Empty;

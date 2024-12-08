@@ -14,7 +14,8 @@ namespace Dossier_Registratie.Models
         private string _opdrachtgeverStraat;
         private string _opdrachtgeverPostcode;
         private string _opdrachtgeverWoonplaats;
-        private string _overledenDatum;
+        //private string _overledenDatum;
+        private DateTime _overledenDatum;
         public string UitvaartNummer
         {
             get { return _uitvaartNummer; }
@@ -60,7 +61,7 @@ namespace Dossier_Registratie.Models
             get { return _opdrachtgeverWoonplaats; }
             set { _opdrachtgeverWoonplaats = value; OnPropertyChanged(nameof(OpdrachtgeverWoonplaats)); }
         }
-        public string OverledenDatum
+        public DateTime OverledenDatum
         {
             get { return _overledenDatum; }
             set { _overledenDatum = value; OnPropertyChanged(nameof(OverledenDatum)); }

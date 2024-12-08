@@ -305,7 +305,7 @@
                 BorderBrush="Black" 
                 BorderThickness="1" 
                 HorizontalAlignment="Center" 
-                VerticalAlignment="Center" Height="160" Width="394">
+                VerticalAlignment="Center" Height="180" Width="394">
                 <StackPanel Name="SearchUitvaartNumberStackpanel" Orientation="Horizontal">
                     <StackPanel x:Name="SearchUitvaarNumberGroep" Orientation="Vertical" Grid.Column="0" Width="394">
                         <StackPanel x:Name="SearchUitvaartNumberInput" Orientation="Horizontal" Margin="0,30,0,0">
@@ -319,10 +319,10 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <StackPanel Orientation="Horizontal">
-                                <Label x:Name="UitvaartLabel" Margin="25,0" Content="{Binding ErrorMessageUitvaartnummer}" FontStyle="Italic" FontSize="10" Foreground="Red"></Label>
                                 <StackPanel Orientation="Vertical">
-                                    <CheckBox Content="Zoek in archief folder" IsChecked="{Binding SearchArchiveFolder}" Margin="0 2 0 0"/>
-                                    <CheckBox Content="Zoek in &lt; 2025 databases" IsChecked="{Binding SearchOldDatabaseNummer}" Margin="0 2 0 0"/>
+                                    <Label x:Name="UitvaartLabel" Margin="25,0,0,0" Content="{Binding ErrorMessageUitvaartnummer}" FontStyle="Italic" FontSize="10" Foreground="Red"></Label>
+                                    <CheckBox Content="Zoek in archief folder" IsChecked="{Binding SearchArchiveFolder}" Margin="25 0 0 0"/>
+                                    <CheckBox Content="Zoek in &lt; 2025 databases" IsChecked="{Binding SearchOldDatabaseNummer}" Margin="25, 0,0, 0"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
