@@ -416,7 +416,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 SelectedVerzekeraar.Id = selectedHerkomst.herkomstId;
                 SelectedVerzekeraar.Name = selectedHerkomst.herkomstName;
-                SelectedVerzekeraar.Afkorting = selectedHerkomst.herkomstAfkorting;
                 SelectedVerzekeraar.CustomLogo = selectedHerkomst.herkomstLogo;
             }
         }

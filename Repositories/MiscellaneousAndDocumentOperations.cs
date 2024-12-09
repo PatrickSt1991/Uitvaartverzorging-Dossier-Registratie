@@ -67,14 +67,14 @@ namespace Dossier_Registratie.Repositories
 
             return notificatie;
         }
-        public (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId)
+        public (Guid herkomstId, string herkomstName, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT overledenHerkomst, verzekeraarNaam, verzekeraarAfkorting, CustomLogo " +
+                command.CommandText = "SELECT overledenHerkomst, verzekeraarNaam, CustomLogo " +
                     "FROM OverledeneOverlijdenInfo " +
                     "INNER JOIN ConfigurationVerzekeraar on overledenHerkomst = ConfigurationVerzekeraar.Id " +
                     "WHERE UitvaartId = @uitvaartId";
@@ -84,11 +84,10 @@ namespace Dossier_Registratie.Repositories
                 {
                     var herkomstId = reader.IsDBNull(0) ? Guid.Empty : reader.GetGuid(0);
                     var herkomstNamee = reader.IsDBNull(1) ? "None" : reader.GetString(1);
-                    var herkomstAfkorting = reader.IsDBNull(2) ? "None" : reader.GetString(2);
-                    var herkomstCustomLogo = reader.IsDBNull(3) ? false : reader.GetBoolean(3);
-                    return (herkomstId, herkomstNamee, herkomstAfkorting, herkomstCustomLogo);
+                    var herkomstCustomLogo = reader.IsDBNull(3) ? false : reader.GetBoolean(2);
+                    return (herkomstId, herkomstNamee, herkomstCustomLogo);
                 }
-                return (Guid.Empty, "None", "None", false);
+                return (Guid.Empty, "None", false);
             }
         }
         public bool UitvaarnummerExists(string uitvaartnummer)
@@ -526,7 +525,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
                     "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType], " +
                     "postbusAddress, postbusNaam, isPakket " +
                     "FROM ConfigurationVerzekeraar " +
@@ -542,7 +541,6 @@ namespace Dossier_Registratie.Repositories
                         {
                             Id = (Guid)reader["Id"],
                             Name = reader["verzekeraarNaam"].ToString(),
-                            Afkorting = reader["verzekeraarAfkorting"].ToString(),
                             IsHerkomst = (bool)reader["isHerkomst"],
                             IsVerzekeraar = (bool)reader["isVerzekeraar"],
                             HasLidnummer = (bool)reader["hasLidnummer"],
@@ -571,7 +569,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
                     "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType], " +
                     "postbusAddress, postbusNaam " +
                     "FROM ConfigurationVerzekeraar";
@@ -586,7 +584,6 @@ namespace Dossier_Registratie.Repositories
                         {
                             Id = (Guid)reader["Id"],
                             Name = reader["verzekeraarNaam"].ToString(),
-                            Afkorting = reader["verzekeraarAfkorting"].ToString(),
                             IsHerkomst = (bool)reader["isHerkomst"],
                             IsVerzekeraar = (bool)reader["isVerzekeraar"],
                             HasLidnummer = (bool)reader["hasLidnummer"],
@@ -614,7 +611,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
                                         "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType]," +
                                         "postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon], isPakket, CustomLogo " +
                                         "FROM ConfigurationVerzekeraar WHERE id = @verzekeraarId";
@@ -625,26 +622,25 @@ namespace Dossier_Registratie.Repositories
                     {
                         Verzekeraar = new VerzekeraarsModel()
                         {
-                            Id = (Guid)reader[0],
-                            Name = reader[1].ToString(),
-                            Afkorting = reader[2].ToString(),
-                            IsHerkomst = (bool)reader[3],
-                            IsVerzekeraar = (bool)reader[4],
-                            HasLidnummer = (bool)reader[5],
-                            IsDeleted = (bool)reader[6],
-                            AddressStreet = reader[7].ToString(),
-                            AddressHousenumber = reader[8].ToString(),
-                            AddressHousenumberAddition = reader[9].ToString(),
-                            AddressZipCode = reader[10].ToString(),
-                            AddressCity = reader[11].ToString(),
+                            Id = (Guid)reader["Id"],
+                            Name = reader["verzekeraarNaam"].ToString(),
+                            IsHerkomst = (bool)reader["isHerkomst"],
+                            IsVerzekeraar = (bool)reader["isVerzekeraar"],
+                            HasLidnummer = (bool)reader["hasLidnummer"],
+                            IsDeleted = (bool)reader["isDeleted"],
+                            AddressStreet = reader["addressStreet"].ToString(),
+                            AddressHousenumber = reader["addressHousenumber"].ToString(),
+                            AddressHousenumberAddition = reader["addressHousenumberAddition"].ToString(),
+                            AddressZipCode = reader["addressZipcode"].ToString(),
+                            AddressCity = reader["addressCity"].ToString(),
                             FactuurType = System.Net.WebUtility.HtmlDecode(reader["factuurType"].ToString()),
                             PostbusAddress = reader["postbusAddress"].ToString(),
                             PostbusName = reader["postbusNaam"].ToString(),
                             CorrespondentieType = reader["correspondentieType"].ToString(),
                             IsOverrideFactuurAdress = (bool)reader["OverrideFactuurAdress"],
                             Telefoon = reader["verzekeraarTelefoon"].ToString(),
-                            Pakket = reader.IsDBNull(18) ? false : reader.GetBoolean(18),
-                            CustomLogo = reader.IsDBNull(19) ? false : reader.GetBoolean(19)
+                            Pakket = reader.IsDBNull(16) ? false : reader.GetBoolean(16),
+                            CustomLogo = reader.IsDBNull(17) ? false : reader.GetBoolean(17)
                         };
                     }
                 }
@@ -659,7 +655,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
                                         "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType],postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon] " +
                                         "FROM ConfigurationVerzekeraar WHERE id = @herkomstId";
                 command.Parameters.AddWithValue("@herkomstId", herkomstId);
@@ -671,7 +667,6 @@ namespace Dossier_Registratie.Repositories
                         {
                             Id = (Guid)reader["Id"],
                             Name = reader["verzekeraarNaam"].ToString(),
-                            Afkorting = reader["verzekeraarAfkorting"].ToString(),
                             IsHerkomst = (bool)reader["isHerkomst"],
                             IsVerzekeraar = (bool)reader["isVerzekeraar"],
                             HasLidnummer = (bool)reader["hasLidnummer"],
@@ -681,7 +676,6 @@ namespace Dossier_Registratie.Repositories
                             AddressHousenumberAddition = reader["addressHousenumberAddition"].ToString(),
                             AddressZipCode = reader["addressZipcode"].ToString(),
                             AddressCity = reader["addressCity"].ToString(),
-                            //FactuurType = reader["factuurType"].ToString(),
                             FactuurType = System.Net.WebUtility.HtmlDecode(reader["factuurType"].ToString()),
                             PostbusAddress = reader["postbusAddress"].ToString(),
                             PostbusName = reader["postbusNaam"].ToString(),

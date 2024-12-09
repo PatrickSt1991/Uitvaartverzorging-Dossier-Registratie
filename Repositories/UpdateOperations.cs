@@ -824,7 +824,6 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "UPDATE ConfigurationVerzekeraar " +
                                         "SET verzekeraarNaam = @naam, " +
-                                        "verzekeraarAfkorting = @afkorting, " +
                                         "isHerkomst = @herkomst, " +
                                         "isVerzekeraar = @verzekeraar, " +
                                         "hasLidnummer = @lidnummer, " +
@@ -844,7 +843,6 @@ namespace Dossier_Registratie.Repositories
                                         "WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", verzekeringUpdate.Id);
                 command.Parameters.AddWithValue("@naam", verzekeringUpdate.Name);
-                command.Parameters.AddWithValue("@afkorting", verzekeringUpdate.Afkorting);
                 command.Parameters.AddWithValue("@herkomst", verzekeringUpdate.IsHerkomst);
                 command.Parameters.AddWithValue("@verzekeraar", verzekeringUpdate.IsVerzekeraar);
                 command.Parameters.AddWithValue("@lidnummer", verzekeringUpdate.HasLidnummer);
