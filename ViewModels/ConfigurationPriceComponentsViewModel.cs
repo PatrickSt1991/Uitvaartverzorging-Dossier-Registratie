@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -26,7 +28,6 @@ namespace Dossier_Registratie.ViewModels
         public ICommand OpenPriceComponentPopupOpenCommand { get; }
         public ICommand SavePriceComponentCommand { get; }
         public ICommand CreateNewPriceComponentCommand { get; }
-        public ICommand FilterPriceComponentsCommand { get; }
         public ICommand VerzekeringCheckCommand { get; set; }
         public ICommand RefreshPriceComponentsGridCommand { get; set; }
         public ICommand SelectAllCommand { get; }
@@ -34,7 +35,6 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditPriceComponentPopupOpen;
         private bool newPriceComponent;
-        private bool _keepFilterActive = false;
         private string searchOmschrijving;
 
         private KostenbegrotingModel _selectedPriceComponent;
@@ -42,7 +42,7 @@ namespace Dossier_Registratie.ViewModels
         private VerzekeraarsModel _selectedPriceComponentVerzekeraar;
         private ObservableCollection<VerzekeraarsModel> _priceComponentsVerzekeraars;
         private ObservableCollection<VerzekeraarsModel> _selectedVerzekeraarsPriceComponents;
-        private ObservableCollection<string> _selectedAfkortingen;
+        private ObservableCollection<Guid> _selectedVerzekeringen;
         private ObservableCollection<KostenbegrotingModel> _priceComponents;
         private ObservableCollection<KostenbegrotingModel> _allPriceComponents = new ObservableCollection<KostenbegrotingModel>();
         public KostenbegrotingModel SelectedPriceComponent
@@ -80,10 +80,7 @@ namespace Dossier_Registratie.ViewModels
                     OnPropertyChanged(nameof(SelectedPriceComponentVerzekeraar));
 
                     if (PriceComponentFilter != null && _selectedPriceComponentVerzekeraar != null)
-                    {
-                        PriceComponentFilter.ComponentVerzekering = _selectedPriceComponentVerzekeraar.Afkorting;
                         PriceComponentFilter.SpecificPakket = _selectedPriceComponentVerzekeraar.Pakket;
-                    }
 
                     ExecuteFilterPriceComponentCommand();
                 }
@@ -113,26 +110,15 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-        public ObservableCollection<string> SelectedAfkortingen
+        public ObservableCollection<Guid> SelectedVerzekeringen
         {
-            get { return _selectedAfkortingen; }
+            get { return _selectedVerzekeringen; }
             set
             {
-                if (_selectedAfkortingen != value)
+                if(_selectedVerzekeringen != value)
                 {
-                    if (_selectedAfkortingen != null)
-                    {
-                        _selectedAfkortingen.CollectionChanged -= SelectedAfkortingen_CollectionChanged;
-                    }
-
-                    _selectedAfkortingen = value;
-
-                    if (_selectedAfkortingen != null)
-                    {
-                        _selectedAfkortingen.CollectionChanged += SelectedAfkortingen_CollectionChanged;
-                    }
-
-                    OnPropertyChanged(nameof(SelectedAfkortingen));
+                    _selectedVerzekeringen = value;
+                    OnPropertyChanged(nameof(SelectedVerzekeringen));
                 }
             }
         }
@@ -187,7 +173,7 @@ namespace Dossier_Registratie.ViewModels
 
             PriceComponentsVerzekeraars = new ObservableCollection<VerzekeraarsModel>();
             SelectedVerzekeraarsPriceComponents = new ObservableCollection<VerzekeraarsModel>();
-            SelectedAfkortingen = new ObservableCollection<string>();
+            SelectedVerzekeringen = new ObservableCollection<Guid>();
             PriceComponents = new ObservableCollection<KostenbegrotingModel>();
 
             ActivatePriceComponentCommand = new ViewModelCommand(ExecuteActivatePriceComponentCommand);
@@ -207,24 +193,24 @@ namespace Dossier_Registratie.ViewModels
         }
         private void SelectAll()
         {
-            SelectedAfkortingen.Clear();
-            SelectedPriceComponent.ComponentVerzekering = string.Empty;
+            SelectedVerzekeringen.Clear();
+            SelectedPriceComponent.ComponentVerzekeringJson = string.Empty;
 
             foreach (var item in SelectedVerzekeraarsPriceComponents)
             {
                 item.IsSelected = true;
-                OnVerzekeringCheckBoxCheckedChanged(item); // Update SelectedAfkortingen
+                OnVerzekeringCheckBoxCheckedChanged(item);
             }
         }
         private void DeselectAll()
         {
-            SelectedAfkortingen.Clear();
-            SelectedPriceComponent.ComponentVerzekering = string.Empty;
+            SelectedVerzekeringen.Clear();
+            SelectedPriceComponent.ComponentVerzekeringJson = string.Empty;
 
             foreach (var item in SelectedVerzekeraarsPriceComponents)
             {
                 item.IsSelected = false;
-                OnVerzekeringCheckBoxCheckedChanged(item); // Update SelectedAfkortingen
+                OnVerzekeringCheckBoxCheckedChanged(item);
             }
         }
         public void ExecuteActivatePriceComponentCommand(object obj)
@@ -263,19 +249,29 @@ namespace Dossier_Registratie.ViewModels
             SelectedPriceComponent.ComponentFactuurBedrag = priceComp.ComponentFactuurBedrag;
             SelectedPriceComponent.DefaultPM = priceComp.DefaultPM;
             SelectedPriceComponent.ComponentAantal = priceComp.ComponentAantal;
-            SelectedPriceComponent.ComponentVerzekering = priceComp.ComponentVerzekering;
+            SelectedPriceComponent.ComponentVerzekeringJson = priceComp.ComponentVerzekeringJson;
             SelectedPriceComponent.SortOrder = priceComp.SortOrder;
+            
+            SelectedVerzekeringen.Clear();
 
-            SelectedAfkortingen.Clear();
-            if (!string.IsNullOrEmpty(priceComp.ComponentVerzekering))
+            if (!string.IsNullOrEmpty(priceComp.ComponentVerzekeringJson))
             {
-                var afkortingen = priceComp.ComponentVerzekering.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var afkorting in afkortingen)
-                    SelectedAfkortingen.Add(afkorting.Trim());
+                try
+                {
+                    var verzekeringIds = JsonConvert.DeserializeObject<List<VerzekeringKbModel>>(priceComp.ComponentVerzekeringJson);
+
+                    foreach (var verzekering in verzekeringIds)
+                        SelectedVerzekeringen.Add(verzekering.Id);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error deserializing ComponentVerzekeringJson: {ex.Message}");
+                }
             }
 
+
             foreach (var verzekeraar in SelectedVerzekeraarsPriceComponents)
-                verzekeraar.IsSelected = SelectedAfkortingen.Contains(verzekeraar.Afkorting);
+                verzekeraar.IsSelected = SelectedVerzekeringen.Contains(verzekeraar.Id);
 
             newPriceComponent = false;
             IsEditPriceComponentPopupOpen = true;
@@ -306,30 +302,24 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-
         private void OnVerzekeringCheckBoxCheckedChanged(VerzekeraarsModel component)
         {
             if (component.IsSelected)
             {
-                if (!SelectedAfkortingen.Contains(component.Afkorting))
-                {
-                    SelectedAfkortingen.CollectionChanged -= SelectedAfkortingen_CollectionChanged;
-                    SelectedAfkortingen.Add(component.Afkorting);
-                    SelectedAfkortingen.CollectionChanged += SelectedAfkortingen_CollectionChanged;
-                }
+                if (!SelectedVerzekeringen.Contains(component.Id))
+                    SelectedVerzekeringen.Add(component.Id);
             }
             else
             {
-                if (SelectedAfkortingen.Contains(component.Afkorting))
-                {
-                    SelectedAfkortingen.CollectionChanged -= SelectedAfkortingen_CollectionChanged;
-                    SelectedAfkortingen.Remove(component.Afkorting);
-                    SelectedAfkortingen.CollectionChanged += SelectedAfkortingen_CollectionChanged;
-                }
+                if (SelectedVerzekeringen.Contains(component.Id))
+                    SelectedVerzekeringen.Remove(component.Id);
             }
 
-            // Manually trigger the collection changed handler
-            SelectedAfkortingen_CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            var serializedJson = JsonConvert.SerializeObject(
+                SelectedVerzekeringen.Select(id => new { Id = id })
+                );
+
+            SelectedPriceComponent.ComponentVerzekeringJson = serializedJson;
         }
         public void PriceComponentGridData()
         {
@@ -372,7 +362,7 @@ namespace Dossier_Registratie.ViewModels
                     ComponentOmschrijving = component.ComponentOmschrijving,
                     ComponentBedrag = component.ComponentBedrag,
                     ComponentAantal = component.ComponentAantal,
-                    ComponentVerzekering = component.ComponentVerzekering,
+                    ComponentVerzekeringJson = component.ComponentVerzekeringJson,
                     DefaultPM = component.DefaultPM,
                     SortOrder = component.SortOrder,
                     IsDeleted = component.IsDeleted,
@@ -385,7 +375,7 @@ namespace Dossier_Registratie.ViewModels
                     ComponentOmschrijving = component.ComponentOmschrijving,
                     ComponentBedrag = component.ComponentBedrag,
                     ComponentAantal = component.ComponentAantal,
-                    ComponentVerzekering = component.ComponentVerzekering,
+                    ComponentVerzekeringJson = component.ComponentVerzekeringJson,
                     DefaultPM = component.DefaultPM,
                     SortOrder = component.SortOrder,
                     IsDeleted = component.IsDeleted,
@@ -395,7 +385,6 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSavePriceComponentCommand(object obj)
         {
-            string InsuranceAfkorting = string.Empty;
             if (!newPriceComponent)
             {
                 try
@@ -431,12 +420,10 @@ namespace Dossier_Registratie.ViewModels
                 !string.IsNullOrEmpty(SelectedPriceComponentVerzekeraar.Name) &&
                 SelectedPriceComponentVerzekeraar.Name != "Geen Filter")
             {
-                _keepFilterActive = true;
                 ExecuteFilterPriceComponentCommand();
             }
             else if (!string.IsNullOrEmpty(SearchOmschrijving))
             {
-                _keepFilterActive = true;
                 FilterPriceComponentsOmschrijving();
             }
             else
@@ -448,67 +435,47 @@ namespace Dossier_Registratie.ViewModels
         public void ExecuteCreateNewPriceComponentCommand(object obj)
         {
             newPriceComponent = true;
-            SelectedAfkortingen.Clear();
+            SelectedVerzekeringen.Clear();
 
             foreach (var verzekeraar in SelectedVerzekeraarsPriceComponents)
-            {
                 verzekeraar.IsSelected = false;
-            }
 
             SelectedPriceComponent.ComponentId = Guid.NewGuid();
             SelectedPriceComponent.ComponentOmschrijving = string.Empty;
             SelectedPriceComponent.ComponentBedrag = decimal.Zero;
             SelectedPriceComponent.ComponentFactuurBedrag = decimal.Zero;
             SelectedPriceComponent.ComponentAantal = string.Empty;
-            SelectedPriceComponent.ComponentVerzekering = string.Empty;
+            SelectedPriceComponent.ComponentVerzekeringJson = string.Empty;
             SelectedPriceComponent.DefaultPM = false;
 
             IsEditPriceComponentPopupOpen = true;
         }
         public void ExecuteFilterPriceComponentCommand()
         {
-            if (!string.IsNullOrEmpty(PriceComponentFilter.ComponentVerzekering))
-            {
-                PriceComponents.Clear();
-
-                if (PriceComponentFilter.ComponentVerzekering == "Alles")
+            var filteredPriceComponents = SelectedPriceComponentVerzekeraar.Afkorting == "Alles"
+                ? _priceComponents.ToList()
+                : _priceComponents.Where(pc =>
                 {
-                    foreach (var PriceComponent in miscellaneousRepository.GetAllPriceComponentsBeheer())
-                    {
-                        PriceComponents.Add(new KostenbegrotingModel
-                        {
-                            ComponentId = PriceComponent.ComponentId,
-                            ComponentOmschrijving = PriceComponent.ComponentOmschrijving,
-                            ComponentBedrag = PriceComponent.ComponentBedrag,
-                            ComponentAantal = PriceComponent.ComponentAantal,
-                            ComponentVerzekering = PriceComponent.ComponentVerzekering,
-                            DefaultPM = PriceComponent.DefaultPM,
-                            IsDeleted = PriceComponent.IsDeleted,
-                            BtnBrush = PriceComponent.BtnBrush
-                        });
-                    }
-                }
-                else
-                {
-                    var filteredComponents = miscellaneousRepository
-                        .GetFilterdPriceComponentsBeheer(PriceComponentFilter.ComponentVerzekering);
+                    if (string.IsNullOrEmpty(pc.ComponentVerzekeringJson))
+                        return false;
 
-                    foreach (var PriceComponent in filteredComponents)
+                    try
                     {
-                        PriceComponents.Add(new KostenbegrotingModel
-                        {
-                            ComponentId = PriceComponent.ComponentId,
-                            ComponentOmschrijving = PriceComponent.ComponentOmschrijving,
-                            ComponentBedrag = PriceComponent.ComponentBedrag,
-                            ComponentAantal = PriceComponent.ComponentAantal,
-                            ComponentVerzekering = PriceComponent.ComponentVerzekering,
-                            DefaultPM = PriceComponent.DefaultPM,
-                            IsDeleted = PriceComponent.IsDeleted,
-                            BtnBrush = PriceComponent.BtnBrush
-                        });
+                        var ids = JsonConvert.DeserializeObject<List<Dictionary<string, Guid>>>(pc.ComponentVerzekeringJson).Select(dict => dict["Id"]);
+
+                        return ids.Contains(SelectedPriceComponentVerzekeraar.Id);
                     }
-                }
-            }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error deserializing ComponentVerzekeringJson for PriceComponent with ID {pc.ComponentId}: {ex.Message}");
+                        return false;
+                    }
+                }).ToList();
+
+            PriceComponents.Clear();
+            foreach (var priceComponent in filteredPriceComponents)
+                PriceComponents.Add(priceComponent);
+
         }
         private void FilterPriceComponentsOmschrijving()
         {
@@ -531,10 +498,6 @@ namespace Dossier_Registratie.ViewModels
                     PriceComponents.Add(component);
                 }
             }
-        }
-        private void SelectedAfkortingen_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            SelectedPriceComponent.ComponentVerzekering = string.Join(",", SelectedAfkortingen);
         }
     }
 }

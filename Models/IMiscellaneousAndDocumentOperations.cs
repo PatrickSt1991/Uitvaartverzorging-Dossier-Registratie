@@ -8,7 +8,7 @@ namespace Dossier_Registratie.Models
     public interface IMiscellaneousAndDocumentOperations
     {
         Task<ObservableCollection<NotificatieOverzichtModel>> NotificationDeceasedAfterYearPassedAsync();
-        (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId);
+        (Guid herkomstId, string herkomstName, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId);
         bool UitvaarnummerExists(string uitvaartnummer);
         bool UitvaartPersoonsgegevensExists(Guid UitvaartId);
         bool UitvaartOverlijdenInfoExists(Guid UitvaartId);
@@ -57,8 +57,8 @@ namespace Dossier_Registratie.Models
         OverledeneUrnSieradenModel GetUrnSieradenUitbetaling(Guid UitvaartIdGuid);
         OverledeneBloemenModel GetBloemenUitbetaling(Guid UitvaartIdGuid);
         IEnumerable<OverledeneBijlagesModel> GetAktesVanCessieByUitvaatId(string uitvaartId);
+        ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponentsId(Guid verzekeraarId, bool pakketVerzekering);
         ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponents(string verzekeringMaatschapij, bool pakketVerzekering);
-        ObservableCollection<KostenbegrotingModel> GetFilterdPriceComponentsBeheer(string verzekeringMaatschapij);
         ObservableCollection<KostenbegrotingModel> GetAllPriceComponentsBeheer();
         KostenbegrotingModel GetSelectedPriceComponentsBeheer(Guid componentId);
         ObservableCollection<RapportagesKisten> GetRapportagesKisten(string startNummer, string endNummer);

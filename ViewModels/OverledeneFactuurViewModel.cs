@@ -416,7 +416,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 SelectedVerzekeraar.Id = selectedHerkomst.herkomstId;
                 SelectedVerzekeraar.Name = selectedHerkomst.herkomstName;
-                SelectedVerzekeraar.Afkorting = selectedHerkomst.herkomstAfkorting;
                 SelectedVerzekeraar.CustomLogo = selectedHerkomst.herkomstLogo;
             }
         }
@@ -693,7 +692,8 @@ namespace Dossier_Registratie.ViewModels
             if (!string.IsNullOrEmpty(verzekeringMaatschapij))
             {
                 var uitvaartType = miscellaneousRepository.GetUitvaartType(Globals.UitvaartCodeGuid);
-                var priceComponents = miscellaneousRepository.GetPriceComponents(verzekeringMaatschapij, pakketVerzekering);
+                //var priceComponents = miscellaneousRepository.GetPriceComponents(verzekeringMaatschapij, pakketVerzekering);
+                var priceComponents = miscellaneousRepository.GetPriceComponentsId(SelectedVerzekeraar.Id, pakketVerzekering);
 
                 var factuurResult = searchRepository.GetPolisInfoByUitvaartId(Globals.UitvaartCode);
 
@@ -988,7 +988,7 @@ namespace Dossier_Registratie.ViewModels
                     var mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 6]];
                     mergeRanges.Add(mergeRange);
 
-                    priceComponent.OrgBedrag ??= 0;
+                    priceComponent.OrgBedrag ??= priceComponent.Bedrag;
 
                     totalAmount += (double)priceComponent.Bedrag;
                     orgAmount += (double)priceComponent.OrgBedrag;

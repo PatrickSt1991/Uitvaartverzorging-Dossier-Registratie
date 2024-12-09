@@ -702,8 +702,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [ConfigurationFactuurComponent] (Id, ComponentId, Omschrijving, Bedrag, VerzekerdAantal, Verzekering,IsDeleted, SortOrder, factuurBedrag, DefaultPM) " +
-                                        "VALUES (@id, @compid, @omschrijving, @bedrag, @aantal, @verzekering, 0, @sortOrder, @factuurBedrag, @defaultpm)";
+                command.CommandText = "INSERT INTO [ConfigurationFactuurComponent] (Id, ComponentId, Omschrijving, Bedrag, VerzekerdAantal, Verzekering, VerzekeringJson,IsDeleted, SortOrder, factuurBedrag, DefaultPM) " +
+                                        "VALUES (@id, @compid, @omschrijving, @bedrag, @aantal, @verzekering, @verzekeringJson, 0, @sortOrder, @factuurBedrag, @defaultpm)";
                 command.Parameters.AddWithValue("@id", priceComponent.Id);
                 command.Parameters.AddWithValue("@compid", priceComponent.ComponentId);
                 command.Parameters.AddWithValue("@omschrijving", priceComponent.ComponentOmschrijving);
@@ -711,6 +711,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@bedrag", priceComponent.ComponentBedrag);
                 command.Parameters.AddWithValue("@factuurBedrag", priceComponent.ComponentFactuurBedrag);
                 command.Parameters.AddWithValue("@verzekering", priceComponent.ComponentVerzekering);
+                command.Parameters.AddWithValue("@verzekeringJson", priceComponent.ComponentVerzekeringJson);
                 command.Parameters.AddWithValue("@defaultpm", priceComponent.DefaultPM);
                 command.Parameters.AddWithValue("sortOrder", priceComponent.SortOrder);
                 if (command.ExecuteNonQuery() == 0)
@@ -799,11 +800,10 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO ConfigurationVerzekeraar (Id, verzekeraarNaam, verzekeraarAfkorting, isHerkomst, isVerzekeraar, hasLidnummer, postbusAddress, postbusNaam, addressStreet, addressHousenumber, addressHousenumberAddition, addressZipcode,  addressCity, factuurType, correspondentieType, isDeleted, isPakket, OverrideFactuurAdress, verzekeraarTelefoon, CustomLogo) " +
-                    "VALUES (@Id, @naam, @afkorting, @herkomst, @verzekeraar, @lidnummer, @postbusAdres, @postbusNaam, @street, @housenumber, @addition, @zipcode, @city, @factuurtype, @correspondentieType, 0, @isPakket, @isOverrideAddress, @telefoon, @customLogo)";
+                command.CommandText = "INSERT INTO ConfigurationVerzekeraar (Id, verzekeraarNaam, isHerkomst, isVerzekeraar, hasLidnummer, postbusAddress, postbusNaam, addressStreet, addressHousenumber, addressHousenumberAddition, addressZipcode,  addressCity, factuurType, correspondentieType, isDeleted, isPakket, OverrideFactuurAdress, verzekeraarTelefoon, CustomLogo) " +
+                    "VALUES (@Id, @naam, @herkomst, @verzekeraar, @lidnummer, @postbusAdres, @postbusNaam, @street, @housenumber, @addition, @zipcode, @city, @factuurtype, @correspondentieType, 0, @isPakket, @isOverrideAddress, @telefoon, @customLogo)";
                 command.Parameters.AddWithValue("@Id", verzekeringCreate.Id);
                 command.Parameters.AddWithValue("@naam", verzekeringCreate.Name);
-                command.Parameters.AddWithValue("@afkorting", verzekeringCreate.Afkorting);
                 command.Parameters.AddWithValue("@herkomst", verzekeringCreate.IsHerkomst);
                 command.Parameters.AddWithValue("@verzekeraar", verzekeringCreate.IsVerzekeraar);
                 command.Parameters.AddWithValue("@lidnummer", verzekeringCreate.HasLidnummer);

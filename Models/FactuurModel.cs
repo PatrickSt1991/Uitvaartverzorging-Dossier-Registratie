@@ -333,6 +333,10 @@ namespace Dossier_Registratie.Models
             set { _polisJson = value; OnPropertyChanged(nameof(PolisJson)); }
         }
     }
+    public class VerzekeringKbModel : ViewModelBase
+    {
+        public Guid Id { get; set; }
+    }
     public class KostenbegrotingModel : ViewModelBase
     {
         private Guid _id;
@@ -340,6 +344,7 @@ namespace Dossier_Registratie.Models
         private string _componentOmschrijving;
         private string _componentAantal;
         private string _componentVerzekering;
+        private string _componentVerzekeringJson;
         private decimal _componentBedrag;
         private decimal _componentFactuurBedrag;
         private bool _isDeleted;
@@ -374,6 +379,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _componentVerzekering; }
             set { _componentVerzekering = value; OnPropertyChanged(nameof(ComponentVerzekering)); }
+        }
+        public string ComponentVerzekeringJson
+        {
+            get { return _componentVerzekeringJson; }
+            set { _componentVerzekeringJson = value; OnPropertyChanged(nameof(ComponentVerzekeringJson)); }
         }
         public decimal ComponentBedrag
         {
