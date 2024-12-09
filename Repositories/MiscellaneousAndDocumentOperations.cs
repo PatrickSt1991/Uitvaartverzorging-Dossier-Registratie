@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -1402,6 +1403,53 @@ namespace Dossier_Registratie.Repositories
             }
             return AkteList;
         }
+        public ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponentsId(Guid verzekeraarId, bool pakketVerzekering)
+        {
+            ObservableCollection<GeneratedKostenbegrotingModel> PriceComponents = new();
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], " +
+                    "FC1.[IsDeleted], FC1.[SpecificCrematie], FC1.[SpecificBegrafenis], FC1.[SpecificPakket], FC1.VerzekeringJson " +
+                    "FROM [ConfigurationFactuurComponent] FC1 " +
+                    "LEFT JOIN [ConfigurationFactuurComponent] FC2 ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
+                    "WHERE (EXISTS (SELECT 1 " +
+                    "FROM OPENJSON(FC1.VerzekeringJson) WITH (Id UNIQUEIDENTIFIER '$.Id') AS JsonIds " +
+                    "WHERE JsonIds.Id = @SelectedVerzekeraarId) OR FC1.VerzekeringJson = '') " +
+                    "AND FC2.Id IS NULL " +
+                    "ORDER BY FC1.SortOrder, FC1.IsDeleted ASC";
+                command.Parameters.AddWithValue("@Verzekering", SqlDbType.UniqueIdentifier).Value = verzekeraarId;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bool specificPakket = !reader.IsDBNull(8) && (bool)reader[8];
+
+                        if (!(bool)reader[5])
+                        {
+                            PriceComponents.Add(new GeneratedKostenbegrotingModel
+                            {
+                                Id = (Guid)reader[0],
+                                Omschrijving = reader[1].ToString(),
+                                Bedrag = (decimal)reader[2],
+                                OrgBedrag = (decimal)reader[2],
+                                Aantal = reader[3].ToString(),
+                                OrgAantal = reader[3].ToString(),
+                                Verzekerd = reader[4].ToString(),
+                                IsDeleted = (bool)reader[5],
+                                SpecificCrematie = reader.IsDBNull(6) ? false : (bool)reader[6],
+                                SpecificBegrafenis = reader.IsDBNull(7) ? false : (bool)reader[7],
+                                SpecificPakket = specificPakket
+                            });
+                        }
+                    }
+
+                }
+            }
+            return PriceComponents;
+        }
         public ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponents(string verzekeringMaatschapij, bool pakketVerzekering)
         {
             ObservableCollection<GeneratedKostenbegrotingModel> PriceComponents = new();
@@ -1454,7 +1502,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [ComponentId],[Omschrijving],[Bedrag],[VerzekerdAantal],[Verzekering],[IsDeleted],[SortOrder],[DefaultPM] " +
+                command.CommandText = "SELECT [ComponentId],[Omschrijving],[Bedrag],[VerzekerdAantal],[Verzekering],[IsDeleted],[SortOrder],[DefaultPM],[VerzekeringJson] " +
                                         "FROM [ConfigurationFactuurComponent] ORDER BY SortOrder ASC";
 
                 using (var reader = command.ExecuteReader())
@@ -1474,49 +1522,9 @@ namespace Dossier_Registratie.Repositories
                             IsDeleted = (bool)reader[5],
                             SortOrder = (int)reader[6],
                             DefaultPM = (bool)reader[7],
+                            ComponentVerzekeringJson = reader[8].ToString(),
                             BtnBrush = styleColor
                         });
-                    }
-                }
-            }
-            return PriceComponents;
-        }
-        public ObservableCollection<KostenbegrotingModel> GetFilterdPriceComponentsBeheer(string verzekeringMaatschapij)
-        {
-            ObservableCollection<KostenbegrotingModel> PriceComponents = new ObservableCollection<KostenbegrotingModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new SqlCommand())
-            {
-                connection.Open();
-                command.Connection = connection;
-
-                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.DefaultPM " +
-                                      "FROM [ConfigurationFactuurComponent] FC1 " +
-                                      "LEFT JOIN [ConfigurationFactuurComponent] FC2 " +
-                                      "ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
-                                      "WHERE (FC1.Verzekering LIKE '%' + @Verzekering + '%' OR FC1.Verzekering = '') AND FC2.Id IS NULL " +
-                                      "ORDER BY FC1.SortOrder ASC";
-                command.Parameters.AddWithValue("@Verzekering", SqlDbType.NVarChar).Value = verzekeringMaatschapij;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string styleColor = reader.GetBoolean(5) ? "Red" : "Green";
-                        var component = new KostenbegrotingModel
-                        {
-                            ComponentId = reader.GetGuid(0),
-                            ComponentOmschrijving = reader.GetString(1),
-                            ComponentBedrag = reader.IsDBNull(2) ? 0.00m : reader.GetDecimal(2), // Handle null for Bedrag
-                            ComponentAantal = reader.IsDBNull(3) ? "0" : reader.GetInt32(3).ToString(), // Handle null for Aantal
-                            ComponentVerzekering = reader.IsDBNull(4) ? string.Empty : reader.GetString(4), // Handle null for Verzekering
-                            IsDeleted = reader.GetBoolean(5),
-                            DefaultPM = reader.GetBoolean(6),
-                            BtnBrush = styleColor
-                        };
-
-                        PriceComponents.Add(component);
                     }
                 }
             }
@@ -1530,8 +1538,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.SortOrder, FC1.[factuurBedrag], FC1.[DefaultPM] " +
-                                        "FROM [ConfigurationFactuurComponent] FC1 " +
+                command.CommandText = "SELECT [ComponentId], [Omschrijving], [Bedrag], [VerzekerdAantal], [Verzekering], [IsDeleted], SortOrder, [factuurBedrag], [DefaultPM], [VerzekeringJson] " +
+                                        "FROM [ConfigurationFactuurComponent]" +
                                         "WHERE ComponentId = @componentId";
                 command.Parameters.AddWithValue("@componentId", componentId);
                 using (var reader = command.ExecuteReader())
@@ -1545,6 +1553,7 @@ namespace Dossier_Registratie.Repositories
                             ComponentBedrag = reader.IsDBNull(2) ? decimal.Zero : (decimal)reader[2],
                             ComponentAantal = reader[3].ToString(),
                             ComponentVerzekering = reader[4].ToString(),
+                            ComponentVerzekeringJson = reader[9].ToString(),
                             SortOrder = reader.IsDBNull(6) ? 0 : (int)reader[6],
                             ComponentFactuurBedrag = reader.IsDBNull(7) ? decimal.Zero : (decimal)reader[7],
                             DefaultPM = (bool)reader[8]

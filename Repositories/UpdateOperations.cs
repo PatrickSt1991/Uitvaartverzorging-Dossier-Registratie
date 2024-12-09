@@ -878,7 +878,7 @@ namespace Dossier_Registratie.Repositories
                                         "SET Omschrijving = @omschrijving, " +
                                         "Bedrag = @bedrag, " +
                                         "VerzekerdAantal = @aantal, " +
-                                        "Verzekering = @verzekering, " +
+                                        "VerzekeringJson = @verzekeringJson, " +
                                         "SortOrder = @sortOrder, " +
                                         "factuurBedrag = @factuurBedrag, " +
                                         "DefaultPM = @defaultpm " +
@@ -888,7 +888,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@aantal", priceComponent.ComponentAantal);
                 command.Parameters.AddWithValue("@bedrag", priceComponent.ComponentBedrag);
                 command.Parameters.AddWithValue("@factuurBedrag", priceComponent.ComponentFactuurBedrag);
-                command.Parameters.AddWithValue("@verzekering", priceComponent.ComponentVerzekering);
+                command.Parameters.AddWithValue("@verzekeringJson", priceComponent.ComponentVerzekeringJson);
                 command.Parameters.AddWithValue("@sortOrder", priceComponent.SortOrder);
                 command.Parameters.AddWithValue("@defaultpm", priceComponent.DefaultPM);
                 if (command.ExecuteNonQuery() == 0)
