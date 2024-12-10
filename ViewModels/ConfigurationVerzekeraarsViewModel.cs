@@ -191,7 +191,6 @@ namespace Dossier_Registratie.ViewModels
             var verzekering = miscellaneousRepository.GetVerzekeraarsById((Guid)obj);
 
             selectedVerzekering.Id = verzekering.Id;
-            selectedVerzekering.Afkorting = verzekering.Afkorting;
             selectedVerzekering.Name = verzekering.Name;
             selectedVerzekering.HasLidnummer = verzekering.HasLidnummer;
             selectedVerzekering.IsHerkomst = verzekering.IsHerkomst;

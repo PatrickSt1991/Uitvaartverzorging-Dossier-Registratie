@@ -171,7 +171,6 @@ namespace Dossier_Registratie
                 {
                     BeheerWindow beheerWindow = new();
                     beheerWindow.Show();
-                    TabHeader.SelectedIndex = 0;
                     MainComboBox.SelectedItem = null;
                 }
                 else if (selectedItemString.Contains("Agenda"))

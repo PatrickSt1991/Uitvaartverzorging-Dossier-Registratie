@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -66,14 +67,14 @@ namespace Dossier_Registratie.Repositories
 
             return notificatie;
         }
-        public (Guid herkomstId, string herkomstName, string herkomstAfkorting, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId)
+        public (Guid herkomstId, string herkomstName, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT overledenHerkomst, verzekeraarNaam, verzekeraarAfkorting, CustomLogo " +
+                command.CommandText = "SELECT overledenHerkomst, verzekeraarNaam, CustomLogo " +
                     "FROM OverledeneOverlijdenInfo " +
                     "INNER JOIN ConfigurationVerzekeraar on overledenHerkomst = ConfigurationVerzekeraar.Id " +
                     "WHERE UitvaartId = @uitvaartId";
@@ -83,11 +84,10 @@ namespace Dossier_Registratie.Repositories
                 {
                     var herkomstId = reader.IsDBNull(0) ? Guid.Empty : reader.GetGuid(0);
                     var herkomstNamee = reader.IsDBNull(1) ? "None" : reader.GetString(1);
-                    var herkomstAfkorting = reader.IsDBNull(2) ? "None" : reader.GetString(2);
-                    var herkomstCustomLogo = reader.IsDBNull(3) ? false : reader.GetBoolean(3);
-                    return (herkomstId, herkomstNamee, herkomstAfkorting, herkomstCustomLogo);
+                    var herkomstCustomLogo = reader.IsDBNull(2) ? false : reader.GetBoolean(2);
+                    return (herkomstId, herkomstNamee, herkomstCustomLogo);
                 }
-                return (Guid.Empty, "None", "None", false);
+                return (Guid.Empty, "None", false);
             }
         }
         public bool UitvaarnummerExists(string uitvaartnummer)
@@ -525,9 +525,9 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
                     "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType], " +
-                    "postbusAddress, postbusNaam, isPakket " +
+                    "postbusAddress, postbusNaam, isPakket, customLogo " +
                     "FROM ConfigurationVerzekeraar " +
                     "ORDER BY isDeleted ASC, verzekeraarNaam";
                 using (var reader = command.ExecuteReader())
@@ -541,7 +541,6 @@ namespace Dossier_Registratie.Repositories
                         {
                             Id = (Guid)reader["Id"],
                             Name = reader["verzekeraarNaam"].ToString(),
-                            Afkorting = reader["verzekeraarAfkorting"].ToString(),
                             IsHerkomst = (bool)reader["isHerkomst"],
                             IsVerzekeraar = (bool)reader["isVerzekeraar"],
                             HasLidnummer = (bool)reader["hasLidnummer"],
@@ -555,6 +554,7 @@ namespace Dossier_Registratie.Repositories
                             PostbusAddress = reader["postbusAddress"].ToString(),
                             PostbusName = reader["postbusNaam"].ToString(),
                             Pakket = reader.IsDBNull("isPakket") ? false : reader.GetBoolean("isPakket"),
+                            CustomLogo = reader.IsDBNull("customLogo") ? false : reader.GetBoolean("customLogo"),
                             BtnBrush = styleColor
                         });
                     }
@@ -570,7 +570,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
                     "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType], " +
                     "postbusAddress, postbusNaam " +
                     "FROM ConfigurationVerzekeraar";
@@ -585,7 +585,6 @@ namespace Dossier_Registratie.Repositories
                         {
                             Id = (Guid)reader["Id"],
                             Name = reader["verzekeraarNaam"].ToString(),
-                            Afkorting = reader["verzekeraarAfkorting"].ToString(),
                             IsHerkomst = (bool)reader["isHerkomst"],
                             IsVerzekeraar = (bool)reader["isVerzekeraar"],
                             HasLidnummer = (bool)reader["hasLidnummer"],
@@ -613,7 +612,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
                                         "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType]," +
                                         "postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon], isPakket, CustomLogo " +
                                         "FROM ConfigurationVerzekeraar WHERE id = @verzekeraarId";
@@ -624,26 +623,25 @@ namespace Dossier_Registratie.Repositories
                     {
                         Verzekeraar = new VerzekeraarsModel()
                         {
-                            Id = (Guid)reader[0],
-                            Name = reader[1].ToString(),
-                            Afkorting = reader[2].ToString(),
-                            IsHerkomst = (bool)reader[3],
-                            IsVerzekeraar = (bool)reader[4],
-                            HasLidnummer = (bool)reader[5],
-                            IsDeleted = (bool)reader[6],
-                            AddressStreet = reader[7].ToString(),
-                            AddressHousenumber = reader[8].ToString(),
-                            AddressHousenumberAddition = reader[9].ToString(),
-                            AddressZipCode = reader[10].ToString(),
-                            AddressCity = reader[11].ToString(),
+                            Id = (Guid)reader["Id"],
+                            Name = reader["verzekeraarNaam"].ToString(),
+                            IsHerkomst = (bool)reader["isHerkomst"],
+                            IsVerzekeraar = (bool)reader["isVerzekeraar"],
+                            HasLidnummer = (bool)reader["hasLidnummer"],
+                            IsDeleted = (bool)reader["isDeleted"],
+                            AddressStreet = reader["addressStreet"].ToString(),
+                            AddressHousenumber = reader["addressHousenumber"].ToString(),
+                            AddressHousenumberAddition = reader["addressHousenumberAddition"].ToString(),
+                            AddressZipCode = reader["addressZipcode"].ToString(),
+                            AddressCity = reader["addressCity"].ToString(),
                             FactuurType = System.Net.WebUtility.HtmlDecode(reader["factuurType"].ToString()),
                             PostbusAddress = reader["postbusAddress"].ToString(),
                             PostbusName = reader["postbusNaam"].ToString(),
                             CorrespondentieType = reader["correspondentieType"].ToString(),
                             IsOverrideFactuurAdress = (bool)reader["OverrideFactuurAdress"],
                             Telefoon = reader["verzekeraarTelefoon"].ToString(),
-                            Pakket = reader.IsDBNull(18) ? false : reader.GetBoolean(18),
-                            CustomLogo = reader.IsDBNull(19) ? false : reader.GetBoolean(19)
+                            Pakket = reader["isPakket"] is DBNull ? false : (bool)reader["isPakket"],
+                            CustomLogo = reader["CustomLogo"] is DBNull ? false : (bool)reader["CustomLogo"]
                         };
                     }
                 }
@@ -658,7 +656,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connecion.Open();
                 command.Connection = connecion;
-                command.CommandText = "SELECT [Id],[verzekeraarNaam],[verzekeraarAfkorting],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
+                command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
                                         "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType],postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon] " +
                                         "FROM ConfigurationVerzekeraar WHERE id = @herkomstId";
                 command.Parameters.AddWithValue("@herkomstId", herkomstId);
@@ -670,7 +668,6 @@ namespace Dossier_Registratie.Repositories
                         {
                             Id = (Guid)reader["Id"],
                             Name = reader["verzekeraarNaam"].ToString(),
-                            Afkorting = reader["verzekeraarAfkorting"].ToString(),
                             IsHerkomst = (bool)reader["isHerkomst"],
                             IsVerzekeraar = (bool)reader["isVerzekeraar"],
                             HasLidnummer = (bool)reader["hasLidnummer"],
@@ -680,7 +677,6 @@ namespace Dossier_Registratie.Repositories
                             AddressHousenumberAddition = reader["addressHousenumberAddition"].ToString(),
                             AddressZipCode = reader["addressZipcode"].ToString(),
                             AddressCity = reader["addressCity"].ToString(),
-                            //FactuurType = reader["factuurType"].ToString(),
                             FactuurType = System.Net.WebUtility.HtmlDecode(reader["factuurType"].ToString()),
                             PostbusAddress = reader["postbusAddress"].ToString(),
                             PostbusName = reader["postbusNaam"].ToString(),
@@ -1402,6 +1398,53 @@ namespace Dossier_Registratie.Repositories
             }
             return AkteList;
         }
+        public ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponentsId(Guid verzekeraarId, bool pakketVerzekering)
+        {
+            ObservableCollection<GeneratedKostenbegrotingModel> PriceComponents = new();
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], " +
+                    "FC1.[IsDeleted], FC1.[SpecificCrematie], FC1.[SpecificBegrafenis], FC1.[SpecificPakket], FC1.VerzekeringJson " +
+                    "FROM [ConfigurationFactuurComponent] FC1 " +
+                    "LEFT JOIN [ConfigurationFactuurComponent] FC2 ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
+                    "WHERE (EXISTS (SELECT 1 " +
+                    "FROM OPENJSON(FC1.VerzekeringJson) WITH (Id UNIQUEIDENTIFIER '$.Id') AS JsonIds " +
+                    "WHERE JsonIds.Id = @SelectedVerzekeraarId) OR FC1.VerzekeringJson = '') " +
+                    "AND FC2.Id IS NULL " +
+                    "ORDER BY FC1.SortOrder, FC1.IsDeleted ASC";
+                command.Parameters.AddWithValue("@SelectedVerzekeraarId", SqlDbType.UniqueIdentifier).Value = verzekeraarId;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bool specificPakket = !reader.IsDBNull(8) && (bool)reader[8];
+
+                        if (!(bool)reader[5])
+                        {
+                            PriceComponents.Add(new GeneratedKostenbegrotingModel
+                            {
+                                Id = (Guid)reader[0],
+                                Omschrijving = reader[1].ToString(),
+                                Bedrag = (decimal)reader[2],
+                                OrgBedrag = (decimal)reader[2],
+                                Aantal = reader[3].ToString(),
+                                OrgAantal = reader[3].ToString(),
+                                Verzekerd = reader[4].ToString(),
+                                IsDeleted = (bool)reader[5],
+                                SpecificCrematie = reader.IsDBNull(6) ? false : (bool)reader[6],
+                                SpecificBegrafenis = reader.IsDBNull(7) ? false : (bool)reader[7],
+                                SpecificPakket = specificPakket
+                            });
+                        }
+                    }
+
+                }
+            }
+            return PriceComponents;
+        }
         public ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponents(string verzekeringMaatschapij, bool pakketVerzekering)
         {
             ObservableCollection<GeneratedKostenbegrotingModel> PriceComponents = new();
@@ -1454,7 +1497,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [ComponentId],[Omschrijving],[Bedrag],[VerzekerdAantal],[Verzekering],[IsDeleted],[SortOrder],[DefaultPM] " +
+                command.CommandText = "SELECT [ComponentId],[Omschrijving],[Bedrag],[VerzekerdAantal],[Verzekering],[IsDeleted],[SortOrder],[DefaultPM],[VerzekeringJson] " +
                                         "FROM [ConfigurationFactuurComponent] ORDER BY SortOrder ASC";
 
                 using (var reader = command.ExecuteReader())
@@ -1474,49 +1517,9 @@ namespace Dossier_Registratie.Repositories
                             IsDeleted = (bool)reader[5],
                             SortOrder = (int)reader[6],
                             DefaultPM = (bool)reader[7],
+                            ComponentVerzekeringJson = reader[8].ToString(),
                             BtnBrush = styleColor
                         });
-                    }
-                }
-            }
-            return PriceComponents;
-        }
-        public ObservableCollection<KostenbegrotingModel> GetFilterdPriceComponentsBeheer(string verzekeringMaatschapij)
-        {
-            ObservableCollection<KostenbegrotingModel> PriceComponents = new ObservableCollection<KostenbegrotingModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new SqlCommand())
-            {
-                connection.Open();
-                command.Connection = connection;
-
-                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.DefaultPM " +
-                                      "FROM [ConfigurationFactuurComponent] FC1 " +
-                                      "LEFT JOIN [ConfigurationFactuurComponent] FC2 " +
-                                      "ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
-                                      "WHERE (FC1.Verzekering LIKE '%' + @Verzekering + '%' OR FC1.Verzekering = '') AND FC2.Id IS NULL " +
-                                      "ORDER BY FC1.SortOrder ASC";
-                command.Parameters.AddWithValue("@Verzekering", SqlDbType.NVarChar).Value = verzekeringMaatschapij;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string styleColor = reader.GetBoolean(5) ? "Red" : "Green";
-                        var component = new KostenbegrotingModel
-                        {
-                            ComponentId = reader.GetGuid(0),
-                            ComponentOmschrijving = reader.GetString(1),
-                            ComponentBedrag = reader.IsDBNull(2) ? 0.00m : reader.GetDecimal(2), // Handle null for Bedrag
-                            ComponentAantal = reader.IsDBNull(3) ? "0" : reader.GetInt32(3).ToString(), // Handle null for Aantal
-                            ComponentVerzekering = reader.IsDBNull(4) ? string.Empty : reader.GetString(4), // Handle null for Verzekering
-                            IsDeleted = reader.GetBoolean(5),
-                            DefaultPM = reader.GetBoolean(6),
-                            BtnBrush = styleColor
-                        };
-
-                        PriceComponents.Add(component);
                     }
                 }
             }
@@ -1530,8 +1533,8 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], FC1.[IsDeleted], FC1.SortOrder, FC1.[factuurBedrag], FC1.[DefaultPM] " +
-                                        "FROM [ConfigurationFactuurComponent] FC1 " +
+                command.CommandText = "SELECT [ComponentId], [Omschrijving], [Bedrag], [VerzekerdAantal], [Verzekering], [IsDeleted], SortOrder, [factuurBedrag], [DefaultPM], [VerzekeringJson] " +
+                                        "FROM [ConfigurationFactuurComponent]" +
                                         "WHERE ComponentId = @componentId";
                 command.Parameters.AddWithValue("@componentId", componentId);
                 using (var reader = command.ExecuteReader())
@@ -1545,6 +1548,7 @@ namespace Dossier_Registratie.Repositories
                             ComponentBedrag = reader.IsDBNull(2) ? decimal.Zero : (decimal)reader[2],
                             ComponentAantal = reader[3].ToString(),
                             ComponentVerzekering = reader[4].ToString(),
+                            ComponentVerzekeringJson = reader[9].ToString(),
                             SortOrder = reader.IsDBNull(6) ? 0 : (int)reader[6],
                             ComponentFactuurBedrag = reader.IsDBNull(7) ? decimal.Zero : (decimal)reader[7],
                             DefaultPM = (bool)reader[8]
