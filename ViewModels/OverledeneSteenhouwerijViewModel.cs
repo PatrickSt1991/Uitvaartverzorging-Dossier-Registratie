@@ -692,26 +692,30 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveCommand(object obj)
         {
-            if (CanExecuteSaveSteenCommand(obj))
-                ExecuteSaveSteenCommand(obj);
 
-            if (CanExecuteSaveBloemCommand(obj))
-                ExecuteSaveBloemCommand(obj);
-
-            if (CanExecuteSaveWerkbonCommand(obj))
-                ExecuteSaveWerkbonCommand(obj);
-
-            if (CanExecuteSaveUrnSieradenCommand(obj))
-                ExecuteSaveUrnSieradenCommand(obj);
-
-            if (obj != null && (obj.ToString() == "SaveButton" || obj.ToString() == "AfrondenButton"))
+            if (Globals.UitvaartCodeGuid != Guid.Empty)
             {
-                Globals.Voorregeling = false;
-                Globals.UitvaartCode = string.Empty;
-                Globals.UitvaartCodeGuid = Guid.Empty;
-                Globals.UitvaarLeider = string.Empty;
+                if (CanExecuteSaveSteenCommand(obj))
+                    ExecuteSaveSteenCommand("GeneralSave");
 
-                IntAggregator.Transmit(0);
+                if (CanExecuteSaveBloemCommand(obj))
+                    ExecuteSaveBloemCommand("GeneralSave");
+
+                if (CanExecuteSaveWerkbonCommand(obj))
+                    ExecuteSaveWerkbonCommand("GeneralSave");
+
+                if (CanExecuteSaveUrnSieradenCommand(obj))
+                    ExecuteSaveUrnSieradenCommand("GeneralSave");
+
+                if (obj != null && (obj.ToString() == "SaveButton" || obj.ToString() == "AfrondenButton"))
+                {
+                    Globals.Voorregeling = false;
+                    Globals.UitvaartCode = string.Empty;
+                    Globals.UitvaartCodeGuid = Guid.Empty;
+                    Globals.UitvaarLeider = string.Empty;
+
+                    IntAggregator.Transmit(0);
+                }
             }
         }
         public bool CanExecuteSaveSteenCommand(object obj)
@@ -727,8 +731,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveSteenCommand(object obj)
         {
-
-            if (!SteenhouwerijModel.HasData())
+            if ((!SteenhouwerijModel.HasData()) && (obj?.ToString() ?? "") != "GeneralSave")
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
                 return;
@@ -744,7 +747,9 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddSteenhouwerij(SteenhouwerijModel);
-                    new ToastWindow("Steenhouwerij is opgeslagen.").Show();
+                    
+                    if(obj.ToString() != "GeneralSave")
+                        new ToastWindow("Steenhouwerij is opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -762,7 +767,9 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditSteenhouwerij(SteenhouwerijModel);
-                        new ToastWindow("Steenhouwerij is geupdate.").Show();
+                        
+                        if ((obj?.ToString() ?? "") != "GeneralSave")
+                            new ToastWindow("Steenhouwerij is geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -797,7 +804,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveBloemCommand(object obj)
         {
-            if (!BloemenModel.HasData())
+            if ((!BloemenModel.HasData())  && (obj?.ToString() ?? "") != "GeneralSave")
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
                 return;
@@ -817,7 +824,8 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddBloemen(BloemenModel);
-                    new ToastWindow("Bloemen zijn opgeslagen.").Show();
+                    if ((obj?.ToString() ?? "") != "GeneralSave")
+                        new ToastWindow("Bloemen zijn opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -834,7 +842,8 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditBloemen(BloemenModel);
-                        new ToastWindow("Bloemen zijn geupdate.").Show();
+                        if ((obj?.ToString() ?? "") != "GeneralSave")
+                            new ToastWindow("Bloemen zijn geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -860,31 +869,10 @@ namespace Dossier_Registratie.ViewModels
         }
         public bool CanExecuteSaveWerkbonCommand(object obj)
         {
-            if (!string.IsNullOrEmpty(WerkbonModel.WerkbonJson))
+            if (!string.IsNullOrEmpty(WerkbonModel.WerkbonJson) && WerkbonModel.WerkbonJson != "[]")
                 WerkbonPrintButtonVisable = Visibility.Visible;
 
-            List<WerkbonnenData> allWerkbonData = [];
-
-            foreach (var werkbon in WerkbonnenList)
-            {
-                var filteredData = werkbon.WerkbonData
-                    .Where(data => data.WerknemerId != Guid.Empty)
-                    .ToList();
-
-                foreach (var data in filteredData)
-                {
-                    data.UitvaartNummer = Globals.UitvaartCode;
-
-                    var werknemer = WerkbonnenPersonen.FirstOrDefault(p => p.Id == data.WerknemerId);
-                    if (werknemer != null)
-                        data.WerknemerName = werknemer.WerkbonPersoon;
-                }
-
-                allWerkbonData.AddRange(filteredData);
-            }
-            WerkbonModel.WerkbonJson = JsonConvert.SerializeObject(allWerkbonData, Formatting.Indented);
-
-            return WerkbonModel.HasData();
+            return true;
         }
         public bool CanExecuteSaveUrnSieradenCommand(object obj)
         {
@@ -899,7 +887,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveUrnSieradenCommand(object obj)
         {
-            if (!UrnSieradenModel.HasData())
+            if ((!UrnSieradenModel.HasData()) && (obj?.ToString() ?? "") != "GeneralSave")
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
                 return;
@@ -915,7 +903,8 @@ namespace Dossier_Registratie.ViewModels
                 try
                 {
                     createRepository.AddUrnSieraden(UrnSieradenModel);
-                    new ToastWindow("Urn & Gedenksieraden zijn opgeslagen.").Show();
+                    if ((obj?.ToString() ?? "") != "GeneralSave")
+                        new ToastWindow("Urn & Gedenksieraden zijn opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -933,7 +922,8 @@ namespace Dossier_Registratie.ViewModels
                     try
                     {
                         updateRepository.EditUrnSieraden(UrnSieradenModel);
-                        new ToastWindow("Urn & Gedenksieraden zijn geupdate.").Show();
+                        if ((obj?.ToString() ?? "") != "GeneralSave")
+                            new ToastWindow("Urn & Gedenksieraden zijn geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -959,21 +949,45 @@ namespace Dossier_Registratie.ViewModels
         {
             WerkbonModel.UitvaartId = Globals.UitvaartCodeGuid;
 
-            if (!WerkbonModel.HasData())
+            List<WerkbonnenData> allWerkbonData = [];
+
+            foreach (var werkbon in WerkbonnenList)
+            {
+                var filteredData = werkbon.WerkbonData
+                    .Where(data => data.WerknemerId != Guid.Empty)
+                    .ToList();
+
+                foreach (var data in filteredData)
+                {
+                    data.UitvaartNummer = Globals.UitvaartCode;
+
+                    var werknemer = WerkbonnenPersonen.FirstOrDefault(p => p.Id == data.WerknemerId);
+                    if (werknemer != null)
+                        data.WerknemerName = werknemer.WerkbonPersoon;
+                }
+
+                allWerkbonData.AddRange(filteredData);
+            }
+            WerkbonModel.WerkbonJson = JsonConvert.SerializeObject(allWerkbonData, Formatting.Indented);
+
+            if ((!WerkbonModel.HasData()) && (obj?.ToString() ?? "") != "GeneralSave")
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();
                 return;
             }
 
             bool WekbonExists = miscellaneousRepository.UitvaarKWerkbonExists(WerkbonModel.UitvaartId);
-            if (WerkbonModel.Id == Guid.Empty && !WekbonExists)
+
+            if (WerkbonModel.Id == Guid.Empty && !WekbonExists && Globals.UitvaartCodeGuid != Guid.Empty)
             {
+                Debug.WriteLine("new wekbon");
                 WerkbonModel.Id = Guid.NewGuid();
 
                 try
                 {
                     createRepository.AddWerkbonnen(WerkbonModel);
-                    new ToastWindow("Werkbonnen zijn opgeslagen.").Show();
+                    if ((obj?.ToString() ?? "") != "GeneralSave")
+                        new ToastWindow("Werkbonnen zijn opgeslagen.").Show();
                 }
                 catch (Exception ex)
                 {
@@ -982,15 +996,17 @@ namespace Dossier_Registratie.ViewModels
                     return;
                 }
             }
-            else if (WekbonExists)
+            else if (WekbonExists && Globals.UitvaartCodeGuid != Guid.Empty)
             {
+                Debug.WriteLine("update werkbon");
                 bool werkbonInfoChanged = modelCompare.AreValuesEqual(_originalWerkbonModel, WerkbonModel);
                 if (werkbonInfoChanged == false)
                 {
                     try
                     {
                         updateRepository.EditWerkbonnen(WerkbonModel);
-                        new ToastWindow("Werkbonnen zijn geupdate.").Show();
+                        if ((obj?.ToString() ?? "") != "GeneralSave")
+                            new ToastWindow("Werkbonnen zijn geupdate.").Show();
                     }
                     catch (Exception ex)
                     {
@@ -1418,7 +1434,6 @@ namespace Dossier_Registratie.ViewModels
         public ObservableCollection<WerknemersModel> WerknemerOverzicht { get; }
 
         private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
-
         public Werkbonnen()
         {
             WerkbonData = new ObservableCollection<WerkbonnenData>();

@@ -84,7 +84,7 @@ namespace Dossier_Registratie.Repositories
                 {
                     var herkomstId = reader.IsDBNull(0) ? Guid.Empty : reader.GetGuid(0);
                     var herkomstNamee = reader.IsDBNull(1) ? "None" : reader.GetString(1);
-                    var herkomstCustomLogo = reader.IsDBNull(3) ? false : reader.GetBoolean(2);
+                    var herkomstCustomLogo = reader.IsDBNull(2) ? false : reader.GetBoolean(2);
                     return (herkomstId, herkomstNamee, herkomstCustomLogo);
                 }
                 return (Guid.Empty, "None", false);
@@ -527,7 +527,7 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connecion;
                 command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted], " +
                     "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType], " +
-                    "postbusAddress, postbusNaam, isPakket " +
+                    "postbusAddress, postbusNaam, isPakket, customLogo " +
                     "FROM ConfigurationVerzekeraar " +
                     "ORDER BY isDeleted ASC, verzekeraarNaam";
                 using (var reader = command.ExecuteReader())
@@ -554,6 +554,7 @@ namespace Dossier_Registratie.Repositories
                             PostbusAddress = reader["postbusAddress"].ToString(),
                             PostbusName = reader["postbusNaam"].ToString(),
                             Pakket = reader.IsDBNull("isPakket") ? false : reader.GetBoolean("isPakket"),
+                            CustomLogo = reader.IsDBNull("customLogo") ? false : reader.GetBoolean("customLogo"),
                             BtnBrush = styleColor
                         });
                     }
@@ -639,8 +640,8 @@ namespace Dossier_Registratie.Repositories
                             CorrespondentieType = reader["correspondentieType"].ToString(),
                             IsOverrideFactuurAdress = (bool)reader["OverrideFactuurAdress"],
                             Telefoon = reader["verzekeraarTelefoon"].ToString(),
-                            Pakket = reader.IsDBNull(16) ? false : reader.GetBoolean(16),
-                            CustomLogo = reader.IsDBNull(17) ? false : reader.GetBoolean(17)
+                            Pakket = reader["isPakket"] is DBNull ? false : (bool)reader["isPakket"],
+                            CustomLogo = reader["CustomLogo"] is DBNull ? false : (bool)reader["CustomLogo"]
                         };
                     }
                 }
@@ -1414,7 +1415,7 @@ namespace Dossier_Registratie.Repositories
                     "WHERE JsonIds.Id = @SelectedVerzekeraarId) OR FC1.VerzekeringJson = '') " +
                     "AND FC2.Id IS NULL " +
                     "ORDER BY FC1.SortOrder, FC1.IsDeleted ASC";
-                command.Parameters.AddWithValue("@Verzekering", SqlDbType.UniqueIdentifier).Value = verzekeraarId;
+                command.Parameters.AddWithValue("@SelectedVerzekeraarId", SqlDbType.UniqueIdentifier).Value = verzekeraarId;
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())

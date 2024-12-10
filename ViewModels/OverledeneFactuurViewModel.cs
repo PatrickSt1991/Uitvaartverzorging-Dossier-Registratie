@@ -390,7 +390,7 @@ namespace Dossier_Registratie.ViewModels
             foreach (var el in miscellaneousRepository.GetVerzekeraars())
             {
                 if (el.IsDeleted == false && el.IsHerkomst == true && el.Name != "Default")
-                    Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting });
+                    Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting, CustomLogo = el.CustomLogo });
             }
         }
         public void ReloadDynamicElements()
@@ -398,7 +398,7 @@ namespace Dossier_Registratie.ViewModels
             foreach (var el in miscellaneousRepository.GetVerzekeraars())
             {
                 if (!Verzekeraars.Any(u => u.Id == el.Id) && el.IsDeleted == false && el.IsHerkomst == true && el.Name != "Default")
-                    Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting });
+                    Verzekeraars.Add(new VerzekeraarsModel { Id = el.Id, Name = el.Name, Afkorting = el.Afkorting, CustomLogo = el.CustomLogo });
             }
         }
         public static OverledeneFactuurViewModel KostenbegrotingInstance { get; } = new();
@@ -686,13 +686,12 @@ namespace Dossier_Registratie.ViewModels
                 new ToastWindow("Er is geen herkomst gekozen!").Show();
                 return;
             }
-            string verzekeringMaatschapij = SelectedVerzekeraar?.Afkorting;
+            string verzekeringMaatschapij = SelectedVerzekeraar?.Name;
             bool pakketVerzekering = SelectedVerzekeraar?.Pakket ?? false;
 
             if (!string.IsNullOrEmpty(verzekeringMaatschapij))
             {
                 var uitvaartType = miscellaneousRepository.GetUitvaartType(Globals.UitvaartCodeGuid);
-                //var priceComponents = miscellaneousRepository.GetPriceComponents(verzekeringMaatschapij, pakketVerzekering);
                 var priceComponents = miscellaneousRepository.GetPriceComponentsId(SelectedVerzekeraar.Id, pakketVerzekering);
 
                 var factuurResult = searchRepository.GetPolisInfoByUitvaartId(Globals.UitvaartCode);
@@ -711,7 +710,7 @@ namespace Dossier_Registratie.ViewModels
                     {
                         MessageBox.Show($"Je kunt geen lege kostenbegroting maken, als je geen standaard kostenbegroting wilt " +
                                             $"zorg dan eerst dat de prijs componenten worden toegewezen of worden aangemaakt voor deze verzekeraar;\r\n\r\n" +
-                                            $" - {SelectedVerzekeraar.Name} met afkorting {SelectedVerzekeraar.Afkorting}.", "Ongeldige kostenbegroting", MessageBoxButton.OK, MessageBoxImage.Hand);
+                                            $" - {SelectedVerzekeraar.Name}.", "Ongeldige kostenbegroting", MessageBoxButton.OK, MessageBoxImage.Hand);
                         IntAggregator.Transmit(7);
                     }
                 }
@@ -919,7 +918,6 @@ namespace Dossier_Registratie.ViewModels
             var workbook = excelApp.Workbooks.Open(kostenbegrotingUrl);
             var worksheet = (Excel.Worksheet)workbook.ActiveSheet;
 
-            Debug.WriteLine(SelectedVerzekeraar.CustomLogo);
 
             if (SelectedVerzekeraar.CustomLogo == true)
             {
@@ -930,8 +928,8 @@ namespace Dossier_Registratie.ViewModels
                     var picture = pictures.AddPicture(kbImage,
                                                       Microsoft.Office.Core.MsoTriState.msoFalse, // LinkToFile
                                                       Microsoft.Office.Core.MsoTriState.msoCTrue, // SaveWithDocument
-                                                      (float)worksheet.Cells[2, 3].Left,
-                                                      (float)worksheet.Cells[2, 3].Top,
+                                                      (float)worksheet.Cells[2, 2].Left,
+                                                      (float)worksheet.Cells[2, 2].Top,
                                                       -1, // Width, -1 to keep original width
                                                       -1); // Height, -1 to keep original height
                     picture.Placement = Excel.XlPlacement.xlMoveAndSize;
@@ -950,7 +948,9 @@ namespace Dossier_Registratie.ViewModels
             kostenbegrotingInfoResult.OverledeneNaam = $"{kostenbegrotingInfoResult.OverledeneAanhef} {voorletters} {kostenbegrotingInfoResult.OverledeneAchternaam}";
 
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
-            worksheet.Cells[7, 8] = kostenbegrotingInfoResult.OverledenDatum != default ? kostenbegrotingInfoResult.OverledenDatum.ToString("dd-MM-yyyy") : string.Empty;
+
+            worksheet.Cells[7, 8].Value = kostenbegrotingInfoResult.OverledenDatum != default ? kostenbegrotingInfoResult.OverledenDatum : (object)string.Empty;
+            worksheet.Cells[7, 8].NumberFormat = "dd-mm-jjjj";
 
 
             var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson);

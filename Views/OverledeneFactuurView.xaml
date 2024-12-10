@@ -40,7 +40,7 @@
                     <StackPanel Margin="10">
                         <ComboBox x:Name="insuranceName" DisplayMemberPath="Name" ItemsSource="{Binding Path=DataContext.Verzekeraars, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" SelectedValuePath="Afkorting" SelectedItem="{Binding Path=DataContext.SelectedVerzekeraar, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" Width="258"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Content="Kies" Width="75" Height="30" Margin="0,5,5,0" Command="{Binding DataContext.GenererenKostenbegrotingCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                            <Button Content="Kies" Width="75" Height="30" Margin="0,5,5,0" Command="{Binding DataContext.GenererenKostenbegrotingCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"/>
                             <Button Content="Sluiten" Width="75" Height="30" Margin="0,5,0,0" Command="{Binding ClosePopupCommand}" CommandParameter="{Binding ElementName=verzekeringPopup}"/>
                         </StackPanel>
                     </StackPanel>

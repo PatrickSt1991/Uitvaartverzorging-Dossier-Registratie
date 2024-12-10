@@ -375,7 +375,8 @@ namespace Dossier_Registratie.Models
         public bool HasData()
         {
             return UitvaartId != Guid.Empty &&
-                    !string.IsNullOrEmpty(WerkbonJson);
+                    !string.IsNullOrEmpty(WerkbonJson) &&
+                    WerkbonJson != "[]";
         }
     }
     public class WerkbonPersoneel : ViewModelBase
