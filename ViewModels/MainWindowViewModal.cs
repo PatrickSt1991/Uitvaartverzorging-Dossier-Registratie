@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Data.Odbc;
+using System.Data.OleDb;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -442,85 +443,6 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-        static async Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnUitvaartNumberAsync(string connectionString, string searchNumber, string db)
-        {
-            List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
-
-            using (OdbcConnection connection = new OdbcConnection(connectionString))
-            {
-                await connection.OpenAsync(); // Open the connection asynchronously
-                string query = "SELECT Uitvaartnummer, [1 Naam overledene] as achternaam, [1 Tussenvoegsel] as tussenvoegsel, " +
-                                "[1 Voornamen] as voornaam, [1 Geboortedatum] as geboortedatum, [1 Aanhef] as aanhef, Uitvaartverzorger FROM data WHERE Uitvaartnummer = ?";
-
-                using (OdbcCommand command = new OdbcCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@param1", searchNumber); // ODBC uses named parameters or placeholders
-
-                    // Use DbDataReader which works with OdbcCommand as well
-                    using (DbDataReader reader = await command.ExecuteReaderAsync()) // Execute asynchronously
-                    {
-                        while (await reader.ReadAsync()) // Read each record asynchronously
-                        {
-                            OverledeneSearchSurname record = new OverledeneSearchSurname
-                            {
-                                UitvaartId = Guid.Empty,
-                                UitvaartNummer = "archief_" + db + "_" + reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
-                                OverledeneAanhef = reader["aanhef"]?.ToString() ?? string.Empty,
-                                OverledeneVoornaam = reader["voornaam"]?.ToString() ?? string.Empty,
-                                OverledeneTussenvoegsel = reader["tussenvoegsel"]?.ToString() ?? string.Empty,
-                                OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
-                                OverledeneGeboortedatum = reader["geboortedatum"]?.ToString() ?? string.Empty,
-                                PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
-                                PersoneelId = Guid.Empty,
-                                DossierCompleted = true
-                            };
-                            records.Add(record);
-                        }
-                    }
-                }
-            }
-            return records;
-        }
-        static async Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnAchternaamAsync(string connectionString, string achternaam, string db)
-        {
-            List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
-
-            using (OdbcConnection connection = new OdbcConnection(connectionString))
-            {
-                await connection.OpenAsync(); // Open the connection asynchronously
-                string query = "SELECT Uitvaartnummer, [1 Naam overledene] as achternaam, [1 Tussenvoegsel] as tussenvoegsel, " +
-                                "[1 Voornamen] as voornaam, [1 Geboortedatum] as geboortedatum, [1 Aanhef] as aanhef, Uitvaartverzorger " +
-                                "FROM data WHERE [1 Naam overledene] LIKE ?";
-
-                using (OdbcCommand command = new OdbcCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("?", "%" + achternaam + "%");
-
-                    // Use DbDataReader instead of OdbcDataReader
-                    using (DbDataReader reader = await command.ExecuteReaderAsync()) // Execute asynchronously
-                    {
-                        while (await reader.ReadAsync()) // Read each record asynchronously
-                        {
-                            OverledeneSearchSurname record = new OverledeneSearchSurname
-                            {
-                                UitvaartId = Guid.Empty,
-                                UitvaartNummer = "archief_" + db + "_" + reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
-                                OverledeneAanhef = reader["aanhef"]?.ToString() ?? string.Empty,
-                                OverledeneVoornaam = reader["voornaam"]?.ToString() ?? string.Empty,
-                                OverledeneTussenvoegsel = reader["tussenvoegsel"]?.ToString() ?? string.Empty,
-                                OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
-                                OverledeneGeboortedatum = reader["geboortedatum"]?.ToString() ?? string.Empty,
-                                PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
-                                PersoneelId = Guid.Empty,
-                                DossierCompleted = true
-                            };
-                            records.Add(record);
-                        }
-                    }
-                }
-            }
-            return records;
-        }
         async Task<bool> OpenArchivePdfAsync(string uitvaartnummer, string achternaam)
         {
             if (string.IsNullOrEmpty(uitvaartnummer) && string.IsNullOrEmpty(achternaam)) return false;
@@ -632,8 +554,8 @@ namespace Dossier_Registratie.ViewModels
 
                 if (!searchUitvaartNumber.Any() && SearchOldDatabaseNummer)
                 {
-                    var access2023Search = await SearchAccessDatabaseOnUitvaartNumberAsync($"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};Dbq={DataProvider.AccessDatabase2023};Uid=;Pwd=;", ZoekenUitvaartnummer, "2023");
-                    var access2024Search = await SearchAccessDatabaseOnUitvaartNumberAsync($"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};Dbq={DataProvider.AccessDatabase2024};Uid=;Pwd=;", ZoekenUitvaartnummer, "2024");
+                    var access2023Search = await miscellaneousRepository.SearchAccessDatabaseOnUitvaartNumberAsync(ZoekenUitvaartnummer, "2023");
+                    var access2024Search = await miscellaneousRepository.SearchAccessDatabaseOnUitvaartNumberAsync(ZoekenUitvaartnummer, "2024");
 
                     combinedResults.AddRange(access2023Search);
                     combinedResults.AddRange(access2024Search);
@@ -693,8 +615,8 @@ namespace Dossier_Registratie.ViewModels
 
                 if (!searchUitvaartSurname.Any() && SearchOldDatabaseSurname)
                 {
-                    var access2023Search = await SearchAccessDatabaseOnAchternaamAsync($"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};Dbq={DataProvider.AccessDatabase2023};Uid=;Pwd=;", ZoekenAchternaam, "2023");
-                    var access2024Search = await SearchAccessDatabaseOnAchternaamAsync($"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};Dbq={DataProvider.AccessDatabase2024};Uid=;Pwd=;", ZoekenAchternaam, "2024");
+                    var access2023Search = await miscellaneousRepository.SearchAccessDatabaseOnAchternaamAsync(ZoekenAchternaam, ZoekenDoB, "2023");
+                    var access2024Search = await miscellaneousRepository.SearchAccessDatabaseOnAchternaamAsync(ZoekenAchternaam, ZoekenDoB, "2024");
 
                     combinedResults.AddRange(access2023Search);
                     combinedResults.AddRange(access2024Search);

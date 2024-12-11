@@ -9,5 +9,9 @@ namespace Dossier_Registratie.Repositories
         {
             return new SqlConnection(DataProvider.ConnectionString);
         }
+        protected SqlConnection GetArchiefConnection()
+        {
+            return new SqlConnection(DataProvider.ArchiefConnectionString);
+        }
     }
 }

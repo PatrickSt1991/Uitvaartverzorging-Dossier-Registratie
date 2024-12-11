@@ -209,6 +209,7 @@ namespace Dossier_Registratie.Helper
             get { return InstanceConfig["SmtpConfiguration:Reciever"]; }
         }
         public static string ConnectionString { get; } = InstanceConfig.GetConnectionString("DossierRegistratieConnectionString");
+        public static string ArchiefConnectionString { get; } = InstanceConfig.GetConnectionString("ArchiefConnectionString");
         public static string ShutdownFile { get; } = GetShutdownFilePath();
         public static string GetShutdownFilePath()
         {

@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Dynamic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +13,87 @@ namespace Dossier_Registratie.Repositories
 {
     public class MiscellaneousAndDocumentOperations : RepositoryBase, IMiscellaneousAndDocumentOperations
     {
+        public async Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnUitvaartNumberAsync(string searchNumber, string db)
+        {
+            List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
+
+            using (var connection = GetArchiefConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync();
+                command.Connection = connection;
+
+                string tableName = db == "2024" ? "[OudeEeftingData].[dbo].[data2024]" : "[OudeEeftingData].[dbo].[data2023]";
+                command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+                                        FROM {tableName} 
+                                        WHERE [Uitvaartnummer] = @uitvaartnummer";
+
+                command.Parameters.AddWithValue("@uitvaartnummer", SqlDbType.Int).Value = searchNumber;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        records.Add(new OverledeneSearchSurname
+                        {
+                            UitvaartId = (Guid)Guid.Empty,
+                            UitvaartNummer = "archief_" + db + "_" + reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
+                            PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
+                            OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
+                            OverledeneGeboortedatum = reader["geboortedatum"] != DBNull.Value ? (DateTime)reader["geboortedatum"] : DateTime.MinValue,
+                            PersoneelId = Guid.Empty,
+                            DossierCompleted = true
+                        });
+                    }
+                }
+            }
+            return records;
+        }
+        public async Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnAchternaamAsync(string achternaam, DateTime geboortedatum, string db)
+        {
+            List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
+
+            using (var connection = GetArchiefConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync();
+                command.Connection = connection;
+
+                string tableName = db == "2024" ? "[OudeEeftingData].[dbo].[data2024]" : "[OudeEeftingData].[dbo].[data2023]";
+
+                command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+                                        FROM {tableName} 
+                                        WHERE [1 Naam overledene] LIKE '%' + @achternaam + '%'";
+
+                if (geboortedatum != DateTime.MinValue)
+                {
+                    command.CommandText += " AND [1 Geboortedatum] = @geboortedatum";
+                    command.Parameters.AddWithValue("@geboortedatum", SqlDbType.DateTime).Value = geboortedatum;
+                }
+
+                command.Parameters.AddWithValue("@achternaam", SqlDbType.NVarChar).Value = achternaam;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        records.Add(new OverledeneSearchSurname
+                        {
+                            UitvaartId = (Guid)Guid.Empty,
+                            UitvaartNummer = "archief_" + db + "_" + reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
+                            PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
+                            OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
+                            OverledeneGeboortedatum = reader["geboortedatum"] != DBNull.Value ? (DateTime)reader["geboortedatum"] : DateTime.MinValue,
+                            PersoneelId = Guid.Empty,
+                            DossierCompleted = true
+                        });
+                    }
+                }
+           
+            }
+
+            return records;
+        }
         public async Task<ObservableCollection<NotificatieOverzichtModel>> NotificationDeceasedAfterYearPassedAsync()
         {
             ObservableCollection<NotificatieOverzichtModel> notificatie = new();
