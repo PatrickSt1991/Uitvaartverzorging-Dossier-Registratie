@@ -12,7 +12,7 @@ namespace Dossier_Registratie.Models
         private string _overledeneVoornaam;
         private string _overledeneTussenvoegsel;
         private string _overledeneAchternaam;
-        private string _overledeneGeboortedatum;
+        private DateTime _overledeneGeboortedatum;
         private string _personeelNaam;
         private Guid _personeelId;
         private bool _dossierCompleted;
@@ -46,7 +46,7 @@ namespace Dossier_Registratie.Models
             get { return _overledeneAchternaam; }
             set { _overledeneAchternaam = value; OnPropertyChanged(nameof(OverledeneAchternaam)); }
         }
-        public string OverledeneGeboortedatum
+        public DateTime OverledeneGeboortedatum
         {
             get { return _overledeneGeboortedatum; }
             set { _overledeneGeboortedatum = value; OnPropertyChanged(nameof(OverledeneGeboortedatum)); }

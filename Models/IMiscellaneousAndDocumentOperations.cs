@@ -7,6 +7,9 @@ namespace Dossier_Registratie.Models
 {
     public interface IMiscellaneousAndDocumentOperations
     {
+        string UitvaartType(Guid uitvaartGuid);
+        Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnUitvaartNumberAsync(string searchNumber, string db);
+        Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnAchternaamAsync(string achternaam, DateTime geboortedatum, string db);
         Task<ObservableCollection<NotificatieOverzichtModel>> NotificationDeceasedAfterYearPassedAsync();
         (Guid herkomstId, string herkomstName, bool herkomstLogo) GetHerkomstByUitvaartId(Guid uitvaartId);
         bool UitvaarnummerExists(string uitvaartnummer);

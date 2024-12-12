@@ -13,6 +13,7 @@ namespace Dossier_Registratie.Models
         public static bool _dossierCompleted;
         public static bool _newDossierCreation;
         public static bool _voorregeling;
+        public static string _uitvaartType;
         public static string UitvaartCode
         {
             get { return _uitvaartCode; }
@@ -56,6 +57,10 @@ namespace Dossier_Registratie.Models
             get { return _voorregeling; }
             set { _voorregeling = value; }
         }
-
+        public static string UitvaartType
+        {
+            get { return _uitvaartType; }
+            set { _uitvaartType = value; }
+        }
     }
 }

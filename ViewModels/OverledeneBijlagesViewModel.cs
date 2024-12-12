@@ -21,6 +21,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Xml.Linq;
 using static Dossier_Registratie.ViewModels.OverledeneFactuurViewModel;
 using static Dossier_Registratie.ViewModels.OverledeneSteenhouwerijViewModel;
 using Range = Microsoft.Office.Interop.Word.Range;
@@ -73,6 +74,8 @@ namespace Dossier_Registratie.ViewModels
         public bool initialLoadDone;
         private bool _isBusy;
         private bool _correctAccessOrNotCompleted = true;
+        private bool _isBegrafenis = false;
+        private bool _isCrematie = false;
         private string _documentOption;
         private string _fileExists;
         private string _fileGenerate;
@@ -86,6 +89,24 @@ namespace Dossier_Registratie.ViewModels
             {
                 _correctAccessOrNotCompleted = value;
                 OnPropertyChanged(nameof(CorrectAccessOrNotCompleted));
+            }
+        }
+        public bool IsBegrafenis
+        {
+            get { return _isBegrafenis; }
+            set
+            {
+                _isBegrafenis = value;
+                OnPropertyChanged(nameof(IsBegrafenis));
+            }
+        }
+        public bool IsCrematie
+        {
+            get { return _isCrematie; }
+            set
+            {
+                _isCrematie = value;
+                OnPropertyChanged(nameof(IsCrematie));
             }
         }
         public bool IsBusy
@@ -337,6 +358,9 @@ namespace Dossier_Registratie.ViewModels
 
             BijlageList.Clear();
             _originalBijlageList.Clear();
+
+            IsBegrafenis = Globals.UitvaartType == "Begrafenis";
+            IsCrematie = Globals.UitvaartType == "Crematie";
         }
         public static OverledeneBijlagesViewModel BijlagesInstance { get; } = new();
         public void RequestedDossierInformationBasedOnUitvaartId(string uitvaartNummer)
@@ -362,6 +386,17 @@ namespace Dossier_Registratie.ViewModels
 
             BijlageList.Clear();
             _originalBijlageList.Clear();
+
+            if (string.IsNullOrEmpty(Globals.UitvaartType))
+                Globals.UitvaartType = miscellaneousRepository.UitvaartType(Globals.UitvaartCodeGuid);
+
+            IsBegrafenis = Globals.UitvaartType == "Begrafenis";
+            IsCrematie = Globals.UitvaartType == "Crematie";
+
+            Debug.WriteLine(Globals.UitvaartType);
+            Debug.WriteLine(IsBegrafenis);
+            Debug.WriteLine(IsCrematie);
+
 
             var dossierStatus = miscellaneousRepository.GetVerlofDossier(Globals.UitvaartCodeGuid);
             if (dossierStatus.BijlageId != Guid.Empty)
@@ -410,21 +445,22 @@ namespace Dossier_Registratie.ViewModels
                         DocumentInconsistent = BijlageModel.DocumentInconsistent
                     });
                 }
-
-                var jsonDeserializer = new JsonDeserializer();
-                Verzekeringen = new ObservableCollection<PolisVerzekering>(jsonDeserializer.DeserializeJson(uitvaartNummer));
-                if (Verzekeringen.Count > 1)
-                {
-                    VerzekeringenWithAll = new ObservableCollection<PolisVerzekering>(new[] { new PolisVerzekering { VerzekeringName = "Alles" } }.Concat(Verzekeringen));
-                }
-                else
-                {
-                    VerzekeringenWithAll = new ObservableCollection<PolisVerzekering>(Verzekeringen);
-                }
-                SelectedVerzekering = VerzekeringenWithAll.FirstOrDefault();
-
-                initialLoadDone = true;
             }
+            var jsonDeserializer = new JsonDeserializer();
+            Debug.WriteLine(uitvaartNummer);
+            Verzekeringen = new ObservableCollection<PolisVerzekering>(jsonDeserializer.DeserializeJson(uitvaartNummer));
+
+            if (Verzekeringen.Count > 1)
+            {
+                VerzekeringenWithAll = new ObservableCollection<PolisVerzekering>(new[] { new PolisVerzekering { VerzekeringName = "Alles" } }.Concat(Verzekeringen));
+            }
+            else
+            {
+                VerzekeringenWithAll = new ObservableCollection<PolisVerzekering>(Verzekeringen);
+            }
+            SelectedVerzekering = VerzekeringenWithAll.FirstOrDefault();
+
+            initialLoadDone = true;
             OnDataLoaded();
         }
         public bool CanExecuteSaveCommand(object obj)
@@ -576,13 +612,15 @@ namespace Dossier_Registratie.ViewModels
                     File.Delete(destinationFileWithPolisNr);
                 }
 
-                // Copy the template file to the new location with the new name
                 sourceFile.CopyTo(destinationFileWithPolisNr);
             }
             else
             {
                 throw new FileNotFoundException("The template file does not exist.", fileToCopy);
             }
+
+            if (File.Exists(destinationFile))
+                File.Delete(destinationFile);
 
             return destinationFileWithPolisNr;
         }
@@ -640,7 +678,7 @@ namespace Dossier_Registratie.ViewModels
             {
                 foreach (string document in documentName.Split(','))
                 {
-                    destinationFile = destinationLoc + "AkteVanCessie_" + document + ".docx";
+                    destinationFile = destinationLoc + "AkteVanCessie_" + document.Replace(" ", "").Replace("/","-") + ".docx";
 
                     if (sourceFile.Exists)
                     {
@@ -662,7 +700,7 @@ namespace Dossier_Registratie.ViewModels
                             }
                         }
                         if (sendMail == true)
-                            mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, "AkteVanCessie_" + document + ".docx");
+                            mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, "AkteVanCessie_" + document.Replace(" ", "").Replace("/", "-") + ".docx");
                     }
                     if (sendMail == false)
                     {
@@ -679,7 +717,7 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
-                destinationFile = destinationLoc + "AkteVanCessie_" + documentName + ".docx";
+                destinationFile = destinationLoc + "AkteVanCessie_" + documentName.Replace(" ", "").Replace("/", "-") + ".docx";
 
                 if (sourceFile.Exists)
                 {
@@ -695,7 +733,7 @@ namespace Dossier_Registratie.ViewModels
                     FillAkteFile(SelectedVerzekering.VerzekeringName, SelectedVerzekering.PolisInfoList, akteStatus);
 
                     if (sendMail == true)
-                        mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, "AkteVanCessie_" + documentName + ".docx");
+                        mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, "AkteVanCessie_" + documentName.Replace(" ", "").Replace("/", "-") + ".docx");
                 }
 
                 if (sendMail == false)
@@ -837,6 +875,53 @@ namespace Dossier_Registratie.ViewModels
                     table.Cell(polisBedragCount, 1).Range.Text = "Totaal";
                     table.Cell(polisBedragCount, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
                     table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString();
+                }
+            }
+
+            var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
+            if (documentData != null && documentData.Length > 0)
+            {
+                string tempImagePath = string.Empty;
+
+                try
+                {
+                    tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
+
+                    string tempDir = Path.GetDirectoryName(tempImagePath);
+                    if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                    {
+                        throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+                    }
+
+                    File.WriteAllBytes(tempImagePath, documentData);
+
+                    foreach (Section section in doc.Sections)
+                    {
+                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                        Range headerRange = header.Range;
+                        headerRange.InlineShapes.AddPicture(tempImagePath);
+                        headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                    throw; // Re-throw the exception to be handled by the calling method
+                }
+                finally
+                {
+                    // Ensure the temporary file is deleted
+                    if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                    {
+                        try
+                        {
+                            File.Delete(tempImagePath);
+                        }
+                        catch (System.Exception deleteEx)
+                        {
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
+                        }
+                    }
                 }
             }
 
@@ -2170,26 +2255,36 @@ namespace Dossier_Registratie.ViewModels
             List<string> documentUrls = new List<string>();
             bool recreationTrigger = false;
 
+            Debug.WriteLine("CreateDocumentTerugmelding started.");
+
             if (string.IsNullOrEmpty(TagModel.TerugmeldingTag))
             {
                 documentId = Guid.NewGuid();
                 initialCreation = true;
+                Debug.WriteLine("Initial document creation: " + documentId);
             }
             else
             {
                 var terugmeldingDocuments = await miscellaneousRepository.GetDocumentsInformationAsync(Globals.UitvaartCodeGuid, "Terugmelding").ConfigureAwait(false);
+                Debug.WriteLine($"Found {terugmeldingDocuments.Count} documents for Terugmelding.");
 
                 if (terugmeldingDocuments.Count > 1)
                 {
                     foreach (var document in terugmeldingDocuments)
                     {
                         documentId = document.BijlageId;
-                        documentHash = Checksum.GetMD5Checksum(document.DocumentUrl);
-                        savedHash = document.DocumentHash;
 
                         if (!File.Exists(document.DocumentUrl))
                         {
+                            recreationTrigger = true;
+                            Debug.WriteLine($"File does not exist: {document.DocumentUrl}");
+                        }
+                        else
+                        {
+                            documentHash = Checksum.GetMD5Checksum(document.DocumentUrl);
+                            savedHash = document.DocumentHash;
 
+                            Debug.WriteLine($"Processing document: {document.DocumentUrl}, Hash: {documentHash}, Saved Hash: {savedHash}");
                         }
 
                         if (savedHash == documentHash && File.Exists(document.DocumentUrl))
@@ -2199,12 +2294,13 @@ namespace Dossier_Registratie.ViewModels
                         else
                         {
                             recreationTrigger = true;
+                            Debug.WriteLine("Recreation triggered for document: " + document.DocumentUrl);
                         }
                     }
 
                     if (!recreationTrigger)
                     {
-                        // Perform the required action based on documentOption
+                        Debug.WriteLine("No recreation required, proceeding with selected document option.");
                         switch (documentOption)
                         {
                             case "Print":
@@ -2227,9 +2323,11 @@ namespace Dossier_Registratie.ViewModels
                             {
                                 File.Delete(document.DocumentUrl);
                                 TerugmeldingModel.Updated = true;
+                                Debug.WriteLine($"Deleted old document: {document.DocumentUrl}");
                             }
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
+                        Debug.WriteLine("New document will be created at: " + destinationFile);
                         documentId = Guid.NewGuid();
                     }
                 }
@@ -2239,6 +2337,8 @@ namespace Dossier_Registratie.ViewModels
                     documentId = document.BijlageId;
                     savedHash = document.DocumentHash;
                     documentHash = Checksum.GetMD5Checksum(TagModel.TerugmeldingTag);
+
+                    Debug.WriteLine($"Single document found, checking hashes. Document Hash: {documentHash}, Saved Hash: {savedHash}");
 
                     if (savedHash == documentHash && File.Exists(document.DocumentUrl))
                     {
@@ -2262,18 +2362,20 @@ namespace Dossier_Registratie.ViewModels
                         {
                             File.Delete(TagModel.TerugmeldingTag);
                             TerugmeldingModel.Updated = true;
+                            Debug.WriteLine("Deleted existing document: " + TagModel.TerugmeldingTag);
                         }
                         destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
                         documentId = Guid.NewGuid();
                     }
                 }
             }
-
-            TerugmeldingModel = await miscellaneousRepository.GetDocumentTerugmeldingInfoAsync(Globals.UitvaartCodeGuid).ConfigureAwait(false);
+            
             TerugmeldingModel.DestinationFile = destinationFile;
+            TerugmeldingModel = await miscellaneousRepository.GetDocumentTerugmeldingInfoAsync(Globals.UitvaartCodeGuid).ConfigureAwait(false);
 
             if (!TerugmeldingModel.HasData())
             {
+                Debug.WriteLine("No data found for Terugmelding, prompting user.");
                 System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
                 MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
@@ -2287,7 +2389,6 @@ namespace Dossier_Registratie.ViewModels
             }
 
             var terugmeldingPolissen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(TerugmeldingModel.Polisnummer);
-
             List<string> distinctPolissen = new List<string>();
 
             foreach (var terugmeldingPolis in terugmeldingPolissen)
@@ -2300,6 +2401,8 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
             }
+
+            Debug.WriteLine($"Found {distinctPolissen.Count} unique policies.");
 
             if (distinctPolissen.Count == 0)
             {
@@ -2316,6 +2419,9 @@ namespace Dossier_Registratie.ViewModels
                     TerugmeldingModel.Polisnummer = polis;
                     destinationFile = await CreateDirectoryPolis(Globals.UitvaartCode, "Terugmelding.docx", polis).ConfigureAwait(true);
                     TerugmeldingModel.DestinationFile = destinationFile;
+
+                    Debug.WriteLine($"Creating document for policy: {polis}, file destination: {destinationFile}");
+                    documentUrls.Add(destinationFile);
 
                     var terugmeldingResults = await documentGenerator.UpdateTerugmelding(TerugmeldingModel).ConfigureAwait(true);
 
@@ -2334,6 +2440,7 @@ namespace Dossier_Registratie.ViewModels
                             try
                             {
                                 await createRepository.InsertDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
+                                Debug.WriteLine("Inserted document info into repository.");
                             }
                             catch (System.Exception ex)
                             {
@@ -2347,6 +2454,7 @@ namespace Dossier_Registratie.ViewModels
                             try
                             {
                                 await updateRepository.UpdateDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
+                                Debug.WriteLine("Updated document info in repository.");
                             }
                             catch (System.Exception ex)
                             {
@@ -2358,6 +2466,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
                 System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
+                
                 switch (documentOption)
                 {
                     case "Print":
@@ -2374,7 +2483,10 @@ namespace Dossier_Registratie.ViewModels
             }
             else if (distinctPolissen.Count == 1)
             {
+                destinationFile = await CreateDirectoryPolis(Globals.UitvaartCode, "Terugmelding.docx", distinctPolissen.First()).ConfigureAwait(true);
+                TerugmeldingModel.DestinationFile = destinationFile;
                 TerugmeldingModel.Polisnummer = distinctPolissen.First();
+
                 var terugmeldingResults = await documentGenerator.UpdateTerugmelding(TerugmeldingModel).ConfigureAwait(true);
 
                 if (terugmeldingResults != null)
@@ -2387,6 +2499,8 @@ namespace Dossier_Registratie.ViewModels
                     string dirPath = Path.GetDirectoryName(terugmeldingResults.DocumentUrl);
                     string newPolisFilePath = Path.Combine(dirPath, $"Terugmelding.{TerugmeldingModel.Polisnummer}.docx");
                     File.Move(terugmeldingResults.DocumentUrl, newPolisFilePath);
+
+                    Debug.WriteLine($"File moved to new path: {newPolisFilePath}");
 
                     terugmeldingResults.DocumentUrl = newPolisFilePath;
                     terugmeldingResults.DocumentName = "Terugmelding";
@@ -2420,6 +2534,7 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
                 System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
+                Debug.WriteLine(documentOption);
                 switch (documentOption)
                 {
                     case "Print":
@@ -2435,6 +2550,7 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
         }
+
         public async Task CreateDocumentTevredenheid(object obj)
         {
             string documentOption = (string)obj;
@@ -2748,8 +2864,13 @@ namespace Dossier_Registratie.ViewModels
             searchRepository = new SearchOperations();
             var verzekeringResult = searchRepository.GetOverlijdenVerzekeringByUitvaartId(UitvaartNummer);
             string jsonString = verzekeringResult.VerzekeringProperties;
+            Debug.WriteLine(jsonString);
             var verzekeringen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(jsonString);
-            var filteredVerzekeringen = verzekeringen.Where(v => !string.IsNullOrEmpty(v.VerzekeringName) && v.VerzekeringName != "null").ToList();
+            var filteredVerzekeringen = verzekeringen
+                .Where(v => !string.IsNullOrEmpty(v.VerzekeringName) && v.VerzekeringName != "null")
+                .GroupBy(v => v.VerzekeringName)
+                .Select(g => g.First())
+                .ToList();
 
             return new ObservableCollection<PolisVerzekering>(filteredVerzekeringen);
         }

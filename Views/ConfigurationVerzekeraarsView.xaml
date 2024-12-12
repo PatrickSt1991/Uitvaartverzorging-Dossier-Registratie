@@ -103,11 +103,19 @@
             </DataGrid.Columns>
         </DataGrid>
         <Popup IsOpen="{Binding IsEditVerzekeringPopupOpen}" Placement="Center" StaysOpen="False">
-            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="550" CornerRadius="5">
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="375" Height="600" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
                         <Label Content="Naam: " Width="100"/>
                         <TextBox Text="{Binding SelectedVerzekering.Name}" Width="250"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Herkomst: " Width="100"/>
+                        <CheckBox IsChecked="{Binding SelectedVerzekering.IsHerkomst}" Margin="0,5,0,0" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
+                        <Label Content="Verzekeraar: " Width="100"/>
+                        <CheckBox IsChecked="{Binding SelectedVerzekering.IsVerzekeraar}" Margin="0,5,0,0" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Lidnummer: " Width="100"/>

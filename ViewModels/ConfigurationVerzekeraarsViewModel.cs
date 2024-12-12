@@ -147,6 +147,8 @@ namespace Dossier_Registratie.ViewModels
                     Name = verzekeraar.Name,
                     Afkorting = verzekeraar.Afkorting,
                     HasLidnummer = verzekeraar.HasLidnummer,
+                    IsHerkomst = verzekeraar.IsHerkomst,
+                    IsVerzekeraar = verzekeraar.IsVerzekeraar,
                     IsDeleted = verzekeraar.IsDeleted,
                     BtnBrush = verzekeraar.BtnBrush,
                     AddressStreet = verzekeraar.AddressStreet,

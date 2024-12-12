@@ -18,8 +18,8 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Popup IsOpen="{Binding IsEditPriceComponentPopupOpen}" Placement="Center" StaysOpen="False" ScrollViewer.VerticalScrollBarVisibility="Auto" >
-            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="1025" Height="Auto" CornerRadius="5">
+        <Popup IsOpen="{Binding IsEditPriceComponentPopupOpen}" Placement="Center" StaysOpen="True" ScrollViewer.VerticalScrollBarVisibility="Auto" >
+            <Border BorderBrush="Black" BorderThickness="2" Background="White" Width="1025" Height="800" CornerRadius="5">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
                         <Label Content="Omschrijving: " Width="200"/>
@@ -44,17 +44,18 @@
                             <Button Content="Deselecteer alles" Command="{Binding DeselectAllCommand}" Width="100" Height="30" Margin="5 10 95 0"/>
 
                         </StackPanel>
-
-                        <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" SelectionMode="Multiple" Width="800" >
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Command="{Binding DataContext.VerzekeringCheckCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}" VerticalAlignment="Center" Margin="5,0" />
-                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" Width="800" Height="500">
+                            <ListBox ItemsSource="{Binding SelectedVerzekeraarsPriceComponents}" SelectionMode="Multiple" Width="800" Height="500">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Command="{Binding DataContext.VerzekeringCheckCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}" VerticalAlignment="Center" Margin="5,0" />
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="10,0" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            </ScrollViewer>
 
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">

@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -331,7 +330,7 @@ namespace Dossier_Registratie.ViewModels
 
             foreach (var verzekeraar in miscellaneousRepository.GetVerzekeraars())
             {
-                if (verzekeraar.IsVerzekeraar == true && verzekeraar.IsDeleted == false)
+                if (verzekeraar.IsHerkomst == true && verzekeraar.IsDeleted == false)
                 {
 
                     if (verzekeraar.Pakket == true) { verzekeraarNaam = verzekeraar.Name + " (Pakket)"; } else { verzekeraarNaam = verzekeraar.Name; }

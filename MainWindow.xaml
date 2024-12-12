@@ -322,7 +322,7 @@
                                 <StackPanel Orientation="Vertical">
                                     <Label x:Name="UitvaartLabel" Margin="25,0,0,0" Content="{Binding ErrorMessageUitvaartnummer}" FontStyle="Italic" FontSize="10" Foreground="Red"></Label>
                                     <CheckBox Content="Zoek in archief folder" IsChecked="{Binding SearchArchiveFolder}" Margin="25 0 0 0"/>
-                                    <CheckBox Content="Zoek in &lt; 2025 databases" IsChecked="{Binding SearchOldDatabaseNummer}" Margin="25, 0,0, 0"/>
+                                    <CheckBox Content="Zoek in oude databases" IsChecked="{Binding SearchOldDatabaseNummer}" Margin="25, 0,0, 0"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -503,11 +503,9 @@
                                 </DataGridTemplateColumn>
 
 
-                                <!-- Button for opening a selected record -->
                                 <DataGridTemplateColumn MinWidth="100" Header="Openen">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <!-- Openen button bound to OpenAchternaamCommand, with UitvaartNummer as CommandParameter -->
                                             <Button x:Name="OpenenAchternaam" 
                     Style="{StaticResource SecondaryButtons}" 
                     Content="Openen" 
