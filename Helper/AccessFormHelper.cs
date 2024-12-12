@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.Access;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace Dossier_Registratie.Helper
 {
@@ -10,7 +11,7 @@ namespace Dossier_Registratie.Helper
     {
         public static void OpenAccessFormWithFilter(string uitvaartnummer, string applicationPath)
         {
-            Application accessApp = new Application();
+            Microsoft.Office.Interop.Access.Application accessApp = new Microsoft.Office.Interop.Access.Application();
 
             try
             {
@@ -36,7 +37,10 @@ namespace Dossier_Registratie.Helper
             }
             catch (COMException comEx)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(comEx);
+                if (comEx.Message.Contains("Microsoft Access can't open the database"))
+                    MessageBox.Show("Sorry,de oude database kon niet worden geopend!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(comEx);
             }
             catch (Exception ex)
             {

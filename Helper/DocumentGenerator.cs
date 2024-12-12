@@ -1,7 +1,6 @@
 ﻿using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
-using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
