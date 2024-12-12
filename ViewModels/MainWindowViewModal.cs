@@ -851,6 +851,10 @@ namespace Dossier_Registratie.ViewModels
             Globals.DossierCompleted = false;
             Globals.UitvaartCode = string.Empty;
             Globals.UitvaartCodeGuid = Guid.Empty;
+            Globals.DossierCompleted = false;
+            Globals.NewDossierCreation = true;
+            Globals.Voorregeling = false;
+            Globals.UitvaartType = string.Empty;
 
             ZoekenUitvaartnummer = string.Empty;
             ZoekenAchternaam = string.Empty;

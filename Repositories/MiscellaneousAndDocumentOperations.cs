@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,28 @@ namespace Dossier_Registratie.Repositories
 {
     public class MiscellaneousAndDocumentOperations : RepositoryBase, IMiscellaneousAndDocumentOperations
     {
+        public string UitvaartType(Guid uitvaartGuid)
+        {
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT [uitvaartInfoType] FROM [OverledeneUitvaartInfo] WHERE uitvaartId = @uitvaartid";
+                command.Parameters.AddWithValue("@uitvaartid", uitvaartGuid);
+
+                var uitvaart = command.ExecuteScalar();
+
+                if (uitvaart == null)
+                {
+                    return "SearchingUitvaartTypeFailed";
+                }
+                else
+                {
+                    return uitvaart.ToString();
+                }
+            }
+        }
         public async Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnUitvaartNumberAsync(string searchNumber, string db)
         {
             List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
@@ -2653,41 +2676,42 @@ namespace Dossier_Registratie.Repositories
                         {
                             crematieInfo = new CrematieDocument()
                             {
-                                Aanvangstrijd = (DateTime)reader["uitvaartInfoDatumTijdUitvaart"],
-                                StartAula = (DateTime)reader["uitvaartInfoDienstDatumTijd"],
-                                StartKoffie = (DateTime)reader["uitvaartInfoDienstDatumTijd"],
-                                CrematieLocatie = reader["uitvaartInfoDienstLocatie"].ToString(),
-                                CrematieVoor = reader["uitvaartInfoType"].ToString(),
-                                OpdrachtgeverNaam = reader["Opdrachtgever"].ToString(),
-                                OpdrachtgeverGebDatum = (DateTime)reader["opdrachtgeverGeboortedatum"],
-                                OpdrachtgeverVoornamen = reader["opdrachtgeverVoornaamen"].ToString(),
-                                OpdrachtgeverStraat = reader["opdrachtgeverAdres"].ToString(),
-                                OpdrachtgeverPostcode = reader["opdrachtgeverPostcode"].ToString(),
-                                OpdrachtgeverRelatie = reader["opdrachtgeverRelatieTotOverledene"].ToString(),
-                                OpdrachtgeverTelefoon = reader["opdrachtgeverTelefoon"].ToString(),
-                                OpdrachtgeverPlaats = reader["opdrachtgeverWoonplaats"].ToString(),
-                                OpdrachtgeverEmail = reader["opdrachtgeverEmail"].ToString(),
-                                CrematieDatum = (DateTime)reader["uitvaartInfoDatumTijdUitvaart"],
-                                CrematieDossiernummer = reader["Uitvaartnummer"].ToString(),
-                                Uitvaartverzorger = reader["UitvaartLeider"].ToString(),
-                                OverledeneNaam = reader["overledeneAchternaam"].ToString(),
-                                OverledeneVoornaam = reader["overledeneVoornamen"].ToString(),
-                                OverledeneBurgStaat = reader["overledeneBurgelijkestaat"].ToString(),
-                                OverledeneStraat = reader["Straat"].ToString(),
-                                OverledeneGebDatum = (DateTime)reader["overledeneGeboortedatum"],
-                                OverledeneGebPlaats = reader["overledeneGeboorteplaats"].ToString(),
-                                OverledeneDatum = (DateTime)reader["overledenDatumTijd"],
-                                OverledenePlaats = reader["overledenPlaats"].ToString(),
-                                OverledenePostcode = reader["overledenePostcode"].ToString(),
-                                OverledeneLevensovertuiging = reader["overledeneLevensovertuiging"].ToString(),
-                                OverledeneLeeftijd = reader["overledeneLeeftijd"].ToString(),
-                                OverledeneWoonplaats = reader["overledeneWoonplaats"].ToString(),
-                                Asbestemming = reader["asbestemming"].ToString(),
-                                Consumpties = reader["uitvaartInfoDienstConsumpties"].ToString(),
-                                Herkomst = reader["overledenHerkomst"].ToString(),
-                                AulaNaam = reader["AulaNaam"].ToString(),
-                                AulaPersonen = (int)reader["AantalPersonen"]
+                                Aanvangstrijd = reader["uitvaartInfoDatumTijdUitvaart"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : default(DateTime),
+                                StartAula = reader["uitvaartInfoDienstDatumTijd"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDienstDatumTijd"] : default(DateTime),
+                                StartKoffie = reader["uitvaartInfoDienstDatumTijd"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDienstDatumTijd"] : default(DateTime),
+                                CrematieLocatie = reader["uitvaartInfoDienstLocatie"] as string,
+                                CrematieVoor = reader["uitvaartInfoType"] as string,
+                                OpdrachtgeverNaam = reader["Opdrachtgever"] as string,
+                                OpdrachtgeverGebDatum = reader["opdrachtgeverGeboortedatum"] != DBNull.Value ? (DateTime)reader["opdrachtgeverGeboortedatum"] : default(DateTime),
+                                OpdrachtgeverVoornamen = reader["opdrachtgeverVoornaamen"] as string,
+                                OpdrachtgeverStraat = reader["opdrachtgeverAdres"] as string,
+                                OpdrachtgeverPostcode = reader["opdrachtgeverPostcode"] as string,
+                                OpdrachtgeverRelatie = reader["opdrachtgeverRelatieTotOverledene"] as string,
+                                OpdrachtgeverTelefoon = reader["opdrachtgeverTelefoon"] as string,
+                                OpdrachtgeverPlaats = reader["opdrachtgeverWoonplaats"] as string,
+                                OpdrachtgeverEmail = reader["opdrachtgeverEmail"] as string,
+                                CrematieDatum = reader["uitvaartInfoDatumTijdUitvaart"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : default(DateTime),
+                                CrematieDossiernummer = reader["Uitvaartnummer"] as string,
+                                Uitvaartverzorger = reader["UitvaartLeider"] as string,
+                                OverledeneNaam = reader["overledeneAchternaam"] as string,
+                                OverledeneVoornaam = reader["overledeneVoornamen"] as string,
+                                OverledeneBurgStaat = reader["overledeneBurgelijkestaat"] as string,
+                                OverledeneStraat = reader["Straat"] as string,
+                                OverledeneGebDatum = reader["overledeneGeboortedatum"] != DBNull.Value ? (DateTime)reader["overledeneGeboortedatum"] : default(DateTime),
+                                OverledeneGebPlaats = reader["overledeneGeboorteplaats"] as string,
+                                OverledeneDatum = reader["overledenDatumTijd"] != DBNull.Value ? (DateTime)reader["overledenDatumTijd"] : default(DateTime),
+                                OverledenePlaats = reader["overledenPlaats"] as string,
+                                OverledenePostcode = reader["overledenePostcode"] as string,
+                                OverledeneLevensovertuiging = reader["overledeneLevensovertuiging"] as string,
+                                OverledeneLeeftijd = reader["overledeneLeeftijd"] as string,
+                                OverledeneWoonplaats = reader["overledeneWoonplaats"] as string,
+                                Asbestemming = reader["asbestemming"] as string,
+                                Consumpties = reader["uitvaartInfoDienstConsumpties"] as string,
+                                Herkomst = reader["overledenHerkomst"] as string,
+                                AulaNaam = reader["AulaNaam"] as string,
+                                AulaPersonen = reader["AantalPersonen"] != DBNull.Value ? (int)reader["AantalPersonen"] : 0 // Handle possible null for int
                             };
+
                         }
                     }
                 }
@@ -2737,25 +2761,25 @@ namespace Dossier_Registratie.Repositories
                         {
                             begrafenisInfo = new BegrafenisDocument()
                             {
-                                NaamOpdrachtgever = reader["Opdrachtgever"].ToString(),
-                                AdresOpdrachtgever = reader["opdrachtgeverAdres"].ToString(),
-                                DatumUitvaart = (DateTime)reader["uitvaartInfoDatumTijdUitvaart"],
-                                SoortGraf = reader["typeGraf"].ToString(),
-                                UitvaartLeider = reader["UitvaartLeider"].ToString(),
-                                UitvaartLeiderEmail = reader["UitvaartLeiderEmail"].ToString(),
-                                NaamOverledene = reader["overledeneAchternaam"].ToString(),
-                                VoornamenOverledene = reader["overledeneVoornamen"].ToString(),
-                                DatumGeboorte = ((DateTime)reader["overledeneGeboortedatum"]).Date,
-                                PlaatsGeboorte = reader["overledeneGeboorteplaats"].ToString(),
-                                DatumOverlijden = ((DateTime)reader["overledenDatumTijd"]).Date,
-                                PlaatsOverlijden = reader["overledenPlaats"].ToString(),
-                                BsnOverledene = reader["overledeneBSN"].ToString(),
-                                KistType = reader["uitvaartInfoDienstKist"].ToString(),
-                                AulaNaam = reader["AulaNaam"].ToString(),
-                                AantalPersonen = (int)reader["AantalPersonen"],
-                                UitvaartLeiderMobiel = reader["Mobiel"].ToString(),
-                                Begraafplaats = reader["BegraafplaatsLocatie"].ToString(),
-                                NrGraf = reader["BegraafplaatsGrafNr"].ToString()
+                                NaamOpdrachtgever = reader["Opdrachtgever"] as string,
+                                AdresOpdrachtgever = reader["opdrachtgeverAdres"] as string,
+                                DatumUitvaart = reader["uitvaartInfoDatumTijdUitvaart"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : default(DateTime),
+                                SoortGraf = reader["typeGraf"] as string,
+                                UitvaartLeider = reader["UitvaartLeider"] as string,
+                                UitvaartLeiderEmail = reader["UitvaartLeiderEmail"] as string,
+                                NaamOverledene = reader["overledeneAchternaam"] as string,
+                                VoornamenOverledene = reader["overledeneVoornamen"] as string,
+                                DatumGeboorte = reader["overledeneGeboortedatum"] != DBNull.Value ? (DateTime)reader["overledeneGeboortedatum"] : default(DateTime),
+                                PlaatsGeboorte = reader["overledeneGeboorteplaats"] as string,
+                                DatumOverlijden = reader["overledenDatumTijd"] != DBNull.Value ? (DateTime)reader["overledenDatumTijd"] : default(DateTime),
+                                PlaatsOverlijden = reader["overledenPlaats"] as string,
+                                BsnOverledene = reader["overledeneBSN"] as string,
+                                KistType = reader["uitvaartInfoDienstKist"] as string,
+                                AulaNaam = reader["AulaNaam"] as string,
+                                AantalPersonen = reader["AantalPersonen"] != DBNull.Value ? (int)reader["AantalPersonen"] : 0,  // Handle possible null for int
+                                UitvaartLeiderMobiel = reader["Mobiel"] as string,
+                                Begraafplaats = reader["BegraafplaatsLocatie"] as string,
+                                NrGraf = reader["BegraafplaatsGrafNr"] as string
                             };
                         }
                     }
@@ -2801,29 +2825,29 @@ namespace Dossier_Registratie.Repositories
                     {
                         terugmeldingInfo = new TerugmeldingDocument()
                         {
-                            Dossiernummer = reader["Uitvaartnummer"].ToString(),
-                            Uitvaartverzorger = reader["UitvaartLeider"].ToString(),
-                            UitvaartverzorgerEmail = reader["Email"].ToString(),
-                            Polisnummer = reader["verzekeringProperties"].ToString(),
-                            OverledeneAanhef = reader["overledeneAanhef"].ToString(),
-                            OverledeneNaam = reader["overledeneAchternaam"].ToString(),
-                            OverledeneVoornamen = reader["overledeneVoornamen"].ToString(),
-                            OverledeneAdres = reader["Adres"].ToString(),
-                            OverledenePostcode = reader["overledenePostcode"].ToString(),
-                            OverledeneWoonplaats = reader["overledeneWoonplaats"].ToString(),
-                            OverledeneGeborenTe = reader["overledeneGeboorteplaats"].ToString(),
-                            OverledeneOverledenOp = (DateTime)reader["OverledenOp"],
-                            OverledeneOverledenTe = reader["overledenAdres"].ToString(),
-                            OverledeneUitvaartDatum = (DateTime)reader["uitvaartInfoDatumTijdUitvaart"],
-                            OverledeneUitvaartTijd = (DateTime)reader["uitvaartInfoDatumTijdUitvaart"],
-                            OverledeneType = reader["uitvaartInfoType"].ToString(),
-                            OverledeneUitvaartTe = reader["uitvaartInfoUitvaartLocatie"].ToString(),
-                            OpdrachtgeverNaam = reader["opdrachtgeverAchternaam"].ToString(),
-                            OpdrachtgeverAdres = reader["AdresOpdrachtgever"].ToString(),
-                            OpdrachtgeverPostcode = reader["opdrachtgeverPostcode"].ToString(),
-                            OpdrachtgeverPlaats = reader["opdrachtgeverWoonplaats"].ToString(),
-                            OpdrachtgeverRelatie = reader["opdrachtgeverRelatieTotOverledene"].ToString(),
-                            OpdrachtgeverTelefoon = reader["opdrachtgeverTelefoon"].ToString()
+                            Dossiernummer = reader["Uitvaartnummer"] as string ?? string.Empty,
+                            Uitvaartverzorger = reader["UitvaartLeider"] as string ?? string.Empty,
+                            UitvaartverzorgerEmail = reader["Email"] as string ?? string.Empty,
+                            Polisnummer = reader["verzekeringProperties"] as string ?? string.Empty,
+                            OverledeneAanhef = reader["overledeneAanhef"] as string ?? string.Empty,
+                            OverledeneNaam = reader["overledeneAchternaam"] as string ?? string.Empty,
+                            OverledeneVoornamen = reader["overledeneVoornamen"] as string ?? string.Empty,
+                            OverledeneAdres = reader["Adres"] as string ?? string.Empty,
+                            OverledenePostcode = reader["overledenePostcode"] as string ?? string.Empty,
+                            OverledeneWoonplaats = reader["overledeneWoonplaats"] as string ?? string.Empty,
+                            OverledeneGeborenTe = reader["overledeneGeboorteplaats"] as string ?? string.Empty,
+                            OverledeneOverledenOp = reader["OverledenOp"] as DBNull != DBNull.Value ? (DateTime)reader["OverledenOp"] : DateTime.MinValue,
+                            OverledeneOverledenTe = reader["overledenAdres"] as string ?? string.Empty,
+                            OverledeneUitvaartDatum = reader["uitvaartInfoDatumTijdUitvaart"] as DBNull != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : DateTime.MinValue,
+                            OverledeneUitvaartTijd = reader["uitvaartInfoDatumTijdUitvaart"] as DBNull != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : DateTime.MinValue,
+                            OverledeneType = reader["uitvaartInfoType"] as string ?? string.Empty,
+                            OverledeneUitvaartTe = reader["uitvaartInfoUitvaartLocatie"] as string ?? string.Empty,
+                            OpdrachtgeverNaam = reader["opdrachtgeverAchternaam"] as string ?? string.Empty,
+                            OpdrachtgeverAdres = reader["AdresOpdrachtgever"] as string ?? string.Empty,
+                            OpdrachtgeverPostcode = reader["opdrachtgeverPostcode"] as string ?? string.Empty,
+                            OpdrachtgeverPlaats = reader["opdrachtgeverWoonplaats"] as string ?? string.Empty,
+                            OpdrachtgeverRelatie = reader["opdrachtgeverRelatieTotOverledene"] as string ?? string.Empty,
+                            OpdrachtgeverTelefoon = reader["opdrachtgeverTelefoon"] as string ?? string.Empty
                         };
                     }
                 }

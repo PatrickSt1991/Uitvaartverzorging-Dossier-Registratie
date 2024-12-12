@@ -5,6 +5,7 @@ using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -1195,6 +1196,18 @@ namespace Dossier_Registratie.Helper
             { "organisatieEmail", DataProvider.OrganizationEmail }
         };
 
+                if (doc == null)
+                {
+                    Debug.WriteLine("Document (doc) is null.");
+                    throw new Exception("Document is null.");
+                }
+
+                // Check if Bookmarks is null
+                if (doc.Bookmarks == null)
+                {
+                    Debug.WriteLine("Bookmarks collection is null.");
+                    throw new Exception("Bookmarks collection is null.");
+                }
                 // Update bookmarks in the document
                 foreach (var bookmark in bookmarks)
                 {

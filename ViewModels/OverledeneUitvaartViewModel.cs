@@ -232,7 +232,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSaveCommand(object obj)
         {
-
+            Globals.UitvaartType = OverledeneUitvaartModel.TypeDienst;
             if (!OverledeneUitvaartModel.HasData() || !OverledeneMisc.HasData())
             {
                 new ToastWindow("Niet alle verplichte velden zijn ingevuld!").Show();

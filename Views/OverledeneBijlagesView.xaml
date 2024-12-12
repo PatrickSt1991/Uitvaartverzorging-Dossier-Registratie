@@ -231,7 +231,7 @@
                 </ComboBoxItem>
             </ComboBox>
             <Label x:Name="lbl_DocumentOverdracht" Content="Overdacht" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
-            <ComboBox x:Name="cb_DocumentOpdrachtBegrafenis" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OpdrachtBegrafenisTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,220,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+            <ComboBox IsEnabled="{Binding IsBegrafenis}" x:Name="cb_DocumentOpdrachtBegrafenis" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OpdrachtBegrafenisTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,220,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
                 <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -264,7 +264,7 @@
                 </ComboBoxItem>
             </ComboBox>
             <Label x:Name="lbl_DocumentOpdrachtBedrafenis" Content="Opdracht Begrafenis" HorizontalAlignment="Left" Margin="10,230,0,0" VerticalAlignment="Top" Height="30" Width="194" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
-            <ComboBox x:Name="cb_DocumentOpdrachtCrematie" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OpdrachtCrematieTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,265,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
+            <ComboBox IsEnabled="{Binding IsCrematie}" x:Name="cb_DocumentOpdrachtCrematie" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.OpdrachtCrematieTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,265,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
                 <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>

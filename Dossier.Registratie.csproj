@@ -13,6 +13,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<ApplicationIcon>logo.ico</ApplicationIcon>
 		<PackageIcon>logo.png</PackageIcon>
+		<PlatformTarget>x86</PlatformTarget>
 	</PropertyGroup>
 
 	<Target Name="GenerateVersionXml" AfterTargets="Publish">

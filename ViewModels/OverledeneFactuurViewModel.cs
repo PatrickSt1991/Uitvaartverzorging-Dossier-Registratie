@@ -988,6 +988,8 @@ namespace Dossier_Registratie.ViewModels
                     var mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 6]];
                     mergeRanges.Add(mergeRange);
 
+
+                    priceComponent.Bedrag ??= 0m;
                     priceComponent.OrgBedrag ??= priceComponent.Bedrag;
 
                     totalAmount += (double)priceComponent.Bedrag;
