@@ -1508,15 +1508,13 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT FC1.[ComponentId], FC1.[Omschrijving], FC1.[Bedrag], FC1.[VerzekerdAantal], FC1.[Verzekering], " +
-                    "FC1.[IsDeleted], FC1.[SpecificCrematie], FC1.[SpecificBegrafenis], FC1.[SpecificPakket], FC1.VerzekeringJson " +
-                    "FROM [ConfigurationFactuurComponent] FC1 " +
-                    "LEFT JOIN [ConfigurationFactuurComponent] FC2 ON FC1.Id <> FC2.Id AND FC1.Omschrijving = FC2.Omschrijving " +
-                    "WHERE (EXISTS (SELECT 1 " +
-                    "FROM OPENJSON(FC1.VerzekeringJson) WITH (Id UNIQUEIDENTIFIER '$.Id') AS JsonIds " +
-                    "WHERE JsonIds.Id = @SelectedVerzekeraarId) OR FC1.VerzekeringJson = '') " +
-                    "AND FC2.Id IS NULL " +
-                    "ORDER BY FC1.SortOrder, FC1.IsDeleted ASC";
+                command.CommandText = "SELECT [ComponentId], [Omschrijving], [Bedrag], [VerzekerdAantal], [Verzekering], " +
+                    "[IsDeleted], [SpecificCrematie], [SpecificBegrafenis], [SpecificPakket], VerzekeringJson " +
+                    "FROM [ConfigurationFactuurComponent] " +
+                    "WHERE(EXISTS(SELECT 1 " +
+                    "FROM OPENJSON(VerzekeringJson) WITH(Id UNIQUEIDENTIFIER '$.Id') AS JsonIds " +
+                    "WHERE JsonIds.Id = @SelectedVerzekeraarId)) " +
+                    "ORDER BY SortOrder, IsDeleted ASC";
                 command.Parameters.AddWithValue("@SelectedVerzekeraarId", SqlDbType.UniqueIdentifier).Value = verzekeraarId;
                 using (var reader = command.ExecuteReader())
                 {

@@ -807,6 +807,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteOpenPopupCommand(object obj)
         {
+            Debug.WriteLine("click");
             IsPopupVisible = true;
         }
         public void ExecuteOpenKostenbegrotingCommand(object obj)
