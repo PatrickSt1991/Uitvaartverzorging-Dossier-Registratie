@@ -24,9 +24,6 @@ namespace Dossier_Registratie.ViewModels
         Task createFactuurTask = null;
         Task createVerenigingFactuurTask = null;
 
-        string kostenbegrotingUrl = string.Empty;
-        SqlConnection conn = new(DataProvider.ConnectionString);
-
         public ICommand ExportBloemenToExcel { get; }
         public ICommand ExportStenenToExcel { get; }
         public ICommand ExportUrnSieradenToExcel { get; }
@@ -539,28 +536,51 @@ namespace Dossier_Registratie.ViewModels
                 {
 
                     case "Opdrachtgever":
-                        factuurUrl = await CreateFactuurFile(factuurSuffix);
-                        createFactuurTask = Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, factuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, string.Empty));
-                        break;
+                        try
+                        {
+                            factuurUrl = await CreateFactuurFile(factuurSuffix);
+                            await Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, factuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, string.Empty));
 
+                            Process.Start(new ProcessStartInfo{ FileName = factuurUrl,UseShellExecute = true });
+                        }
+                        catch (Exception ex)
+                        {
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        }
+
+                        break;
                     case "Opdrachtgever & Vereniging":
-                        factuurUrl = await CreateFactuurFile(string.Empty);
-                        createFactuurTask = Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, factuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, "Opdrachtgever"));
+                        try
+                        {
+                            factuurUrl = await CreateFactuurFile(string.Empty);
+                            await Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, factuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, "Opdrachtgever"));
 
-                        verenigingFactuurUrl = await CreateFactuurFile("A");
-                        createVerenigingFactuurTask = Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, verenigingFactuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, "Vereniging"));
+                            verenigingFactuurUrl = await CreateFactuurFile("A");
+                            await Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, verenigingFactuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, "Vereniging"));
+
+                            Process.Start(new ProcessStartInfo { FileName = factuurUrl, UseShellExecute = true });
+                            Process.Start(new ProcessStartInfo { FileName = verenigingFactuurUrl, UseShellExecute = true });
+                        }
+                        catch(Exception ex)
+                        {
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        }
+
                         break;
-
                     case "Vereniging":
-                        verenigingFactuurUrl = await CreateFactuurFile("A");
-                        createVerenigingFactuurTask = Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, verenigingFactuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, string.Empty));
+                        try
+                        {
+                            verenigingFactuurUrl = await CreateFactuurFile("A");
+                            await Task.Run(() => FillFactuurFile(GenerateSelectedFactuur.UitvaartId, verenigingFactuurUrl, GenerateSelectedFactuur.KostenbegrotingJson, GenerateSelectedFactuur.OverledeneVerzekeringJson, string.Empty));
+                            Process.Start(new ProcessStartInfo { FileName = verenigingFactuurUrl, UseShellExecute = true });
+                        }
+                        catch(Exception ex)
+                        {
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                        }
+
                         break;
                 }
-
-                if (createFactuurTask != null)
-                    await createFactuurTask;
-                if (createVerenigingFactuurTask != null)
-                    await createVerenigingFactuurTask;
 
                 var factuurJsonObject = new JObject();
                 if (!string.IsNullOrEmpty(factuurUrl))
@@ -649,17 +669,20 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteExportBloemenToExcel(object obj)
         {
-            Excel.Application excelApp = new Excel.Application();
-            Excel.Workbook workbook = excelApp.Workbooks.Add();
-            Excel.Worksheet worksheet = workbook.Worksheets[1];
+            Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
+            Excel.Worksheet worksheet = null;
 
             try
             {
+                excelApp = new Excel.Application();
+                excelApp.DisplayAlerts = false;
+                workbook = excelApp.Workbooks.Add();
+                worksheet = (Excel.Worksheet?)workbook.Worksheets[1];
+
                 int headerIndex = 1;
                 foreach (var column in GetBloemenColumns())
-                {
-                    worksheet.Cells[1, headerIndex++].Value = column.Header;
-                }
+                    ((Excel.Range)worksheet.Cells[1, headerIndex++]).Value2 = column.Header;
 
                 int rowIndex = 2;
                 foreach (var item in FilteredBloemenFinancieel)
@@ -668,20 +691,26 @@ namespace Dossier_Registratie.ViewModels
                     {
                         int columnIndex = 1;
                         foreach (var column in GetBloemenColumns())
-                        {
-                            worksheet.Cells[rowIndex, columnIndex++].Value = column.GetValue(item);
-                        }
-                        rowIndex++;
+                            ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = column.GetValue(item);
+                        
+                            rowIndex++;
                     }
                 }
                 excelApp.Visible = true;
                 workbook.Activate();
+            }catch(Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
+                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+
+                worksheet = null;
+                workbook = null;
+                excelApp = null;
             }
         }
         private static IEnumerable<DataGridColumnBloemen> GetBloemenColumns()
@@ -706,17 +735,20 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteExportUrnSieradenToExcel(object obj)
         {
-            Excel.Application excelApp = new Excel.Application();
-            Excel.Workbook workbook = excelApp.Workbooks.Add();
-            Excel.Worksheet worksheet = workbook.Worksheets[1];
+            Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
+            Excel.Worksheet worksheet = null;
 
             try
             {
+                excelApp = new Excel.Application();
+                excelApp.DisplayAlerts = false;
+                workbook = excelApp.Workbooks.Add();
+                worksheet = (Excel.Worksheet)workbook.Worksheets[1];
+
                 int headerIndex = 1;
                 foreach (var column in GetUrnSieradenColumns())
-                {
-                    worksheet.Cells[1, headerIndex++].Value = column.Header;
-                }
+                    ((Excel.Range)worksheet.Cells[1, headerIndex++]).Value2 = column.Header;
 
                 int rowIndex = 2;
                 foreach (var item in FilteredUrnSieradenFinancieel)
@@ -725,20 +757,27 @@ namespace Dossier_Registratie.ViewModels
                     {
                         int columnIndex = 1;
                         foreach (var column in GetUrnSieradenColumns())
-                        {
-                            worksheet.Cells[rowIndex, columnIndex++].Value = column.GetValue(item);
-                        }
+                            ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = column.GetValue(item);
+
                         rowIndex++;
                     }
                 }
                 excelApp.Visible = true;
                 workbook.Activate();
             }
+            catch (Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+            }
             finally
             {
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
+                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+
+                worksheet = null;
+                workbook = null;
+                excelApp = null;
             }
         }
         private static IEnumerable<DataGridColumnsUrnSieraden> GetUrnSieradenColumns()
@@ -762,22 +801,25 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteExportSteenhouwerijToExcel(object obj)
         {
-            Excel.Application excelApp = new Excel.Application();
-            Excel.Workbook workbook = excelApp.Workbooks.Add();
-            Excel.Worksheet worksheet = workbook.Worksheets[1];
+            Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
+            Excel.Worksheet worksheet = null;
 
             try
             {
+                // Initialize Excel application
+                excelApp = new Excel.Application();
+                excelApp.DisplayAlerts = false;
+                workbook = excelApp.Workbooks.Add();
+                worksheet = (Excel.Worksheet)workbook.Worksheets[1];
                 int headerIndex = 1;
 
-                worksheet.Cells[1, 1].Value = "Steenhouwerij";
+                ((Excel.Range)worksheet.Cells[1, 1]).Value2 = "Steenhouwerij";
 
                 // Set the first header
                 int headerRowIndex = 2;
                 foreach (var column in GetSteenColumns())
-                {
-                    worksheet.Cells[headerRowIndex, headerIndex++].Value = column.Header;
-                }
+                    ((Excel.Range)worksheet.Cells[headerRowIndex, headerIndex++]).Value2 = column.Header;
 
                 int rowIndex = headerRowIndex + 1;
 
@@ -788,23 +830,20 @@ namespace Dossier_Registratie.ViewModels
                     {
                         int columnIndex = 1;
                         foreach (var column in GetSteenColumns())
-                        {
-                            worksheet.Cells[rowIndex, columnIndex++].Value = column.GetValue(item);
-                        }
+                            ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = column.GetValue(item);
+
                         rowIndex++;
                     }
                 }
 
                 rowIndex += 3;
 
-                worksheet.Cells[rowIndex, 1].Value = "Urnen & Sieraden";
+                ((Excel.Range)worksheet.Cells[rowIndex, 1]).Value2 = "Urnen & Sieraden";
 
                 int secondHeaderIndex = 1;
                 int secondHeaderRowIndex = rowIndex + 1;
                 foreach (var column in GetUrnSieradenColumns())
-                {
-                    worksheet.Cells[secondHeaderRowIndex, secondHeaderIndex++].Value = column.Header;
-                }
+                    ((Excel.Range)worksheet.Cells[secondHeaderRowIndex, secondHeaderIndex++]).Value2 = column.Header;
 
                 rowIndex = secondHeaderRowIndex + 1;
 
@@ -815,9 +854,8 @@ namespace Dossier_Registratie.ViewModels
                     {
                         int secondColumnIndex = 1;
                         foreach (var column in GetUrnSieradenColumns())
-                        {
-                            worksheet.Cells[rowIndex, secondColumnIndex++].Value = column.GetValue(item);
-                        }
+                            ((Excel.Range)worksheet.Cells[rowIndex, secondColumnIndex++]).Value2 = column.GetValue(item);
+
                         rowIndex++;
                     }
                 }
@@ -826,12 +864,21 @@ namespace Dossier_Registratie.ViewModels
                 excelApp.Visible = true;
                 workbook.Activate();
             }
+            catch (Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+            }
             finally
             {
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
+                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+
+                worksheet = null;
+                workbook = null;
+                excelApp = null;
             }
+
         }
         private static IEnumerable<DataGridColumnSteenhouwerij> GetSteenColumns()
         {
@@ -855,17 +902,20 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteExportWerkbonnenToExcel(object obj)
         {
-            Excel.Application excelApp = new Excel.Application();
-            Excel.Workbook workbook = excelApp.Workbooks.Add();
-            Excel.Worksheet worksheet = workbook.Worksheets[1];
+            Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
+            Excel.Worksheet worksheet = null;
 
             try
             {
+                // Initialize Excel application
+                excelApp = new Excel.Application();
+                excelApp.DisplayAlerts = false;
+                workbook = excelApp.Workbooks.Add();
+                worksheet = (Excel.Worksheet)workbook.Worksheets[1];
                 int headerIndex = 1;
                 foreach (var column in GetWerkbonColumns())
-                {
-                    worksheet.Cells[1, headerIndex++].Value = column.Header;
-                }
+                    ((Excel.Range)worksheet.Cells[1, headerIndex++]).Value2 = column.Header;
 
                 int rowIndex = 2;
                 foreach (var item in FilteredWerkbonnenData)
@@ -876,21 +926,15 @@ namespace Dossier_Registratie.ViewModels
                         if (column.Header == "Bedrag")
                         {
                             if ((item.RouwAuto || item.VolgAuto) && (item.Condoleance || item.Overbrengen))
-                            {
-                                worksheet.Cells[rowIndex, columnIndex++].Value = "37,50";
-                            }
+                                ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = "37,50";
                             else if (item.RouwAuto || item.VolgAuto)
-                            {
-                                worksheet.Cells[rowIndex, columnIndex++].Value = "30";
-                            }
+                                ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = "30";
                             else if (item.Condoleance || item.Overbrengen)
-                            {
-                                worksheet.Cells[rowIndex, columnIndex++].Value = "7,50";
-                            }
+                                ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = "7,50";
                         }
                         else
                         {
-                            worksheet.Cells[rowIndex, columnIndex++].Value = column.GetValue(item);
+                            ((Excel.Range)worksheet.Cells[rowIndex, columnIndex++]).Value2 = column.GetValue(item);
                         }
                     }
                     rowIndex++;
@@ -898,19 +942,27 @@ namespace Dossier_Registratie.ViewModels
                 excelApp.Visible = true;
                 workbook.Activate();
             }
+            catch (Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+            }
             finally
             {
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
+                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+
+                worksheet = null;
+                workbook = null;
+                excelApp = null;
             }
+
         }
         private static IEnumerable<DataGridColumnWerkbonnen> GetWerkbonColumns()
         {
             yield return new DataGridColumnWerkbonnen { Header = "Uitvaart Nummer", PropertyName = "UitvaartNummer" };
             yield return new DataGridColumnWerkbonnen { Header = "Werknemer", PropertyName = "WerknemerName" };
             yield return new DataGridColumnWerkbonnen { Header = "Rouwauto", PropertyName = "RouwAuto" };
-            //yield return new DataGridColumnWerkbonnen { Header = "Rouwdienaar", PropertyName = "RouwDienaar" }; deprecated
             yield return new DataGridColumnWerkbonnen { Header = "Laatste verzorging", PropertyName = "LaatsteVerzorging" };
             yield return new DataGridColumnWerkbonnen { Header = "Volgauto", PropertyName = "VolgAuto" };
             yield return new DataGridColumnWerkbonnen { Header = "Overbrengen", PropertyName = "Overbrengen" };
@@ -1172,6 +1224,7 @@ namespace Dossier_Registratie.ViewModels
             int excelRow = 22;
 
             Excel.Application excelApp = new Excel.Application();
+            excelApp.DisplayAlerts = false;
             excelApp.Visible = false;
             Excel.Workbook workbook = excelApp.Workbooks.Open(factuurUrl);
             Excel.Worksheet worksheet = (Excel.Worksheet)workbook.ActiveSheet;
@@ -1244,7 +1297,7 @@ namespace Dossier_Registratie.ViewModels
                 worksheet.Cells[20, 2] = "Onderstaande kosten zijn gemaakt voor de uitvaart van " + GenerateSelectedFactuur.OverledeneAanhef + " " + GenerateSelectedFactuur.OverledeneVoornamen + " " + GenerateSelectedFactuur.OverledeneAchternaam + " (overleden " + GenerateSelectedFactuur.OverledeneOpDatum.ToString()[..10] + ").";
             }
 
-            Excel.Range overledenCell = worksheet.Cells[20, 4];
+            Excel.Range overledenCell = (Excel.Range)worksheet.Cells[20, 4];
 
             int aanhefLength = GenerateSelectedFactuur.OverledeneAanhef.Length;
             int voornamenLength = GenerateSelectedFactuur.OverledeneVoornamen.Length;
@@ -1296,40 +1349,52 @@ namespace Dossier_Registratie.ViewModels
                 {
                     if ((priceComponent.Bedrag.HasValue && priceComponent.Bedrag.Value != 0m) || priceComponent.PrintTrue)
                     {
+                        // Set the value for the first cell in the row
                         Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
-                        cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0" ? priceComponent.Omschrijving : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
+                        string cellValue = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0"
+                            ? priceComponent.Omschrijving
+                            : $"{priceComponent.Aantal}  {priceComponent.Omschrijving}";
+                        cell.Value = cellValue;
 
-                        if (cell.Value != null && cell.Value.ToString().Length > 98)
+                        // Adjust row height based on the length of the text
+                        if (cellValue.Length > 98)
                         {
-                            worksheet.Rows[excelRow].RowHeight = 36;
+                            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 36;
                             cell.WrapText = true;
                         }
                         else
                         {
-                            worksheet.Rows[excelRow].RowHeight = 15;
+                            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 15;
                             cell.WrapText = false;
                         }
+
+                        // Align text to the left
                         cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
-                        Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
-                        // Use a null check for FactuurBedrag and assign default value if needed
+                        // Assign value for the currency cell
+                        Excel.Range currencyCellComp = (Excel.Range)worksheet.Cells[excelRow, 8];
                         currencyCellComp.Value = priceComponent.FactuurBedrag.HasValue && priceComponent.FactuurBedrag != decimal.Zero
                             ? priceComponent.FactuurBedrag.Value
-                            : priceComponent.Bedrag ?? 0m;  // Use the null-coalescing operator to ensure a valid value
+                            : priceComponent.Bedrag ?? 0m;  // Default to 0 if both are null
 
+                        // Apply number format
                         currencyCellComp.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
-
                         currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
+                        // Merge the cells from columns 2 to 7 in the current row
                         Excel.Range mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
                         mergeRange.Merge();
                         mergeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
+                        // Insert a new row for the next price component
                         excelRow++;
-                        worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                        Excel.Range newRow = (Excel.Range)worksheet.Rows[excelRow];
+                        newRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
 
+                        // Update the subtotal amount
                         subtotalAmount += (double)(priceComponent.Bedrag ?? 0m);  // Safe handling for null
                     }
+
                 }
             }
             else if (splitFactuur == "Opdrachtgever")
@@ -1342,37 +1407,53 @@ namespace Dossier_Registratie.ViewModels
                 {
                     if (string.IsNullOrEmpty(priceComponent.Verzekerd) && priceComponent.Bedrag != 0m)
                     {
+                        // Set the value for the first cell in the row
                         Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
-                        cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) ? priceComponent.Omschrijving : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
+                        string cellValue = string.IsNullOrEmpty(priceComponent.Aantal)
+                            ? priceComponent.Omschrijving
+                            : $"{priceComponent.Aantal}  {priceComponent.Omschrijving}";
+                        cell.Value = cellValue;
 
-                        if (cell.Value != null && cell.Value.ToString().Length > 98)
+                        // Adjust row height based on the length of the text
+                        if (cellValue.Length > 98)
                         {
-                            worksheet.Rows[excelRow].RowHeight = 36;
+                            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 36;
                             cell.WrapText = true;
                         }
                         else
                         {
-                            worksheet.Rows[excelRow].RowHeight = 15;
+                            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 15;
                             cell.WrapText = false;
                         }
+
+                        // Align text to the left
                         cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
-                        Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
+                        // Set the value for the currency cell in column 8
+                        Excel.Range currencyCellComp = (Excel.Range)worksheet.Cells[excelRow, 8];
                         currencyCellComp.Value = priceComponent.Bedrag;
 
+                        // Apply number format
                         currencyCellComp.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
+                        currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
+                        // Set the value for the Verzekerd column (column 9)
                         worksheet.Cells[excelRow, 9] = priceComponent.Verzekerd;
 
+                        // Merge cells from columns 2 to 7 in the current row
                         Excel.Range mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
                         mergeRange.Merge();
                         mergeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
+                        // Insert a new row for the next price component
                         excelRow++;
-                        worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                        Excel.Range newRow = (Excel.Range)worksheet.Rows[excelRow];
+                        newRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
 
+                        // Update the subtotal amount
                         subtotalAmount += (double)priceComponent.Bedrag;
                     }
+
                 }
             }
             else if (splitFactuur == "Vereniging")
@@ -1404,154 +1485,134 @@ namespace Dossier_Registratie.ViewModels
                 {
                     if (!string.IsNullOrEmpty(priceComponent.Verzekerd))
                     {
+                        // Set the value for the first cell in the row
                         Excel.Range cell = (Excel.Range)worksheet.Cells[excelRow, 2];
-                        cell.Value = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0"
-                        ? priceComponent.Omschrijving
-                        : priceComponent.Aantal + "  " + priceComponent.Omschrijving;
+                        string cellValue = string.IsNullOrEmpty(priceComponent.Aantal) || priceComponent.Aantal == "0"
+                            ? priceComponent.Omschrijving
+                            : $"{priceComponent.Aantal}  {priceComponent.Omschrijving}";
+                        cell.Value = cellValue;
 
-                        if (cell.Value != null && cell.Value.ToString().Length > 98)
+                        // Adjust row height based on the length of the text
+                        if (cellValue.Length > 98)
                         {
-                            worksheet.Rows[excelRow].RowHeight = 36;
+                            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 36;
                             cell.WrapText = true;
                         }
                         else
                         {
-                            worksheet.Rows[excelRow].RowHeight = 15;
+                            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 15;
                             cell.WrapText = false;
                         }
+
+                        // Align text to the left
                         cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
-                        Excel.Range currencyCellComp = worksheet.Cells[excelRow, 8];
+                        // Set the value for the currency cell in column 8
+                        Excel.Range currencyCellComp = (Excel.Range)worksheet.Cells[excelRow, 8];
                         currencyCellComp.Value = priceComponent.Bedrag;
                         currencyCellComp.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
                         currencyCellComp.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
-
+                        // Set the value for the Verzekerd column (column 9)
                         worksheet.Cells[excelRow, 9] = priceComponent.Verzekerd;
 
+                        // Merge cells from columns 2 to 7 in the current row
                         Excel.Range mergeRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
                         mergeRange.Merge();
                         mergeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
+                        // Insert a new row for the next price component
                         excelRow++;
-                        worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                        Excel.Range newRow = (Excel.Range)worksheet.Rows[excelRow];
+                        newRow.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
 
+                        // Update the subtotal amount
                         subtotalAmount += (double)priceComponent.Bedrag;
                     }
+
                 }
             }
 
             excelRow++;
-            worksheet.Rows[excelRow].RowHeight = 15;
-            worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+            // Insert a row and set row height
+            ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = 15;
+            ((Excel.Range)worksheet.Rows[excelRow]).Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+
+            // Create and format the "Totaal diensten:" row
             Excel.Range mergeTotalRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
             mergeTotalRange.Merge();
             mergeTotalRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
-
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlThin;
-
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].TintAndShade = 0;
-            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
-
+            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+            mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = mergeTotalRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
             mergeTotalRange.Value = "Totaal diensten:";
 
-            Excel.Range currencyCellTotal = worksheet.Cells[excelRow, 8];
+            // Format the currency cell
+            Excel.Range currencyCellTotal = (Excel.Range)worksheet.Cells[excelRow, 8];
             currencyCellTotal.Value = subtotalAmount;
             currencyCellTotal.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlThin;
-
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeBottom].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeBottom].TintAndShade = 0;
-            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
-
+            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+            currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = currencyCellTotal.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
 
             excelRow++;
-            worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+            ((Excel.Range)worksheet.Rows[excelRow]).Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+
+            // Create and format the "In mindering" row
             Excel.Range mergeMinderingRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 8]];
             mergeMinderingRange.Merge();
             mergeMinderingRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlThick;
-
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].TintAndShade = 0;
-            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThick;
-
+            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+            mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = mergeMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThick;
             mergeMinderingRange.Value = "In mindering";
-            worksheet.Rows[excelRow].Font.Bold = true;
+            ((Excel.Range)worksheet.Rows[excelRow]).Font.Bold = true;
 
+            // Process the polis verzekering list
             var polisVerzekeringList = JsonConvert.DeserializeObject<List<PolisVerzekering>>(GenerateSelectedFactuur.OverledeneVerzekeringJson);
-
             foreach (var verzekering in polisVerzekeringList.Where(v => v.PolisInfoList.Any(p => p.PolisNr != null || p.PolisBedrag != null)))
             {
                 foreach (var polis in verzekering.PolisInfoList.Where(p => p.PolisNr != null || p.PolisBedrag != null))
                 {
                     excelRow++;
-                    worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                    ((Excel.Range)worksheet.Rows[excelRow]).Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+
+                    // Merge and format the verzekering and polis row
                     Excel.Range mergeVerzekeringRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
                     mergeVerzekeringRange.Merge();
                     mergeVerzekeringRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-
                     mergeVerzekeringRange.Value = verzekering.VerzekeringName + " " + polis.PolisNr;
 
-                    Excel.Range currencyCell = worksheet.Cells[excelRow, 8];
+                    // Set currency format for polis
+                    Excel.Range currencyCell = (Excel.Range)worksheet.Cells[excelRow, 8];
                     currencyCell.Value = polis.PolisBedrag;
                     currencyCell.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
-                    ;
+
+                    // Accumulate the "mindering" amount
                     if (double.TryParse(polis.PolisBedrag, out double doubleValue))
-                    {
                         minderingAmount += doubleValue;
-                    }
                 }
             }
 
             excelRow++;
-            worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+            ((Excel.Range)worksheet.Rows[excelRow]).Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+
+            // Create and format the "Totaal in mindering:" row
             Excel.Range mergeTotaalMinderingRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
             mergeTotaalMinderingRange.Merge();
             mergeTotaalMinderingRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
             mergeTotaalMinderingRange.Value = "Totaal in mindering:";
+            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
 
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlThin;
-
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].TintAndShade = 0;
-            mergeTotaalMinderingRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
-
-            Excel.Range currencyTotaalMinderingCell = worksheet.Cells[excelRow, 8];
+            // Set currency for total mindering
+            Excel.Range currencyTotaalMinderingCell = (Excel.Range)worksheet.Cells[excelRow, 8];
             currencyTotaalMinderingCell.Value = minderingAmount;
             currencyTotaalMinderingCell.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].TintAndShade = 0;
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlThin;
-
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeBottom].ColorIndex = Excel.XlColorIndex.xlColorIndexAutomatic;
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeBottom].TintAndShade = 0;
-            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
-
+            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+            currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = currencyTotaalMinderingCell.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThin;
 
             excelRow++;
-            worksheet.Rows[excelRow].Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+            ((Excel.Range)worksheet.Rows[excelRow]).Insert(Excel.XlInsertShiftDirection.xlShiftDown);
 
+            // Create and format the final "Totaal" row
             Excel.Range mergeTotaalRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 7]];
             mergeTotaalRange.Merge();
             mergeTotaalRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
@@ -1559,17 +1620,18 @@ namespace Dossier_Registratie.ViewModels
 
             totalAmount = subtotalAmount - minderingAmount;
 
-            Excel.Range currencyTotaalCell = worksheet.Cells[excelRow, 8];
+            Excel.Range currencyTotaalCell = (Excel.Range)worksheet.Cells[excelRow, 8];
             currencyTotaalCell.Value = totalAmount;
             currencyTotaalCell.NumberFormat = "_-€ * #,##0.00_-;_-€ * #,##0.00_-;_-€ * \"-\"??_-;_-@_-";
-            worksheet.Rows[excelRow].Font.Bold = true;
+            ((Excel.Range)worksheet.Rows[excelRow]).Font.Bold = true;
 
+            // Disclaimer Row
             excelRow++;
             Excel.Range mergeDisclaimerRange = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow, 8]];
             mergeDisclaimerRange.Merge();
             mergeDisclaimerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
             mergeDisclaimerRange.Value = "Wij danken u voor het door u gestelde vertrouwen.";
-            worksheet.Rows[excelRow].Font.Bold = true;
+            ((Excel.Range)worksheet.Rows[excelRow]).Font.Bold = true;
 
             excelRow++;
             Excel.Range mergeDisclaimerPart2Range = worksheet.Range[worksheet.Cells[excelRow, 2], worksheet.Cells[excelRow + 4, 8]];
@@ -1580,8 +1642,7 @@ namespace Dossier_Registratie.ViewModels
                                             Betalingen dienen binnen 14 dagen te zijn voldaan.
                                             Algemene leveringsvoorwaarden gedeponeerd bij de Kamer van Koophandel Noord Nederland onder nummer 02062153";
 
-            excelRow++;
-
+            // Set the print area for the worksheet
             worksheet.PageSetup.PrintArea = $"A1:H{excelRow + 7}";
             worksheet.HPageBreaks.Add(worksheet.Rows[excelRow + 7]);
 
@@ -1592,20 +1653,11 @@ namespace Dossier_Registratie.ViewModels
             worksheet.PageSetup.FitToPagesWide = false;
             worksheet.PageSetup.FitToPagesTall = false;
 
-
-
-
             // AutoFit the column width
             //worksheet.Cells.EntireColumn.AutoFit();
 
             workbook.Close(true);
             excelApp.Quit();
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = factuurUrl,
-                UseShellExecute = true
-            });
 
             return Task.CompletedTask;
         }
