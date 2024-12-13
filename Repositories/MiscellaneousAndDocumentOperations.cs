@@ -84,7 +84,8 @@ namespace Dossier_Registratie.Repositories
 
                 string tableName = db == "2024" ? "[OudeEeftingData].[dbo].[data2024]" : "[OudeEeftingData].[dbo].[data2023]";
 
-                command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+                command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum,
+                                        [1 Aanhef] as aanhef, [1 Voornamen] as voornamen, [1 Tussenvoegsel] as tussenvoegsel 
                                         FROM {tableName} 
                                         WHERE [1 Naam overledene] LIKE '%' + @achternaam + '%'";
 
@@ -107,6 +108,9 @@ namespace Dossier_Registratie.Repositories
                             PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
                             OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
                             OverledeneGeboortedatum = reader["geboortedatum"] != DBNull.Value ? (DateTime)reader["geboortedatum"] : DateTime.MinValue,
+                            OverledeneAanhef = reader["aanhef"].ToString() ?? string.Empty,
+                            OverledeneVoornaam = reader["voornamen"].ToString() ?? string.Empty,
+                            OverledeneTussenvoegsel = reader["tussenvoegsel"].ToString() ?? string.Empty,
                             PersoneelId = Guid.Empty,
                             DossierCompleted = true
                         });
