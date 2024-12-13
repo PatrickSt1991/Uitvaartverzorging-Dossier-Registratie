@@ -2327,7 +2327,11 @@ namespace Dossier_Registratie.Repositories
                 {
                     await connection.OpenAsync(); // Open the connection asynchronously
                     command.Connection = connection;
-                    command.CommandText = "SELECT OUI.uitvaartInfoDatumTijdUitvaart, CONCAT(OPG.overledeneAanhef, ' ', OPG.overledeneAchternaam) AS Naam, uitvaartInfoDienstLocatie, " +
+                    command.CommandText = "SELECT OUI.uitvaartInfoDatumTijdUitvaart ," +
+                                            "CASE WHEN opg.overledeneTussenvoegsel IS NULL " +
+                                            "THEN TRIM(OPG.overledeneAchternaam) " +
+                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "END AS Naam, uitvaartInfoDienstLocatie, " +
                                             "uitvaartInfoDienstDatumTijd, uitvaartInfoDienstDatumTijd, " +
                                             "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverAchternaam) ELSE CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                             "(CASE WHEN OOG.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer, ', ', OOG.opdrachtgeverPostcode, ', ', OOG.opdrachtgeverWoonplaats) ELSE CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer, TRIM(OOG.opdrachtgeverHuisnummerToevoeging),', ', OOG.opdrachtgeverPostcode, ', ', OOG.opdrachtgeverWoonplaats) END) as Adres, " +
@@ -2378,7 +2382,9 @@ namespace Dossier_Registratie.Repositories
                     await connection.OpenAsync();
                     command.Connection = connection;
                     command.CommandText = "SELECT OUI.uitvaartInfoType, OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoUitvaartLocatie, CONCAT(Initialen,' ',Achternaam) as UitvaartLeider, " +
-                                            "CP.Email, OPG.overledeneAchternaam, OPG.overledeneVoornamen, OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, OPG.overledeneWoonplaats, " +
+                                            "CP.Email, CASE WHEN opg.overledeneTussenvoegsel IS NULL THEN OPG.overledeneAchternaam " +
+                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "END AS overledeneAchternaam, OPG.overledeneVoornamen, OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, OPG.overledeneWoonplaats, " +
                                             "OOI.overledenDatumTijd, OOI.overledenGemeente, OOI.overledenPlaats " +
                                             "FROM OverledenePersoonsGegevens OPG " +
                                             "INNER JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.uitvaartId " +
@@ -2431,7 +2437,10 @@ namespace Dossier_Registratie.Repositories
                 {
                     await connection.OpenAsync();
                     command.Connection = connection;
-                    command.CommandText = "SELECT OUI.[uitvaartInfoType], OUI.uitvaartInfoDatumTijdUitvaart, OPG.overledeneAchternaam, " +
+                    command.CommandText = "SELECT OUI.[uitvaartInfoType], OUI.uitvaartInfoDatumTijdUitvaart, " +
+                                            "CASE WHEN OPG.overledeneTussenvoegsel IS NULL " +
+                                            "THEN TRIM(OPG.overledeneAchternaam) " +
+                                            "ELSE TRIM(CONCAT(OPG.overledeneTussenvoegsel, ' ', OPG.overledeneAchternaam)) END AS overledeneAchternaam, " +
                                             "CASE WHEN OPG.overledeneTussenvoegsel IS NOT NULL AND LEN(OPG.overledeneTussenvoegsel) > 0 THEN CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneTussenvoegsel,' ',OPG.overledeneAchternaam) ELSE " +
                                             "CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneAchternaam) END AS volledigeNaam, " +
                                             "OOI.overledenDatumTijd, CV.verzekeraarNaam, OO.opbaringVerzorgingJson " +
@@ -2481,7 +2490,7 @@ namespace Dossier_Registratie.Repositories
                 await connection.OpenAsync().ConfigureAwait(false);
                 command.Connection = connection;
                 command.CommandText = "SELECT uitvaartInfoType, overledeneAanhef, overledeneVoornamen, " +
-                                      "CASE WHEN overledeneTussenvoegsel IS NOT NULL THEN CONCAT(overledeneTussenvoegsel, ' ', overledeneAchternaam) ELSE overledeneAchternaam END AS Achternaam, " +
+                                      "CASE WHEN overledeneTussenvoegsel IS NOT NULL THEN TRIM(CONCAT(overledeneTussenvoegsel, ' ', overledeneAchternaam)) ELSE TRIM(overledeneAchternaam) END AS Achternaam, " +
                                       "CASE WHEN CP.Tussenvoegsel IS NOT NULL THEN CONCAT(CP.Voornaam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) ELSE CONCAT(CP.Voornaam, ' ', CP.Achternaam) END AS PersoneelName " +
                                       "FROM OverledeneUitvaartInfo OUI " +
                                       "INNER JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
@@ -2581,10 +2590,15 @@ namespace Dossier_Registratie.Repositories
                 {
                     await connection.OpenAsync(); // Open the connection asynchronously
                     command.Connection = connection;
-                    command.CommandText = "SELECT OUL.Uitvaartnummer, OPG.overledeneAchternaam, OPG.overledeneVoornamen, OPG.overledeneGeboortedatum, " +
+                    command.CommandText = "SELECT OUL.Uitvaartnummer, " +
+                                            "CASE WHEN opg.overledeneTussenvoegsel IS NULL " +
+                                            "THEN TRIM(OPG.overledeneAchternaam) " +
+                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "END AS overledeneAchternaam, " +
+                                            "OPG.overledeneVoornamen, OPG.overledeneGeboortedatum, " +
                                             "OOI.overledenDatumTijd, OO.opbaringLocatie, OOI.overledenPlaats, OOG.opdrachtgeverRelatieTotOverledene, " +
                                             "OO.opbaringSieradenOmschrijving, OO.opbaringSieradenRetour," +
-                                            "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAchternaam, ', ') ELSE CONCAT(OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam, ', ') END) as Opdrachtgever, " +
+                                            "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(TRIM(OOG.opdrachtgeverAchternaam), ', ') ELSE CONCAT(TRIM(OOG.opdrachtgeverTussenvoegsel), ' ', TRIM(OOG.opdrachtgeverAchternaam), ', ') END) as Opdrachtgever, " +
                                             "opdrachtgeverVoornaamen," +
                                             "(CASE WHEN opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) ELSE CONCAT(opdrachtgeverStraat, ' ', TRIM(opdrachtgeverHuisnummer), ' ', TRIM(opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever " +
                                             "FROM OverledenePersoonsGegevens OPG " +
@@ -2649,7 +2663,11 @@ namespace Dossier_Registratie.Repositories
                                             "(CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN OO.opdrachtgeverAchternaam ELSE CONCAT(OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                             "OO.opdrachtgeverVoornaamen, CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging) as opdrachtgeverAdres, " +
                                             "OUI.uitvaartInfoDatumTijdUitvaart, OUL.Uitvaartnummer, CONCAT(Achternaam, ' ', CP.Initialen) as UitvaartLeider, " +
-                                            "OPG.overledeneAchternaam, OPG.overledeneVoornamen, OEI.overledeneBurgelijkestaat, " +
+                                            "CASE WHEN opg.overledeneTussenvoegsel IS NULL " +
+                                            "THEN TRIM(OPG.overledeneAchternaam) " +
+                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "END AS overledeneAchternaam, " +
+                                            "OPG.overledeneVoornamen, OEI.overledeneBurgelijkestaat, " +
                                             "(CASE WHEN OPG.overledeneHuisnummerToevoeging IS NULL THEN CONCAT(OPG.overledeneAdres, ' ', OPG.overledeneHuisnummer) ELSE CONCAT(OPG.overledeneAdres, ' ', OPG.overledeneHuisnummer, ' ', OPG.overledeneHuisnummerToevoeging) END) as Straat, " +
                                             "OPG.overledenePostcode, OEI.overledeneLevensovertuiging, OPG.overledeneLeeftijd, OPG.overledeneWoonplaats, " +
                                             "OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, " +
@@ -2737,7 +2755,11 @@ namespace Dossier_Registratie.Repositories
                                             "CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging, ', ', OO.opdrachtgeverPostcode, ', ', OO.opdrachtgeverWoonplaats) as opdrachtgeverAdres, " +
                                             "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoDatumTijdUitvaart, OA.typeGraf, " +
                                             "CONCAT(Initialen, ' ', Achternaam) as UitvaartLeider, CP.Email as UitvaartLeiderEmail, " +
-                                            "OPG.overledeneAchternaam, OPG.overledeneVoornamen, " +
+                                            "CASE WHEN opg.overledeneTussenvoegsel IS NULL " +
+                                            "THEN TRIM(OPG.overledeneAchternaam) " +
+                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "END AS overledeneAchternaam, " +
+                                            "OPG.overledeneVoornamen, " +
                                             "OPG.overledeneGeboortedatum, OPG.overledeneGeboorteplaats, " +
                                             "OOI.overledenDatumTijd, OOI.overledenPlaats, OPG.overledeneBSN, " +
                                             "uitvaartInfoDienstKist, OUIM.AulaNaam, OUIM.AantalPersonen, CP.Mobiel, " +
@@ -2803,7 +2825,11 @@ namespace Dossier_Registratie.Repositories
                 command.CommandText = "SELECT OUL.Uitvaartnummer, CONCAT(Achternaam,' ',CP.Initialen) as UitvaartLeider, CP.Email, OVI.verzekeringProperties, OPG.overledeneAanhef, OPG.overledeneAchternaam, OPG.overledeneVoornamen, " +
                                       "(CASE WHEN OPG.overledeneHuisnummerToevoeging IS NULL THEN CONCAT(OPG.overledeneAdres, ' ', OPG.overledeneHuisnummer) ELSE CONCAT(OPG.overledeneAdres, ' ', TRIM(OPG.overledeneHuisnummer), ' ', TRIM(OPG.overledeneHuisnummerToevoeging)) END) as Adres, " +
                                       "OPG.overledenePostcode, OPG.overledeneWoonplaats, OPG.overledeneGeboorteplaats, OOI.overledenDatumTijd as OverledenOp, OOI.overledenAdres, OUI.uitvaartInfoDatumTijdUitvaart, " +
-                                      "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoType, OUI.uitvaartInfoUitvaartLocatie, OO.opdrachtgeverAchternaam, " +
+                                      "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoType, OUI.uitvaartInfoUitvaartLocatie, " +
+                                      "CASE WHEN oo.opdrachtgeverTussenvoegsel IS NULL " +
+                                      "THEN TRIM(oo.opdrachtgeverTussenvoegsel) " +
+                                      "ELSE TRIM(CONCAT(oo.opdrachtgeverTussenvoegsel, ' ', oo.opdrachtgeverAchternaam)) " +
+                                      "END AS opdrachtgeverAchternaam," +
                                       "(CASE WHEN OO.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer) ELSE CONCAT(OO.opdrachtgeverStraat, ' ', TRIM(OO.opdrachtgeverHuisnummer), ' ', TRIM(OO.opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever, " +
                                       "OO.opdrachtgeverPostcode, OO.opdrachtgeverWoonplaats, OO.opdrachtgeverRelatieTotOverledene, OO.opdrachtgeverTelefoon " +
                                       "FROM OverledeneOpdrachtgever OO " +
@@ -2909,7 +2935,12 @@ namespace Dossier_Registratie.Repositories
                 {
                     await connection.OpenAsync(); // Open the connection asynchronously
                     command.Connection = connection;
-                    command.CommandText = "SELECT OPG.overledeneAanhef, OPG.overledeneAchternaam, OPG.overledeneVoornamen, OPG.overledeneGeboorteplaats, OPG.overledeneGeboortedatum, " +
+                    command.CommandText = "SELECT OPG.overledeneAanhef, " +
+                                            "CASE WHEN opg.overledeneTussenvoegsel IS NULL " +
+                                            "THEN TRIM(OPG.overledeneAchternaam) " +
+                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "END AS overledeneAchternaam," +
+                                            " OPG.overledeneVoornamen, OPG.overledeneGeboorteplaats, OPG.overledeneGeboortedatum, " +
                                             "(CASE WHEN (OPG.overledeneHuisnummerToevoeging IS NOT NULL) THEN CONCAT(OPG.overledeneAdres, ' ', trim(OPG.overledeneHuisnummer), ' ', OPG.overledeneHuisnummerToevoeging) " +
                                             "ELSE CONCAT(OPG.overledeneAdres, ' ', trim(OPG.overledeneHuisnummer)) END) AS OverledenAdres," +
                                             "OPG.overledenePostcode, OPG.overledeneWoonplaats, OPG.overledeneBSN, OOI.overledenDatumTijd," +
