@@ -45,7 +45,7 @@ namespace Dossier_Registratie.ViewModels
         private string _applicationUnavailable;
         private string _versionLabel = "Dossier Registratie - Versie: 3";
         private string _copyrightText = "© " + DateTime.Now.ToString("yyyy") + " - Patrick Stel - All Rights Reserved - " +
-                                "Licensed under GNU Affero General Public License v3.0 ";
+                                "Licensed under GNU Affero General Public License v3.0 - .NET " + Environment.Version.ToString();
 
         private int _selectedIndex;
 
