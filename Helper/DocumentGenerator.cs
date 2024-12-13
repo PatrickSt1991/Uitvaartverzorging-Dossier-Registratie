@@ -455,12 +455,12 @@ namespace Dossier_Registratie.Helper
         public async Task<OverledeneBijlagesModel> UpdateDocument(DocumentDocument document)
         {
             OverledeneBijlagesModel bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
+            Microsoft.Office.Interop.Word.Application app = null;
             Document doc = null;
 
             try
             {
-                app = new Application();
+                app = new Microsoft.Office.Interop.Word.Application();
                 doc = app.Documents.Open(document.DestinationFile);
 
                 string OrganizationAdress = $"{DataProvider.OrganizationStreet} {DataProvider.OrganizationHouseNumber}, {DataProvider.OrganizationZipcode} {DataProvider.OrganizationCity}";
