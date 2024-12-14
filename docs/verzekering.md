@@ -1,11 +1,11 @@
 ---
-title: Dossier aanmaken - Verzekeringen
+title: 3. Verzekeringen
 layout: default
 nav_enabled: true
-nav_order: 5
+nav_order: 6
 ---
 
-# Dossier aanmaken - Verzekeringen
+# Verzekeringen
 Per overledene kunnen er vijf verzekeraars gekozen worden, per gekozen verzekeringen komen er standaard vijf polissen, in gevallen dat dit niet genoeg is dan maak dan gebruik van de knop Polis Toevoegen.
 
 <p float="left">
