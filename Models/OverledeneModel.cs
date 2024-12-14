@@ -67,7 +67,7 @@ namespace Dossier_Registratie.Models
             set { _dossierCompleted = value; OnPropertyChanged(nameof(DossierCompleted)); }
         }
     }
-    public class OverledeneUitvaartleiderModel : ViewModelBase, IDataErrorInfo
+    public class OverledeneUitvaartleiderModel : ViewModelBase
     {
         private Guid _uitvaartId;
         private Guid _personeelId;
@@ -94,22 +94,6 @@ namespace Dossier_Registratie.Models
             get { return _uitvaartNummer; }
             set { _uitvaartNummer = value; OnPropertyChanged(nameof(Uitvaartnummer)); }
         }
-        public string Error => string.Empty;
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = null;
-                if (PersoneelId == Guid.Empty ||
-                    (PersoneelId == null) ||
-                    (string.IsNullOrEmpty(Uitvaartnummer)))
-                {
-                    result = "Validatie velden niet correct.";
-                }
-                return result;
-
-            }
-        }
         public bool DossierCompleted
         {
             get { return _dossierCompleted; }
@@ -122,7 +106,7 @@ namespace Dossier_Registratie.Models
                    !string.IsNullOrEmpty(Uitvaartnummer);
         }
     }
-    public class OverledenePersoonsGegevensModel : ViewModelBase, IDataErrorInfo
+    public class OverledenePersoonsGegevensModel : ViewModelBase
     {
         private Guid _id;
         private Guid _uitvaartId;
@@ -239,30 +223,6 @@ namespace Dossier_Registratie.Models
             get { return _overledeneVoorregeling; }
             set { _overledeneVoorregeling = value; OnPropertyChanged(nameof(OverledeneVoorregeling)); }
         }
-        public string Error => string.Empty;
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = null;
-                if (string.IsNullOrEmpty(OverledeneBSN) ||
-                    (string.IsNullOrEmpty(OverledeneAanhef)) ||
-                    (string.IsNullOrEmpty(OverledeneAchternaam)) ||
-                    (string.IsNullOrEmpty(OverledeneVoornamen)) ||
-                    (DateTime.MinValue == OverledeneGeboortedatum) ||
-                    (string.IsNullOrEmpty(OverledeneGeboorteplaats)) ||
-                    (string.IsNullOrEmpty(OverledeneLeeftijd)) ||
-                    (string.IsNullOrEmpty(OverledeneAdres)) ||
-                    (string.IsNullOrEmpty(OverledeneHuisnummer)) ||
-                    (string.IsNullOrEmpty(OverledenePostcode)) ||
-                    (string.IsNullOrEmpty(OverledeneWoonplaats)) ||
-                    (string.IsNullOrEmpty(OverledeneGemeente)))
-                {
-                    result = "Validatie velden niet correct.";
-                }
-                return result;
-            }
-        }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(OverledeneAchternaam) &&
@@ -279,7 +239,7 @@ namespace Dossier_Registratie.Models
                    !string.IsNullOrEmpty(OverledeneWoonplaats);
         }
     }
-    public class OverledeneOverlijdenInfoModel : ViewModelBase, IDataErrorInfo
+    public class OverledeneOverlijdenInfoModel : ViewModelBase
     {
         private Guid _id;
         private Guid _uitvaartId;
@@ -424,25 +384,6 @@ namespace Dossier_Registratie.Models
         {
             get { return _overledenSchouwarts; }
             set { _overledenSchouwarts = value; OnPropertyChanged(nameof(OverledenSchouwarts)); }
-        }
-        public string Error => string.Empty;
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = null;
-                if (DateTime.MinValue == OverledenDatumTijd ||
-                    string.IsNullOrEmpty(OverledenAdres) ||
-                    string.IsNullOrEmpty(OverledenHuisnummer) ||
-                    string.IsNullOrEmpty(OverledenPlaats) ||
-                    string.IsNullOrEmpty(OverledenGemeente) ||
-                    string.IsNullOrEmpty(OverledenLijkvinding) ||
-                    OverledenHerkomst == Guid.Empty)
-                {
-                    result = "Validatie velden niet correct.";
-                }
-                return result;
-            }
         }
         public bool HasData()
         {

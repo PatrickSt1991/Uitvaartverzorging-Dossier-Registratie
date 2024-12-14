@@ -84,7 +84,7 @@ namespace Dossier_Registratie.Models
             return true;
         }
     }
-    public class OverledeneUitvaartModel : ViewModelBase, IDataErrorInfo
+    public class OverledeneUitvaartModel : ViewModelBase
     {
         private Guid _id;
         private Guid _uitvaartId;
@@ -335,24 +335,6 @@ namespace Dossier_Registratie.Models
             set { _tijdBlokken = value; OnPropertyChanged(nameof(TijdBlokken)); }
         }
 
-        public string Error => string.Empty;
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = null;
-                if (string.IsNullOrEmpty(TypeDienst) ||
-                    (DateTime.MinValue == DatumTijdUitvaart) ||
-                    (string.IsNullOrEmpty(LocatieUitvaart)) ||
-                    (string.IsNullOrEmpty(LocatieDienst)) ||
-                    (DateTime.MinValue == DatumTijdDienst) ||
-                    (string.IsNullOrEmpty(BeslotenDienst)))
-                {
-                    result = "Validatie velden niet correct.";
-                }
-                return result;
-            }
-        }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(TypeDienst) &&

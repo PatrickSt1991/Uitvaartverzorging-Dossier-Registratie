@@ -6,6 +6,27 @@ using System.Windows.Data;
 
 namespace Dossier_Registratie.Helper
 {
+    public class YearToDisplayConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int year)
+                return year == 1 ? "Voorregelingen" : year.ToString();
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string str && str == "Voorregelingen")
+                return 1;
+
+            if (int.TryParse(value.ToString(), out int year))
+                return year;
+
+            return null;
+        }
+    }
     public class NullableIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
