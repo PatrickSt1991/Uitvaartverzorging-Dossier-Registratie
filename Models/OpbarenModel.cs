@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace Dossier_Registratie.Models
 {
-    public class OverledeneOpbarenModel : ViewModelBase, IDataErrorInfo
+    public class OverledeneOpbarenModel : ViewModelBase
     {
         private Guid _opbaringId;
         private Guid _uitvaartId;
@@ -102,25 +102,6 @@ namespace Dossier_Registratie.Models
         {
             get { return _opbaringExtraInfo; }
             set { _opbaringExtraInfo = value; OnPropertyChanged(nameof(OpbaringExtraInfo)); }
-        }
-        public string Error => string.Empty;
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = null;
-                if (string.IsNullOrEmpty(OpbaringLocatie) ||
-                    (OpbaringKistId == Guid.Empty) ||
-                    (OpbaringKistLengte == Guid.Empty) ||
-                    (string.IsNullOrEmpty(OpbaringVerzorgingJson)) ||
-                    (string.IsNullOrEmpty(OpbaringKoeling)) ||
-                    (string.IsNullOrEmpty(OpbaringSieraden)) ||
-                    (string.IsNullOrEmpty(OpbaringSieradenRetour)))
-                {
-                    result = "Validatie velden niet correct.";
-                }
-                return result;
-            }
         }
         public bool HasData()
         {

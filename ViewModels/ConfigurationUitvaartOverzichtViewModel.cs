@@ -4,6 +4,7 @@ using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using static Dossier_Registratie.ViewModels.OverledeneViewModel;
@@ -38,7 +39,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 _selectedVoorregeling = value;
                 OnPropertyChanged(nameof(SelectedVoorregeling));
-                //UpdateUitvaartItemsVoorregeling(SelectedVoorregeling);
                 ApplyFilters();
             }
         }
@@ -49,7 +49,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 _selectedVoornaam = value;
                 OnPropertyChanged(nameof(SelectedVoornaam));
-                //UpdateUitvaartItemsVoornaam(SelectedVoornaam);
                 ApplyFilters();
             }
         }
@@ -90,18 +89,20 @@ namespace Dossier_Registratie.ViewModels
             LoadAllItems();
             //GetAllUitvaartItems();
         }
-        private void LoadAllItems()
+        public static ConfigurationUitvaartOverzichtViewModel OverzichtInstance { get; } = new();
+        public void LoadAllItems()
         {
             _allItems = miscellaneousRepository.GetUitvaartOverzicht().ToList();
             var currentYear = DateTime.Now.Year;
             AvailableYears = new ObservableCollection<int>(
-            _allItems.Where(item => item.DatumOverlijden.HasValue)
-                     .Select(item => item.DatumOverlijden.Value.Year)
+            _allItems.Where(item => item.DatumOverlijden.HasValue || item.Voorregeling)
+                     .Select(item => item.DatumOverlijden.HasValue ? item.DatumOverlijden.Value.Year : DateTime.MinValue.Year)
                      .Distinct()
                      .OrderByDescending(year => year)
             );
-
+            
             SelectedYear = currentYear;
+           
             ApplyFilters();
         }
         public void ApplyFilters()
@@ -109,14 +110,17 @@ namespace Dossier_Registratie.ViewModels
             UitvaartOverzicht.Clear();
 
             var filteredItems = _allItems.Where(item =>
-                (item.DatumOverlijden?.Year == SelectedYear || item.DatumOverlijden?.Year == SelectedYear - 1) &&
-                (string.IsNullOrEmpty(SelectedVoorregeling) || item.Voorregeling && item.VoornaamOverledene.StartsWith(SelectedVoorregeling, StringComparison.OrdinalIgnoreCase)) &&
-                (string.IsNullOrEmpty(SelectedVoornaam) || item.VoornaamOverledene.StartsWith(SelectedVoornaam, StringComparison.OrdinalIgnoreCase)) &&
-                (string.IsNullOrEmpty(SearchAchternaam) || item.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
-            );
+                ((item.DatumOverlijden?.Year == SelectedYear || item.DatumOverlijden?.Year == SelectedYear - 1) || (item.DatumOverlijden == null))
+                && (string.IsNullOrEmpty(SelectedVoorregeling) || item.VoornaamOverledene.StartsWith(SelectedVoorregeling, StringComparison.OrdinalIgnoreCase))
+                && (string.IsNullOrEmpty(SelectedVoornaam) || item.VoornaamOverledene.StartsWith(SelectedVoornaam, StringComparison.OrdinalIgnoreCase))
+                &&(string.IsNullOrEmpty(SearchAchternaam) || item.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
 
-            foreach (var item in filteredItems)
+
+            // Assuming filteredItems is already created
+            foreach (var item in filteredItems.OrderByDescending(item => item.DatumOverlijden ?? DateTime.MinValue)) 
                 UitvaartOverzicht.Add(item);
+
         }
         public void GetAllUitvaartItems()
         {
@@ -181,6 +185,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteClearFilterCommand(object obj)
         {
+            SelectedYear = DateTime.Now.Year;
             SelectedVoorregeling = string.Empty;
             SelectedVoornaam = string.Empty;
             SearchAchternaam = string.Empty;

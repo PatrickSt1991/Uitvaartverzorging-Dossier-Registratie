@@ -6,6 +6,52 @@ using System.Windows.Data;
 
 namespace Dossier_Registratie.Helper
 {
+    public class DatumOverlijdenConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values.Length < 2) return null;
+
+            var datumOverlijden = values[0] as DateTime?;
+            var voorregeling = values[1] as bool?;
+
+            if (voorregeling == true)
+                return "Voorregeling";
+
+            if (datumOverlijden == null && voorregeling == false)
+                return "Onbekend";
+
+            return datumOverlijden.Value.ToString("dd-MM-yyyy");
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            // ConvertBack not needed
+            throw new NotImplementedException();
+        }
+    }
+
+    public class YearToDisplayConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int year)
+                return year == 1 ? "Voorregelingen" : year.ToString();
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string str && str == "Voorregelingen")
+                return 1;
+
+            if (int.TryParse(value.ToString(), out int year))
+                return year;
+
+            return null;
+        }
+    }
     public class NullableIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -140,6 +140,7 @@
             HorizontalAlignment="Left" 
             Margin="162,194,0,0"
             Width="300" 
+            Language="nl-NL"
             Height="31" 
             FontSize="16" 
             FontFamily="Arial" 

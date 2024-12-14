@@ -298,7 +298,7 @@ namespace Dossier_Registratie.Models
         }
 
     }
-    public class OpdrachtgeverPersoonsGegevensModel : ViewModelBase, IDataErrorInfo
+    public class OpdrachtgeverPersoonsGegevensModel : ViewModelBase
     {
         private Guid _id;
         private Guid _uitvaartId;
@@ -433,27 +433,6 @@ namespace Dossier_Registratie.Models
         {
             get { return _opdrachtgeverEmail; }
             set { _opdrachtgeverEmail = value; OnPropertyChanged(nameof(OpdrachtgeverEmail)); }
-        }
-        public string Error => string.Empty;
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = null;
-                if (string.IsNullOrEmpty(OpdrachtgeverAanhef) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverAchternaam)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverVoornaamen)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverStraat)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverHuisnummer)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverPostcode)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverWoonplaats)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverTelefoon)) ||
-                    (string.IsNullOrEmpty(OpdrachtgeverRelatieTotOverledene)))
-                {
-                    result = "Validatie velden niet correct.";
-                }
-                return result;
-            }
         }
     }
 }
