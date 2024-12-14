@@ -7,14 +7,13 @@
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels" 
              xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              xmlns:local="clr-namespace:Dossier_Registratie.Views"
+             DataContext="{x:Static viewmodels:ConfigurationUitvaartOverzichtViewModel.OverzichtInstance}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Loaded="ReloadOverzicht">
-    <UserControl.DataContext>
-        <viewmodels:ConfigurationUitvaartOverzichtViewModel/>
-    </UserControl.DataContext>
     <UserControl.Resources>
         <helper:YearToDisplayConverter x:Key="YearToDisplayConverter"/>
+        <helper:DatumOverlijdenConverter x:Key="DatumOverlijdenConverter"/>
     </UserControl.Resources>
     <Border Background="#ffffff">
         <Grid>
@@ -94,7 +93,10 @@
                     <DataGridTextColumn Header="Voornamen" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding VoornaamOverledene}"/>
                     <DataGridTextColumn Header="Datum uitvaart" IsReadOnly="True" CanUserResize="False" Width="*">
                         <DataGridTextColumn.Binding>
-                            <Binding Path="DatumOverlijden" StringFormat="dd-MM-yyyy" />
+                            <MultiBinding Converter="{StaticResource DatumOverlijdenConverter}">
+                                <Binding Path="DatumOverlijden" />
+                                <Binding Path="Voorregeling" />
+                            </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Uitvaartleider" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding UitvaartLeider}"/>

@@ -1,4 +1,5 @@
 ﻿using Dossier_Registratie.ViewModels;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,8 +20,7 @@ namespace Dossier_Registratie.Views
         private void ReloadOverzicht(object sender, RoutedEventArgs e)
         {
             var viewModel = (ConfigurationUitvaartOverzichtViewModel)this.DataContext;
-            //viewModel.GetAllUitvaartItems();
-            viewModel.ApplyFilters();
+            viewModel.LoadAllItems();
         }
     }
 }

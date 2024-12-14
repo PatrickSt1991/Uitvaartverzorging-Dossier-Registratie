@@ -89,7 +89,8 @@ namespace Dossier_Registratie.ViewModels
             LoadAllItems();
             //GetAllUitvaartItems();
         }
-        private void LoadAllItems()
+        public static ConfigurationUitvaartOverzichtViewModel OverzichtInstance { get; } = new();
+        public void LoadAllItems()
         {
             _allItems = miscellaneousRepository.GetUitvaartOverzicht().ToList();
             var currentYear = DateTime.Now.Year;
@@ -109,7 +110,7 @@ namespace Dossier_Registratie.ViewModels
             UitvaartOverzicht.Clear();
 
             var filteredItems = _allItems.Where(item =>
-                ((item.DatumOverlijden?.Year == SelectedYear || item.DatumOverlijden?.Year == SelectedYear - 1) || (item.DatumOverlijden == null && item.Voorregeling))
+                ((item.DatumOverlijden?.Year == SelectedYear || item.DatumOverlijden?.Year == SelectedYear - 1) || (item.DatumOverlijden == null))
                 && (string.IsNullOrEmpty(SelectedVoorregeling) || item.VoornaamOverledene.StartsWith(SelectedVoorregeling, StringComparison.OrdinalIgnoreCase))
                 && (string.IsNullOrEmpty(SelectedVoornaam) || item.VoornaamOverledene.StartsWith(SelectedVoornaam, StringComparison.OrdinalIgnoreCase))
                 &&(string.IsNullOrEmpty(SearchAchternaam) || item.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
