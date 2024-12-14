@@ -1,11 +1,11 @@
 ---
-title: Dossier aanmaken - Extra Info
+title: 2. Extra Info
 layout: default
 nav_enabled: true
 nav_order: 5
 ---
 
-# Dossier aanmaken - Extra Info
+# Extra Info
 Op het moment dat je rechtsboven in op Volgende klik wordt de data die je hebt ingegeven direct opgeslagen in de database en ga je door naar het volgende scherm.
 
 <p float="left">
