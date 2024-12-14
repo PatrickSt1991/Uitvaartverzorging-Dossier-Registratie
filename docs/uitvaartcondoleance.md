@@ -1,11 +1,11 @@
 ---
-title: Dossier aanmaken - Uitvaart / Condoleance & Asbestemming
+title: 5. Uitvaart / Condoleance & Asbestemming
 layout: default
 nav_enabled: true
 nav_order: 8
 ---
 
-# Dossier aanmaken - Verzekeringen
+# Uitvaart / Condoleance & Asbestemming
 Vul de gevraagde informatie in
 
 <p float="left">
