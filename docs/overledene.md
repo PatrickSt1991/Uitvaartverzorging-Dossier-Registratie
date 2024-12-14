@@ -1,8 +1,8 @@
 ---
 title: Dossier aanmaken
 layout: default
-parent: Handleiding
-nav_order: 1
+nav_enabled: true
+nav_order: 4
 ---
 
 # Dossier aanmaken
