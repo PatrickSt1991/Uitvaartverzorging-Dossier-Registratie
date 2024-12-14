@@ -21,6 +21,15 @@ Bij het werken met dossiers zijn er een aantal veelgebruikte actieknoppen die u 
 <a href="./images/startmenu.png" target="_blank">
   <img src="./images/startmenu.png" alt="Screenshot of the application" width="45%" />
 </a>
+
+<p float="left">
+  <a href="./images/zoekenAchternaam.png" target="_blank">
+    <img src="./images/zoekenAchternaam.png" alt="Screenshot of the application" width="25%" />
+  </a>
+  <a href="./images/zoekenUitvaartnummer.png" target="_blank">
+    <img src="./images/zoekenUitvaartnummer.png" alt="Screenshot of the application" width="25%" />
+  </a>
+</p>
   
 ### Ondersteuning
 Voor verdere vragen kunt u altijd de ingebouwde helpfunctie gebruiken via Help in het hoofdmenu of contact opnemen met ons ondersteuningsteam via de GitHub pagina.
