@@ -36,3 +36,5 @@ Heb je perongeluk de verkeerde verzekeraar gekozen dan kun je op “Verzekering 
 Wanneer je de kostenbegroting gemaakt hebt zoals je wilt klik je op “Genereer Excel”. Je krijgt vervolgens een Excel bestand die voorzien is van alle gegevens zoals je hebt ingevuld is en voldoet aan de standaard.
 
 Mocht je een aanpassing willen doen in de kostenbegroting dan kan je dat doen in de applicatie en vervolgens klik je weer op Genereer Excel, de oude wordt dan verwijderd en een nieuwe klaargezet.
+
+***Let op:*** De aanpassingen die je doet textueel of toevoegingen o.i.d. geld alleen voor de kostenbegroting van het nummer waar je aan werkt, wil je aan algemene aanpassing ga dan via Beheer -> Prijs componenten
