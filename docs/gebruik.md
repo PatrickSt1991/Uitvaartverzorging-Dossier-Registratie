@@ -1,5 +1,5 @@
 ---
-title: In gebruikname
+title: 0. In gebruikname
 layout: default
 nav_enabled: true
 nav_order: 3
@@ -17,6 +17,7 @@ Bij het werken met dossiers zijn er een aantal veelgebruikte actieknoppen die u 
   - Alle uitvaarten: Toont alle uitvaarten die aanwwezig zijn in het systeem.
   - Uitvaart agenda: Toont alle uitvaarten van de komende 7 dagen.
   - Beheer: Opent de beheer afdeling.
+  - Help: Meldingen aanmaken voor aanpassingen of verbeteringen in het systeem.
 
 <a href="./images/startmenu.png" target="_blank">
   <img src="./images/startmenu.png" alt="Screenshot of the application" width="45%" />
@@ -30,6 +31,26 @@ Bij het werken met dossiers zijn er een aantal veelgebruikte actieknoppen die u 
     <img src="./images/zoekenUitvaartnummer.png" alt="Screenshot of the application" width="25%" />
   </a>
 </p>
+
+### Alle uitvaarten
+<a href="./images/uitvaartOverzicht.png" target="_blank">
+  <img src="./images/uitvaartOverzicht.png" alt="Screenshot of the application" width="45%" />
+</a>
+
+### Agenda
+<a href="./images/agenda.png" target="_blank">
+  <img src="./images/agenda.png" alt="Screenshot of the application" width="45%" />
+</a>
+
+### Notificatie
+<a href="./images/notificatie.png" target="_blank">
+  <img src="./images/notificatie.png" alt="Screenshot of the application" width="45%" />
+</a>
+
+### Help
+<a href="./images/help.png" target="_blank">
+  <img src="./images/help.png" alt="Screenshot of the application" width="45%" />
+</a>
   
 ### Ondersteuning
 Voor verdere vragen kunt u altijd de ingebouwde helpfunctie gebruiken via Help in het hoofdmenu of contact opnemen met ons ondersteuningsteam via de GitHub pagina.
