@@ -2831,7 +2831,7 @@ namespace Dossier_Registratie.Repositories
                                       "OPG.overledenePostcode, OPG.overledeneWoonplaats, OPG.overledeneGeboorteplaats, OOI.overledenDatumTijd as OverledenOp, OOI.overledenAdres, OUI.uitvaartInfoDatumTijdUitvaart, " +
                                       "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoType, OUI.uitvaartInfoUitvaartLocatie, " +
                                       "CASE WHEN oo.opdrachtgeverTussenvoegsel IS NULL " +
-                                      "THEN TRIM(oo.opdrachtgeverTussenvoegsel) " +
+                                      "THEN TRIM(oo.opdrachtgeverAchternaam) " +
                                       "ELSE TRIM(CONCAT(oo.opdrachtgeverTussenvoegsel, ' ', oo.opdrachtgeverAchternaam)) " +
                                       "END AS opdrachtgeverAchternaam," +
                                       "(CASE WHEN OO.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer) ELSE CONCAT(OO.opdrachtgeverStraat, ' ', TRIM(OO.opdrachtgeverHuisnummer), ' ', TRIM(OO.opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever, " +

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -180,7 +181,9 @@ StackTrace: {ex.StackTrace}
 
 Veroorzaker: {Environment.UserName}
 
-Datum Tijd: {DateTime.Now}"
+Datum Tijd: {DateTime.Now}
+
+Applicatie Versie: {Assembly.GetExecutingAssembly().GetName().Version.ToString()}"
                 };
 
                 newIssue.Labels.Add("Code Error");
@@ -201,7 +204,11 @@ Datum Tijd: {DateTime.Now}"
             {
                 var newIssue = new NewIssue(configuratieGithubViewModel.IssueType + " " + configuratieGithubViewModel.OnderwerpText)
                 {
-                    Body = $"Omschrijving:\r\n{configuratieGithubViewModel.OmschrijvingText}\r\n\r\nDoor: {Environment.UserName}"
+                    Body = $@"Omschrijving:\r\n{configuratieGithubViewModel.OmschrijvingText}
+                            
+                            Door: {Environment.UserName}
+
+                            Applicatie Versie: {Assembly.GetExecutingAssembly().GetName().Version.ToString()}"
                 };
                 newIssue.Labels.Add(configuratieGithubViewModel.IssueLabel);
                 try
