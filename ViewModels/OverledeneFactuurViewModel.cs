@@ -984,7 +984,8 @@ namespace Dossier_Registratie.ViewModels
                         : priceComponent.Verzekerd);
 
                     worksheet.Cells[excelRow, 8] = priceComponent.Bedrag;
-                    ((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+                    //((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+                    ((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
                     ((Excel.Range)worksheet.Cells[excelRow, 8]).HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
 
 
@@ -1011,10 +1012,12 @@ namespace Dossier_Registratie.ViewModels
             }
 
             worksheet.Cells[excelRow + 1, 8] = "-" + CalculatedSubtotal;
-            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            //((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             excelRow++;
             worksheet.Cells[excelRow + 1, 8] = totalAmount;
-            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            //((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             worksheet.Cells[excelRow + 5, 4] = kostenbegrotingInfoResult.OpdrachtgeverNaam;
             worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
             worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;

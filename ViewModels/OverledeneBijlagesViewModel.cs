@@ -874,7 +874,8 @@ namespace Dossier_Registratie.ViewModels
                     table.Rows[polisBedragCount].Range.Borders[WdBorderType.wdBorderTop].LineStyle = WdLineStyle.wdLineStyleSingle;
                     table.Cell(polisBedragCount, 1).Range.Text = "Totaal";
                     table.Cell(polisBedragCount, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
-                    table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString();
+                    table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString("#,0.00", System.Globalization.CultureInfo.CreateSpecificCulture("nl-NL"));
+
                 }
             }
 
