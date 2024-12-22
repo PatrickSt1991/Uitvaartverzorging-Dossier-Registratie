@@ -20,6 +20,9 @@
     <WriteLinesToFile File="$(PublishDir)version.xml" Lines="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xD;&#xA;&lt;item&gt;&#xD;&#xA;  &lt;version&gt;%(AppAssembly.Version)&lt;/version&gt;&#xD;&#xA;&lt;/item&gt;" Overwrite="true" />
   </Target>
   <ItemGroup>
+    <None Remove="Images\splash.png" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Resource files -->
     <Resource Include="Images\compose.png" />
     <Resource Include="Images\email.png" />
@@ -67,5 +70,8 @@
     <PackageReference Include="SkiaSharp" Version="3.116.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Images\splash.png" />
   </ItemGroup>
 </Project>
