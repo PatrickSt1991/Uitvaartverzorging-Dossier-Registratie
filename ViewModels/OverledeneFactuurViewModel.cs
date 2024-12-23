@@ -907,7 +907,9 @@ namespace Dossier_Registratie.ViewModels
         }
         private async Task FillKostenbegrotingFile(Guid UitvaartCodeGuid, string kostenbegrotingUrl, string kostenbegrotingJson, string priceComponentsOnly)
         {
-            CultureInfo dutchCulture = new CultureInfo("nl-NL");
+            CultureInfo.CurrentCulture = new CultureInfo("nl-NL");
+            CultureInfo.CurrentUICulture = new CultureInfo("nl-NL");
+
             string kbImage = string.Empty;
             double totalAmount = 0.0;
             double orgAmount = 0.0;
@@ -919,7 +921,6 @@ namespace Dossier_Registratie.ViewModels
             var workbook = excelApp.Workbooks.Open(kostenbegrotingUrl);
             var worksheet = (Excel.Worksheet)workbook.ActiveSheet;
 
-
             if (SelectedVerzekeraar.CustomLogo == true)
             {
                 kbImage = LoadImageFromDatabase();
@@ -930,8 +931,8 @@ namespace Dossier_Registratie.ViewModels
                     var picture = pictures.AddPicture(kbImage,
                                                         Microsoft.Office.Core.MsoTriState.msoFalse, // LinkToFile
                                                         Microsoft.Office.Core.MsoTriState.msoCTrue, // SaveWithDocument
-                                                        (float)cell.Left,
-                                                        (float)cell.Top,
+                                                        Convert.ToSingle(cell.Left),
+                                                        Convert.ToSingle(cell.Top),
                                                         -1, // Width, -1 to keep original width
                                                         -1); // Height, -1 to keep original height
                     picture.Placement = Excel.XlPlacement.xlMoveAndSize;
@@ -952,7 +953,7 @@ namespace Dossier_Registratie.ViewModels
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
 
             ((Excel.Range)worksheet.Cells[7, 8]).Value2 = kostenbegrotingInfoResult.OverledenDatum != default ? kostenbegrotingInfoResult.OverledenDatum : (object)string.Empty;
-            ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "dd-mm-jjjj";
+            ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "dd-mm-yyyy";
 
 
             var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson);
@@ -983,7 +984,8 @@ namespace Dossier_Registratie.ViewModels
                         : priceComponent.Verzekerd);
 
                     worksheet.Cells[excelRow, 8] = priceComponent.Bedrag;
-                    ((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+                    //((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+                    ((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
                     ((Excel.Range)worksheet.Cells[excelRow, 8]).HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
 
 
@@ -1010,12 +1012,12 @@ namespace Dossier_Registratie.ViewModels
             }
 
             worksheet.Cells[excelRow + 1, 8] = "-" + CalculatedSubtotal;
-            //worksheet.Cells[excelRow + 1, 8].NumberFormat = "€ #.##0,00";
-            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            //((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             excelRow++;
             worksheet.Cells[excelRow + 1, 8] = totalAmount;
-            //worksheet.Cells[excelRow + 1, 8].NumberFormat = "€ #.##0,00";
-            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            //((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             worksheet.Cells[excelRow + 5, 4] = kostenbegrotingInfoResult.OpdrachtgeverNaam;
             worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
             worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;

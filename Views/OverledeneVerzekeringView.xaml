@@ -29,7 +29,7 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <ItemsControl ItemsSource="{Binding Insurances}" HorizontalAlignment="Left" Margin="10,85,0,10" FontFamily="Arial" FontSize="16" d:ItemsSource="{d:SampleData ItemCount=5}" Width="1170">
+            <ItemsControl ItemsSource="{Binding Insurances}" HorizontalAlignment="Left" Margin="10,85,0,10" FontFamily="Arial" FontSize="16" d:ItemsSource="{d:SampleData ItemCount=5}" Width="1500">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Columns="3" Rows="2" Margin="10"/>
@@ -41,7 +41,7 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Margin="0" Target="insuranceName" Content="Verzekeraar: " />
-                                <ComboBox x:Name="insuranceName" DisplayMemberPath="Name" Text="{Binding Name}" ItemsSource="{Binding Path=Verzekeraars}" Width="258"/>
+                                <ComboBox x:Name="insuranceName" DisplayMemberPath="Name" Text="{Binding Name}" ItemsSource="{Binding Path=Verzekeraars}" Width="350"/>
                             </StackPanel>
                             <ListBox ItemsSource="{Binding PolisList}">
                                 <ListBox.ItemTemplate>
@@ -49,11 +49,11 @@
                                         <StackPanel Orientation="Horizontal" Margin="0 5 0 15">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="Polis: " Width="46" Margin="0 0 5 0" FontFamily="Arial" FontSize="16" />
-                                                <TextBox Text="{Binding PolisNr}" Width="110" Margin="0 0 10 0" FontFamily="Arial" FontSize="16"/>
+                                                <TextBox Text="{Binding PolisNr}" Width="175" Margin="0 0 10 0" FontFamily="Arial" FontSize="16"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="Bedrag:" Width="54" Margin="0 0 5 0" FontFamily="Arial" FontSize="16" />
-                                                <TextBox Text="{Binding PolisBedrag}" Width="110" Margin="0 0 5 0" FontFamily="Arial" FontSize="16" />
+                                                <TextBox Text="{Binding PolisBedrag}" Width="150" Margin="0 0 5 0" FontFamily="Arial" FontSize="16" />
                                             </StackPanel>
                                         </StackPanel>
                                     </DataTemplate>

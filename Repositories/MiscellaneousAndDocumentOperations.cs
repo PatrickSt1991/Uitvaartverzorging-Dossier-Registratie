@@ -2831,9 +2831,10 @@ namespace Dossier_Registratie.Repositories
                                       "OPG.overledenePostcode, OPG.overledeneWoonplaats, OPG.overledeneGeboorteplaats, OOI.overledenDatumTijd as OverledenOp, OOI.overledenAdres, OUI.uitvaartInfoDatumTijdUitvaart, " +
                                       "OUI.uitvaartInfoDatumTijdUitvaart, OUI.uitvaartInfoType, OUI.uitvaartInfoUitvaartLocatie, " +
                                       "CASE WHEN oo.opdrachtgeverTussenvoegsel IS NULL " +
-                                      "THEN TRIM(oo.opdrachtgeverTussenvoegsel) " +
+                                      "THEN TRIM(oo.opdrachtgeverAchternaam) " +
                                       "ELSE TRIM(CONCAT(oo.opdrachtgeverTussenvoegsel, ' ', oo.opdrachtgeverAchternaam)) " +
-                                      "END AS opdrachtgeverAchternaam," +
+                                      "END AS opdrachtgeverAchternaam, " +
+                                      "oo.OpdrachtgeverVoornaamen," +
                                       "(CASE WHEN OO.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer) ELSE CONCAT(OO.opdrachtgeverStraat, ' ', TRIM(OO.opdrachtgeverHuisnummer), ' ', TRIM(OO.opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever, " +
                                       "OO.opdrachtgeverPostcode, OO.opdrachtgeverWoonplaats, OO.opdrachtgeverRelatieTotOverledene, OO.opdrachtgeverTelefoon " +
                                       "FROM OverledeneOpdrachtgever OO " +
@@ -2846,11 +2847,23 @@ namespace Dossier_Registratie.Repositories
                                       "WHERE OPG.uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
-                // Use ExecuteReaderAsync for async reading
+                string voorletters = string.Empty;
+                string achternaam = string.Empty;
+                string opdrachtgeverTotalNaam = string.Empty;
+                    
                 using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
                     if (await reader.ReadAsync().ConfigureAwait(false))
                     {
+                        if (!string.IsNullOrEmpty(reader["OpdrachtgeverVoornaamen"].ToString()))
+                        {
+                            string[] words = reader["OpdrachtgeverVoornaamen"].ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                            voorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
+                            achternaam = reader["opdrachtgeverAchternaam"] as string ?? string.Empty;
+                            opdrachtgeverTotalNaam = achternaam  + ", " + voorletters;
+                        }
+
                         terugmeldingInfo = new TerugmeldingDocument()
                         {
                             Dossiernummer = reader["Uitvaartnummer"] as string ?? string.Empty,
@@ -2870,7 +2883,7 @@ namespace Dossier_Registratie.Repositories
                             OverledeneUitvaartTijd = reader["uitvaartInfoDatumTijdUitvaart"] as DBNull != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : DateTime.MinValue,
                             OverledeneType = reader["uitvaartInfoType"] as string ?? string.Empty,
                             OverledeneUitvaartTe = reader["uitvaartInfoUitvaartLocatie"] as string ?? string.Empty,
-                            OpdrachtgeverNaam = reader["opdrachtgeverAchternaam"] as string ?? string.Empty,
+                            OpdrachtgeverNaam = opdrachtgeverTotalNaam ?? string.Empty,
                             OpdrachtgeverAdres = reader["AdresOpdrachtgever"] as string ?? string.Empty,
                             OpdrachtgeverPostcode = reader["opdrachtgeverPostcode"] as string ?? string.Empty,
                             OpdrachtgeverPlaats = reader["opdrachtgeverWoonplaats"] as string ?? string.Empty,
