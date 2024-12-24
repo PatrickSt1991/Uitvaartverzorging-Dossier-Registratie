@@ -2283,6 +2283,7 @@ namespace Dossier_Registratie.Repositories
                                             "uitvaartInfoDienstMuziek, uitvaartInfoDienstAfscheid, uitvaartInfoDienstKist, " +
                                             "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverAchternaam) ELSE CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                             "(CASE WHEN OOG.opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer) ELSE CONCAT(OOG.opdrachtgeverStraat, ' ', OOG.opdrachtgeverHuisnummer, ' ', OOG.opdrachtgeverHuisnummerToevoeging) END) as OpdrachtgeverAdres, " +
+                                            "opdrachtgeverPostcode, opdrachtgeverWoonplaats, " +
                                             "opdrachtgeverTelefoon " +
                                             "FROM [OverledeneUitvaartInfo] OUI " +
                                             "INNER JOIN [OverledenePersoonsGegevens] OPG ON OUI.uitvaartId = OPG.uitvaartId " +
@@ -2306,9 +2307,12 @@ namespace Dossier_Registratie.Repositories
                                 KistDalen = reader["uitvaartInfoDienstKist"].ToString(),
                                 OpdrachtgeverNaam = reader["Opdrachtgever"].ToString(),
                                 OpdrachtgeverTelefoon = reader["OpdrachtgeverTelefoon"].ToString(),
-                                OpdrachtgeverAdres = reader["OpdrachtgeverAdres"].ToString(),
+                                OpdrachtgeverAdres = reader["OpdrachtgeverAdres"] != DBNull.Value ? reader["OpdrachtgeverAdres"].ToString()  : string.Empty,
+                                OpdrachtgeverPostcode = reader["opdrachtgeverPostcode"] != DBNull.Value ? reader["opdrachtgeverPostcode"].ToString() : string.Empty,
+                                OpdrachtgeverPlaats = reader["opdrachtgeverWoonplaats"] != DBNull.Value ? reader["opdrachtgeverWoonplaats"].ToString() : string.Empty,
                             };
                         }
+                        //VolledigeNaam = reader["volledigeNaam"] != DBNull.Value ? reader["volledigeNaam"].ToString() : string.Empty,
                     }
                 }
             }

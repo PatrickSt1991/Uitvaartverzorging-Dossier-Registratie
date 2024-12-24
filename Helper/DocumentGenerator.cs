@@ -333,18 +333,26 @@ namespace Dossier_Registratie.Helper
                 app = new Application();
                 doc = app.Documents.Open(dienst.DestinationFile);
 
+                string opdrachtgeverAdresFull = string.Join(", ", new[]
+                {
+                    dienst.OpdrachtgeverAdres,
+                    dienst.OpdrachtgeverPostcode,
+                    dienst.OpdrachtgeverPlaats
+                }.Where(part => !string.IsNullOrEmpty(part)));
+
+
                 var bookmarks = new Dictionary<string, string>
-        {
-            //{ "AanvraagDienstTe", dienst.AanvraagDienstTe },
-            { "datumUitvaart", dienst.DatumUitvaart.ToString("dd-MM-yyyy") },
-            { "naamUitvaart", dienst.NaamUitvaart },
-            { "locatieUitvaart", dienst.LocatieDienst },
-            { "datumDienst", dienst.DatumDienst.ToString("dd-MM-yyyy") },
-            { "aanvang", dienst.Aanvang.ToString("HH:mm") },
-            { "opdrachtgeverAdres", dienst.OpdrachtgeverAdres },
-            { "opdrachtgeverTelefoon", dienst.OpdrachtgeverTelefoon },
-            { "naamOpdrachtgever", dienst.OpdrachtgeverNaam }
-        };
+                {
+                    //{ "AanvraagDienstTe", dienst.AanvraagDienstTe },
+                    { "datumUitvaart", dienst.DatumUitvaart.ToString("dd-MM-yyyy") },
+                    { "naamUitvaart", dienst.NaamUitvaart },
+                    { "locatieUitvaart", dienst.LocatieDienst },
+                    { "datumDienst", dienst.DatumDienst.ToString("dd-MM-yyyy") },
+                    { "aanvang", dienst.Aanvang.ToString("HH:mm") },
+                    { "opdrachtgeverAdres", opdrachtgeverAdresFull },
+                    { "opdrachtgeverTelefoon", dienst.OpdrachtgeverTelefoon },
+                    { "naamOpdrachtgever", dienst.OpdrachtgeverNaam }
+                };
 
                 foreach (var bookmark in bookmarks)
                 {

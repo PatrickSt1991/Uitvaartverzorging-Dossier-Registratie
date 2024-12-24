@@ -1206,6 +1206,8 @@ namespace Dossier_Registratie.Models
         private string _liturgische;
         private string _opdrachtgeverNaam;
         private string _opdrachtgeverAdres;
+        private string _opdrachtgeverPostcode;
+        private string _opdrachtgeverPlaats;
         private string _opdrachtgeverTelefoon;
         private string _opmerkingen;
         private bool _updated = false;
@@ -1322,6 +1324,16 @@ namespace Dossier_Registratie.Models
         {
             get { return _opdrachtgeverAdres; }
             set { _opdrachtgeverAdres = value; OnPropertyChanged(nameof(OpdrachtgeverAdres)); }
+        }
+        public string OpdrachtgeverPostcode
+        {
+            get { return _opdrachtgeverPostcode; }
+            set { _opdrachtgeverPostcode = value; OnPropertyChanged(nameof(OpdrachtgeverPostcode)); }
+        }
+        public string OpdrachtgeverPlaats
+        {
+            get { return _opdrachtgeverPlaats; }
+            set { _opdrachtgeverPlaats = value; OnPropertyChanged(nameof(OpdrachtgeverPlaats)); }
         }
         public string OpdrachtgeverTelefoon
         {
