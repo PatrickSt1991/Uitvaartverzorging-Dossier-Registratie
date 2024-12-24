@@ -204,11 +204,11 @@ Applicatie Versie: {Assembly.GetExecutingAssembly().GetName().Version.ToString()
             {
                 var newIssue = new NewIssue(configuratieGithubViewModel.IssueType + " " + configuratieGithubViewModel.OnderwerpText)
                 {
-                    Body = $@"Omschrijving:\r\n{configuratieGithubViewModel.OmschrijvingText}
+                    Body = $@"Omschrijving: {configuratieGithubViewModel.OmschrijvingText}
                             
-                            Door: {Environment.UserName}
+Door: {Environment.UserName}
 
-                            Applicatie Versie: {Assembly.GetExecutingAssembly().GetName().Version.ToString()}"
+Applicatie Versie: {Assembly.GetExecutingAssembly().GetName().Version.ToString()}"
                 };
                 newIssue.Labels.Add(configuratieGithubViewModel.IssueLabel);
                 try

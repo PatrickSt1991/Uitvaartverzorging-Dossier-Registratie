@@ -554,6 +554,9 @@ namespace Dossier_Registratie.ViewModels
             var opslagFolder = DataProvider.DocumentenOpslag;
             var templateFolder = DataProvider.TemplateFolder;
 
+            Debug.WriteLine(opslagFolder);
+            Debug.WriteLine(templateFolder);
+
             bool sourceLocEndSlash = opslagFolder.EndsWith(@"\");
 
             if (!sourceLocEndSlash)
@@ -1344,6 +1347,7 @@ namespace Dossier_Registratie.ViewModels
             string destinationFile = string.Empty;
             bool initialCreation = false;
             Guid documentId;
+
             if (string.IsNullOrWhiteSpace(TagModel.AanvraagDienstTag))
             {
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
@@ -1352,13 +1356,14 @@ namespace Dossier_Registratie.ViewModels
             }
             else if (!File.Exists(TagModel.AanvraagDienstTag))
             {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Aanvraag.Dienst");
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "AanvraagDienst");
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
             else
             {
+                Debug.WriteLine("Else");
                 var dienstDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "AanvraagDienst").ConfigureAwait(false);
                 documentId = dienstDocument.BijlageId;
                 string savedHash = dienstDocument.DocumentHash;
@@ -1656,7 +1661,7 @@ namespace Dossier_Registratie.ViewModels
             }
             else if (!File.Exists(TagModel.KoffiekamerTag))
             {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Aanvraag.Koffiekamer");
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Koffiekamer");
                 destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
                 documentId = Guid.NewGuid();
                 initialCreation = true;
@@ -2035,11 +2040,23 @@ namespace Dossier_Registratie.ViewModels
                     System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
                 }
             }
-            Guid HerkomstId = Guid.Parse(CrematieModel.Herkomst);
-            FactuurCreatieModel = await miscellaneousRepository.GetFactuurInfo(HerkomstId);
 
+            if(CrematieModel.Herkomst != Guid.Empty)
+            {
+                FactuurCreatieModel = await miscellaneousRepository.GetFactuurInfo(CrematieModel.Herkomst);
+            }
+            else
+            {
+                FactuurCreatieModel.FactuurAdresNaam = string.Empty;
+                FactuurCreatieModel.FactuurAdresRelatie = string.Empty;
+                FactuurCreatieModel.FactuurAdresStraat = string.Empty; 
+                FactuurCreatieModel.FactuurAdresPostcode = string.Empty;
+                FactuurCreatieModel.FactuurAdresGeslacht = string.Empty;
+                FactuurCreatieModel.FactuurAdresTelefoon = string.Empty;
+                FactuurCreatieModel.FactuurAdresPlaats = string.Empty;
+            }
+                
             OverledeneBijlagesModel crematieResults = await documentGenerator.UpdateCrematie(CrematieModel, FactuurCreatieModel).ConfigureAwait(true);
-
             if (crematieResults != null)
             {
                 crematieResults.DocumentInconsistent = false;
