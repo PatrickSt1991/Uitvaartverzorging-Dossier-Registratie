@@ -588,7 +588,7 @@ namespace Dossier_Registratie.Models
         private string _uitvaartverzorger;
         private string _asbestemming;
         private string _consumpties;
-        private string _herkomst;
+        private Guid _herkomst;
         private bool _updated = false;
         private bool _initialCreation = false;
         private string _destinationFile;
@@ -775,7 +775,7 @@ namespace Dossier_Registratie.Models
             get { return _consumpties; }
             set { _consumpties = value; OnPropertyChanged(nameof(Consumpties)); }
         }
-        public string Herkomst
+        public Guid Herkomst
         {
             get { return _herkomst; }
             set { _herkomst = value; OnPropertyChanged(nameof(Herkomst)); }
@@ -840,8 +840,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OpdrachtgeverEmail) ||
                     !string.IsNullOrEmpty(Uitvaartverzorger) ||
                     !string.IsNullOrEmpty(Asbestemming) ||
-                    !string.IsNullOrEmpty(Consumpties) ||
-                    !string.IsNullOrEmpty(Herkomst);
+                    !string.IsNullOrEmpty(Consumpties);
         }
     }
     public class BezittingenDocument : ViewModelBase

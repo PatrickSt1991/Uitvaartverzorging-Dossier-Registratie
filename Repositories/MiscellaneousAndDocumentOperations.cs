@@ -431,13 +431,13 @@ namespace Dossier_Registratie.Repositories
                     {
                         info = new FactuurInfoCrematie()
                         {
-                            FactuurAdresNaam = reader["verzekeraarNaam"].ToString(),
+                            FactuurAdresNaam = reader["verzekeraarNaam"] != DBNull.Value ? reader["verzekeraarNaam"].ToString() : string.Empty,
                             FactuurAdresRelatie = "Lid",
-                            FactuurAdresStraat = reader["CorrespondenceAddress"].ToString(),
-                            FactuurAdresPostcode = reader["addressZipcode"].ToString(),
-                            FactuurAdresPlaats = reader["addressCity"].ToString(),
+                            FactuurAdresStraat = reader["CorrespondenceAddress"] != DBNull.Value ? reader["CorrespondenceAddress"].ToString() : string.Empty,
+                            FactuurAdresPostcode = reader["addressZipcode"] != DBNull.Value ? reader["addressZipcode"].ToString() : string.Empty,
+                            FactuurAdresPlaats = reader["addressCity"] != DBNull.Value ? reader["addressCity"].ToString() : string.Empty,
                             FactuurAdresGeslacht = "-",
-                            FactuurAdresTelefoon = reader["verzekeraarTelefoon"].ToString(),
+                            FactuurAdresTelefoon = reader["verzekeraarTelefoon"] != DBNull.Value ? reader["verzekeraarTelefoon"].ToString() : string.Empty,
                         };
                     }
                 }
@@ -2726,9 +2726,9 @@ namespace Dossier_Registratie.Repositories
                                 OverledeneLeeftijd = reader["overledeneLeeftijd"] as string,
                                 OverledeneWoonplaats = reader["overledeneWoonplaats"] as string,
                                 Asbestemming = reader["asbestemming"] as string,
-                                Consumpties = reader["uitvaartInfoDienstConsumpties"] as string,
-                                Herkomst = reader["overledenHerkomst"] as string,
-                                AulaNaam = reader["AulaNaam"] as string,
+                                Consumpties = reader["uitvaartInfoDienstConsumpties"] != DBNull.Value ? reader["uitvaartInfoDienstConsumpties"].ToString() : string.Empty,
+                                Herkomst = reader["overledenHerkomst"] != DBNull.Value ? (Guid)reader["overledenHerkomst"] : Guid.Empty,
+                                AulaNaam = reader["AulaNaam"] != DBNull.Value ? reader["AulaNaam"].ToString() : string.Empty,
                                 AulaPersonen = reader["AantalPersonen"] != DBNull.Value ? (int)reader["AantalPersonen"] : 0 // Handle possible null for int
                             };
 
