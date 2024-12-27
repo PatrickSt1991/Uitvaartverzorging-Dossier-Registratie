@@ -200,19 +200,21 @@
                                             <Button Command="{Binding DataContext.OpenBloemenUitbetalenCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding UitvaartId}">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Width="95" Height="25">
                                                     <Icon:PackIconMaterial Kind="CurrencyEur" Style="{StaticResource gridButtonIcon}" Margin="5,0,5,0"/>
-                                                    <TextBlock Text="Uitbetalen" Margin="5,3,5,0"/>
+                                                    <TextBlock Margin="5,3,5,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="Uitbetalen" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding BloemenPaid}" Value="True">
+                                                                        <Setter Property="Text" Value="Aanpassen" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </StackPanel>
                                                 <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding BloemenPaid}" Value="False">
-                                                                <Setter Property="Visibility" Value="Visible" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding BloemenPaid}" Value="True">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}" />
                                                 </Button.Style>
                                             </Button>
                                         </StackPanel>
@@ -301,19 +303,21 @@
                                             <Button Command="{Binding DataContext.OpenSteenhouwerUitbetalenCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding UitvaartId}">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Width="95" Height="25">
                                                     <Icon:PackIconMaterial Kind="CurrencyEur" Style="{StaticResource gridButtonIcon}" Margin="5,0,5,0"/>
-                                                    <TextBlock Text="Uitbetalen" Margin="5,3,5,0"/>
+                                                    <TextBlock Margin="5,3,5,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="Uitbetalen" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding SteenhouwerPaid}" Value="True">
+                                                                        <Setter Property="Text" Value="Aanpassen" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </StackPanel>
                                                 <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding SteenhouwerPaid}" Value="False">
-                                                                <Setter Property="Visibility" Value="Visible" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding SteenhouwerPaid}" Value="True">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}" />
                                                 </Button.Style>
                                             </Button>
                                         </StackPanel>
@@ -417,19 +421,21 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row
                                             <Button Command="{Binding DataContext.OpenUrnSieradenUitbetalenCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding UitvaartId}">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Width="95" Height="25">
                                                     <Icon:PackIconMaterial Kind="CurrencyEur" Style="{StaticResource gridButtonIcon}" Margin="5,0,5,0"/>
-                                                    <TextBlock Text="Uitbetalen" Margin="5,3,5,0"/>
+                                                    <TextBlock Margin="5,3,5,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="Uitbetalen" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding UrnPaid}" Value="True">
+                                                                        <Setter Property="Text" Value="Aanpassen" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </StackPanel>
                                                 <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding UrnPaid}" Value="False">
-                                                                <Setter Property="Visibility" Value="Visible" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UrnPaid}" Value="True">
-                                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource gridEditButton}" />
                                                 </Button.Style>
                                             </Button>
                                         </StackPanel>

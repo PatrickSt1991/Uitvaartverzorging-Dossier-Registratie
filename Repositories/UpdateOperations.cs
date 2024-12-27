@@ -912,7 +912,11 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@provisie", steenInfo.SteenhouwerProvisie);
                 command.Parameters.AddWithValue("@betalingDatum", steenInfo.SteenhouwerUitbetaing);
                 command.Parameters.AddWithValue("@bedrag", steenInfo.SteenhouwerBedrag);
-                command.Parameters.AddWithValue("@provisieTotaal", steenInfo.SteenhouwerProvisieTotaal ?? (object)DBNull.Value);
+                if (decimal.TryParse(steenInfo.SteenhouwerProvisieTotaal, out var provisieTotaal))
+                    command.Parameters.AddWithValue("@provisieTotaal", provisieTotaal);
+                else
+                    command.Parameters.AddWithValue("@provisieTotaal", DBNull.Value);
+
                 command.Parameters.AddWithValue("@UitvaartId", steenInfo.UitvaartId);
 
                 if (command.ExecuteNonQuery() == 0)
