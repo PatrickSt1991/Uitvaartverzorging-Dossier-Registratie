@@ -495,7 +495,8 @@ namespace Dossier_Registratie.Helper
             { "OrganisatieNaam1", DataProvider.OrganizationName },
             { "OrganisatieNaam2", DataProvider.OrganizationName },
             { "OrganisatieAdres", OrganizationAdress },
-            { "OrganisatieTelefoon", DataProvider.OrganizationPhoneNumber }
+            { "OrganisatieTelefoon", DataProvider.OrganizationPhoneNumber },
+            { "Uitvaartnummer", document.UitvaartNummer }
         };
 
                 foreach (var bookmark in bookmarks)

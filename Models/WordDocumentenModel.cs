@@ -1411,6 +1411,7 @@ namespace Dossier_Registratie.Models
         private string _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string _uitvaartNummer;
         public string DocumentType
         {
             get { return _documentType; }
@@ -1508,6 +1509,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
+        }
+        public string UitvaartNummer
+        {
+            get { return _uitvaartNummer; }
+            set { _uitvaartNummer = value; OnPropertyChanged(nameof(UitvaartNummer)); }
         }
         public bool HasData()
         {
