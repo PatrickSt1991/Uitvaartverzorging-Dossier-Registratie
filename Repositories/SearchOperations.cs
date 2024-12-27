@@ -704,7 +704,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT OS.[Id],OS.[uitvaartId],[steenhouwerOpdracht],[steenhouwerBedrag],[steenhouwerProvisie]," +
-                                        "[steenhouwerUitbetaing],CONCAT(CP.Initialen, ' ', CP.Achternaam) as Personeel,CL.leverancierName, Uitvaartnummer, [steenhouwerPaid] " +
+                                        "[steenhouwerUitbetaing],CONCAT(CP.Initialen, ' ', CP.Achternaam) as Personeel,CL.leverancierName, Uitvaartnummer, [steenhouwerPaid], steenhouwerProvisieTotaal " +
                                         "FROM [OverledeneSteenhouwer] OS " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OS.UitvaartId " +
                                         "INNER JOIN ConfigurationLeveranciers CL ON OS.steenhouwerLeverancier = CL.leverancierId " +
@@ -724,8 +724,8 @@ namespace Dossier_Registratie.Repositories
                             SteenhouwerUitbetaing = reader["steenhouwerUitbetaing"] != DBNull.Value ? (DateTime?)reader["steenhouwerUitbetaing"] : null,
                             SteenhouwerWerknemer = reader["Personeel"].ToString(),
                             SteenhouwerLeverancierName = reader["leverancierName"].ToString(),
-                            SteenhouwerPaid = reader["steenhouwerPaid"] != DBNull.Value && Convert.ToBoolean(reader["steenhouwerPaid"])
-
+                            SteenhouwerPaid = reader["steenhouwerPaid"] != DBNull.Value && Convert.ToBoolean(reader["steenhouwerPaid"]),
+                            SteenhouwerProvisieTotaal = reader["steenhouwerProvisieTotaal"].ToString()
                         });
                     }
                 }
@@ -846,9 +846,10 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT [bloemenBedrag],[bloemenLeverancier],CONCAT(CP.Roepnaam, ' ', CP.Achternaam) as Personeel, Uitvaartnummer " +
+                command.CommandText = "SELECT [bloemenBedrag],CL.leverancierName,CONCAT(CP.Roepnaam, ' ', CP.Achternaam) as Personeel, Uitvaartnummer " +
                                         "FROM[OverledeneBloemen] OB " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OB.UitvaartId " +
+                                        "INNER JOIN ConfigurationLeveranciers CL ON OB.bloemenLeverancier = CL.leverancierId  " +
                                         "INNER JOIN ConfigurationPersoneel CP ON OU.PersoneelId = CP.Id " +
                                         "WHERE OU.PersoneelId = @employeeId";
                 command.Parameters.AddWithValue("@employeeId", EmployeeId);
@@ -860,7 +861,7 @@ namespace Dossier_Registratie.Repositories
                         {
                             UitvaartNummer = reader["uitvaartnummer"].ToString(),
                             BloemenBedrag = reader["bloemenBedrag"].ToString(),
-                            BloemenLeverancier = (Guid)reader["bloemenLeverancier"],
+                            BloemenLeverancierName = reader["leverancierName"].ToString(),
                             BloemenWerknemer = reader["Personeel"].ToString()
                         });
                     }

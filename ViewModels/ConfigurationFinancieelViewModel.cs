@@ -887,6 +887,7 @@ namespace Dossier_Registratie.ViewModels
             yield return new DataGridColumnSteenhouwerij { Header = "Werknemer", PropertyName = "SteenhouwerWerknemer" };
             yield return new DataGridColumnSteenhouwerij { Header = "Bedrag", PropertyName = "SteenhouwerBedrag" };
             yield return new DataGridColumnSteenhouwerij { Header = "Provisie", PropertyName = "SteenhouwerProvisie" };
+            yield return new DataGridColumnSteenhouwerij { Header = "ProvisieTotaal", PropertyName = "SteenhouwerProvisieTotaal" };
             yield return new DataGridColumnSteenhouwerij { Header = "Uitbetaling", PropertyName = "SteenhouwerUitbetaing" };
         }
         public class DataGridColumnSteenhouwerij
@@ -1111,6 +1112,7 @@ namespace Dossier_Registratie.ViewModels
                     SteenhouwerOpdracht = steen.SteenhouwerOpdracht,
                     SteenhouwerBedrag = steen.SteenhouwerBedrag,
                     SteenhouwerProvisie = steen.SteenhouwerProvisie,
+                    SteenhouwerProvisieTotaal = steen.SteenhouwerProvisieTotaal,
                     SteenhouwerUitbetaing = steen.SteenhouwerUitbetaing,
                     SteenhouwerWerknemer = steen.SteenhouwerWerknemer,
                     SteenhouwerLeverancierName = steen.SteenhouwerLeverancierName,
@@ -1678,7 +1680,8 @@ namespace Dossier_Registratie.ViewModels
                     SteenhouwerUitbetaing = steen.SteenhouwerUitbetaing,
                     SteenhouwerWerknemer = steen.SteenhouwerWerknemer,
                     SteenhouwerLeverancierName = steen.SteenhouwerLeverancierName,
-                    SteenhouwerPaid = steen.SteenhouwerPaid
+                    SteenhouwerPaid = steen.SteenhouwerPaid,
+                    SteenhouwerProvisieTotaal = steen.SteenhouwerProvisieTotaal
                 });
             }
 

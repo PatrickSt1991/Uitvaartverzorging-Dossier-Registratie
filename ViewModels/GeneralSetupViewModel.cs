@@ -26,10 +26,15 @@ namespace Dossier_Registratie.ViewModels
         private string _organizationEmail;
         private string _organizationIban;
         private string _dataSource;
+        private string _archiefDataSource;
         private string _databaseName;
+        private string _archiefDatabaseName;
         private string _userId;
+        private string _archiefUserId;
         private string _password;
+        private string _archiefPassword;
         private string _connectionString;
+        private string _archiefConnectionString;
         private string _shutdownFile;
         private string _access2023Db;
         private string _access2024Db;
@@ -148,6 +153,16 @@ namespace Dossier_Registratie.ViewModels
                 UpdateConnectionString();
             }
         }
+        public string ArchiefDataSource
+        {
+            get => _archiefDataSource;
+            set
+            {
+                _archiefDataSource = value;
+                OnPropertyChanged(nameof(ArchiefDataSource));
+                UpdateConnectionString();
+            }
+        }
         public string DatabaseName
         {
             get => _databaseName;
@@ -155,6 +170,16 @@ namespace Dossier_Registratie.ViewModels
             {
                 _databaseName = value;
                 OnPropertyChanged(nameof(DatabaseName));
+                UpdateConnectionString();
+            }
+        }
+        public string ArchiefDatabaseName
+        {
+            get => _archiefDatabaseName;
+            set
+            {
+                _archiefDatabaseName = value;
+                OnPropertyChanged(nameof(ArchiefDatabaseName));
                 UpdateConnectionString();
             }
         }
@@ -168,6 +193,16 @@ namespace Dossier_Registratie.ViewModels
                 UpdateConnectionString();
             }
         }
+        public string ArchiefUserId
+        {
+            get => _archiefUserId;
+            set
+            {
+                _archiefUserId = value;
+                OnPropertyChanged(nameof(ArchiefUserId));
+                UpdateConnectionString();
+            }
+        }
         public string Password
         {
             get => _password;
@@ -178,6 +213,16 @@ namespace Dossier_Registratie.ViewModels
                 UpdateConnectionString();
             }
         }
+        public string ArchiefPassword
+        {
+            get => _archiefPassword;
+            set
+            {
+                _archiefPassword = value;
+                OnPropertyChanged(nameof(ArchiefPassword));
+                UpdateConnectionString();
+            }
+        }
         public string ConnectionString
         {
             get => _connectionString;
@@ -185,6 +230,15 @@ namespace Dossier_Registratie.ViewModels
             {
                 _connectionString = value;
                 OnPropertyChanged(nameof(ConnectionString));
+            }
+        }
+        public string ArchiefConnectionString
+        {
+            get => _archiefConnectionString;
+            private set
+            {
+                _archiefConnectionString = value;
+                OnPropertyChanged(nameof(ArchiefConnectionString));
             }
         }
         public string ShutdownFile
@@ -488,6 +542,7 @@ namespace Dossier_Registratie.ViewModels
         private void LoadSettingsFromDataProvider()
         {
             var builder = new SqlConnectionStringBuilder(DataProvider.ConnectionString);
+            var archiefBuilder = new SqlConnectionStringBuilder(DataProvider.ArchiefConnectionString);
 
             OrganizationName = DataProvider.OrganizationName;
             OrganizationCity = DataProvider.OrganizationCity;
@@ -503,6 +558,10 @@ namespace Dossier_Registratie.ViewModels
             DatabaseName = builder.InitialCatalog;
             UserId = builder.UserID;
             Password = builder.Password;
+            ArchiefDataSource = archiefBuilder.DataSource;
+            ArchiefDatabaseName = archiefBuilder.InitialCatalog;
+            ArchiefUserId = archiefBuilder.UserID;
+            ArchiefPassword = archiefBuilder.Password;
             ShutdownFile = DataProvider.ShutdownFile;
             Access2023Db = DataProvider.AccessDatabase2023;
             Access2024Db = DataProvider.AccessDatabase2024;
@@ -530,6 +589,7 @@ namespace Dossier_Registratie.ViewModels
         private void UpdateConnectionString()
         {
             ConnectionString = $"Data Source={DataSource};Database={DatabaseName};User Id={UserId};Password={Password};";
+            ArchiefConnectionString = $"Data Source={ArchiefDataSource};Database={ArchiefDatabaseName};User Id={ArchiefUserId};Password={ArchiefPassword};";
         }
         private static bool TestDatabaseConnection(string connectionString)
         {
@@ -649,29 +709,30 @@ namespace Dossier_Registratie.ViewModels
             {
                 ConnectionStrings = new
                 {
-                    DossierRegistratieConnectionString = ConnectionString
+                    DossierRegistratieConnectionString = ConnectionString,
+                    ArchiefConnectionString = ArchiefConnectionString
                 },
                 CompanySettings = new
                 {
-                    DataProvider.OrganizationName,
-                    DataProvider.OrganizationStreet,
-                    DataProvider.OrganizationHouseNumber,
-                    DataProvider.OrganizationHouseNumberAddition,
-                    DataProvider.OrganizationZipcode,
-                    DataProvider.OrganizationCity,
-                    DataProvider.OrganizationPhoneNumber,
-                    DataProvider.OrganizationEmail,
-                    DataProvider.OrganizationIban
+                    Name = OrganizationName,
+                    Street = OrganizationStreet,
+                    HouseNumber = OrganizationHousenumber,
+                    HouseNumberAddition = OrganizationHousenumberAddition,
+                    Zipcode = OrganizationZipcode,
+                    City = OrganizationCity,
+                    PhoneNumber = OrganizationPhonenumber,
+                    Email = OrganizationEmail,
+                    IBAN = OrganizationIban
                 },
                 SystemSettings = new
                 {
-                    DataProvider.SystemTitle,
-                    DataProvider.ApplicationName,
-                    DataProvider.GithubKey,
-                    DataProvider.GithubOwner,
-                    DataProvider.GithubRepo,
-                    DataProvider.GithubProduct,
-                    DataProvider.GithubEnabled,
+                    SystemTitle,
+                    ApplicationName,
+                    GithubKey,
+                    GithubOwner,
+                    GithubRepo,
+                    GithubProduct,
+                    GithubEnabled,
                     SetupComplete = true
                 },
                 SystemConfiguration = new
@@ -688,17 +749,17 @@ namespace Dossier_Registratie.ViewModels
                 {
                     MaintenanceCheckEnabled = MaintenanceEnabled,
                     MaintenanceUrl,
-                    MaintenanceUsername,
+                    MaintenanceUser = MaintenanceUsername,
                     MaintenancePassword
                 },
                 SmtpConfiguration = new
                 {
-                    DataProvider.SmtpEnabled,
-                    DataProvider.SmtpServer,
-                    DataProvider.SmtpPort,
-                    DataProvider.SmtpUsername,
-                    DataProvider.SmtpPassword,
-                    DataProvider.SmtpReciever
+                    SmtpEnabled,
+                    SmtpServer,
+                    SmtpPort,
+                    SmtpUsername,
+                    SmtpPassword,
+                    SmtpReciever
                 }
             };
 

@@ -426,10 +426,21 @@
                 <Binding Path="IsSearchResultVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}"/>
             </Grid.Visibility>
             <Grid Background="Black" Opacity="0.5"/>
-            <Border MinWidth="250" Background="#FFF0F0F0" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Center" Height="398" Width="1250">
-                <StackPanel Name="MainPanel" Orientation="Horizontal" Margin="0,31,0,0">
-                    <StackPanel x:Name="ItemPanel" Orientation="Vertical" Grid.Column="0" Width="1200" Height="366">
-                        <DataGrid x:Name="resultGrid" CanUserResizeColumns="True" CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding SearchUitvaartSurname}" AutoGenerateColumns="False" Height="336" Width="1250">
+            <Border MinWidth="250" Background="#FFF0F0F0" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Center" Height="500" Width="1250">
+                <Grid>
+                    <!-- Define Rows -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <!-- For DataGrid -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- For Close Button -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Scrollable DataGrid -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="0">
+                        <DataGrid x:Name="resultGrid" CanUserResizeColumns="True" CanUserAddRows="False" CanUserDeleteRows="False" 
+                          ItemsSource="{Binding SearchUitvaartSurname}" AutoGenerateColumns="False" 
+                          ScrollViewer.CanContentScroll="True" Width="1250">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn MinWidth="125" Width="Auto" Header="Uitvaartnummer">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -474,32 +485,34 @@
                                 <DataGridTemplateColumn MinWidth="200" Width="Auto" Header="Geboortedatum">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding OverledeneGeboortedatum}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding OverledeneGeboortedatum, StringFormat={}{0:dd-MM-yyyy}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-
 
                                 <DataGridTemplateColumn MinWidth="100" Header="Openen">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button x:Name="OpenenAchternaam" Style="{StaticResource SecondaryButtons}" Content="Openen" Command="{Binding DataContext.OpenAchternaamCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding UitvaartNummer}"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Height="25" Width="120"/>
+                                            <Button x:Name="OpenenAchternaam" Style="{StaticResource SecondaryButtons}" Content="Openen" 
+                                            Command="{Binding DataContext.OpenAchternaamCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                            CommandParameter="{Binding UitvaartNummer}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                            Margin="0" Height="25" Width="120"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-
                             </DataGrid.Columns>
                         </DataGrid>
+                    </ScrollViewer>
 
-                        <!-- Button to close the results window -->
-                        <Button x:Name="CloseResultSurname" Style="{StaticResource SecondaryButtons}" Height="25" Width="160" 
-                        Click="CloseResultsSurname_Click" HorizontalAlignment="Right" Margin="0,0,15,0">
-                            <StackPanel>
-                                <TextBlock Text="Sluiten"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
+                    <!-- Close Button -->
+                    <Button x:Name="CloseResultSurname" Style="{StaticResource SecondaryButtons}" Height="25" Width="160" 
+                    Click="CloseResultsSurname_Click" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                    Margin="0,15,25,5" Grid.Row="1">
+                        <StackPanel>
+                            <TextBlock Text="Sluiten"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
             </Border>
         </Grid>
         <Label x:Name="lblAccessLevel" Content="Label" Margin="0,58,34,0" VerticalAlignment="Top" Height="20" HorizontalAlignment="Right" Width="143" FontSize="9" FontWeight="Bold"/>

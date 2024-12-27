@@ -231,6 +231,31 @@ Style="{StaticResource TextBoxStyle}" />
                             ToolTip="Enter the password for the database."
                             helper:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
+                    <Label Content="Archief Database Informatie" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Host (Data Source)" Margin="10,0,0,5" Width="200"/>
+                        <TextBox Text="{Binding ArchiefDataSource}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Enter the database host (e.g., localhost)." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Database naam" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding ArchiefDatabaseName}" Width="545" Height="30" 
+                            Margin="0,0,0,10" ToolTip="Enter the name of the database." 
+                            Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Gebruikersnaam (User ID)" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <TextBox Text="{Binding ArchiefUserId}" Width="545" Height="30" 
+                             Margin="0,0,0,10" ToolTip="Enter the username for the database." 
+                             Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Wachtwoord" Margin="10,0,0,5" Width="200" FontStyle="Normal"/>
+                        <PasswordBox x:Name="PasswordBoxAchief" Width="545" Height="30" Margin="0,0,0,10"
+                            ToolTip="Enter the password for the database."
+                            helper:PasswordBoxHelper.BoundPassword="{Binding ArchiefPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
                     <Label Content="Onderhouds Informatie" FontSize="16" FontWeight="Bold"/>

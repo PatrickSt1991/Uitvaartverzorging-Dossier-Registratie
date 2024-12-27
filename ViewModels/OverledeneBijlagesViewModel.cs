@@ -1574,7 +1574,7 @@ namespace Dossier_Registratie.ViewModels
             DocumentModel.DocumentId = documentId;
             DocumentModel.DestinationFile = destinationFile;
             DocumentModel.UitvaartId = Globals.UitvaartCodeGuid;
-
+            DocumentModel.UitvaartNummer = Globals.UitvaartCode;
 
             if (!DocumentModel.HasData())
             {
