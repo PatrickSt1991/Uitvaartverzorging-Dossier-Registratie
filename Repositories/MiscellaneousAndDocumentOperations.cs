@@ -84,6 +84,8 @@ namespace Dossier_Registratie.Repositories
 
                 string tableName = db == "2024" ? "[OudeEeftingData].[dbo].[data2024]" : "[OudeEeftingData].[dbo].[data2023]";
 
+                Debug.WriteLine(tableName);
+
                 command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum,
                                         [1 Aanhef] as aanhef, [1 Voornamen] as voornamen, [1 Tussenvoegsel] as tussenvoegsel 
                                         FROM {tableName} 

@@ -549,7 +549,7 @@ namespace Dossier_Registratie.ViewModels
                     ArchiveSearchResult = await OpenArchivePdfAsync(ZoekenUitvaartnummer, string.Empty);
 
 
-                if (!searchUitvaartNumber.Any() && SearchOldDatabaseNummer)
+                if (!searchUitvaartNumber.Any() || SearchOldDatabaseNummer)
                 {
                     var access2023Search = await miscellaneousRepository.SearchAccessDatabaseOnUitvaartNumberAsync(ZoekenUitvaartnummer, "2023");
                     var access2024Search = await miscellaneousRepository.SearchAccessDatabaseOnUitvaartNumberAsync(ZoekenUitvaartnummer, "2024");
@@ -610,7 +610,7 @@ namespace Dossier_Registratie.ViewModels
                 if (SearchArchiveFolder)
                     ArchiveSearchResult = await OpenArchivePdfAsync(string.Empty, ZoekenAchternaam);
 
-                if (!searchUitvaartSurname.Any() && SearchOldDatabaseSurname)
+                if (!searchUitvaartSurname.Any() || SearchOldDatabaseSurname)
                 {
                     var access2023Search = await miscellaneousRepository.SearchAccessDatabaseOnAchternaamAsync(ZoekenAchternaam, ZoekenDoB, "2023");
                     var access2024Search = await miscellaneousRepository.SearchAccessDatabaseOnAchternaamAsync(ZoekenAchternaam, ZoekenDoB, "2024");
