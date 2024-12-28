@@ -711,18 +711,15 @@ namespace Dossier_Registratie.ViewModels
                 string databasePath = GetDatabasePath(parameter.ToString());
 
                 if (string.IsNullOrEmpty(databasePath))
-                {
                     throw new InvalidOperationException("Invalid parameter. No matching database found.");
-                }
+
+                if(!File.Exists(databasePath))
+                    throw new FileNotFoundException($"De Database kon niet worden gevonden: {databasePath}");
 
                 if (DataProvider.CustomAccessLauncher)
-                {
                     LaunchCustomAccessLauncher(uitvaartnummer, databasePath);
-                }
                 else
-                {
                     AccessFormHelper.OpenAccessFormWithFilter(uitvaartnummer, databasePath);
-                }
 
                 return;
             }

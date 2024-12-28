@@ -1,6 +1,8 @@
 ﻿using Dossier_Registratie.ViewModels;
 using Microsoft.Office.Interop.Access;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -11,6 +13,9 @@ namespace Dossier_Registratie.Helper
     {
         public static void OpenAccessFormWithFilter(string uitvaartnummer, string applicationPath)
         {
+            if (!File.Exists(applicationPath))
+                throw new FileNotFoundException($"Database not found at: {applicationPath}");
+
             Microsoft.Office.Interop.Access.Application accessApp = new Microsoft.Office.Interop.Access.Application();
 
             try
@@ -21,13 +26,15 @@ namespace Dossier_Registratie.Helper
 
                 string whereCondition = $"[Uitvaartnummer] = {uitvaartnummer}";
                 string recordCountQuery = $"SELECT Count(*) FROM [Data] WHERE [Uitvaartnummer] = {uitvaartnummer}";
-
                 var recordset = accessApp.CurrentDb().OpenRecordset(recordCountQuery);
                 int recordCount = (int)recordset.Fields[0].Value;
                 recordset.Close();
 
+                Debug.WriteLine(recordCount);
+
                 if (recordCount > 0)
                 {
+                    Debug.WriteLine(whereCondition);
                     accessApp.DoCmd.OpenForm("invoeren", (AcFormView)0, "", whereCondition, (AcFormOpenDataMode)0, 0);
                     var myForm = accessApp.Forms["invoeren"];
 
@@ -44,7 +51,8 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                Debug.WriteLine(ex);
+                //ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
         }
 
