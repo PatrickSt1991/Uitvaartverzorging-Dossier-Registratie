@@ -152,6 +152,20 @@ namespace Dossier_Registratie.Helper
                 return InstanceConfig.GetValue<bool>("SystemSettings:GithubEnabled");
             }
         }
+        public static bool CustomAccessLauncher
+        {
+            get
+            {
+                return InstanceConfig.GetValue<bool>("SystemConfiguration:CustomAccessLauncher");
+            }
+        }
+        public static string CustomAccessLauncherLocation
+        {
+            get
+            {
+                return InstanceConfig["SystemConfiguration:CustomAccessLauncherLocation"];
+            }
+        }
         public static string TemplateFolder
         {
             get { return InstanceConfig["SystemConfiguration:TemplateFolder"]; }
