@@ -61,6 +61,8 @@ namespace Dossier_Registratie.ViewModels
         private int _smtpPort;
         private string _smtpReciever;
         private string saveReboot = "Opslaan en opnieuw opstarten";
+        private bool _accessCustomLauncher;
+        private string _accessCustomLauncherLocation;
 
         public string OrganizationName
         {
@@ -489,6 +491,24 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(SaveReboot));
             }
         }
+        public bool AccessCustomLauncher
+        {
+            get => _accessCustomLauncher;
+            set
+            {
+                _accessCustomLauncher = value;
+                OnPropertyChanged(nameof(AccessCustomLauncher));
+            }
+        }
+        public string AccessCustomLauncherLocation
+        {
+            get => _accessCustomLauncherLocation;
+            set
+            {
+                _accessCustomLauncherLocation = value;
+                OnPropertyChanged(nameof(AccessCustomLauncherLocation));
+            }
+        }
         public ICommand SaveCommand { get; }
         public ICommand UploadLogoCommand { get; }
 
@@ -585,6 +605,8 @@ namespace Dossier_Registratie.ViewModels
             SmtpPort = DataProvider.SmtpPort;
             SmtpServer = DataProvider.SmtpServer;
             SmtpReciever = DataProvider.SmtpReciever;
+            AccessCustomLauncher = DataProvider.CustomAccessLauncher;
+            AccessCustomLauncherLocation = DataProvider.CustomAccessLauncherLocation;
         }
         private void UpdateConnectionString()
         {
@@ -743,7 +765,9 @@ namespace Dossier_Registratie.ViewModels
                     PdfArchive = ArchiveFolder,
                     TemplateFolder,
                     DocumentenOpslag = DocuSaveFolder,
-                    FactuurOpslag = BillSaveFolder
+                    FactuurOpslag = BillSaveFolder,
+                    CustomAccessLauncher = AccessCustomLauncher,
+                    CustomAccessLauncherLocation = AccessCustomLauncherLocation
                 },
                 MaintenanceConfiguration = new
                 {

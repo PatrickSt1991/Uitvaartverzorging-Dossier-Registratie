@@ -681,6 +681,26 @@ namespace Dossier_Registratie.ViewModels
             UitvaartNummerEnabled = false;
             SelectedIndex = 1;
         }
+        private static string GetDatabasePath(string parameter)
+        {
+            if (parameter.Contains("_2023_"))
+                return DataProvider.AccessDatabase2023;
+            else if (parameter.Contains("_2024_"))
+                return DataProvider.AccessDatabase2024;
+
+            return null;
+        }
+        private static void LaunchCustomAccessLauncher(string searchString, string databasePath)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = DataProvider.CustomAccessLauncherLocation,
+                Arguments = $"\"{searchString}\" \"{databasePath}\"",
+                UseShellExecute = true
+            };
+
+            Process.Start(startInfo);
+        }
         private void ExecuteOpenAchternaamCommand(object parameter)
         {
             if (parameter.ToString().StartsWith("archief_"))
@@ -688,11 +708,21 @@ namespace Dossier_Registratie.ViewModels
                 string[] uitvaartnummerParts = parameter.ToString().Split('_');
                 string uitvaartnummer = uitvaartnummerParts[^1];
 
-                if (parameter.ToString().Contains("_2023_"))
-                    AccessFormHelper.OpenAccessFormWithFilter(uitvaartnummer, DataProvider.AccessDatabase2023);
+                string databasePath = GetDatabasePath(parameter.ToString());
 
-                if (parameter.ToString().Contains("_2024_"))
-                    AccessFormHelper.OpenAccessFormWithFilter(uitvaartnummer, DataProvider.AccessDatabase2024);
+                if (string.IsNullOrEmpty(databasePath))
+                {
+                    throw new InvalidOperationException("Invalid parameter. No matching database found.");
+                }
+
+                if (DataProvider.CustomAccessLauncher)
+                {
+                    LaunchCustomAccessLauncher(uitvaartnummer, databasePath);
+                }
+                else
+                {
+                    AccessFormHelper.OpenAccessFormWithFilter(uitvaartnummer, databasePath);
+                }
 
                 return;
             }

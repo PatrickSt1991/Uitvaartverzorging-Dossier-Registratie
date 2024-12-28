@@ -360,6 +360,43 @@ Style="{StaticResource TextBoxStyle}" />
                          Margin="0,0,0,10" ToolTip="Enter the full path for the shutdown file." 
                          Style="{StaticResource TextBoxStyle}" />
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Custom MS Access Launcher" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Nodig voor 32bits MS Access" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <ToggleButton IsChecked="{Binding AccessCustomLauncher}" Width="60" Height="30" Margin="0,0,0,10">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Grid>
+                                                    <Border x:Name="BackgroundBorder" Background="LightGray" CornerRadius="15" />
+                                                    <Border x:Name="SwitchKnob" Background="White" Width="25" Height="25" CornerRadius="12.5" HorizontalAlignment="Left" Margin="2"/>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="BackgroundBorder" Property="Background" Value="#FFC92F39"/>
+                                                        <Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Custom MS Access Launcer Locatie" Margin="10,0,0,-5" Width="200"/>
+                            <Label Content="Volledig pad naar AccessLauncher.exe" FontSize="10" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBox Text="{Binding AccessCustomLauncherLocation}" Width="545" Height="30" 
+                         Margin="0,0,0,10" ToolTip="Volledig pad naar AccessLauncher.exe." 
+                         Style="{StaticResource TextBoxStyle}" />
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
                     <Label Content="Afbeelding Informatie" FontSize="16" FontWeight="Bold"/>
