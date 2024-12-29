@@ -5,7 +5,17 @@ nav_enabled: true
 nav_order: 1
 ---
 
-## Start scherm
+Onderwerpen
+- [Start scherm](#start)
+- [Dossier openen](#openen)
+- [Dossier opzoeken](#opzoeken)
+- [Alle uitvaarten](#uitvaarten)
+- [Agenda](#agenda)
+- [Notificatie](#notificatie)
+- [Help](#help)
+
+
+## Start scherm {#start}
 
 <a href="./images/startmenu.png" target="_blank">
   <img src="./images/startmenu.png" alt="Screenshot of the application" width="45%" />
@@ -72,7 +82,7 @@ nav_order: 1
   </table>
 </p>
 
-## Dossier openen
+## Dossier openen {#openen}
 <p>
   Wanneer er voor “Dossier openen” gekozen is dan wordt een om een Uitvaartnummer gevraagd, dit nummer is verplicht.<br/>
   Daarnaast is er nog de optie om te zoeken in de archief folder (PDF bestanden) of in de oude archief databases.<br/>
@@ -81,7 +91,7 @@ nav_order: 1
   </a>
 </p>
 
-## Dossier opzoeken
+## Dossier opzoeken {#opzoeken}
 <p>
   Wanneer er voor “Dossier opzoeken” gekozen is dan wordt er om een Achternaam en Geboortedatum gevraagd, <br/>Let op: Achternaam is verplicht maar Geboortedatum niet.<br/>
   <a href="./images/zoekenAchternaam.png" target="_blank">
@@ -90,7 +100,7 @@ nav_order: 1
   Wanneer er meer dan één dossier gevonden wordt met de gegevens dan krijgt de gebruiker dit te zien middels een popup met daarin alle gegevens en een knop om het betreffende dossier te openen in de applicatie of in de oude database als het een oud dossier is.
 </p>
 
-## Alle uitvaarten
+## Alle uitvaarten {#uitvaarten}
 <p>
   Alle uitvaarten laat een overzicht zien van alle uitvaarten die in het systeem zitten.<br/>
   <a href="./images/uitvaartOverzicht.png" target="_blank">
@@ -106,7 +116,7 @@ nav_order: 1
   Wil je de filters opheffen klik dan op de knop “Alles Weergeven”
 </p>
 
-## Agenda
+## Agenda {#agenda}
 <p>
   De agenda laat de aankomende uitvaarten zien van de komende 7 dagen.<br/>
   <a href="./images/agenda.png" target="_blank">
@@ -116,7 +126,7 @@ nav_order: 1
   Met de knop “Openen” ga je rechtstreeks naar het dossier van de betreffende uitvaart.
 </p>
 
-## Notificatie
+## Notificatie {#notificatie}
 <p>
   Notificaties geeft een weergave van de overleden personen van één jaar geleden aan de uitvaartleider die de uitvaart gedaan heeft<br/>
   De notifcatie geven een tijdspan van 14 dagen,  7 dagen voor overlijden en 7 dagen erna.<br/>
@@ -125,7 +135,7 @@ nav_order: 1
   </a>
 </p>
 
-## Help
+## Help {#help}
 <p>
   Met Help kun je een verzoek doen voor een nieuwe toevoeging of een fout melden in het systeem (de meeste systeem fouten worden ook automatisch gemeld).<br/>
   <a href="./images/help.png" target="_blank">
