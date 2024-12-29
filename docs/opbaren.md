@@ -2,7 +2,7 @@
 title: 4. Opbaren
 layout: default
 nav_enabled: true
-nav_order: 7
+nav_order: 5
 ---
 
 # Opbaren
