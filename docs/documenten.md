@@ -2,7 +2,7 @@
 title: 6. Documenten
 layout: default
 nav_enabled: true
-nav_order: 9
+nav_order: 7
 ---
 
 # Documenten
@@ -26,5 +26,4 @@ Per document type heb je een aantal keuzes;
 | **Openen**      | Openen opent het bestand als een Word-bestand, wil je iets met de hand aanpassen dan kan dat via deze optie. |
 | **Email bijlage** | Email als bijlage opent een nieuwe email en stopt daar het Word-bestand in als een bijlage.               |
 
-Elke keer dat je een van de drie opties kiest controleerd het systeem als het al bestaat, deze versie wordt dan verwijderd en vervolgens wordt er een nieuwe versie gemaakt met de data vanuit het systeem.
-Heb je dus iets met de hand aangepast in een Word bestand en je klikt op Openen dan ben je die aanpassingen dus kwijt.
+Het systeem controleerd als het bestand al bestaat, als deze versie gelijk is met wat het systeem verwacht dan wordt die gebruikt, mocht je aanpassingen hebben gedaan in het Word bestand dan wordt dit gedetecteerd door het systeem.
