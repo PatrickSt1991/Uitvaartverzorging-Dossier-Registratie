@@ -1,5 +1,5 @@
 ---
-title: 10. Beheer
+title: 10. Beheer - Gebruikers
 layout: default
 nav_enabled: true
 nav_order: 11
