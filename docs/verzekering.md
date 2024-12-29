@@ -13,4 +13,5 @@ Per overledene kunnen er vijf verzekeraars gekozen worden, per gekozen verzekeri
     <img src="./images/VerzekeringenInvul.png" alt="Screenshot of the application" width="45%" />
   </a>
 </p>
+Er kunnen net zoveel extra polissen toegevoegd worden als nodig is.
 
