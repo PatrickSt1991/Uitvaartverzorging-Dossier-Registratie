@@ -2,7 +2,7 @@
 title: 8. Steenhouwerij / Bloemen / Urnen & Gedenksieraden
 layout: default
 nav_enabled: true
-nav_order: 11
+nav_order: 9
 ---
 Het scherm voor Steenhouwerij / Bloemen / Werkbonnen ziet er iets anders uit dan de andere schermen.
 Je hebt hier vier tabbladen respectievelijk voor Steenhouwer, Bloemen, Urnen en Gedenksieraden én Werkbonnen.
