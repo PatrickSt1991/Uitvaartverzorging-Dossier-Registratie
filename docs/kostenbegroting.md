@@ -2,7 +2,7 @@
 title: 7. Kostenbegroting
 layout: default
 nav_enabled: true
-nav_order: 10
+nav_order: 8
 ---
 
 # Kostenbegroting
@@ -24,12 +24,32 @@ Afhankelijk van welke kostenbegroting je hebt gekozen zal je iets zien wat hier 
 </p>
 
 De gevraagde gegevens bestaan uit;
-Omschrijving - Tekst
-Aantal - Numeriek
-Verzekerd - X (X = Ja, Leeg = Nee)
-Bedrag - decimalen (10,00)
-PM - Check als het een PM bedrag is
-Print - Check als aantal leeg is, Verzekerd leeg is, Bedrag leeg is en PM niet aangevinkt is, maar toch op het Excel formulier moet komen.
+<table>
+  <tr>
+    <td>Omschrijving</td>
+    <td>Vrije tekst</td>
+  </tr>
+  <tr>
+    <td>Aantal</td>
+    <td>Numeriek (0-9)</td>
+  </tr>
+  <tr>
+    <td>Verzekerd</td>
+    <td>X (X = Ja, Leeg = Nee)</td>
+  </tr>
+  <tr>
+    <td>Bedrag</td>
+    <td>decimalen (10,00)</td>
+  </tr>
+  <tr>
+    <td>PM</td>
+    <td>Zet een vinkje als het een PM bedrag is</td>
+  </tr>
+  <tr>
+    <td>Print</td>
+    <td>Zet een vinkje als aantal leeg is, Verzekerd leeg is, Bedrag leeg is en PM niet aangevinkt is, maar toch op het Excel formulier moet komen. </td>
+  </tr>
+</table>
 
 Heb je perongeluk de verkeerde verzekeraar gekozen dan kun je op “Verzekering veranderen” klikken. Je krijgt dan het eerste schermpje weer te zien;
 
