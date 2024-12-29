@@ -2,7 +2,7 @@
 title: 3. Verzekeringen
 layout: default
 nav_enabled: true
-nav_order: 6
+nav_order: 4
 ---
 
 # Verzekeringen
@@ -14,4 +14,3 @@ Per overledene kunnen er vijf verzekeraars gekozen worden, per gekozen verzekeri
   </a>
 </p>
 
-Er kunnen net zoveel extra polissen toegevoegd worden als nodig is.
