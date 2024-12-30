@@ -1,5 +1,5 @@
 ---
-title: 11. Beheer - Gebruikers
+title: 11. Beheer - Overlijden Locaties
 layout: default
 nav_enabled: true
 nav_order: 12
