@@ -1,8 +1,8 @@
 ---
-title: 12. Beheer - Kisten
+title: 14. Beheer - Kisten
 layout: default
 nav_enabled: true
-nav_order: 13
+nav_order: 15
 ---
 
 # Beheer - Kisten
