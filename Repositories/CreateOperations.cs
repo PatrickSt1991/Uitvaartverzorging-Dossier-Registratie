@@ -702,15 +702,14 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [ConfigurationFactuurComponent] (Id, ComponentId, Omschrijving, Bedrag, VerzekerdAantal, Verzekering, VerzekeringJson,IsDeleted, SortOrder, factuurBedrag, DefaultPM) " +
-                                        "VALUES (@id, @compid, @omschrijving, @bedrag, @aantal, @verzekering, @verzekeringJson, 0, @sortOrder, @factuurBedrag, @defaultpm)";
+                command.CommandText = "INSERT INTO [ConfigurationFactuurComponent] (Id, ComponentId, Omschrijving, Bedrag, VerzekerdAantal, VerzekeringJson,IsDeleted, SortOrder, factuurBedrag, DefaultPM) " +
+                                        "VALUES (@id, @compid, @omschrijving, @bedrag, @aantal, @verzekeringJson, 0, @sortOrder, @factuurBedrag, @defaultpm)";
                 command.Parameters.AddWithValue("@id", priceComponent.Id);
                 command.Parameters.AddWithValue("@compid", priceComponent.ComponentId);
                 command.Parameters.AddWithValue("@omschrijving", priceComponent.ComponentOmschrijving);
                 command.Parameters.AddWithValue("@aantal", priceComponent.ComponentAantal);
                 command.Parameters.AddWithValue("@bedrag", priceComponent.ComponentBedrag);
                 command.Parameters.AddWithValue("@factuurBedrag", priceComponent.ComponentFactuurBedrag);
-                command.Parameters.AddWithValue("@verzekering", priceComponent.ComponentVerzekering);
                 command.Parameters.AddWithValue("@verzekeringJson", priceComponent.ComponentVerzekeringJson);
                 command.Parameters.AddWithValue("@defaultpm", priceComponent.DefaultPM);
                 command.Parameters.AddWithValue("sortOrder", priceComponent.SortOrder);
