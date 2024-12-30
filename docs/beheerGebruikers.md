@@ -12,7 +12,7 @@ Als je rechts op bewerken klikt kan je de gegevens van die specifieke medewerker
 
 <p float="left">
   <a href="./images/werknemers.png" target="_blank">
-    <img src="./images/werknemers.png" alt="Screenshot of the application" width="45%" />
+    <img src="./images/werknemers.png" alt="Screenshot of the application" width="75%" />
   </a>
 </p>
 
@@ -21,7 +21,7 @@ Als je rechts op bewerken klikt kan je de gegevens van die specifieke medewerker
   <tr>
     <td>
       <a href="./images/werknemersnewedit.png" target="_blank">
-        <img src="./images/werknemersnewedit.png" alt="Screenshot of the application" width="45%" />
+        <img src="./images/werknemersnewedit.png" alt="Screenshot of the application" width="75%" />
       </a>
     </td>
     <td>
