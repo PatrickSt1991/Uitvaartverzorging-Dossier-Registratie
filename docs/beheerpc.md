@@ -1,8 +1,8 @@
 ---
-title: 13. Beheer - Prijs Componenten
+title: 17. Beheer - Prijs Componenten
 layout: default
 nav_enabled: true
-nav_order: 14
+nav_order: 18
 ---
 
 # Beheer - Prijs Componenten
