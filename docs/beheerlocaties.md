@@ -1,8 +1,8 @@
 ---
-title: 11. Beheer - Overlijden Locaties
+title: 12. Beheer - Overlijden Locaties
 layout: default
 nav_enabled: true
-nav_order: 12
+nav_order: 13
 ---
 
 # Beheer - Locaties / Suggesties
