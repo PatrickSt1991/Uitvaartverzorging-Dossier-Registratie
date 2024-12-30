@@ -1,8 +1,8 @@
 ---
-title: 12. Beheer - Leveranciers
+title: 13. Beheer - Leveranciers
 layout: default
 nav_enabled: true
-nav_order: 13
+nav_order: 14
 ---
 
 # Beheer - Leveranciers
