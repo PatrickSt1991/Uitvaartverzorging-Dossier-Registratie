@@ -5,12 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dossier_Registratie.Views"
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
+             xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="1450" d:DesignWidth="1800" d:Background="White">
     <UserControl.DataContext>
         <viewmodels:ConfigurationPriceComponentsViewModel/>
     </UserControl.DataContext>
+    <UserControl.Resources>
+        <helper:DecimalToStringConverter x:Key="DecimalToStringConverter" />
+    </UserControl.Resources>
     <Grid x:Name="PriceComponentGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -27,11 +31,11 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="800"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, Converter={StaticResource DecimalToStringConverter}, UpdateSourceTrigger=PropertyChanged, FallbackValue=0, TargetNullValue=''}" Width="800" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Factuur Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="800"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, Converter={StaticResource DecimalToStringConverter}, UpdateSourceTrigger=PropertyChanged, FallbackValue=0, TargetNullValue=''}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Verzekerd Aantal: " Width="200"/>

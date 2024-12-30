@@ -233,6 +233,9 @@ namespace Dossier_Registratie.ViewModels
             {
                 try
                 {
+                    if (SelectedUser.Geboortedatum == DateTime.MinValue)
+                        SelectedUser.Geboortedatum = DateTime.Today;
+
                     createRepository.EmployeeCreate(SelectedUser);
                 }
                 catch (Exception ex)

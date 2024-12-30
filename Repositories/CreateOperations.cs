@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Dossier_Registratie.Repositories
@@ -626,8 +627,8 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "INSERT INTO OverledeneFacturen ([Id],[uitvaartId],[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate]," +
-                                    "[kostenbegrotingCreated],[kostenbegrotingVerzekeraar]) " +
-                                    "VALUES (@FactuurId, @UitvaartId, @kostenbegrotingUrl, @kostenbegrotingJson, @kostenbegrotingCreationDate, @kostenbegrotingCreated,@verzekeraarId)";
+                                    "[kostenbegrotingCreated],[kostenbegrotingVerzekeraar], [korting]) " +
+                                    "VALUES (@FactuurId, @UitvaartId, @kostenbegrotingUrl, @kostenbegrotingJson, @kostenbegrotingCreationDate, @kostenbegrotingCreated,@verzekeraarId, @korting)";
                 command.Parameters.AddWithValue("@FactuurId", overledeneKostenbegrotingModel.Id);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneKostenbegrotingModel.UitvaartId);
                 command.Parameters.AddWithValue("@kostenbegrotingUrl", overledeneKostenbegrotingModel.KostenbegrotingUrl);
@@ -635,6 +636,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@kostenbegrotingCreationDate", DateTime.Now);
                 command.Parameters.AddWithValue("@kostenbegrotingCreated", 1);
                 command.Parameters.AddWithValue("@verzekeraarId", overledeneKostenbegrotingModel.KostenbegrotingVerzekeraar);
+                command.Parameters.AddWithValue("@korting", overledeneKostenbegrotingModel.Korting == 0 ? 0 : overledeneKostenbegrotingModel.Korting);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertFactuurFailed");
@@ -697,6 +699,7 @@ namespace Dossier_Registratie.Repositories
         }
         public void CreatePriceComponent(KostenbegrotingModel priceComponent)
         {
+            Debug.WriteLine(priceComponent.ComponentAantal);
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {

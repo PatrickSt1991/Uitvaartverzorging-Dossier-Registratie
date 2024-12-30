@@ -710,12 +710,14 @@ namespace Dossier_Registratie.Repositories
                 command.Connection = connection;
                 command.CommandText = "UPDATE OverledeneFacturen SET kostenbegrotingJson = @kostenbegrotingJson, " +
                                         "kostenbegrotingCreationDate = @kostenbegrotingCreationDate, " +
-                                        "kostenbegrotingVerzekeraar = @verzekeraarId" +
+                                        "kostenbegrotingVerzekeraar = @verzekeraarId, " +
+                                        "korting = @korting" +
                                         " WHERE uitvaartId = @UitvaartId";
                 command.Parameters.AddWithValue("@UitvaartId", overledeneFactuurModel.UitvaartId);
                 command.Parameters.AddWithValue("@kostenbegrotingJson", overledeneFactuurModel.KostenbegrotingJson);
                 command.Parameters.AddWithValue("@kostenbegrotingCreationDate", DateTime.Now);
                 command.Parameters.AddWithValue("@verzekeraarId", overledeneFactuurModel.KostenbegrotingVerzekeraar);
+                command.Parameters.AddWithValue("@korting", overledeneFactuurModel.Korting == 0 ? 0 : overledeneFactuurModel.Korting);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("UpdateKostenbegrotingFailed");

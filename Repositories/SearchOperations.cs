@@ -1135,7 +1135,7 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT OFA.Id,OFA.uitvaartId,[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate],[kostenbegrotingCreated],[KostenbegrotingVerzekeraar], [verzekeringProperties] " +
+                command.CommandText = "SELECT OFA.Id,OFA.uitvaartId,[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate],[kostenbegrotingCreated],[KostenbegrotingVerzekeraar], [verzekeringProperties], [korting] " +
                                         "FROM [OverledeneFacturen] AS OFA " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
                                         "LEFT JOIN OverledeneVerzerkeringInfo  OVI ON OFA.uitvaartId = OVI.uitvaartId " +
@@ -1154,7 +1154,8 @@ namespace Dossier_Registratie.Repositories
                             KostenbegrotingCreationDate = (DateTime)reader[4],
                             KostenbegrotingCreated = (bool)reader[5],
                             KostenbegrotingVerzekeraar = (Guid)reader[6],
-                            PolisJson = reader[7].ToString()
+                            PolisJson = reader[7].ToString(),
+                            Korting = reader.IsDBNull(8) ? 0m : (decimal)reader[8]
                         };
                     }
                 }

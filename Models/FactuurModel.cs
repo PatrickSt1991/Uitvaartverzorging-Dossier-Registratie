@@ -266,6 +266,7 @@ namespace Dossier_Registratie.Models
         private string _factuurOpdrachtgeverUrl;
         private string _factuurVerenigingUrl;
         private string _polisJson;
+        private decimal _korting;
 
         public Guid Id
         {
@@ -331,6 +332,11 @@ namespace Dossier_Registratie.Models
         {
             get { return _polisJson; }
             set { _polisJson = value; OnPropertyChanged(nameof(PolisJson)); }
+        }
+        public decimal Korting
+        {
+            get { return _korting; }
+            set { _korting = value; OnPropertyChanged(nameof(Korting)); }
         }
     }
     public class VerzekeringKbModel : ViewModelBase
