@@ -5,9 +5,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -35,6 +37,7 @@ namespace Dossier_Registratie.ViewModels
         private bool isEditPriceComponentPopupOpen;
         private bool newPriceComponent;
         private string searchOmschrijving;
+        private bool _showDeleted;
 
         private KostenbegrotingModel _selectedPriceComponent;
         private KostenbegrotingModel _priceComponentFilter;
@@ -44,6 +47,7 @@ namespace Dossier_Registratie.ViewModels
         private ObservableCollection<Guid> _selectedVerzekeringen;
         private ObservableCollection<KostenbegrotingModel> _priceComponents;
         private ObservableCollection<KostenbegrotingModel> _allPriceComponents = new ObservableCollection<KostenbegrotingModel>();
+        private ICollectionView _filteredPriceComponents;
         public KostenbegrotingModel SelectedPriceComponent
         {
             get { return _selectedPriceComponent; }
@@ -133,6 +137,15 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+        public ICollectionView FilteredPriceComponents
+        {
+            get => _filteredPriceComponents;
+            set
+            {
+                _filteredPriceComponents = value;
+                OnPropertyChanged(nameof(FilteredPriceComponents));
+            }
+        }
         public bool IsEditPriceComponentPopupOpen
         {
             get { return isEditPriceComponentPopupOpen; }
@@ -158,7 +171,19 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
+                {
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredPriceComponents.Refresh();
+                }
+            }
+        }
         public ConfigurationPriceComponentsViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
@@ -174,6 +199,9 @@ namespace Dossier_Registratie.ViewModels
             SelectedVerzekeraarsPriceComponents = new ObservableCollection<VerzekeraarsModel>();
             SelectedVerzekeringen = new ObservableCollection<Guid>();
             PriceComponents = new ObservableCollection<KostenbegrotingModel>();
+
+            FilteredPriceComponents = CollectionViewSource.GetDefaultView(PriceComponents);
+            FilteredPriceComponents.Filter = FilterPriceComponents;
 
             ActivatePriceComponentCommand = new ViewModelCommand(ExecuteActivatePriceComponentCommand);
             EditPriceComponentsCommand = new ViewModelCommand(ExecuteEditPriceComponentsCommand);
@@ -521,6 +549,12 @@ namespace Dossier_Registratie.ViewModels
                 return false;
             }
         }
+        private bool FilterPriceComponents(object item)
+        {
+            if (item is KostenbegrotingModel pricecomponent)
+                return ShowDeleted || !pricecomponent.IsDeleted;
 
+            return false;
+        }
     }
 }

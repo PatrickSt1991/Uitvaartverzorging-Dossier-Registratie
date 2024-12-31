@@ -3,7 +3,9 @@ using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -26,9 +28,11 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditRouwbrievenPopupOpen;
         private bool newRouwbrief;
+        private bool _showDeleted;
 
         private OverledeneRouwbrieven selectedRouwbrief;
         private ObservableCollection<OverledeneRouwbrieven> _rouwbrieven;
+        private ICollectionView _filteredRouwbrieven;
         public OverledeneRouwbrieven SelectedRouwbrief
         {
             get { return selectedRouwbrief; }
@@ -53,6 +57,15 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+        public ICollectionView FilteredRouwbrieven
+        {
+            get => _filteredRouwbrieven;
+            set
+            {
+                _filteredRouwbrieven = value;
+                OnPropertyChanged(nameof(FilteredRouwbrieven));
+            }
+        }
         public bool IsEditRouwbrievenPopupOpen
         {
             get { return isEditRouwbrievenPopupOpen; }
@@ -62,6 +75,19 @@ namespace Dossier_Registratie.ViewModels
                 {
                     isEditRouwbrievenPopupOpen = value;
                     OnPropertyChanged(nameof(IsEditRouwbrievenPopupOpen));
+                }
+            }
+        }
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
+                {
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredRouwbrieven.Refresh();
                 }
             }
         }
@@ -76,6 +102,9 @@ namespace Dossier_Registratie.ViewModels
 
             SelectedRouwbrief = new OverledeneRouwbrieven();
             Rouwbrieven = new ObservableCollection<OverledeneRouwbrieven>();
+
+            FilteredRouwbrieven = CollectionViewSource.GetDefaultView(Rouwbrieven);
+            FilteredRouwbrieven.Filter = FilterRouwbrieven;
 
             ActivateRouwbrievenCommand = new ViewModelCommand(ExecuteActivateRouwbrievenCommand);
             EditRouwbrievenCommand = new ViewModelCommand(ExecuteEditRouwbrievenCommand);
@@ -200,6 +229,13 @@ namespace Dossier_Registratie.ViewModels
             selectedRouwbrief.IsDeleted = false;
 
             IsEditRouwbrievenPopupOpen = true;
+        }
+        private bool FilterRouwbrieven(object item)
+        {
+            if (item is OverledeneRouwbrieven rouwbrief)
+                return ShowDeleted || !rouwbrief.IsDeleted;
+
+            return false;
         }
     }
 }

@@ -2,8 +2,12 @@
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
+using System.Collections;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -26,10 +30,24 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditAsbestemmingPopupOpen;
         private bool newAsbestemming;
+        private bool _showDeleted;
 
         private ConfigurationAsbestemmingModel selectedAsbestemming;
         private ObservableCollection<ConfigurationAsbestemmingModel> _asbestemming;
+        private ICollectionView _filteredAsbestemming;
 
+        public bool IsEditAsbestemmingPopupOpen
+        {
+            get { return isEditAsbestemmingPopupOpen; }
+            set
+            {
+                if (isEditAsbestemmingPopupOpen != value)
+                {
+                    isEditAsbestemmingPopupOpen = value;
+                    OnPropertyChanged(nameof(IsEditAsbestemmingPopupOpen));
+                }
+            }
+        }
         public ConfigurationAsbestemmingModel SelectedAsbestemming
         {
             get { return selectedAsbestemming; }
@@ -54,16 +72,25 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-
-        public bool IsEditAsbestemmingPopupOpen
+        public ICollectionView FilteredAsbestemming
         {
-            get { return isEditAsbestemmingPopupOpen; }
+            get => _filteredAsbestemming;
             set
             {
-                if (isEditAsbestemmingPopupOpen != value)
+                _filteredAsbestemming = value;
+                OnPropertyChanged(nameof(FilteredAsbestemming));
+            }
+        }
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if(_showDeleted != value)
                 {
-                    isEditAsbestemmingPopupOpen = value;
-                    OnPropertyChanged(nameof(IsEditAsbestemmingPopupOpen));
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredAsbestemming.Refresh();
                 }
             }
         }
@@ -78,6 +105,9 @@ namespace Dossier_Registratie.ViewModels
 
             SelectedAsbestemming = new ConfigurationAsbestemmingModel();
             Asbestemming = new ObservableCollection<ConfigurationAsbestemmingModel>();
+            FilteredAsbestemming = CollectionViewSource.GetDefaultView(Asbestemming);
+
+            FilteredAsbestemming.Filter = FilterAsbestemming;
 
             ActivateAsbestemmingCommand = new ViewModelCommand(ExecuteActivateAsbestemmingCommand);
             EditAsbestemmingCommand = new ViewModelCommand(ExecuteEditAsbestemmingCommand);
@@ -208,6 +238,13 @@ namespace Dossier_Registratie.ViewModels
             selectedAsbestemming.IsDeleted = false;
 
             IsEditAsbestemmingPopupOpen = true;
+        }
+        private bool FilterAsbestemming(object item)
+        {
+            if (item is ConfigurationAsbestemmingModel asbestemming)
+                return ShowDeleted || !asbestemming.IsDeleted;
+
+            return false;
         }
     }
 }

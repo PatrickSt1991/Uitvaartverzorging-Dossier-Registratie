@@ -13,7 +13,7 @@ namespace Dossier_Registratie.Models
         private string? _zipCode;
         private string? _city;
         private string? _county;
-        private bool? _isDeleted;
+        private bool _isDeleted;
         private string _btnBrush;
 
         public Guid Id
@@ -56,7 +56,7 @@ namespace Dossier_Registratie.Models
             get { return _county; }
             set { _county = value; OnPropertyChanged(nameof(County)); }
         }
-        public bool? IsDeleted
+        public bool IsDeleted
         {
             get { return _isDeleted; }
             set { _isDeleted = value; OnPropertyChanged(nameof(IsDeleted)); }

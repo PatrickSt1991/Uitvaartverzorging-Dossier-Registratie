@@ -115,7 +115,7 @@ namespace Dossier_Registratie.Models
         private Guid _id;
         private string? _kistTypeNummer;
         private string? _kistOmschrijving;
-        private bool? _isDeleted;
+        private bool _isDeleted;
         private string _btnBrush;
         public Guid Id
         {
@@ -132,7 +132,7 @@ namespace Dossier_Registratie.Models
             get { return _kistOmschrijving; }
             set { _kistOmschrijving = value; OnPropertyChanged(nameof(KistOmschrijving)); }
         }
-        public bool? IsDeleted
+        public bool IsDeleted
         {
             get { return _isDeleted; }
             set { _isDeleted = value; OnPropertyChanged(nameof(IsDeleted)); }

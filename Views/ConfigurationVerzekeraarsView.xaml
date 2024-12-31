@@ -29,8 +29,13 @@
             <Button Width="150" Height="25" Content="Nieuwe toevoegen" Command="{Binding CreateNewVerzekeraarCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label>Gedeactiveerd weergeven?</Label>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding ShowDeleted,Mode=TwoWay}"/>
+        </StackPanel>
+        
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="verzekeraarsDataGrid" ItemsSource="{Binding Verzekeraars}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="3" x:Name="verzekeraarsDataGrid" ItemsSource="{Binding FilteredVerzekeraars}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="100" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>
@@ -44,7 +49,6 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Naam" IsReadOnly="True" CanUserResize="True" Width="auto" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Afkorting" IsReadOnly="True" CanUserResize="True" Width="*" Binding="{Binding Afkorting}" Visibility="Hidden"/>
                 <DataGridCheckBoxColumn Header="Herkomst" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding IsHerkomst}"/>
                 <DataGridCheckBoxColumn Header="Verzekeraar" ElementStyle="{StaticResource CheckBoxStyle2}" CanUserResize="False" Width="*" Binding="{Binding IsVerzekeraar}"/>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*">
