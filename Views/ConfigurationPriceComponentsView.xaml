@@ -14,6 +14,7 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <helper:DecimalToStringConverter x:Key="DecimalToStringConverter" />
+        <helper:DecimalToStringConverterBeheer x:Key="DecimalToStringConverterBeheer" />
     </UserControl.Resources>
     <Grid x:Name="PriceComponentGrid">
         <Grid.RowDefinitions>
@@ -31,11 +32,11 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, Converter={StaticResource DecimalToStringConverter}, UpdateSourceTrigger=PropertyChanged, FallbackValue=0, TargetNullValue=''}" Width="800" />
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, Converter={StaticResource DecimalToStringConverterBeheer}, UpdateSourceTrigger=LostFocus, FallbackValue=0, TargetNullValue=''}" Width="800" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Factuur Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, Converter={StaticResource DecimalToStringConverter}, UpdateSourceTrigger=PropertyChanged, FallbackValue=0, TargetNullValue=''}" Width="800"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, Converter={StaticResource DecimalToStringConverterBeheer}, UpdateSourceTrigger=LostFocus, FallbackValue=0, TargetNullValue=''}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Verzekerd Aantal: " Width="200"/>

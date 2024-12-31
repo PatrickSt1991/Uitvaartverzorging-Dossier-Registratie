@@ -129,7 +129,7 @@ namespace Dossier_Registratie.Views
             }
             return child;
         }
-        private void dataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {

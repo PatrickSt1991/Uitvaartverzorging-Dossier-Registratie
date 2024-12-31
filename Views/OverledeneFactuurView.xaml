@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Dossier_Registratie.ViewModels"
              xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              mc:Ignorable="d" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              d:DesignHeight="950.96" d:DesignWidth="1400"
              DataContext="{x:Static local:OverledeneFactuurViewModel.KostenbegrotingInstance}"
              Loaded="ReloadDynamicElements"
@@ -46,12 +47,23 @@
                     </StackPanel>
                 </Border>
             </Popup>
-            <DataGrid Name="dataGrid" CanUserResizeColumns="True" CanUserAddRows="True" CanUserDeleteRows="True" ItemsSource="{Binding PriceComponents}" LostFocus="DataGrid_LostFocus" PreviewKeyDown="DataGrid_PreviewKeyDown" RowEditEnding="dataGrid_RowEditEnding" AutoGenerateColumns="False" Margin="10,85,10,0" Height="731" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <DataGrid Name="dataGrid" 
+                      CanUserResizeColumns="True" 
+                      CanUserAddRows="True" 
+                      CanUserDeleteRows="True" 
+                      ItemsSource="{Binding PriceComponents}" 
+                      LostFocus="DataGrid_LostFocus" 
+                      PreviewKeyDown="DataGrid_PreviewKeyDown" 
+                      RowEditEnding="DataGrid_RowEditEnding" 
+                      AutoGenerateColumns="False" Margin="10,85,10,0" Height="731" VerticalAlignment="Top" 
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                      dd:DragDrop.IsDragSource="True" 
+                      dd:DragDrop.IsDropTarget="True" 
+                      dd:DragDrop.DropHandler="{Binding}">
                 <DataGrid.Columns>
                     <DataGridTextColumn MinWidth="900" Width="Auto" Header="Omschrijving" Binding="{Binding Omschrijving}" />
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Aantal" Binding="{Binding Aantal}" />
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Verzekerd" Binding="{Binding Verzekerd}" />
-                    <!--<DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag" Binding="{Binding Bedrag, Converter={StaticResource DecimalToStringConverter}, Mode=TwoWay}" />-->
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag">
                         <DataGridTextColumn.Binding>
                             <Binding Path="Bedrag" Mode="TwoWay" Converter="{StaticResource DecimalToStringConverter}" TargetNullValue="">
