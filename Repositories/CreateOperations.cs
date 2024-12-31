@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Dossier_Registratie.Repositories
@@ -626,8 +627,8 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "INSERT INTO OverledeneFacturen ([Id],[uitvaartId],[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate]," +
-                                    "[kostenbegrotingCreated],[kostenbegrotingVerzekeraar]) " +
-                                    "VALUES (@FactuurId, @UitvaartId, @kostenbegrotingUrl, @kostenbegrotingJson, @kostenbegrotingCreationDate, @kostenbegrotingCreated,@verzekeraarId)";
+                                    "[kostenbegrotingCreated],[kostenbegrotingVerzekeraar], [korting]) " +
+                                    "VALUES (@FactuurId, @UitvaartId, @kostenbegrotingUrl, @kostenbegrotingJson, @kostenbegrotingCreationDate, @kostenbegrotingCreated,@verzekeraarId, @korting)";
                 command.Parameters.AddWithValue("@FactuurId", overledeneKostenbegrotingModel.Id);
                 command.Parameters.AddWithValue("@UitvaartId", overledeneKostenbegrotingModel.UitvaartId);
                 command.Parameters.AddWithValue("@kostenbegrotingUrl", overledeneKostenbegrotingModel.KostenbegrotingUrl);
@@ -635,6 +636,7 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@kostenbegrotingCreationDate", DateTime.Now);
                 command.Parameters.AddWithValue("@kostenbegrotingCreated", 1);
                 command.Parameters.AddWithValue("@verzekeraarId", overledeneKostenbegrotingModel.KostenbegrotingVerzekeraar);
+                command.Parameters.AddWithValue("@korting", overledeneKostenbegrotingModel.Korting == 0 ? 0 : overledeneKostenbegrotingModel.Korting);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertFactuurFailed");
@@ -697,20 +699,20 @@ namespace Dossier_Registratie.Repositories
         }
         public void CreatePriceComponent(KostenbegrotingModel priceComponent)
         {
+            Debug.WriteLine(priceComponent.ComponentAantal);
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [ConfigurationFactuurComponent] (Id, ComponentId, Omschrijving, Bedrag, VerzekerdAantal, Verzekering, VerzekeringJson,IsDeleted, SortOrder, factuurBedrag, DefaultPM) " +
-                                        "VALUES (@id, @compid, @omschrijving, @bedrag, @aantal, @verzekering, @verzekeringJson, 0, @sortOrder, @factuurBedrag, @defaultpm)";
+                command.CommandText = "INSERT INTO [ConfigurationFactuurComponent] (Id, ComponentId, Omschrijving, Bedrag, VerzekerdAantal, VerzekeringJson,IsDeleted, SortOrder, factuurBedrag, DefaultPM) " +
+                                        "VALUES (@id, @compid, @omschrijving, @bedrag, @aantal, @verzekeringJson, 0, @sortOrder, @factuurBedrag, @defaultpm)";
                 command.Parameters.AddWithValue("@id", priceComponent.Id);
                 command.Parameters.AddWithValue("@compid", priceComponent.ComponentId);
                 command.Parameters.AddWithValue("@omschrijving", priceComponent.ComponentOmschrijving);
                 command.Parameters.AddWithValue("@aantal", priceComponent.ComponentAantal);
                 command.Parameters.AddWithValue("@bedrag", priceComponent.ComponentBedrag);
                 command.Parameters.AddWithValue("@factuurBedrag", priceComponent.ComponentFactuurBedrag);
-                command.Parameters.AddWithValue("@verzekering", priceComponent.ComponentVerzekering);
                 command.Parameters.AddWithValue("@verzekeringJson", priceComponent.ComponentVerzekeringJson);
                 command.Parameters.AddWithValue("@defaultpm", priceComponent.DefaultPM);
                 command.Parameters.AddWithValue("sortOrder", priceComponent.SortOrder);

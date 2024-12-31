@@ -720,14 +720,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public bool CanExecuteSaveSteenCommand(object obj)
         {
-            if (SteenhouwerijModel.HasData())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
         }
         public void ExecuteSaveSteenCommand(object obj)
         {
@@ -793,14 +786,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public bool CanExecuteSaveBloemCommand(object obj)
         {
-            if (BloemenModel.HasData())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
         }
         public void ExecuteSaveBloemCommand(object obj)
         {
@@ -876,14 +862,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public bool CanExecuteSaveUrnSieradenCommand(object obj)
         {
-            if (UrnSieradenModel.HasData())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
         }
         public void ExecuteSaveUrnSieradenCommand(object obj)
         {

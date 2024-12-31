@@ -496,7 +496,7 @@ namespace Dossier_Registratie.Repositories
                                 ZipCode = reader["ZipCode"].ToString(),
                                 City = reader["City"].ToString(),
                                 County = reader["County"].ToString(),
-                                IsDeleted = reader["IsDeleted"] as bool?
+                                IsDeleted = (bool)reader["IsDeleted"]
                             });
                         }
                     }

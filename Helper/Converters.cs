@@ -293,5 +293,51 @@ namespace Dossier_Registratie.Helper
             return 0m; // Or throw an exception if parsing fails
         }
     }
+    public class DecimalToStringConverterBeheer : IValueConverter
+    {
+        private readonly NumberFormatInfo dutchNumberFormatInfo;
+
+        public DecimalToStringConverterBeheer()
+        {
+            dutchNumberFormatInfo = new NumberFormatInfo
+            {
+                NumberDecimalSeparator = ",",
+                NumberGroupSeparator = ".",
+                CurrencySymbol = "€"
+            };
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is decimal decimalValue)
+            {
+                // Format the value to always display 2 decimal places
+                return decimalValue.ToString("N2", dutchNumberFormatInfo);
+            }
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                return 0m;
+            }
+
+            string stringValue = value.ToString().Trim();
+
+            // Normalize input for parsing
+            stringValue = stringValue.Replace(dutchNumberFormatInfo.NumberGroupSeparator, "");
+            stringValue = stringValue.Replace(dutchNumberFormatInfo.NumberDecimalSeparator, ".");
+
+            if (decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
+            {
+                return result;
+            }
+
+            return Binding.DoNothing; // Preserve invalid input
+        }
+    }
+
 
 }

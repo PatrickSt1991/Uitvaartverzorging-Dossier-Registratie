@@ -309,6 +309,7 @@ namespace Dossier_Registratie.ViewModels
         private void PriceComponents_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             UpdateSubtotaal();
+            UpdateTotal();
         }
         public void UpdateSubtotaal()
         {
@@ -321,7 +322,8 @@ namespace Dossier_Registratie.ViewModels
                 .Where(item => item.Bedrag.HasValue && item.OrgBedrag.HasValue && item.Bedrag.Value < item.OrgBedrag.Value)
                 .Sum(item => item.OrgBedrag.Value - item.Bedrag.Value);
 
-            Total = Subtotaal - DiscountAmount;
+            Total = Subtotaal - CalculatedSubtotal - DiscountAmount;
+            //Total = CalculatedSubtotal - DiscountAmount;
         }
         private void ExecuteKeyDownCommand(object parameter)
         {
@@ -444,6 +446,9 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneFactuurModel.KostenbegrotingCreated = factuurResult.KostenbegrotingCreated;
                 OverledeneFactuurModel.KostenbegrotingVerzekeraar = factuurResult.KostenbegrotingVerzekeraar;
                 OverledeneFactuurModel.PolisJson = factuurResult.PolisJson;
+                OverledeneFactuurModel.Korting = factuurResult.Korting;
+                DiscountAmount = factuurResult.Korting;
+
 
                 var previouslySelected = miscellaneousRepository.GetVerzekeraarsById(OverledeneFactuurModel.KostenbegrotingVerzekeraar);
 
@@ -461,7 +466,8 @@ namespace Dossier_Registratie.ViewModels
                     KostenbegrotingCreationDate = OverledeneFactuurModel.KostenbegrotingCreationDate,
                     KostenbegrotingCreated = OverledeneFactuurModel.KostenbegrotingCreated,
                     KostenbegrotingVerzekeraar = OverledeneFactuurModel.KostenbegrotingVerzekeraar,
-                    PolisJson = OverledeneFactuurModel.PolisJson
+                    PolisJson = OverledeneFactuurModel.PolisJson,
+                    Korting = OverledeneFactuurModel.Korting
                 };
 
                 var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(OverledeneFactuurModel.KostenbegrotingJson);
@@ -592,6 +598,7 @@ namespace Dossier_Registratie.ViewModels
 
 
                         Process.Start(stopInfo);
+                        IsExcelButtonEnabled = true;
                         return;
                     }
                 }
@@ -807,7 +814,6 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteOpenPopupCommand(object obj)
         {
-            Debug.WriteLine("click");
             IsPopupVisible = true;
         }
         public void ExecuteOpenKostenbegrotingCommand(object obj)
@@ -1004,21 +1010,29 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
-            // Perform merging after the loop to minimize COM interactions
+
             foreach (var range in mergeRanges)
             {
                 range.Merge();
                 range.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
             }
 
-            worksheet.Cells[excelRow + 1, 8] = "-" + CalculatedSubtotal;
-            //((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            decimal negativeDiscount = DiscountAmount < 0 ? DiscountAmount : -DiscountAmount;
+            worksheet.Cells[excelRow + 1, 8] = negativeDiscount;
             ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+
+            decimal calculatedSubtotal = CalculatedSubtotal < 0 ? CalculatedSubtotal : -CalculatedSubtotal;
+            worksheet.Cells[excelRow + 2, 8] = calculatedSubtotal;
+
+            ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+
             excelRow++;
-            worksheet.Cells[excelRow + 1, 8] = totalAmount;
-            //((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            if (CalculatedSubtotal > 0) 
+                totalAmount = (double)((decimal)totalAmount - CalculatedSubtotal - DiscountAmount);
+
+            worksheet.Cells[excelRow + 2, 8] = totalAmount;
             ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
-            worksheet.Cells[excelRow + 5, 4] = kostenbegrotingInfoResult.OpdrachtgeverNaam;
+            worksheet.Cells[excelRow + 5, 4] = kostenbegrotingInfoResult.OverledeneAanhef + " " + kostenbegrotingInfoResult.OpdrachtgeverNaam;
             worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
             worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
             worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
@@ -1052,11 +1066,11 @@ namespace Dossier_Registratie.ViewModels
         {
             if (obj != null && obj.ToString() == "Opslaan")
             {
-
                 OverledeneFactuurModel.UitvaartId = Globals.UitvaartCodeGuid;
                 OverledeneFactuurModel.KostenbegrotingUrl = kostenbegrotingUrl;
                 OverledeneFactuurModel.KostenbegrotingJson = SerializePriceComponentsToJson();
                 OverledeneFactuurModel.KostenbegrotingVerzekeraar = SelectedVerzekeraar.Id;
+                OverledeneFactuurModel.Korting = DiscountAmount;
 
                 bool FactuurInfoExists = miscellaneousRepository.UitvaarFactuurExists(OverledeneFactuurModel.UitvaartId);
 
@@ -1099,7 +1113,8 @@ namespace Dossier_Registratie.ViewModels
                             KostenbegrotingJson = OverledeneFactuurModel.KostenbegrotingJson,
                             KostenbegrotingCreationDate = OverledeneFactuurModel.KostenbegrotingCreationDate,
                             KostenbegrotingCreated = OverledeneFactuurModel.KostenbegrotingCreated,
-                            KostenbegrotingVerzekeraar = OverledeneFactuurModel.KostenbegrotingVerzekeraar
+                            KostenbegrotingVerzekeraar = OverledeneFactuurModel.KostenbegrotingVerzekeraar,
+                            Korting = OverledeneFactuurModel.Korting
                         };
                     }
                 }

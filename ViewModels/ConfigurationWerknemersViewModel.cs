@@ -4,7 +4,9 @@ using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -27,11 +29,26 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditUserPopupOpen;
         private bool newEmployee;
+        private bool _showDeleted;
 
         private WerknemersModel selectedUser;
         private ObservableCollection<WerknemersModel> _werknemers;
         private ObservableCollection<WindowsAccount> _werknemerPermissions;
         private ObservableCollection<PermissionsModel> _permissions;
+        private ICollectionView _filteredwerknemers;
+
+        public bool IsEditUserPopupOpen
+        {
+            get { return isEditUserPopupOpen; }
+            set
+            {
+                if (isEditUserPopupOpen != value)
+                {
+                    isEditUserPopupOpen = value;
+                    OnPropertyChanged(nameof(IsEditUserPopupOpen));
+                }
+            }
+        }
         public WerknemersModel SelectedUser
         {
             get { return selectedUser; }
@@ -80,15 +97,26 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-        public bool IsEditUserPopupOpen
+
+        public ICollectionView FilteredWerknemers
         {
-            get { return isEditUserPopupOpen; }
+            get => _filteredwerknemers;
             set
             {
-                if (isEditUserPopupOpen != value)
+                _filteredwerknemers = value;
+                OnPropertyChanged(nameof(FilteredWerknemers));
+            }
+        }
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
                 {
-                    isEditUserPopupOpen = value;
-                    OnPropertyChanged(nameof(IsEditUserPopupOpen));
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredWerknemers.Refresh();
                 }
             }
         }
@@ -104,6 +132,9 @@ namespace Dossier_Registratie.ViewModels
             Werknemers = new ObservableCollection<WerknemersModel>();
             WerknemersPermissions = new ObservableCollection<WindowsAccount>();
             Permissions = new ObservableCollection<PermissionsModel>();
+
+            FilteredWerknemers = CollectionViewSource.GetDefaultView(Werknemers);
+            FilteredWerknemers.Filter = FilterWerknemers;
 
             ActivateUserCommand = new ViewModelCommand(ExecuteActivateUserCommand);
             EditUserCommand = new ViewModelCommand(ExecuteEditUserCommand);
@@ -233,6 +264,9 @@ namespace Dossier_Registratie.ViewModels
             {
                 try
                 {
+                    if (SelectedUser.Geboortedatum == DateTime.MinValue)
+                        SelectedUser.Geboortedatum = DateTime.Today;
+
                     createRepository.EmployeeCreate(SelectedUser);
                 }
                 catch (Exception ex)
@@ -346,6 +380,13 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
             }
+        }
+        private bool FilterWerknemers(object item)
+        {
+            if (item is WerknemersModel werknemer)
+                return ShowDeleted || !werknemer.IsDeleted;
+
+            return false;
         }
     }
 }

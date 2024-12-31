@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Dossier_Registratie.ViewModels"
              xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              mc:Ignorable="d" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              d:DesignHeight="950.96" d:DesignWidth="1400"
              DataContext="{x:Static local:OverledeneFactuurViewModel.KostenbegrotingInstance}"
              Loaded="ReloadDynamicElements"
@@ -46,12 +47,23 @@
                     </StackPanel>
                 </Border>
             </Popup>
-            <DataGrid Name="dataGrid" CanUserResizeColumns="True" CanUserAddRows="True" CanUserDeleteRows="True" ItemsSource="{Binding PriceComponents}" LostFocus="DataGrid_LostFocus" PreviewKeyDown="DataGrid_PreviewKeyDown" RowEditEnding="dataGrid_RowEditEnding" AutoGenerateColumns="False" Margin="10,85,10,0" Height="731" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <DataGrid Name="dataGrid" 
+                      CanUserResizeColumns="True" 
+                      CanUserAddRows="True" 
+                      CanUserDeleteRows="True" 
+                      ItemsSource="{Binding PriceComponents}" 
+                      LostFocus="DataGrid_LostFocus" 
+                      PreviewKeyDown="DataGrid_PreviewKeyDown" 
+                      RowEditEnding="DataGrid_RowEditEnding" 
+                      AutoGenerateColumns="False" Margin="10,85,10,0" Height="731" VerticalAlignment="Top" 
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                      dd:DragDrop.IsDragSource="True" 
+                      dd:DragDrop.IsDropTarget="True" 
+                      dd:DragDrop.DropHandler="{Binding}">
                 <DataGrid.Columns>
                     <DataGridTextColumn MinWidth="900" Width="Auto" Header="Omschrijving" Binding="{Binding Omschrijving}" />
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Aantal" Binding="{Binding Aantal}" />
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Verzekerd" Binding="{Binding Verzekerd}" />
-                    <!--<DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag" Binding="{Binding Bedrag, Converter={StaticResource DecimalToStringConverter}, Mode=TwoWay}" />-->
                     <DataGridTextColumn MinWidth="75" Width="Auto" Header="Bedrag">
                         <DataGridTextColumn.Binding>
                             <Binding Path="Bedrag" Mode="TwoWay" Converter="{StaticResource DecimalToStringConverter}" TargetNullValue="">
@@ -69,7 +81,13 @@
             <Button x:Name="CreateKostenbegrotingFile" Content="Genereer Excel" IsEnabled="{Binding IsExcelButtonEnabled}" Command="{Binding Path=CreateKostenbegrotingFileCommand}" Margin="771,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
             <TextBox x:Name="input_subtotaal" Margin="1119,854,10,0" TextWrapping="Wrap" Text="{Binding Subtotaal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
             <Label x:Name="lbl_SubTotaal" Content="Subtotaal: " HorizontalAlignment="Left" Margin="990,854,0,0" VerticalAlignment="Top"/>
-            <TextBox x:Name="input_korting" Margin="1119,885,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Text="{Binding DiscountAmount, Converter={StaticResource CurrencyConverter}}"/>
+            <!--<TextBox x:Name="input_korting" Margin="1119,885,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Text="{Binding DiscountAmount, StringFormat='€ {0:N2}'}"/>-->
+            <TextBox x:Name="input_korting" Margin="1132,885,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" 
+                              Text="{Binding DiscountAmount, 
+                        Mode=TwoWay, 
+                        Converter={StaticResource DecimalToStringConverter}, 
+                        FallbackValue=0, 
+                        TargetNullValue=''}" />
             <Label x:Name="lbl_korting" Content="Korting:" HorizontalAlignment="Left" Margin="990,885,0,0" VerticalAlignment="Top"/>
             <TextBox x:Name="input_total" Margin="1119,916,10,0" TextWrapping="Wrap" Text="{Binding Total, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False" IsReadOnly="True"/>
 
@@ -78,6 +96,7 @@
             <TextBox x:Name="input_bedragAf" Margin="1119,823,10,0" TextWrapping="Wrap" Text="{Binding CalculatedSubtotal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
             <Label x:Name="lbl_bedragAf" Content="Bedrag in mindering: " HorizontalAlignment="Left" Margin="990,823,0,0" VerticalAlignment="Top"/>
             <Button x:Name="OpenKostenbegrotingFile" Content="Open Excel" Visibility="{Binding IsExcelFileButtonVisable}" Command="{Binding OpenKostenbegrotingCommand}" Margin="608,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
+            <Label x:Name="lbl_korting_Copy" Content="€" HorizontalAlignment="Left" Margin="1115,886,0,0" VerticalAlignment="Top"/>
         </Grid>
     </ScrollViewer>
 </UserControl>

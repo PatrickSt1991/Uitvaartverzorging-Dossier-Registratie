@@ -5,10 +5,12 @@ using Dossier_Registratie.Repositories;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -32,9 +34,11 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditVerzekeringPopupOpen;
         private bool newVerzekering;
+        private bool _showDeleted;
 
         private VerzekeraarsModel selectedVerzekering;
         private ObservableCollection<VerzekeraarsModel> _verzekeraars;
+        private ICollectionView _filteredVerzekeraars;
 
         public VerzekeraarsModel SelectedVerzekering
         {
@@ -60,6 +64,16 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+        public ICollectionView FilteredVerzekeraars
+        {
+            get => _filteredVerzekeraars;
+            set
+            {
+                _filteredVerzekeraars = value;
+                OnPropertyChanged(nameof(FilteredVerzekeraars));
+            }
+        }
+
         public bool IsEditVerzekeringPopupOpen
         {
             get { return isEditVerzekeringPopupOpen; }
@@ -69,6 +83,19 @@ namespace Dossier_Registratie.ViewModels
                 {
                     isEditVerzekeringPopupOpen = value;
                     OnPropertyChanged(nameof(IsEditVerzekeringPopupOpen));
+                }
+            }
+        }
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
+                {
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredVerzekeraars.Refresh();
                 }
             }
         }
@@ -83,6 +110,10 @@ namespace Dossier_Registratie.ViewModels
 
             SelectedVerzekering = new VerzekeraarsModel();
             Verzekeraars = new ObservableCollection<VerzekeraarsModel>();
+
+            FilteredVerzekeraars = CollectionViewSource.GetDefaultView(Verzekeraars);
+            FilteredVerzekeraars.Filter = FilterVerzekeraars;
+
 
             ActivateVerzekeringCommand = new ViewModelCommand(ExecuteActivateVerzekeringCommand);
             EditVerzekeringCommand = new ViewModelCommand(ExecuteEditVerzekeringCommand);
@@ -318,6 +349,13 @@ namespace Dossier_Registratie.ViewModels
             selectedVerzekering.Telefoon = string.Empty;
 
             IsEditVerzekeringPopupOpen = true;
+        }
+        private bool FilterVerzekeraars(object item)
+        {
+            if (item is VerzekeraarsModel verzekeraar)
+                return ShowDeleted || !verzekeraar.IsDeleted;
+
+            return false;
         }
     }
 }

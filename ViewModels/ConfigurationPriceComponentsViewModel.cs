@@ -5,9 +5,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -35,6 +37,7 @@ namespace Dossier_Registratie.ViewModels
         private bool isEditPriceComponentPopupOpen;
         private bool newPriceComponent;
         private string searchOmschrijving;
+        private bool _showDeleted;
 
         private KostenbegrotingModel _selectedPriceComponent;
         private KostenbegrotingModel _priceComponentFilter;
@@ -44,6 +47,7 @@ namespace Dossier_Registratie.ViewModels
         private ObservableCollection<Guid> _selectedVerzekeringen;
         private ObservableCollection<KostenbegrotingModel> _priceComponents;
         private ObservableCollection<KostenbegrotingModel> _allPriceComponents = new ObservableCollection<KostenbegrotingModel>();
+        private ICollectionView _filteredPriceComponents;
         public KostenbegrotingModel SelectedPriceComponent
         {
             get { return _selectedPriceComponent; }
@@ -133,6 +137,15 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+        public ICollectionView FilteredPriceComponents
+        {
+            get => _filteredPriceComponents;
+            set
+            {
+                _filteredPriceComponents = value;
+                OnPropertyChanged(nameof(FilteredPriceComponents));
+            }
+        }
         public bool IsEditPriceComponentPopupOpen
         {
             get { return isEditPriceComponentPopupOpen; }
@@ -158,7 +171,19 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
+                {
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredPriceComponents.Refresh();
+                }
+            }
+        }
         public ConfigurationPriceComponentsViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
@@ -174,6 +199,9 @@ namespace Dossier_Registratie.ViewModels
             SelectedVerzekeraarsPriceComponents = new ObservableCollection<VerzekeraarsModel>();
             SelectedVerzekeringen = new ObservableCollection<Guid>();
             PriceComponents = new ObservableCollection<KostenbegrotingModel>();
+
+            FilteredPriceComponents = CollectionViewSource.GetDefaultView(PriceComponents);
+            FilteredPriceComponents.Filter = FilterPriceComponents;
 
             ActivatePriceComponentCommand = new ViewModelCommand(ExecuteActivatePriceComponentCommand);
             EditPriceComponentsCommand = new ViewModelCommand(ExecuteEditPriceComponentsCommand);
@@ -315,7 +343,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             var serializedJson = JsonConvert.SerializeObject(
-                SelectedVerzekeringen.Select(id => new { Id = id })
+                    SelectedVerzekeringen.Select(id => new { Id = id })
                 );
 
             SelectedPriceComponent.ComponentVerzekeringJson = serializedJson;
@@ -327,6 +355,7 @@ namespace Dossier_Registratie.ViewModels
             SelectedVerzekeraarsPriceComponents.Clear();
             PriceComponentsVerzekeraars.Clear();
             PriceComponents.Clear();
+            _allPriceComponents.Clear();
 
             foreach (var verzekeraar in miscellaneousRepository.GetVerzekeraars())
             {
@@ -353,22 +382,13 @@ namespace Dossier_Registratie.ViewModels
             }
             PriceComponentsVerzekeraars.Insert(0, new VerzekeraarsModel { Id = Guid.NewGuid(), Name = "Geen Filter", Afkorting = "Alles" });
 
-            foreach (var component in miscellaneousRepository.GetAllPriceComponentsBeheer())
-            {
-                PriceComponents.Add(new KostenbegrotingModel
-                {
-                    ComponentId = component.ComponentId,
-                    ComponentOmschrijving = component.ComponentOmschrijving,
-                    ComponentBedrag = component.ComponentBedrag,
-                    ComponentAantal = component.ComponentAantal,
-                    ComponentVerzekeringJson = component.ComponentVerzekeringJson,
-                    DefaultPM = component.DefaultPM,
-                    SortOrder = component.SortOrder,
-                    IsDeleted = component.IsDeleted,
-                    BtnBrush = component.BtnBrush
-                });
+            var components = miscellaneousRepository.GetAllPriceComponentsBeheer()
+                .OrderBy(component => component.IsDeleted)
+                .ToList();
 
-                _allPriceComponents.Add(new KostenbegrotingModel
+            foreach (var component in components)
+            {
+                var kostenbegrotingModel = new KostenbegrotingModel
                 {
                     ComponentId = component.ComponentId,
                     ComponentOmschrijving = component.ComponentOmschrijving,
@@ -379,7 +399,10 @@ namespace Dossier_Registratie.ViewModels
                     SortOrder = component.SortOrder,
                     IsDeleted = component.IsDeleted,
                     BtnBrush = component.BtnBrush
-                });
+                };
+
+                PriceComponents.Add(kostenbegrotingModel);
+                _allPriceComponents.Add(kostenbegrotingModel);
             }
         }
         public void ExecuteSavePriceComponentCommand(object obj)
@@ -418,7 +441,7 @@ namespace Dossier_Registratie.ViewModels
             if (SelectedPriceComponentVerzekeraar != null &&
                 !string.IsNullOrEmpty(SelectedPriceComponentVerzekeraar.Name) &&
                 SelectedPriceComponentVerzekeraar.Name != "Geen Filter")
-            {
+            { 
                 ExecuteFilterPriceComponentCommand();
             }
             else if (!string.IsNullOrEmpty(SearchOmschrijving))
@@ -451,29 +474,39 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteFilterPriceComponentCommand()
         {
-            var filteredPriceComponents = SelectedPriceComponentVerzekeraar.Afkorting == "Alles"
-                ? _priceComponents.ToList()
-                : _priceComponents.Where(pc =>
-                {
-                    if (string.IsNullOrEmpty(pc.ComponentVerzekeringJson))
-                        return false;
+            // Fetch latest components from the database
+            var components = miscellaneousRepository.GetAllPriceComponentsBeheer()
+                .OrderBy(component => component.IsDeleted)
+                .ToList();
 
-                    try
-                    {
-                        var ids = JsonConvert.DeserializeObject<List<Dictionary<string, Guid>>>(pc.ComponentVerzekeringJson).Select(dict => dict["Id"]);
-
-                        return ids.Contains(SelectedPriceComponentVerzekeraar.Id);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error deserializing ComponentVerzekeringJson for PriceComponent with ID {pc.ComponentId}: {ex.Message}");
-                        return false;
-                    }
-                }).ToList();
-
+            // Clear the lists before populating them with new data
+            _allPriceComponents.Clear();
             PriceComponents.Clear();
-            foreach (var priceComponent in filteredPriceComponents)
-                PriceComponents.Add(priceComponent);
+
+            foreach (var component in components)
+            {
+                var kostenbegrotingModel = new KostenbegrotingModel
+                {
+                    ComponentId = component.ComponentId,
+                    ComponentOmschrijving = component.ComponentOmschrijving,
+                    ComponentBedrag = component.ComponentBedrag,
+                    ComponentAantal = component.ComponentAantal,
+                    ComponentVerzekeringJson = component.ComponentVerzekeringJson,
+                    DefaultPM = component.DefaultPM,
+                    SortOrder = component.SortOrder,
+                    IsDeleted = component.IsDeleted,
+                    BtnBrush = component.BtnBrush
+                };
+
+                // Add all components to _allPriceComponents
+                _allPriceComponents.Add(kostenbegrotingModel);
+
+                // Apply filter logic based on SelectedPriceComponentVerzekeraar.Afkorting
+                if (SelectedPriceComponentVerzekeraar.Afkorting == "Alles" || FilterComponent(kostenbegrotingModel))
+                {
+                    PriceComponents.Add(kostenbegrotingModel);
+                }
+            }
 
         }
         private void FilterPriceComponentsOmschrijving()
@@ -497,6 +530,31 @@ namespace Dossier_Registratie.ViewModels
                     PriceComponents.Add(component);
                 }
             }
+        }
+        private bool FilterComponent(KostenbegrotingModel component)
+        {
+            if (string.IsNullOrEmpty(component.ComponentVerzekeringJson))
+                return false;
+
+            try
+            {
+                var ids = JsonConvert.DeserializeObject<List<Dictionary<string, Guid>>>(component.ComponentVerzekeringJson)
+                    .Select(dict => dict["Id"]);
+
+                return ids.Contains(SelectedPriceComponentVerzekeraar.Id);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error deserializing ComponentVerzekeringJson for PriceComponent with ID {component.ComponentId}: {ex.Message}");
+                return false;
+            }
+        }
+        private bool FilterPriceComponents(object item)
+        {
+            if (item is KostenbegrotingModel pricecomponent)
+                return ShowDeleted || !pricecomponent.IsDeleted;
+
+            return false;
         }
     }
 }

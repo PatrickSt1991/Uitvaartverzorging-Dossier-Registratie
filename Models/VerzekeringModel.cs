@@ -72,7 +72,7 @@ namespace Dossier_Registratie.Models
         private bool? _verzekeraar;
         private bool? _lidnummer;
         private bool? _pakket;
-        private bool? _isDeleted;
+        private bool _isDeleted;
         private string _btnBrush;
         private string? _postbusAddress = null;
         private string? _postbusName = null;
@@ -123,7 +123,7 @@ namespace Dossier_Registratie.Models
             get { return _pakket; }
             set { _pakket = value; OnPropertyChanged(nameof(Pakket)); }
         }
-        public bool? IsDeleted
+        public bool IsDeleted
         {
             get { return _isDeleted; }
             set { _isDeleted = value; OnPropertyChanged(nameof(IsDeleted)); }

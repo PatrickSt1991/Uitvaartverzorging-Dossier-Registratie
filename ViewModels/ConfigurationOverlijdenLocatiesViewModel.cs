@@ -3,7 +3,9 @@ using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -26,10 +28,24 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditOverlijdenLocatiePopupOpen;
         private bool newOverlijdenLocatie;
+        private bool _showDeleted;
 
         private SuggestionModel selectedOverlijdenlocatie;
         private ObservableCollection<SuggestionModel> _overlijdenlocatie;
+        private ICollectionView _filteredLocaties;
 
+        public bool IsEditOverlijdenLocatiePopupOpen
+        {
+            get { return isEditOverlijdenLocatiePopupOpen; }
+            set
+            {
+                if (isEditOverlijdenLocatiePopupOpen != value)
+                {
+                    isEditOverlijdenLocatiePopupOpen = value;
+                    OnPropertyChanged(nameof(IsEditOverlijdenLocatiePopupOpen));
+                }
+            }
+        }
         public SuggestionModel SelectedOverlijdenlocatie
         {
             get { return selectedOverlijdenlocatie; }
@@ -54,15 +70,25 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-        public bool IsEditOverlijdenLocatiePopupOpen
+        public ICollectionView FilteredLocaties
         {
-            get { return isEditOverlijdenLocatiePopupOpen; }
+            get => _filteredLocaties;
             set
             {
-                if (isEditOverlijdenLocatiePopupOpen != value)
+                _filteredLocaties = value;
+                OnPropertyChanged(nameof(FilteredLocaties));
+            }
+        }
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
                 {
-                    isEditOverlijdenLocatiePopupOpen = value;
-                    OnPropertyChanged(nameof(IsEditOverlijdenLocatiePopupOpen));
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredLocaties.Refresh();
                 }
             }
         }
@@ -77,6 +103,9 @@ namespace Dossier_Registratie.ViewModels
 
             SelectedOverlijdenlocatie = new SuggestionModel();
             Overlijdenlocatie = new ObservableCollection<SuggestionModel>();
+
+            FilteredLocaties = CollectionViewSource.GetDefaultView(Overlijdenlocatie);
+            FilteredLocaties.Filter = FilterLocaties;
 
             ActivateOverlijdenLocatieCommand = new ViewModelCommand(ExecuteActivateOverlijdenLocatieCommand);
             EditOverlijdenLocatieCommand = new ViewModelCommand(ExecuteEditOverlijdenLocatieCommand);
@@ -218,6 +247,13 @@ namespace Dossier_Registratie.ViewModels
             selectedOverlijdenlocatie.IsDeleted = false;
 
             IsEditOverlijdenLocatiePopupOpen = true;
+        }
+        private bool FilterLocaties(object item)
+        {
+            if (item is SuggestionModel locatie)
+                return ShowDeleted || !locatie.IsDeleted;
+
+            return false;
         }
     }
 }

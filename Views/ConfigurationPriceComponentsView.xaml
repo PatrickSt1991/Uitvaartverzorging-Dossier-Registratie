@@ -5,12 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dossier_Registratie.Views"
              xmlns:viewmodels="clr-namespace:Dossier_Registratie.ViewModels"
+             xmlns:helper="clr-namespace:Dossier_Registratie.Helper"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="1450" d:DesignWidth="1800" d:Background="White">
     <UserControl.DataContext>
         <viewmodels:ConfigurationPriceComponentsViewModel/>
     </UserControl.DataContext>
+    <UserControl.Resources>
+        <helper:DecimalToStringConverter x:Key="DecimalToStringConverter" />
+        <helper:DecimalToStringConverterBeheer x:Key="DecimalToStringConverterBeheer" />
+    </UserControl.Resources>
     <Grid x:Name="PriceComponentGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -27,11 +32,11 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="800"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentBedrag, Converter={StaticResource DecimalToStringConverterBeheer}, UpdateSourceTrigger=LostFocus, FallbackValue=0, TargetNullValue=''}" Width="800" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Factuur Bedrag: " Width="200"/>
-                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Width="800"/>
+                        <TextBox Text="{Binding SelectedPriceComponent.ComponentFactuurBedrag, Converter={StaticResource DecimalToStringConverterBeheer}, UpdateSourceTrigger=LostFocus, FallbackValue=0, TargetNullValue=''}" Width="800"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0,0,5">
                         <Label Content="Verzekerd Aantal: " Width="200"/>
@@ -87,8 +92,13 @@
             </StackPanel>
         </Grid>
 
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label>Gedeactiveerd weergeven?</Label>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding ShowDeleted,Mode=TwoWay}"/>
+        </StackPanel>
+        
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="priceComponentsDataGrid" ItemsSource="{Binding PriceComponents}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="priceComponentsDataGrid" ItemsSource="{Binding FilteredPriceComponents}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="100" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>

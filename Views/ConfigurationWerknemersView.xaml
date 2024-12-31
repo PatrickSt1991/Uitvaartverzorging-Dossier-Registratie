@@ -177,8 +177,13 @@
             <Button Width="150" Height="25" Content="Nieuwe Gebruiker" Command="{Binding CreateNewEmployeeCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label>Gedeactiveerd weergeven?</Label>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding ShowDeleted,Mode=TwoWay}"/>
+        </StackPanel>
+
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Grid.Row="4" x:Name="gebruikersDataGrid" ItemsSource="{Binding Werknemers}" AutoGenerateColumns="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Grid.Row="3" x:Name="gebruikersDataGrid" ItemsSource="{Binding FilteredWerknemers}" AutoGenerateColumns="False" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>

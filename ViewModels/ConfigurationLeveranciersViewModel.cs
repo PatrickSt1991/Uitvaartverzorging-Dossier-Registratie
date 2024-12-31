@@ -4,7 +4,9 @@ using Dossier_Registratie.Repositories;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -28,10 +30,12 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditLeverancierPopupOpen;
         private bool newLeverancier;
+        private bool _showDeleted;
 
         private LeveranciersModel selectedLeverancier;
         private LeverancierContactModel selectedLeverancierContact;
         private ObservableCollection<LeveranciersModel> _leveranciers;
+        private ICollectionView _filteredLeveranciers;
         public LeveranciersModel SelectedLeverancier
         {
             get { return selectedLeverancier; }
@@ -68,6 +72,15 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
+        public ICollectionView FilteredLeveranciers
+        {
+            get => _filteredLeveranciers;
+            set
+            {
+                _filteredLeveranciers = value;
+                OnPropertyChanged(nameof(FilteredLeveranciers));
+            }
+        }
         public bool IsEditLeverancierPopupOpen
         {
             get { return isEditLeverancierPopupOpen; }
@@ -80,7 +93,19 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
+                {
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredLeveranciers.Refresh();
+                }
+            }
+        }
         public ConfigurationLeveranciersViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
@@ -92,6 +117,9 @@ namespace Dossier_Registratie.ViewModels
             SelectedLeverancier = new LeveranciersModel();
             SelectedLeverancierContact = new LeverancierContactModel();
             Leveranciers = new ObservableCollection<LeveranciersModel>();
+
+            FilteredLeveranciers = CollectionViewSource.GetDefaultView(Leveranciers);
+            FilteredLeveranciers.Filter = FilterLeveranciers;
 
             ActivateLeverancierCommand = new ViewModelCommand(ExecuteActivateLeverancierCommand);
             EditLeverancierCommand = new ViewModelCommand(ExecuteEditLeverancierCommand);
@@ -254,6 +282,13 @@ namespace Dossier_Registratie.ViewModels
             selectedLeverancier.IsDeleted = false;
 
             IsEditLeverancierPopupOpen = true;
+        }
+        private bool FilterLeveranciers(object item)
+        {
+            if (item is LeveranciersModel leverancier)
+                return ShowDeleted || !leverancier.IsDeleted;
+
+            return false;
         }
     }
 }

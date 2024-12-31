@@ -190,30 +190,13 @@ namespace Dossier_Registratie
                 }
                 else if (selectedItemString.Contains("Handleiding"))
                 {
-                    try
+                    Process.Start(new ProcessStartInfo
                     {
-                        string pdfPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Handleiding.pdf");
-                        if (File.Exists(pdfPath))
-                        {
-                            Process.Start(new ProcessStartInfo
-                            {
-                                FileName = pdfPath,
-                                UseShellExecute = true
-                            });
-                        }
-                        else
-                        {
-                            MessageBox.Show("Handleiding PDF niet gevonden: " + pdfPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("An error occurred while trying to open the PDF: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    finally
-                    {
-                        MainComboBox.SelectedItem = null;
-                    }
+                        FileName = "https://patrickst1991.github.io/Uitvaartverzorging-Dossier-Registratie/",
+                        UseShellExecute = true
+                    });
+
+                    MainComboBox.SelectedItem = null;
                 }
             }
         }

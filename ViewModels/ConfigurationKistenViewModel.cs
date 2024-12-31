@@ -3,7 +3,9 @@ using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Dossier_Registratie.ViewModels
@@ -26,9 +28,11 @@ namespace Dossier_Registratie.ViewModels
 
         private bool isEditKistPopupOpen;
         private bool newKist;
+        private bool _showDeleted;
 
         private KistenModel selectedKist;
         private ObservableCollection<KistenModel> _kisten;
+        private ICollectionView _filteredKisten;
 
         public KistenModel SelectedKist
         {
@@ -54,7 +58,15 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
         }
-
+        public ICollectionView FilteredKisten
+        {
+            get => _filteredKisten;
+            set
+            {
+                _filteredKisten = value;
+                OnPropertyChanged(nameof(FilteredKisten));
+            }
+        }
         public bool IsEditKistPopupOpen
         {
             get { return isEditKistPopupOpen; }
@@ -64,6 +76,19 @@ namespace Dossier_Registratie.ViewModels
                 {
                     isEditKistPopupOpen = value;
                     OnPropertyChanged(nameof(IsEditKistPopupOpen));
+                }
+            }
+        }
+        public bool ShowDeleted
+        {
+            get { return _showDeleted; }
+            set
+            {
+                if (_showDeleted != value)
+                {
+                    _showDeleted = value;
+                    OnPropertyChanged(nameof(ShowDeleted));
+                    FilteredKisten.Refresh();
                 }
             }
         }
@@ -78,6 +103,9 @@ namespace Dossier_Registratie.ViewModels
 
             SelectedKist = new KistenModel();
             Kisten = new ObservableCollection<KistenModel>();
+
+            FilteredKisten = CollectionViewSource.GetDefaultView(Kisten);
+            FilteredKisten.Filter = FilterKisten;
 
             ActivateKistCommand = new ViewModelCommand(ExecuteActivateKistCommand);
             EditKistCommand = new ViewModelCommand(ExecuteEditKistCommand);
@@ -209,6 +237,13 @@ namespace Dossier_Registratie.ViewModels
             selectedKist.KistTypeNummer = string.Empty;
 
             IsEditKistPopupOpen = true;
+        }
+        private bool FilterKisten(object item)
+        {
+            if (item is KistenModel kist)
+                return ShowDeleted || !kist.IsDeleted;
+
+            return false;
         }
     }
 }

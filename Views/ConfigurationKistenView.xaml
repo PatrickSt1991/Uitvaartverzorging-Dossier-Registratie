@@ -25,8 +25,14 @@
             <Button Width="150" Height="25" Content="Nieuwe Uitvaartkist" Command="{Binding CreateNewKistCommand}" HorizontalAlignment="Right" Margin="0,20,20,0"/>
         </Grid>
 
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label>Gedeactiveerd weergeven?</Label>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding ShowDeleted,Mode=TwoWay}"/>
+        </StackPanel>
+        
         <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" 
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="4" x:Name="kistenDataGrid" ItemsSource="{Binding Kisten}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="3" x:Name="kistenDataGrid" ItemsSource="{Binding FilteredKisten}" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTemplateColumn IsReadOnly="True" Width="*" Header="Status">
                     <DataGridTemplateColumn.CellTemplate>
