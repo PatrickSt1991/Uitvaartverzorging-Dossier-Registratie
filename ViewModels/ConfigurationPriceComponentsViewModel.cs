@@ -383,8 +383,13 @@ namespace Dossier_Registratie.ViewModels
             PriceComponentsVerzekeraars.Insert(0, new VerzekeraarsModel { Id = Guid.NewGuid(), Name = "Geen Filter", Afkorting = "Alles" });
 
             var components = miscellaneousRepository.GetAllPriceComponentsBeheer()
-                .OrderBy(component => component.IsDeleted)
+                .OrderBy(component =>
+                    component.BtnBrush == "Green" ? 0 :
+                    component.BtnBrush == "Orange" ? 1 :
+                    component.BtnBrush == "Red" ? 2 : 3)
+                .ThenBy(component => component.IsDeleted)
                 .ToList();
+
 
             foreach (var component in components)
             {

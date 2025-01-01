@@ -1613,6 +1613,9 @@ namespace Dossier_Registratie.Repositories
                         string styleColor;
                         styleColor = ((bool)reader[5]) ? "Red" : "Green";
 
+                        if (reader[8].ToString() == "[]" && (bool)reader[5] == false)
+                            styleColor = "Orange";
+
                         PriceComponents.Add(new KostenbegrotingModel
                         {
                             ComponentId = (Guid)reader[0],
