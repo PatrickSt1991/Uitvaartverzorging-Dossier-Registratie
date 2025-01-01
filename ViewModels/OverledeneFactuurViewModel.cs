@@ -963,6 +963,11 @@ namespace Dossier_Registratie.ViewModels
 
 
             var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson);
+
+            priceComponents = priceComponents
+                .OrderByDescending(pc => pc.Verzekerd == "X")
+                .ToList();
+
             var mergeRanges = new List<Excel.Range>();
 
             foreach (var priceComponent in priceComponents)
@@ -990,7 +995,6 @@ namespace Dossier_Registratie.ViewModels
                         : priceComponent.Verzekerd);
 
                     worksheet.Cells[excelRow, 8] = priceComponent.Bedrag;
-                    //((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormat = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
                     ((Excel.Range)worksheet.Cells[excelRow, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
                     ((Excel.Range)worksheet.Cells[excelRow, 8]).HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
 

@@ -377,7 +377,7 @@ namespace Dossier_Registratie.ViewModels
             }
 
             if (DataProvider.MaintenanceCheckEnabled)
-                CheckMaintenanceWindow();
+                Task.Run(async () => await CheckMaintenanceWindow());
 
             DeceasedYearAgoCheck();
 
@@ -414,11 +414,11 @@ namespace Dossier_Registratie.ViewModels
 
                 try
                 {
-                    var response = await httpClient.GetAsync(DataProvider.MaintenanceUrl);
+                    var response = await httpClient.GetAsync(DataProvider.MaintenanceUrl).ConfigureAwait(false); ;
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var xmlContent = await response.Content.ReadAsStringAsync();
+                        var xmlContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false); ;
                         var xmlDoc = XDocument.Parse(xmlContent);
                         var maintenanceValue = xmlDoc.Root.Element("maintenance")?.Value;
                         IsUnderMaintenance = maintenanceValue != null && maintenanceValue.Equals("true", StringComparison.OrdinalIgnoreCase);
