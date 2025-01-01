@@ -51,11 +51,13 @@
                       CanUserResizeColumns="True" 
                       CanUserAddRows="True" 
                       CanUserDeleteRows="True" 
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Top"
                       ItemsSource="{Binding PriceComponents}" 
                       LostFocus="DataGrid_LostFocus" 
                       PreviewKeyDown="DataGrid_PreviewKeyDown" 
                       RowEditEnding="DataGrid_RowEditEnding" 
-                      AutoGenerateColumns="False" Margin="10,85,10,0" Height="731" VerticalAlignment="Top" 
+                      AutoGenerateColumns="False" Margin="10,85,10,0" Height="731"
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
                       dd:DragDrop.IsDragSource="True" 
                       dd:DragDrop.IsDropTarget="True" 
@@ -81,7 +83,6 @@
             <Button x:Name="CreateKostenbegrotingFile" Content="Genereer Excel" IsEnabled="{Binding IsExcelButtonEnabled}" Command="{Binding Path=CreateKostenbegrotingFileCommand}" Margin="771,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
             <TextBox x:Name="input_subtotaal" Margin="1119,854,10,0" TextWrapping="Wrap" Text="{Binding Subtotaal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
             <Label x:Name="lbl_SubTotaal" Content="Subtotaal: " HorizontalAlignment="Left" Margin="990,854,0,0" VerticalAlignment="Top"/>
-            <!--<TextBox x:Name="input_korting" Margin="1119,885,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Text="{Binding DiscountAmount, StringFormat='€ {0:N2}'}"/>-->
             <TextBox x:Name="input_korting" Margin="1132,885,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" 
                               Text="{Binding DiscountAmount, 
                         Mode=TwoWay, 
