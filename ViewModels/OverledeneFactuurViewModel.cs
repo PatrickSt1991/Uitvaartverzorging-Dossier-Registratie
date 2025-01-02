@@ -982,8 +982,11 @@ namespace Dossier_Registratie.ViewModels
                         ? $"Aantal: {priceComponent.Aantal}  {priceComponent.Omschrijving}"
                         : priceComponent.Omschrijving;
 
-                    ((Excel.Range)worksheet.Rows[excelRow]).RowHeight = aantalCell.Value?.ToString().Length > 98 ? 36 : 15;
-                    aantalCell.WrapText = aantalCell.Value?.ToString().Length > 98;
+                    ((Excel.Range)worksheet.Rows[excelRow]).RowHeight =
+                        aantalCell.Value?.ToString().Length > 200 ? 36 :
+                        aantalCell.Value?.ToString().Length > 100 ? 25 : 15;
+
+                    aantalCell.WrapText = aantalCell.Value?.ToString().Length > 100;
 
                     aantalCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
 
@@ -1036,11 +1039,11 @@ namespace Dossier_Registratie.ViewModels
 
             worksheet.Cells[excelRow + 2, 8] = totalAmount;
             ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
-            worksheet.Cells[excelRow + 5, 4] = kostenbegrotingInfoResult.OverledeneAanhef + " " + kostenbegrotingInfoResult.OpdrachtgeverNaam;
-            worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
-            worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
-            worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
-            worksheet.Cells[excelRow + 12, 2] = $"Dossier: {Globals.UitvaartCode}";
+            worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OverledeneAanhef + " " + kostenbegrotingInfoResult.OpdrachtgeverNaam;
+            worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
+            worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
+            worksheet.Cells[excelRow + 9, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
+            worksheet.Cells[excelRow + 13, 2] = $"Dossier: {Globals.UitvaartCode}";
 
             worksheet.PageSetup.PrintArea = $"A1:I{excelRow + 18},A{excelRow + 19}:I{excelRow + 78}"; //82
 

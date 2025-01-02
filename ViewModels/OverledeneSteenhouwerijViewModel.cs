@@ -730,57 +730,60 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            bool SteenExists = miscellaneousRepository.UitvaarSteenhouwerijExists(SteenhouwerijModel.UitvaartId);
-
-            if (SteenhouwerijModel.SteenhouwerijId == Guid.Empty && !SteenExists)
+            if (SteenhouwerijModel.HasData())
             {
-                SteenhouwerijModel.SteenhouwerijId = Guid.NewGuid();
-                SteenhouwerijModel.UitvaartId = Globals.UitvaartCodeGuid;
+                bool SteenExists = miscellaneousRepository.UitvaarSteenhouwerijExists(SteenhouwerijModel.UitvaartId);
 
-                try
+                if (SteenhouwerijModel.SteenhouwerijId == Guid.Empty && !SteenExists)
                 {
-                    createRepository.AddSteenhouwerij(SteenhouwerijModel);
-                    
-                    if(obj.ToString() != "GeneralSave")
-                        new ToastWindow("Steenhouwerij is opgeslagen.").Show();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error Inserting Steenhouwer: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    return;
-                }
-            }
-            else if (SteenExists)
-            {
-                bool steenhouwerjInfoChanged = modelCompare.AreValuesEqual(_originalSteenhouwerijModel, SteenhouwerijModel);
+                    SteenhouwerijModel.SteenhouwerijId = Guid.NewGuid();
+                    SteenhouwerijModel.UitvaartId = Globals.UitvaartCodeGuid;
 
-                if (steenhouwerjInfoChanged == false)
-                {
                     try
                     {
-                        updateRepository.EditSteenhouwerij(SteenhouwerijModel);
-                        
+                        createRepository.AddSteenhouwerij(SteenhouwerijModel);
+
                         if ((obj?.ToString() ?? "") != "GeneralSave")
-                            new ToastWindow("Steenhouwerij is geupdate.").Show();
+                            new ToastWindow("Steenhouwerij is opgeslagen.").Show();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error updating Steenhouwer: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error Inserting Steenhouwer: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         return;
                     }
+                }
+                else if (SteenExists)
+                {
+                    bool steenhouwerjInfoChanged = modelCompare.AreValuesEqual(_originalSteenhouwerijModel, SteenhouwerijModel);
 
-                    _originalSteenhouwerijModel = new OverledeneSteenhouwerijModel
+                    if (steenhouwerjInfoChanged == false)
                     {
-                        SteenhouwerijId = SteenhouwerijModel.SteenhouwerijId,
-                        UitvaartId = SteenhouwerijModel.UitvaartId,
-                        SteenhouwerOpdracht = SteenhouwerijModel.SteenhouwerOpdracht,
-                        SteenhouwerBedrag = SteenhouwerijModel.SteenhouwerBedrag,
-                        SteenhouwerProvisie = SteenhouwerijModel.SteenhouwerProvisie,
-                        SteenhouwerUitbetaing = SteenhouwerijModel.SteenhouwerUitbetaing,
-                        SteenhouwerText = SteenhouwerijModel.SteenhouwerText
-                    };
+                        try
+                        {
+                            updateRepository.EditSteenhouwerij(SteenhouwerijModel);
+
+                            if ((obj?.ToString() ?? "") != "GeneralSave")
+                                new ToastWindow("Steenhouwerij is geupdate.").Show();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error updating Steenhouwer: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                            return;
+                        }
+
+                        _originalSteenhouwerijModel = new OverledeneSteenhouwerijModel
+                        {
+                            SteenhouwerijId = SteenhouwerijModel.SteenhouwerijId,
+                            UitvaartId = SteenhouwerijModel.UitvaartId,
+                            SteenhouwerOpdracht = SteenhouwerijModel.SteenhouwerOpdracht,
+                            SteenhouwerBedrag = SteenhouwerijModel.SteenhouwerBedrag,
+                            SteenhouwerProvisie = SteenhouwerijModel.SteenhouwerProvisie,
+                            SteenhouwerUitbetaing = SteenhouwerijModel.SteenhouwerUitbetaing,
+                            SteenhouwerText = SteenhouwerijModel.SteenhouwerText
+                        };
+                    }
                 }
             }
         }
@@ -799,57 +802,60 @@ namespace Dossier_Registratie.ViewModels
             var lintValues = new List<string> { Lint1, Lint2, Lint3, Lint4 };
             BloemenModel.BloemenLintJson = JsonConvert.SerializeObject(lintValues);
 
-
-            bool BloemenExists = miscellaneousRepository.UitvaarBloemenExists(BloemenModel.UitvaartId);
-
-            if (BloemenModel.BloemenId == Guid.Empty && !BloemenExists)
+            if (BloemenModel.HasData())
             {
-                BloemenModel.BloemenId = Guid.NewGuid();
-                BloemenModel.UitvaartId = Globals.UitvaartCodeGuid;
 
-                try
+                bool BloemenExists = miscellaneousRepository.UitvaarBloemenExists(BloemenModel.UitvaartId);
+
+                if (BloemenModel.BloemenId == Guid.Empty && !BloemenExists)
                 {
-                    createRepository.AddBloemen(BloemenModel);
-                    if ((obj?.ToString() ?? "") != "GeneralSave")
-                        new ToastWindow("Bloemen zijn opgeslagen.").Show();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error insert bloemen: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    return;
-                }
-            }
-            else if (BloemenExists)
-            {
-                bool bloemenInfoChanged = modelCompare.AreValuesEqual(_originalBloemenModel, BloemenModel);
-                if (bloemenInfoChanged == false)
-                {
+                    BloemenModel.BloemenId = Guid.NewGuid();
+                    BloemenModel.UitvaartId = Globals.UitvaartCodeGuid;
+
                     try
                     {
-                        updateRepository.EditBloemen(BloemenModel);
+                        createRepository.AddBloemen(BloemenModel);
                         if ((obj?.ToString() ?? "") != "GeneralSave")
-                            new ToastWindow("Bloemen zijn geupdate.").Show();
+                            new ToastWindow("Bloemen zijn opgeslagen.").Show();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error updating bloemen: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error insert bloemen: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         return;
                     }
-
-                    _originalBloemenModel = new OverledeneBloemenModel
+                }
+                else if (BloemenExists)
+                {
+                    bool bloemenInfoChanged = modelCompare.AreValuesEqual(_originalBloemenModel, BloemenModel);
+                    if (bloemenInfoChanged == false)
                     {
-                        BloemenId = BloemenModel.BloemenId,
-                        UitvaartId = BloemenModel.UitvaartId,
-                        BloemenText = BloemenModel.BloemenText,
-                        BloemenLint = BloemenModel.BloemenLint,
-                        BloemenKaart = BloemenModel.BloemenKaart,
-                        BloemenBedrag = BloemenModel.BloemenBedrag,
-                        BloemenProvisie = BloemenModel.BloemenProvisie,
-                        BloemenUitbetaling = BloemenModel.BloemenUitbetaling,
-                        BloemenLintJson = BloemenModel.BloemenLintJson
-                    };
+                        try
+                        {
+                            updateRepository.EditBloemen(BloemenModel);
+                            if ((obj?.ToString() ?? "") != "GeneralSave")
+                                new ToastWindow("Bloemen zijn geupdate.").Show();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error updating bloemen: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                            return;
+                        }
+
+                        _originalBloemenModel = new OverledeneBloemenModel
+                        {
+                            BloemenId = BloemenModel.BloemenId,
+                            UitvaartId = BloemenModel.UitvaartId,
+                            BloemenText = BloemenModel.BloemenText,
+                            BloemenLint = BloemenModel.BloemenLint,
+                            BloemenKaart = BloemenModel.BloemenKaart,
+                            BloemenBedrag = BloemenModel.BloemenBedrag,
+                            BloemenProvisie = BloemenModel.BloemenProvisie,
+                            BloemenUitbetaling = BloemenModel.BloemenUitbetaling,
+                            BloemenLintJson = BloemenModel.BloemenLintJson
+                        };
+                    }
                 }
             }
         }
@@ -872,57 +878,59 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            bool UrnSieradenExists = miscellaneousRepository.UitvaarKUrnSieradenExists(UrnSieradenModel.UitvaartId);
-
-            if (UrnSieradenModel.UrnId == Guid.Empty && !UrnSieradenExists)
+            if(UrnSieradenModel.HasData())
             {
-                UrnSieradenModel.UrnId = Guid.NewGuid();
-                UrnSieradenModel.UitvaartId = Globals.UitvaartCodeGuid;
+                bool UrnSieradenExists = miscellaneousRepository.UitvaarKUrnSieradenExists(UrnSieradenModel.UitvaartId);
 
-                try
+                if (UrnSieradenModel.UrnId == Guid.Empty && !UrnSieradenExists)
                 {
-                    createRepository.AddUrnSieraden(UrnSieradenModel);
-                    if ((obj?.ToString() ?? "") != "GeneralSave")
-                        new ToastWindow("Urn & Gedenksieraden zijn opgeslagen.").Show();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error Inserting UrnSieraden: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    return;
-                }
-            }
-            else if (UrnSieradenExists)
-            {
+                    UrnSieradenModel.UrnId = Guid.NewGuid();
+                    UrnSieradenModel.UitvaartId = Globals.UitvaartCodeGuid;
 
-                bool urnSieradenInfoChanged = modelCompare.AreValuesEqual(_orginalUrnsieradenModel, UrnSieradenModel);
-                if (urnSieradenInfoChanged == false)
-                {
                     try
                     {
-                        updateRepository.EditUrnSieraden(UrnSieradenModel);
+                        Debug.WriteLine("called add");
+                        createRepository.AddUrnSieraden(UrnSieradenModel);
                         if ((obj?.ToString() ?? "") != "GeneralSave")
-                            new ToastWindow("Urn & Gedenksieraden zijn geupdate.").Show();
+                            new ToastWindow("Urn & Gedenksieraden zijn opgeslagen.").Show();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error updating UrnSieraden: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error Inserting UrnSieraden: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         return;
                     }
-                    _orginalUrnsieradenModel = new OverledeneUrnSieradenModel
+                }
+                else if (UrnSieradenExists)
+                {
+                    bool urnSieradenInfoChanged = modelCompare.AreValuesEqual(_orginalUrnsieradenModel, UrnSieradenModel);
+                    if (urnSieradenInfoChanged == false)
                     {
-                        UrnId = UrnSieradenModel.UrnId,
-                        UitvaartId = UrnSieradenModel.UitvaartId,
-                        UrnOpdracht = UrnSieradenModel.UrnOpdracht,
-                        UrnBedrag = UrnSieradenModel.UrnBedrag,
-                        UrnProvisie = UrnSieradenModel.UrnProvisie,
-                        UrnUitbetaing = UrnSieradenModel.UrnUitbetaing,
-                        UrnText = UrnSieradenModel.UrnText
-                    };
+                        try
+                        {
+                            updateRepository.EditUrnSieraden(UrnSieradenModel);
+                            if ((obj?.ToString() ?? "") != "GeneralSave")
+                                new ToastWindow("Urn & Gedenksieraden zijn geupdate.").Show();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error updating UrnSieraden: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                            return;
+                        }
+                        _orginalUrnsieradenModel = new OverledeneUrnSieradenModel
+                        {
+                            UrnId = UrnSieradenModel.UrnId,
+                            UitvaartId = UrnSieradenModel.UitvaartId,
+                            UrnOpdracht = UrnSieradenModel.UrnOpdracht,
+                            UrnBedrag = UrnSieradenModel.UrnBedrag,
+                            UrnProvisie = UrnSieradenModel.UrnProvisie,
+                            UrnUitbetaing = UrnSieradenModel.UrnUitbetaing,
+                            UrnText = UrnSieradenModel.UrnText
+                        };
+                    }
                 }
             }
-
         }
         public void ExecuteSaveWerkbonCommand(object obj)
         {
@@ -955,52 +963,55 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
 
-            bool WekbonExists = miscellaneousRepository.UitvaarKWerkbonExists(WerkbonModel.UitvaartId);
-
-            if (WerkbonModel.Id == Guid.Empty && !WekbonExists && Globals.UitvaartCodeGuid != Guid.Empty)
+            if (WerkbonModel.HasData())
             {
-                Debug.WriteLine("new wekbon");
-                WerkbonModel.Id = Guid.NewGuid();
+                bool WekbonExists = miscellaneousRepository.UitvaarKWerkbonExists(WerkbonModel.UitvaartId);
 
-                try
+                if (WerkbonModel.Id == Guid.Empty && !WekbonExists && Globals.UitvaartCodeGuid != Guid.Empty)
                 {
-                    createRepository.AddWerkbonnen(WerkbonModel);
-                    if ((obj?.ToString() ?? "") != "GeneralSave")
-                        new ToastWindow("Werkbonnen zijn opgeslagen.").Show();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error Inserting Werkbonnen: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    return;
-                }
-            }
-            else if (WekbonExists && Globals.UitvaartCodeGuid != Guid.Empty)
-            {
-                Debug.WriteLine("update werkbon");
-                bool werkbonInfoChanged = modelCompare.AreValuesEqual(_originalWerkbonModel, WerkbonModel);
-                if (werkbonInfoChanged == false)
-                {
+                    Debug.WriteLine("new wekbon");
+                    WerkbonModel.Id = Guid.NewGuid();
+
                     try
                     {
-                        updateRepository.EditWerkbonnen(WerkbonModel);
+                        createRepository.AddWerkbonnen(WerkbonModel);
                         if ((obj?.ToString() ?? "") != "GeneralSave")
-                            new ToastWindow("Werkbonnen zijn geupdate.").Show();
+                            new ToastWindow("Werkbonnen zijn opgeslagen.").Show();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error updating Werkbonnen: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error Inserting Werkbonnen: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                         return;
                     }
-
-                    _originalWerkbonModel = new OverledeneWerkbonUitvaart
+                }
+                else if (WekbonExists && Globals.UitvaartCodeGuid != Guid.Empty)
+                {
+                    Debug.WriteLine("update werkbon");
+                    bool werkbonInfoChanged = modelCompare.AreValuesEqual(_originalWerkbonModel, WerkbonModel);
+                    if (werkbonInfoChanged == false)
                     {
-                        Id = WerkbonModel.Id,
-                        UitvaartId = WerkbonModel.UitvaartId,
-                        UitvaartNummer = WerkbonModel.UitvaartNummer,
-                        WerkbonJson = WerkbonModel.WerkbonJson
-                    };
+                        try
+                        {
+                            updateRepository.EditWerkbonnen(WerkbonModel);
+                            if ((obj?.ToString() ?? "") != "GeneralSave")
+                                new ToastWindow("Werkbonnen zijn geupdate.").Show();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error updating Werkbonnen: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                            return;
+                        }
+
+                        _originalWerkbonModel = new OverledeneWerkbonUitvaart
+                        {
+                            Id = WerkbonModel.Id,
+                            UitvaartId = WerkbonModel.UitvaartId,
+                            UitvaartNummer = WerkbonModel.UitvaartNummer,
+                            WerkbonJson = WerkbonModel.WerkbonJson
+                        };
+                    }
                 }
             }
         }
