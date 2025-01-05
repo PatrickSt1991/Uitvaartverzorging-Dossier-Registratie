@@ -25,22 +25,17 @@ namespace Dossier_Registratie.Helper
         }
         public static void PrintFile(string filePath)
         {
-            // Initialize Word application object
             Word.Application wordApp = new Word.Application();
             Word.Document wordDoc = null;
 
             try
             {
-                // Open the Word document
                 wordDoc = wordApp.Documents.Open(filePath, ReadOnly: true, Visible: false);
-
-                // Ensure the document is activated
                 wordDoc.Activate();
 
-                // Print the document
                 wordDoc.PrintOut(
-                    Background: false, // Print synchronously
-                    PrintToFile: false // Print directly to the printer
+                    Background: false,
+                    PrintToFile: false
                 );
             }
             catch (Exception ex)
@@ -49,7 +44,6 @@ namespace Dossier_Registratie.Helper
             }
             finally
             {
-                // Close the document without saving changes
                 if (wordDoc != null)
                 {
                     wordDoc.Close(SaveChanges: false);

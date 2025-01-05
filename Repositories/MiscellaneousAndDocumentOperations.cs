@@ -40,18 +40,27 @@ namespace Dossier_Registratie.Repositories
         {
             List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
 
+            string tableName = db switch
+            {
+                "2024" => "[OudeEeftingData].[dbo].[data2024]",
+                "2023" => "[OudeEeftingData].[dbo].[data2023]",
+                _ => throw new ArgumentException("Invalid database identifier", nameof(db))
+            };
+
             using (var connection = GetArchiefConnection())
             using (var command = new SqlCommand())
             {
                 await connection.OpenAsync();
                 command.Connection = connection;
 
-                string tableName = db == "2024" ? "[OudeEeftingData].[dbo].[data2024]" : "[OudeEeftingData].[dbo].[data2023]";
                 command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
-                                        FROM {tableName} 
-                                        WHERE [Uitvaartnummer] = @uitvaartnummer";
+                                    FROM {tableName} 
+                                    WHERE [Uitvaartnummer] = @uitvaartnummer";
 
-                command.Parameters.AddWithValue("@uitvaartnummer", SqlDbType.Int).Value = searchNumber;
+                if (!int.TryParse(searchNumber, out int searchNumberValue))
+                    throw new ArgumentException("Search number must be a valid integer.", nameof(searchNumber));
+
+                command.Parameters.AddWithValue("@uitvaartnummer", searchNumberValue);
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -59,7 +68,7 @@ namespace Dossier_Registratie.Repositories
                     {
                         records.Add(new OverledeneSearchSurname
                         {
-                            UitvaartId = (Guid)Guid.Empty,
+                            UitvaartId = Guid.Empty,
                             UitvaartNummer = "archief_" + db + "_" + reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
                             PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
                             OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
@@ -70,34 +79,39 @@ namespace Dossier_Registratie.Repositories
                     }
                 }
             }
+
             return records;
         }
+
         public async Task<List<OverledeneSearchSurname>> SearchAccessDatabaseOnAchternaamAsync(string achternaam, DateTime geboortedatum, string db)
         {
             List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
 
+            string tableName = db switch
+            {
+                "2024" => "[OudeEeftingData].[dbo].[data2024]",
+                "2023" => "[OudeEeftingData].[dbo].[data2023]",
+                _ => throw new ArgumentException("Invalid database identifier", nameof(db))
+            };
+
             using (var connection = GetArchiefConnection())
             using (var command = new SqlCommand())
             {
                 await connection.OpenAsync();
                 command.Connection = connection;
 
-                string tableName = db == "2024" ? "[OudeEeftingData].[dbo].[data2024]" : "[OudeEeftingData].[dbo].[data2023]";
-
-                Debug.WriteLine(tableName);
-
                 command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum,
                                         [1 Aanhef] as aanhef, [1 Voornamen] as voornamen, [1 Tussenvoegsel] as tussenvoegsel 
                                         FROM {tableName} 
-                                        WHERE [1 Naam overledene] LIKE '%' + @achternaam + '%'";
+                                        WHERE [1 Naam overledene] LIKE @achternaam";
+
+                command.Parameters.AddWithValue("@achternaam", "%" + achternaam + "%");
 
                 if (geboortedatum != DateTime.MinValue)
                 {
                     command.CommandText += " AND [1 Geboortedatum] = @geboortedatum";
-                    command.Parameters.AddWithValue("@geboortedatum", SqlDbType.DateTime).Value = geboortedatum;
+                    command.Parameters.AddWithValue("@geboortedatum", geboortedatum);
                 }
-
-                command.Parameters.AddWithValue("@achternaam", SqlDbType.NVarChar).Value = achternaam;
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -105,24 +119,24 @@ namespace Dossier_Registratie.Repositories
                     {
                         records.Add(new OverledeneSearchSurname
                         {
-                            UitvaartId = (Guid)Guid.Empty,
+                            UitvaartId = Guid.Empty,
                             UitvaartNummer = "archief_" + db + "_" + reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
                             PersoneelNaam = reader["Uitvaartverzorger"]?.ToString() ?? string.Empty,
                             OverledeneAchternaam = reader["achternaam"]?.ToString() ?? string.Empty,
                             OverledeneGeboortedatum = reader["geboortedatum"] != DBNull.Value ? (DateTime)reader["geboortedatum"] : DateTime.MinValue,
-                            OverledeneAanhef = reader["aanhef"].ToString() ?? string.Empty,
-                            OverledeneVoornaam = reader["voornamen"].ToString() ?? string.Empty,
-                            OverledeneTussenvoegsel = reader["tussenvoegsel"].ToString() ?? string.Empty,
+                            OverledeneAanhef = reader["aanhef"]?.ToString() ?? string.Empty,
+                            OverledeneVoornaam = reader["voornamen"]?.ToString() ?? string.Empty,
+                            OverledeneTussenvoegsel = reader["tussenvoegsel"]?.ToString() ?? string.Empty,
                             PersoneelId = Guid.Empty,
                             DossierCompleted = true
                         });
                     }
                 }
-           
             }
 
             return records;
         }
+
         public async Task<ObservableCollection<NotificatieOverzichtModel>> NotificationDeceasedAfterYearPassedAsync()
         {
             ObservableCollection<NotificatieOverzichtModel> notificatie = new();
@@ -1643,7 +1657,7 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT [ComponentId], [Omschrijving], [Bedrag], [VerzekerdAantal], [Verzekering], [IsDeleted], SortOrder, [factuurBedrag], [DefaultPM], [VerzekeringJson] " +
-                                        "FROM [ConfigurationFactuurComponent]" +
+                                        "FROM [ConfigurationFactuurComponent] " +
                                         "WHERE ComponentId = @componentId";
                 command.Parameters.AddWithValue("@componentId", componentId);
                 using (var reader = command.ExecuteReader())

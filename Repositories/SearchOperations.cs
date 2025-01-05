@@ -6,12 +6,119 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Dossier_Registratie.Repositories
 {
     public class SearchOperations : RepositoryBase, ISearchOperations
     {
+        public async Task<AkteContent> GetAkteContentByUitvaartIdAsync(Guid uitvaartId)
+        {
+            AkteContent? akteContent = null;
+
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync();
+                command.Connection = connection;
+
+                command.CommandText = @"SELECT 
+                                    (CASE 
+                                        WHEN opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverAchternaam, ', ')  
+                                        ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam, ', ') 
+                                    END) AS NaamOpdrachtgever,  
+                                    opdrachtgeverVoornaamen,
+                                    (CASE 
+                                        WHEN opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) 
+                                        ELSE CONCAT(opdrachtgeverStraat, ' ', TRIM(opdrachtgeverHuisnummer), ' ', TRIM(opdrachtgeverHuisnummerToevoeging)) 
+                                    END) AS AdresOpdrachtgever, 
+                                    opdrachtgeverRelatieTotOverledene, 
+                                    (CASE 
+                                        WHEN overledeneTussenvoegsel IS NULL THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) 
+                                        ELSE CONCAT(overledeneAanhef, ' ', overledeneTussenvoegsel, ' ', overledeneAchternaam) 
+                                    END) AS NaamOverledene, 
+                                    overledeneGeboortedatum, 
+                                    overledenPlaats, 
+                                    overledenDatumTijd, 
+                                    (CASE 
+                                        WHEN overledenHuisnummerToevoeging IS NULL THEN CONCAT(overledenAdres, ' ', overledenHuisnummer, ', ', overledenPlaats) 
+                                        ELSE CONCAT(overledenAdres, ' ', TRIM(overledenHuisnummer), ' ', TRIM(overledenHuisnummerToevoeging), ', ', overledenPlaats) 
+                                    END) AS AdresOpverledene
+                                 FROM OverledeneOpdrachtgever OO 
+                                 INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId 
+                                 INNER JOIN OverledeneOverlijdenInfo OOI ON OO.uitvaartId = OOI.UitvaartId 
+                                 WHERE OO.uitvaartId = @uitvaartId";
+
+                command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        akteContent = new AkteContent()
+                        {
+                            OpdrachtgeverNaam = reader["NaamOpdrachtgever"]?.ToString(),
+                            OpdrachtgeverAdres = reader["AdresOpdrachtgever"]?.ToString(),
+                            OpdrachtgeverRelatie = reader["opdrachtgeverRelatieTotOverledene"]?.ToString(),
+                            GeslotenOpHetLevenVan = reader["NaamOverledene"]?.ToString(),
+                            OverledenGeboorteDatum = reader["overledeneGeboortedatum"] != DBNull.Value ? (DateTime)reader["overledeneGeboortedatum"] : DateTime.MinValue,
+                            OverledenOpDatum = reader["overledenDatumTijd"] != DBNull.Value ? (DateTime)reader["overledenDatumTijd"] : DateTime.MinValue,
+                            OverledenOpAdres = reader["AdresOpverledene"]?.ToString()
+                        };
+
+                        if (!string.IsNullOrEmpty(reader["opdrachtgeverVoornaamen"]?.ToString()))
+                        {
+                            string? fullName = reader["opdrachtgeverVoornaamen"]?.ToString() ?? string.Empty;
+                            string[] words = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                            akteContent.OpdrachtgeverVoorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
+                        }
+                    }
+                }
+            }
+
+            return akteContent ?? new AkteContent();
+        }
+        public async Task<WekbonnenContent> GetWerkbonInfoByUitvaartIdAsync(Guid uitvaartId)
+        {
+            WekbonnenContent uitvaartInfo = null;
+
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                await connection.OpenAsync();
+                command.Connection = connection;
+                command.CommandText = @"SELECT uitvaartInfoType, uitvaartInfoDatumTijdUitvaart, OOI.overledenDatumTijd,
+                                uitvaartInfoUitvaartLocatie, uitvaartInfoDienstLocatie,
+                                CASE WHEN OPG.overledeneTussenvoegsel IS NULL 
+                                     THEN CONCAT(TRIM(OPG.overledeneAanhef), ' ', TRIM(OPG.overledeneVoornamen), ' ', TRIM(OPG.overledeneAchternaam))
+                                     ELSE CONCAT(OPG.overledeneAanhef, ' ', TRIM(OPG.overledeneVoornamen), ' ', TRIM(OPG.overledeneTussenvoegsel), ' ', TRIM(OPG.overledeneAchternaam)) 
+                                END AS Overledene
+                                FROM OverledeneUitvaartInfo OUI
+                                INNER JOIN OverledeneOverlijdenInfo OOI ON OUI.uitvaartId = OOI.UitvaartId
+                                INNER JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId
+                                WHERE OUI.UitvaartId = @UitvaartId";
+
+                command.Parameters.AddWithValue("@UitvaartId", uitvaartId);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        uitvaartInfo = new WekbonnenContent()
+                        {
+                            UitvaartType = reader["uitvaartInfoType"].ToString(),
+                            UitvaartDatumTijd = (DateTime)reader["uitvaartInfoDatumTijdUitvaart"],
+                            OverledenDatumTijd = (DateTime)reader["overledenDatumTijd"],
+                            UitvaartLocatie = reader["uitvaartInfoUitvaartLocatie"].ToString(),
+                            DienstLocatie = reader["uitvaartInfoDienstLocatie"].ToString(),
+                            Overledene = reader["Overledene"].ToString()
+                        };
+                    }
+                }
+            }
+            return uitvaartInfo ?? new WekbonnenContent();
+        }
         public async Task<bool> SearchBlobLogo(string appType)
         {
             using (var connection = GetConnection())
@@ -27,8 +134,7 @@ namespace Dossier_Registratie.Repositories
                 return result != null;
             }
         }
-
-        public (string PermissionLevelId, string PermissionLevelName, bool IsActive) FetchUserCredentials(string windowsUsername)
+        public (string PermissionLevelId, string PermissionLevelName) FetchUserCredentials(string windowsUsername)
         {
             using var connection = new SqlConnection(DataProvider.ConnectionString);
             connection.Open();
@@ -47,13 +153,11 @@ namespace Dossier_Registratie.Repositories
             {
                 var permissionLevelId = reader.IsDBNull(0) ? "NotRegistered" : reader.GetGuid(0).ToString();
                 var permissionLevelName = reader.IsDBNull(1) ? "NotRegistered" : reader.GetString(1);
-                var isActive = reader.IsDBNull(2) ? false : reader.GetBoolean(2);
-                return (permissionLevelId, permissionLevelName, isActive);
+                return (permissionLevelId, permissionLevelName);
             }
 
-            return ("NotRegistered", "NotRegistered", false);
+            return ("NotRegistered", "NotRegistered");
         }
-
         public async Task<int> SearchKostenbegrotingExistanceAsync(Guid uitvaartGuid)
         {
             using var connection = GetConnection();

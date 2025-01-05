@@ -6,7 +6,6 @@ using Dossier_Registratie.Views;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,9 +18,15 @@ namespace Dossier_Registratie
         private TabItem _previousTabItem;
         private bool _isFirstSelection = true;
 
-        public bool tabControlChecked = false;
-        public static RoutedEvent NextClickedEvent = EventManager.RegisterRoutedEvent("ClickedNext", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(MainWindow));
-        public static RoutedEvent PreviousClickedEvent = EventManager.RegisterRoutedEvent("ClickedPrevious", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(MainWindow));
+        private bool _tabControlChecked = false;
+        public static readonly RoutedEvent NextClickedEvent = EventManager.RegisterRoutedEvent("ClickedNext", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(MainWindow));
+        public static readonly RoutedEvent PreviousClickedEvent = EventManager.RegisterRoutedEvent("ClickedPrevious", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(MainWindow));
+
+        public bool TabControlChecked
+        {
+            get => _tabControlChecked;
+            set => _tabControlChecked = value;
+        }
 
         public MainWindow()
         {
@@ -63,7 +68,7 @@ namespace Dossier_Registratie
         private void CheckWindowsUserEmployee()
         {
             var searchOperation = new SearchOperations();
-            var (permissionLevelId, permissionLevelName, isActive) = searchOperation.FetchUserCredentials(Environment.UserName);
+            var (permissionLevelId, permissionLevelName) = searchOperation.FetchUserCredentials(Environment.UserName);
 
             Globals.PermissionLevelId = permissionLevelId;
             Globals.PermissionLevelName = permissionLevelName;
@@ -85,7 +90,7 @@ namespace Dossier_Registratie
                 }
             }
         }
-        public void OnNextClickedEvent(object sender, RoutedEventArgs e)
+        public static void OnNextClickedEvent(object sender, RoutedEventArgs e)
         {
             IntAggregator.Transmit(1);
         }
@@ -100,35 +105,6 @@ namespace Dossier_Registratie
                 TabHeader.SelectedIndex--;
             }
         }
-        private void NewDossier_Click(object sender, RoutedEventArgs e)
-        {
-            Globals.NewDossierCreation = true;
-            IntAggregator.Transmit(1);
-        }
-        private void OpenDossier_Click(object sender, RoutedEventArgs e)
-        {
-            Globals.NewDossierCreation = false;
-            SearchUitvaartNumber.Visibility = Visibility.Visible;
-            UitvaartSearchInput.Focus();
-        }
-        private void CloseUitvaartnummer_Click(object sender, RoutedEventArgs e)
-        {
-            SearchUitvaartNumber.Visibility = Visibility.Collapsed;
-        }
-        private void CloseSurname_Click(object sender, RoutedEventArgs e)
-        {
-            SearchSurname.Visibility = Visibility.Collapsed;
-        }
-        private void CloseResultsSurname_Click(object sender, RoutedEventArgs e)
-        {
-            SelectUitvaartnummer.Visibility = Visibility.Collapsed;
-        }
-        private void SearchDossier_Click(object sender, RoutedEventArgs e)
-        {
-            Globals.NewDossierCreation = false;
-            SearchSurname.Visibility = Visibility.Visible;
-            SearchSurnameInput.Focus();
-        }
         private void AlleUitvaarten_Click(object sender, RoutedEventArgs e)
         {
             TabHeader.SelectedIndex = 13;
@@ -136,15 +112,6 @@ namespace Dossier_Registratie
         private void AgendaUitvaarten_Click(object sender, RoutedEventArgs e)
         {
             TabHeader.SelectedIndex = 10;
-        }
-        private void BeheerOpenen_Click(object sender, RoutedEventArgs e)
-        {
-            BeheerWindow beheerWindow = new();
-            beheerWindow.Show();
-        }
-        private void CloseApplication_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
         }
         private void MainComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -202,7 +169,7 @@ namespace Dossier_Registratie
         }
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Globals.NewDossierCreation == false)
+            if (!Globals.NewDossierCreation)
             {
                 if (sender is not TabControl tabControl) return;
 
@@ -217,11 +184,11 @@ namespace Dossier_Registratie
                         if (saveCommandProperty?.GetValue(viewModel) is ICommand saveCommand && saveCommand.CanExecute(null))
                         {
                             saveCommand.Execute(null);
-                            tabControlChecked = true;
+                            TabControlChecked = true;
                         }
                         else
                         {
-                            tabControlChecked = false;
+                            TabControlChecked = false;
                             return;
                         }
                     }
@@ -247,7 +214,7 @@ namespace Dossier_Registratie
                                 if (clearCommandProperty?.GetValue(viewModel) is ICommand clearCommand && clearCommand.CanExecute(null))
                                 {
                                     clearCommand.Execute(null);
-                                    tabControlChecked = false;
+                                    TabControlChecked = false;
                                 }
                             }
                             else
@@ -277,7 +244,7 @@ namespace Dossier_Registratie
 
             public static Action<string> OnMessageTransmitted;
         }
-        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
             if (DataContext is MainWindowViewModal viewModel)
             {

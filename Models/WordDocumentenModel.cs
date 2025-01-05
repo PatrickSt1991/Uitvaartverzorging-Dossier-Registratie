@@ -3,46 +3,142 @@ using System;
 
 namespace Dossier_Registratie.Models
 {
+    public class WekbonnenContent : ViewModelBase
+    {
+        private string? _uitvaartType;
+        private DateTime _uitvaartDatumTijd;
+        private DateTime _overledenDatumTijd;
+        private string? _uitvaartLocatie;
+        private string? _dienstLocatie;
+        private string? _overledene;
+
+        public string? UitvaartType
+        {
+            get { return _uitvaartType; }
+            set { _uitvaartType = value; OnPropertyChanged(nameof(UitvaartType)); }
+        }
+        public DateTime UitvaartDatumTijd
+        {
+            get { return _uitvaartDatumTijd; }
+            set { _uitvaartDatumTijd = value; OnPropertyChanged(nameof(UitvaartDatumTijd)); }
+        }
+        public DateTime OverledenDatumTijd
+        {
+            get { return _overledenDatumTijd; }
+            set { _overledenDatumTijd = value; OnPropertyChanged(nameof(OverledenDatumTijd)); }
+        }
+        public string? UitvaartLocatie
+        {
+            get { return _uitvaartLocatie; }
+            set { _uitvaartLocatie = value; OnPropertyChanged(nameof(UitvaartLocatie)); }
+        }
+        public string? DienstLocatie
+        {
+            get { return _dienstLocatie; }
+            set { _dienstLocatie = value; OnPropertyChanged(nameof(DienstLocatie)); }
+        }
+        public string? Overledene
+        {
+            get { return _overledene; }
+            set { _overledene = value; OnPropertyChanged(nameof(Overledene)); }
+        }
+    }
+    public class AkteContent : ViewModelBase
+    {
+        private string? _opdrachtgeverVoorletters;
+        private string? _opdrachtgeverNaam;
+        private string? _opdrachtgeverAdres;
+        private string? _opdrachtgeverRelatie;
+        private string? _geslotenOpHetLevenVan;
+        private DateTime _overledeneGeboorteDatum;
+        private DateTime _overledenOpDatum;
+        private string? _overledenOpAdres;
+
+        public string? OpdrachtgeverVoorletters
+        {
+            get { return _opdrachtgeverVoorletters; }
+            set { _opdrachtgeverVoorletters = value; OnPropertyChanged(nameof(OpdrachtgeverVoorletters)); }
+        }
+        public string? OpdrachtgeverNaam
+        {
+            get { return _opdrachtgeverNaam; }
+            set
+            {
+                _opdrachtgeverNaam = value;
+                OnPropertyChanged(nameof(OpdrachtgeverNaam));
+            }
+        }
+        public string? OpdrachtgeverAdres
+        {
+            get { return _opdrachtgeverAdres; }
+            set { _opdrachtgeverAdres = value; OnPropertyChanged(nameof(OpdrachtgeverAdres)); }
+        }
+        public string? OpdrachtgeverRelatie
+        {
+            get { return _opdrachtgeverRelatie; }
+            set { _opdrachtgeverRelatie = value; OnPropertyChanged(nameof(OpdrachtgeverRelatie)); }
+        }
+        public string? GeslotenOpHetLevenVan
+        {
+            get { return _geslotenOpHetLevenVan; }
+            set { _geslotenOpHetLevenVan = value; OnPropertyChanged(nameof(GeslotenOpHetLevenVan)); }
+        }
+        public DateTime OverledenGeboorteDatum
+        {
+            get { return _overledeneGeboorteDatum; }
+            set { _overledeneGeboorteDatum = value; OnPropertyChanged(nameof(OverledenGeboorteDatum)); }
+        }
+        public DateTime OverledenOpDatum
+        {
+            get { return _overledenOpDatum; }
+            set { _overledenOpDatum = value; OnPropertyChanged(nameof(OverledenOpDatum)); }
+        }
+        public string? OverledenOpAdres
+        {
+            get { return _overledenOpAdres; }
+            set { _overledenOpAdres = value; OnPropertyChanged(nameof(OverledenOpAdres)); }
+        }
+    }
     public class TevredenheidDocument : ViewModelBase
     {
-        private string _dossiernummer;
-        private string _ingevuldDoorAdres;
-        private string _ingevuldDoorNaam;
-        private string _ingevuldDoorTelefoon;
-        private string _ingevuldDoorWoonplaats;
-        private string _uitvaartverzorger;
+        private string? _dossiernummer;
+        private string? _ingevuldDoorAdres;
+        private string? _ingevuldDoorNaam;
+        private string? _ingevuldDoorTelefoon;
+        private string? _ingevuldDoorWoonplaats;
+        private string? _uitvaartverzorger;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
 
-        public string Dossiernummer
+        public string? Dossiernummer
         {
             get { return _dossiernummer; }
             set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
         }
-        public string IngevuldDoorAdres
+        public string? IngevuldDoorAdres
         {
             get { return _ingevuldDoorAdres; }
             set { _ingevuldDoorAdres = value; OnPropertyChanged(nameof(IngevuldDoorAdres)); }
         }
-        public string IngevuldDoorNaam
+        public string? IngevuldDoorNaam
         {
             get { return _ingevuldDoorNaam; }
             set { _ingevuldDoorNaam = value; OnPropertyChanged(nameof(IngevuldDoorNaam)); }
         }
-        public string IngevuldDoorTelefoon
+        public string? IngevuldDoorTelefoon
         {
             get { return _ingevuldDoorTelefoon; }
             set { _ingevuldDoorTelefoon = value; OnPropertyChanged(nameof(IngevuldDoorTelefoon)); }
         }
-        public string IngevuldDoorWoonplaats
+        public string? IngevuldDoorWoonplaats
         {
             get { return _ingevuldDoorWoonplaats; }
             set { _ingevuldDoorWoonplaats = value; OnPropertyChanged(nameof(IngevuldDoorWoonplaats)); }
         }
-        public string Uitvaartverzorger
+        public string? Uitvaartverzorger
         {
             get { return _uitvaartverzorger; }
             set { _uitvaartverzorger = value; OnPropertyChanged(nameof(Uitvaartverzorger)); }
@@ -57,7 +153,7 @@ namespace Dossier_Registratie.Models
             get { return _initialCreation; }
             set { _initialCreation = value; OnPropertyChanged(nameof(InitialCreation)); }
         }
-        public string DestinationFile
+        public string? DestinationFile
         {
             get { return _destinationFile; }
             set
@@ -87,34 +183,34 @@ namespace Dossier_Registratie.Models
     }
     public class TerugmeldingDocument : ViewModelBase
     {
-        private string _dossiernummer;
-        private string _uitvaartverzorger;
-        private string _uitvaartverzorgerEmail;
-        private string _polisnummer;
-        private string _overledeneAanhef;
-        private string _overledeneNaam;
-        private string _overledeneVoornamen;
-        private string _overledeneAdres;
-        private string _overledenePostcode;
-        private string _overledeneWoonplaats;
-        private string _overledeneGeborenTe;
+        private string? _dossiernummer;
+        private string? _uitvaartverzorger;
+        private string? _uitvaartverzorgerEmail;
+        private string? _polisnummer;
+        private string? _overledeneAanhef;
+        private string? _overledeneNaam;
+        private string? _overledeneVoornamen;
+        private string? _overledeneAdres;
+        private string? _overledenePostcode;
+        private string? _overledeneWoonplaats;
+        private string? _overledeneGeborenTe;
         private DateTime _overledeneOverledenOp;
-        private string _overledeneOverledenTe;
+        private string? _overledeneOverledenTe;
         private DateTime _overledeneUitvaartDatum;
         private DateTime _overledeneUitvaartTijd;
-        private string _overledeneType;
-        private string _overledeneUitvaartTe;
+        private string? _overledeneType;
+        private string? _overledeneUitvaartTe;
 
-        private string _opdrachtgeverNaam;
-        private string _opdrachtgeverAdres;
-        private string _opdrachtgeverPostcode;
-        private string _opdrachtgeverPlaats;
-        private string _opdrachtgeverRelatie;
-        private string _opdrachtgeverTelefoon;
+        private string? _opdrachtgeverNaam;
+        private string? _opdrachtgeverAdres;
+        private string? _opdrachtgeverPostcode;
+        private string? _opdrachtgeverPlaats;
+        private string? _opdrachtgeverRelatie;
+        private string? _opdrachtgeverTelefoon;
 
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
 
@@ -290,29 +386,29 @@ namespace Dossier_Registratie.Models
     }
     public class BegrafenisDocument : ViewModelBase
     {
-        private string _naamOpdrachtgever;
-        private string _adresOpdrachtgever;
-        private string _begraafplaats;
+        private string? _naamOpdrachtgever;
+        private string? _adresOpdrachtgever;
+        private string? _begraafplaats;
         private DateTime _datumUitvaart;
         private DateTime _tijdUitvaart;
-        private string _soortGraf;
-        private string _nrGraf;
-        private string _kistType;
-        private string _aulaNaam;
+        private string? _soortGraf;
+        private string? _nrGraf;
+        private string? _kistType;
+        private string? _aulaNaam;
         private int _aantalPersonen;
-        private string _naamOverledene;
-        private string _voornamenOverledene;
+        private string? _naamOverledene;
+        private string? _voornamenOverledene;
         private DateTime _datumGeboorte;
-        private string _plaatsGeboorte;
+        private string? _plaatsGeboorte;
         private DateTime _datumOverlijden;
-        private string _plaatsOverlijden;
-        private string _bsnOverledene;
-        private string _uitvaartLeider;
-        private string _uitvaartLeiderEmail;
-        private string _uitvaartLeiderMobiel;
+        private string? _plaatsOverlijden;
+        private string? _bsnOverledene;
+        private string? _uitvaartLeider;
+        private string? _uitvaartLeiderEmail;
+        private string? _uitvaartLeiderMobiel;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
         public string NaamOpdrachtgever
@@ -465,16 +561,16 @@ namespace Dossier_Registratie.Models
     }
     public class FactuurInfoCrematie : ViewModelBase
     {
-        private string _factuurAdresNaam;
-        private string _factuurAdresRelatie;
-        private string _factuurAdresStraat;
-        private string _factuurAdresPostcode;
-        private string _factuurAdresGeslacht;
-        private string _factuurAdresTelefoon;
-        private string _factuurAdresPlaats;
+        private string? _factuurAdresNaam;
+        private string? _factuurAdresRelatie;
+        private string? _factuurAdresStraat;
+        private string? _factuurAdresPostcode;
+        private string? _factuurAdresGeslacht;
+        private string? _factuurAdresTelefoon;
+        private string? _factuurAdresPlaats;
         private bool _factuurAdresOverride;
 
-        public string FactuurAdresNaam
+        public string? FactuurAdresNaam
         {
             get { return _factuurAdresNaam; }
             set
@@ -483,7 +579,7 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresNaam));
             }
         }
-        public string FactuurAdresRelatie
+        public string? FactuurAdresRelatie
         {
             get { return _factuurAdresRelatie; }
             set
@@ -492,7 +588,7 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresRelatie));
             }
         }
-        public string FactuurAdresStraat
+        public string? FactuurAdresStraat
         {
             get { return _factuurAdresStraat; }
             set
@@ -501,7 +597,7 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresStraat));
             }
         }
-        public string FactuurAdresPostcode
+        public string? FactuurAdresPostcode
         {
             get { return _factuurAdresPostcode; }
             set
@@ -510,7 +606,7 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresPostcode));
             }
         }
-        public string FactuurAdresGeslacht
+        public string? FactuurAdresGeslacht
         {
             get { return _factuurAdresGeslacht; }
             set
@@ -519,7 +615,7 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresGeslacht));
             }
         }
-        public string FactuurAdresTelefoon
+        public string? FactuurAdresTelefoon
         {
             get { return _factuurAdresTelefoon; }
             set
@@ -528,7 +624,7 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresTelefoon));
             }
         }
-        public string FactuurAdresPlaats
+        public string? FactuurAdresPlaats
         {
             get { return _factuurAdresPlaats; }
             set
@@ -549,53 +645,53 @@ namespace Dossier_Registratie.Models
     }
     public class CrematieDocument : ViewModelBase
     {
-        private string _aulaNaam;
+        private string? _aulaNaam;
         private int _aulaPersonen;
         private DateTime _aanvangstTijd;
         private DateTime _startAula;
         private DateTime _startKoffie;
-        private string _crematieLocatie;
-        private string _crematieVoor;
+        private string? _crematieLocatie;
+        private string? _crematieVoor;
         private DateTime _crematieDatum;
-        private string _crematieDossiernummer;
+        private string? _crematieDossiernummer;
 
-        private string _overledeneNaam;
-        private string _overledeneVoornaam;
-        private string _overledeneBurgStaat;
+        private string? _overledeneNaam;
+        private string? _overledeneVoornaam;
+        private string? _overledeneBurgStaat;
         private DateTime _overledeneGebDatum;
-        private string _overledeneGebPlaats;
-        private string _overledeneStraat;
-        private string _overledenePostcode;
-        private string _overledeneLevensovertuiging;
-        private string _overledeneGeslacht;
-        private string _overledeneLeeftijd;
-        private string _overledeneWoonplaats;
+        private string? _overledeneGebPlaats;
+        private string? _overledeneStraat;
+        private string? _overledenePostcode;
+        private string? _overledeneLevensovertuiging;
+        private string? _overledeneGeslacht;
+        private string? _overledeneLeeftijd;
+        private string? _overledeneWoonplaats;
         private DateTime _overledeneDatum;
-        private string _overledenePlaats;
-        private string _overledeneRadio;
+        private string? _overledenePlaats;
+        private string? _overledeneRadio;
 
-        private string _opdrachtgeverNaam;
-        private string _opdrachtgeverGeslacht;
+        private string? _opdrachtgeverNaam;
+        private string? _opdrachtgeverGeslacht;
         private DateTime _opdrachtgeverGebDatum;
-        private string _opdrachtgeverStraat;
-        private string _opdrachtgeverPostcode;
-        private string _opdrachtgeverRelatie;
-        private string _opdrachtgeverVoornamen;
-        private string _opdrachtgeverTelefoon;
-        private string _opdrachtgeverPlaats;
-        private string _opdrachtgeverEmail;
+        private string? _opdrachtgeverStraat;
+        private string? _opdrachtgeverPostcode;
+        private string? _opdrachtgeverRelatie;
+        private string? _opdrachtgeverVoornamen;
+        private string? _opdrachtgeverTelefoon;
+        private string? _opdrachtgeverPlaats;
+        private string? _opdrachtgeverEmail;
 
-        private string _uitvaartverzorger;
-        private string _asbestemming;
-        private string _consumpties;
+        private string? _uitvaartverzorger;
+        private string? _asbestemming;
+        private string? _consumpties;
         private Guid _herkomst;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
 
-        public string AulaNaam
+        public string? AulaNaam
         {
             get { return _aulaNaam; }
             set { _aulaNaam = value; OnPropertyChanged(nameof(AulaNaam)); }
@@ -620,12 +716,12 @@ namespace Dossier_Registratie.Models
             get { return _startKoffie; }
             set { _startKoffie = value; OnPropertyChanged(nameof(StartKoffie)); }
         }
-        public string CrematieLocatie
+        public string? CrematieLocatie
         {
             get { return _crematieLocatie; }
             set { _crematieLocatie = value; OnPropertyChanged(nameof(CrematieLocatie)); }
         }
-        public string CrematieVoor
+        public string? CrematieVoor
         {
             get { return _crematieVoor; }
             set { _crematieVoor = value; OnPropertyChanged(nameof(CrematieVoor)); }
@@ -635,22 +731,22 @@ namespace Dossier_Registratie.Models
             get { return _crematieDatum; }
             set { _crematieDatum = value; OnPropertyChanged(nameof(CrematieDatum)); }
         }
-        public string CrematieDossiernummer
+        public string? CrematieDossiernummer
         {
             get { return _crematieDossiernummer; }
             set { _crematieDossiernummer = value; OnPropertyChanged(nameof(CrematieDossiernummer)); }
         }
-        public string OverledeneNaam
+        public string? OverledeneNaam
         {
             get { return _overledeneNaam; }
             set { _overledeneNaam = value; OnPropertyChanged(nameof(OverledeneNaam)); }
         }
-        public string OverledeneVoornaam
+        public string? OverledeneVoornaam
         {
             get { return _overledeneVoornaam; }
             set { _overledeneVoornaam = value; OnPropertyChanged(nameof(OverledeneVoornaam)); }
         }
-        public string OverledeneBurgStaat
+        public string? OverledeneBurgStaat
         {
             get { return _overledeneBurgStaat; }
             set { _overledeneBurgStaat = value; OnPropertyChanged(nameof(OverledeneBurgStaat)); }
@@ -660,37 +756,37 @@ namespace Dossier_Registratie.Models
             get { return _overledeneGebDatum; }
             set { _overledeneGebDatum = value; OnPropertyChanged(nameof(OverledeneGebDatum)); }
         }
-        public string OverledeneGebPlaats
+        public string? OverledeneGebPlaats
         {
             get { return _overledeneGebPlaats; }
             set { _overledeneGebPlaats = value; OnPropertyChanged(nameof(OverledeneGebPlaats)); }
         }
-        public string OverledeneStraat
+        public string? OverledeneStraat
         {
             get { return _overledeneStraat; }
             set { _overledeneStraat = value; OnPropertyChanged(nameof(OverledeneStraat)); }
         }
-        public string OverledenePostcode
+        public string? OverledenePostcode
         {
             get { return _overledenePostcode; }
             set { _overledenePostcode = value; OnPropertyChanged(nameof(OverledenePostcode)); }
         }
-        public string OverledeneLevensovertuiging
+        public string? OverledeneLevensovertuiging
         {
             get { return _overledeneLevensovertuiging; }
             set { _overledeneLevensovertuiging = value; OnPropertyChanged(nameof(OverledeneLevensovertuiging)); }
         }
-        public string OverledeneGeslacht
+        public string? OverledeneGeslacht
         {
             get { return _overledeneGeslacht; }
             set { _overledeneGeslacht = value; OnPropertyChanged(nameof(OverledeneGeslacht)); }
         }
-        public string OverledeneLeeftijd
+        public string? OverledeneLeeftijd
         {
             get { return _overledeneLeeftijd; }
             set { _overledeneLeeftijd = value; OnPropertyChanged(nameof(OverledeneLeeftijd)); }
         }
-        public string OverledeneWoonplaats
+        public string? OverledeneWoonplaats
         {
             get { return _overledeneWoonplaats; }
             set { _overledeneWoonplaats = value; OnPropertyChanged(nameof(OverledeneWoonplaats)); }
@@ -700,22 +796,22 @@ namespace Dossier_Registratie.Models
             get { return _overledeneDatum; }
             set { _overledeneDatum = value; OnPropertyChanged(nameof(OverledeneDatum)); }
         }
-        public string OverledenePlaats
+        public string? OverledenePlaats
         {
             get { return _overledenePlaats; }
             set { _overledenePlaats = value; OnPropertyChanged(nameof(OverledenePlaats)); }
         }
-        public string OverledeneRadio
+        public string? OverledeneRadio
         {
             get { return _overledeneRadio; }
             set { _overledeneRadio = value; OnPropertyChanged(nameof(OverledeneRadio)); }
         }
-        public string OpdrachtgeverNaam
+        public string? OpdrachtgeverNaam
         {
             get { return _opdrachtgeverNaam; }
             set { _opdrachtgeverNaam = value; OnPropertyChanged(nameof(OpdrachtgeverNaam)); }
         }
-        public string OpdrachtgeverGeslacht
+        public string? OpdrachtgeverGeslacht
         {
             get { return _opdrachtgeverGeslacht; }
             set { _opdrachtgeverGeslacht = value; OnPropertyChanged(nameof(OpdrachtgeverGeslacht)); }
@@ -725,52 +821,52 @@ namespace Dossier_Registratie.Models
             get { return _opdrachtgeverGebDatum; }
             set { _opdrachtgeverGebDatum = value; OnPropertyChanged(nameof(OpdrachtgeverGebDatum)); }
         }
-        public string OpdrachtgeverStraat
+        public string? OpdrachtgeverStraat
         {
             get { return _opdrachtgeverStraat; }
             set { _opdrachtgeverStraat = value; OnPropertyChanged(nameof(OpdrachtgeverStraat)); }
         }
-        public string OpdrachtgeverPostcode
+        public string? OpdrachtgeverPostcode
         {
             get { return _opdrachtgeverPostcode; }
             set { _opdrachtgeverPostcode = value; OnPropertyChanged(nameof(OpdrachtgeverPostcode)); }
         }
-        public string OpdrachtgeverRelatie
+        public string? OpdrachtgeverRelatie
         {
             get { return _opdrachtgeverRelatie; }
             set { _opdrachtgeverRelatie = value; OnPropertyChanged(nameof(OpdrachtgeverRelatie)); }
         }
-        public string OpdrachtgeverVoornamen
+        public string? OpdrachtgeverVoornamen
         {
             get { return _opdrachtgeverVoornamen; }
             set { _opdrachtgeverVoornamen = value; OnPropertyChanged(nameof(OpdrachtgeverVoornamen)); }
         }
-        public string OpdrachtgeverTelefoon
+        public string? OpdrachtgeverTelefoon
         {
             get { return _opdrachtgeverTelefoon; }
             set { _opdrachtgeverTelefoon = value; OnPropertyChanged(nameof(OpdrachtgeverTelefoon)); }
         }
-        public string OpdrachtgeverPlaats
+        public string? OpdrachtgeverPlaats
         {
             get { return _opdrachtgeverPlaats; }
             set { _opdrachtgeverPlaats = value; OnPropertyChanged(nameof(OpdrachtgeverPlaats)); }
         }
-        public string OpdrachtgeverEmail
+        public string? OpdrachtgeverEmail
         {
             get { return _opdrachtgeverEmail; }
             set { _opdrachtgeverEmail = value; OnPropertyChanged(nameof(OpdrachtgeverEmail)); }
         }
-        public string Uitvaartverzorger
+        public string? Uitvaartverzorger
         {
             get { return _uitvaartverzorger; }
             set { _uitvaartverzorger = value; OnPropertyChanged(nameof(Uitvaartverzorger)); }
         }
-        public string Asbestemming
+        public string? Asbestemming
         {
             get { return _asbestemming; }
             set { _asbestemming = value; OnPropertyChanged(nameof(Asbestemming)); }
         }
-        public string Consumpties
+        public string? Consumpties
         {
             get { return _consumpties; }
             set { _consumpties = value; OnPropertyChanged(nameof(Consumpties)); }
@@ -790,7 +886,7 @@ namespace Dossier_Registratie.Models
             get { return _initialCreation; }
             set { _initialCreation = value; OnPropertyChanged(nameof(InitialCreation)); }
         }
-        public string DestinationFile
+        public string? DestinationFile
         {
             get { return _destinationFile; }
             set
@@ -845,21 +941,21 @@ namespace Dossier_Registratie.Models
     }
     public class BezittingenDocument : ViewModelBase
     {
-        private string _dossiernummer;
-        private string _overledeneNaam;
-        private string _overledeneVoornaam;
+        private string? _dossiernummer;
+        private string? _overledeneNaam;
+        private string? _overledeneVoornaam;
         private DateTime _overledeneGeborenOp;
         private DateTime _overledeneOverledenOp;
-        private string _overledeneLocatieOpbaring;
-        private string _overledenePlaatsOverlijden;
-        private string _overledeneBezittingen;
-        private string _overledeneRetour;
-        private string _overledeneRelatie;
-        private string _opdrachtgeverNaamVoorletters;
-        private string _opdrachtgeverAdres;
+        private string? _overledeneLocatieOpbaring;
+        private string? _overledenePlaatsOverlijden;
+        private string? _overledeneBezittingen;
+        private string? _overledeneRetour;
+        private string? _overledeneRelatie;
+        private string? _opdrachtgeverNaamVoorletters;
+        private string? _opdrachtgeverAdres;
         private bool _updated = false;
         private bool _initialCreation;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
 
@@ -982,13 +1078,13 @@ namespace Dossier_Registratie.Models
     }
     public class OverdrachtDocument : ViewModelBase
     {
-        private string _overdrachtType;
-        private string _overledeAanhef;
-        private string _overledeneVoornaam;
-        private string _overledeneAchternaam;
-        private string _uitvaartNummer;
-        private string _overdragendePartij;
-        private string _destinationFile;
+        private string? _overdrachtType;
+        private string? _overledeAanhef;
+        private string? _overledeneVoornaam;
+        private string? _overledeneAchternaam;
+        private string? _uitvaartNummer;
+        private string? _overdragendePartij;
+        private string? _destinationFile;
         private bool _updated = false;
         private Guid _uitvaartId;
         private Guid _documentId;
@@ -1059,7 +1155,7 @@ namespace Dossier_Registratie.Models
     public class ChecklistOpbarenDocument : ViewModelBase
     {
         private Guid _werknemerId;
-        private string _werknemerName;
+        private string? _werknemerName;
 
         public Guid WerknemerId
         {
@@ -1074,17 +1170,17 @@ namespace Dossier_Registratie.Models
     }
     public class ChecklistDocument : ViewModelBase
     {
-        private string _documentType;
-        private string _achternaam;
-        private string _datumUitvaart;
-        private string _overledenDatum;
-        private string _uitvaartNummer;
-        private string _herkomst;
-        private string _uitvaartType;
-        private string _destinationFile;
-        private string _uitvaartLeider;
-        private string _volledigeNaam;
-        private string _opbarenInfo;
+        private string? _documentType;
+        private string? _achternaam;
+        private string? _datumUitvaart;
+        private string? _overledenDatum;
+        private string? _uitvaartNummer;
+        private string? _herkomst;
+        private string? _uitvaartType;
+        private string? _destinationFile;
+        private string? _uitvaartLeider;
+        private string? _volledigeNaam;
+        private string? _opbarenInfo;
         private bool _updated = false;
         private Guid _uitvaartId;
         private Guid _documentId;
@@ -1185,33 +1281,33 @@ namespace Dossier_Registratie.Models
     }
     public class DienstDocument : ViewModelBase
     {
-        private string _aanvraagDienstTe;
+        private string? _aanvraagDienstTe;
         private DateTime _datumUitvaart;
-        private string _naamUitvaart;
-        private string _locatieDienst;
+        private string? _naamUitvaart;
+        private string? _locatieDienst;
         private DateTime _datumDienst;
-        private string _ontvangstekamer;
+        private string? _ontvangstekamer;
         private DateTime _aanvang;
-        private string _aantalPersonen;
-        private string _muziekAfgespeeld;
-        private string _beeldmateriaal;
-        private string _opname;
-        private string _afscheidVoorDienst;
-        private string _baarOntrekken;
-        private string _kistDalen;
-        private string _familieLaatste;
-        private string _orgel;
-        private string _koor;
-        private string _attributen;
-        private string _liturgische;
-        private string _opdrachtgeverNaam;
-        private string _opdrachtgeverAdres;
-        private string _opdrachtgeverPostcode;
-        private string _opdrachtgeverPlaats;
-        private string _opdrachtgeverTelefoon;
-        private string _opmerkingen;
+        private string? _aantalPersonen;
+        private string? _muziekAfgespeeld;
+        private string? _beeldmateriaal;
+        private string? _opname;
+        private string? _afscheidVoorDienst;
+        private string? _baarOntrekken;
+        private string? _kistDalen;
+        private string? _familieLaatste;
+        private string? _orgel;
+        private string? _koor;
+        private string? _attributen;
+        private string? _liturgische;
+        private string? _opdrachtgeverNaam;
+        private string? _opdrachtgeverAdres;
+        private string? _opdrachtgeverPostcode;
+        private string? _opdrachtgeverPlaats;
+        private string? _opdrachtgeverTelefoon;
+        private string? _opmerkingen;
         private bool _updated = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
 
@@ -1392,26 +1488,26 @@ namespace Dossier_Registratie.Models
     }
     public class DocumentDocument : ViewModelBase
     {
-        private string _documentType;
-        private string _uitvaartverzorger;
-        private string _uitvaartverzorgerEmail;
-        private string _geslachtnaamOverledene;
-        private string _voornaamOverledene;
+        private string? _documentType;
+        private string? _uitvaartverzorger;
+        private string? _uitvaartverzorgerEmail;
+        private string? _geslachtnaamOverledene;
+        private string? _voornaamOverledene;
         private DateTime _geboortedatumOverledene;
-        private string _geboorteplaatsOverledene;
-        private string _woonplaatsOverledene;
+        private string? _geboorteplaatsOverledene;
+        private string? _woonplaatsOverledene;
         private DateTime _datumOverlijden;
-        private string _gemeenteOverlijden;
-        private string _plaatsOverlijden;
-        private string _locatieUitvaart;
+        private string? _gemeenteOverlijden;
+        private string? _plaatsOverlijden;
+        private string? _locatieUitvaart;
         private DateTime _datumUitvaart;
-        private string _ondergetekendeUitvaart;
+        private string? _ondergetekendeUitvaart;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
-        private string _uitvaartNummer;
+        private string? _uitvaartNummer;
         public string DocumentType
         {
             get { return _documentType; }
@@ -1536,16 +1632,16 @@ namespace Dossier_Registratie.Models
     public class KoffieKamerDocument : ViewModelBase
     {
         private DateTime _datumUitvaart;
-        private string _naam;
-        private string _dienstLocatie;
+        private string? _naam;
+        private string? _dienstLocatie;
         private DateTime _dienstDatum;
         private DateTime _dienstTijd;
-        private string _opdrachtgever;
-        private string _opdrachtgeverAdres;
-        private string _opdrachtgeverTelefoon;
+        private string? _opdrachtgever;
+        private string? _opdrachtgeverAdres;
+        private string? _opdrachtgeverTelefoon;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
 
@@ -1631,22 +1727,22 @@ namespace Dossier_Registratie.Models
     }
     public class BloemenDocument : ViewModelBase
     {
-        private string _leverancierNaam;
-        private string _uitvaartleider;
-        private string _emailUitvaartleider;
-        private string _naamOverledene;
-        private string _bloemstuk;
+        private string? _leverancierNaam;
+        private string? _uitvaartleider;
+        private string? _emailUitvaartleider;
+        private string? _naamOverledene;
+        private string? _bloemstuk;
         private bool _lint;
         private bool _kaart;
-        private string _bezorgadres;
-        private string _telefoonnummer;
+        private string? _bezorgadres;
+        private string? _telefoonnummer;
         private DateTime _datumBezorgen;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
-        private string _lintJson;
+        private string? _lintJson;
 
         public string LeverancierNaam
         {
@@ -1756,46 +1852,46 @@ namespace Dossier_Registratie.Models
     }
     public class AangifteDocument : ViewModelBase
     {
-        private string _overledeneAanhef;
-        private string _overledeneAchternaam;
-        private string _overledeneVoornaam;
-        private string _overledeneGeboorteplaats;
+        private string? _overledeneAanhef;
+        private string? _overledeneAchternaam;
+        private string? _overledeneVoornaam;
+        private string? _overledeneGeboorteplaats;
         private DateTime _overledeneGeboortedatum;
-        private string _overledeneAdres;
-        private string _overledenePostcode;
-        private string _overledeneWoonplaats;
-        private string _overledeneBSN;
+        private string? _overledeneAdres;
+        private string? _overledenePostcode;
+        private string? _overledeneWoonplaats;
+        private string? _overledeneBSN;
         private DateTime _datumOverlijden;
         private DateTime _tijdOverlijden;
-        private string _adresOverlijden;
-        private string _naamWederhelft;
-        private string _voornaamWederhelft;
-        private string _eersteOuder;
-        private string _tweedeOuder;
-        private string _gehuwdGeweestMet;
-        private string _weduwenaarVan;
-        private string _aantalKinderen;
-        private string _aantalKinderenMinderjarig;
-        private string _aantalKinderenWaarvanOverleden;
-        private string _aangeverNaam;
-        private string _aangeverPlaats;
-        private string _erfgenaamVolledigeNaam;
-        private string _erfgenaamStraat;
-        private string _erfgenaamPostcode;
-        private string _erfgenaamWoonplaats;
+        private string? _adresOverlijden;
+        private string? _naamWederhelft;
+        private string? _voornaamWederhelft;
+        private string? _eersteOuder;
+        private string? _tweedeOuder;
+        private string? _gehuwdGeweestMet;
+        private string? _weduwenaarVan;
+        private string? _aantalKinderen;
+        private string? _aantalKinderenMinderjarig;
+        private string? _aantalKinderenWaarvanOverleden;
+        private string? _aangeverNaam;
+        private string? _aangeverPlaats;
+        private string? _erfgenaamVolledigeNaam;
+        private string? _erfgenaamStraat;
+        private string? _erfgenaamPostcode;
+        private string? _erfgenaamWoonplaats;
         private DateTime _datumUitvaart;
         private DateTime _tijdUitvaart;
-        private string _locatieUitvaart;
-        private string _typeUitvaart;
-        private string _schouwarts;
-        private string _ubs;
+        private string? _locatieUitvaart;
+        private string? _typeUitvaart;
+        private string? _schouwarts;
+        private string? _ubs;
         private bool _updated = false;
         private bool _initialCreation = false;
-        private string _destinationFile;
+        private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
-        private string _uitvaartnummer;
-        private string _burgelijkestaat;
+        private string? _uitvaartnummer;
+        private string? _burgelijkestaat;
 
 
         public string OverledeneAanhef

@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -447,7 +448,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
             var jsonDeserializer = new JsonDeserializer();
-            Debug.WriteLine(uitvaartNummer);
+
             Verzekeringen = new ObservableCollection<PolisVerzekering>(jsonDeserializer.DeserializeJson(uitvaartNummer));
 
             if (Verzekeringen.Count > 1)
@@ -643,245 +644,172 @@ namespace Dossier_Registratie.ViewModels
 
             return true;
         }
-        private Task CreateAkteFile(string UitvaartId, string documentName, bool akteStatus, bool sendMail)
+        private static string EnsureTrailingSlash(string path) => path.EndsWith("\\") ? path : path + "\\";
+        private async Task CreateAkteFile(string UitvaartId, string documentName, bool akteStatus, bool sendMail)
         {
-            Microsoft.Office.Interop.Outlook.Application outlookApp = null;
-            MailItem mail = null;
+            var outlookApp = sendMail ? new Microsoft.Office.Interop.Outlook.Application() : null;
+            var mail = sendMail ? (MailItem)outlookApp.CreateItem(OlItemType.olMailItem) : null;
 
-            if (sendMail == true)
-            {
-                outlookApp = new Microsoft.Office.Interop.Outlook.Application();
-                mail = (MailItem)outlookApp.CreateItem(OlItemType.olMailItem);
-            }
-
-            string sourceLoc = DataProvider.DocumentenOpslag;
-            string templateLoc = DataProvider.TemplateFolder;
-
-            bool sourceLocEndSlash = sourceLoc.EndsWith(@"\");
-
-            if (!sourceLocEndSlash)
-                sourceLoc += "\\";
-
-            bool templateLocatEndSlash = templateLoc.EndsWith(@"\");
-            if (!templateLocatEndSlash)
-                templateLoc += "\\";
-
-            string fileToCopy = templateLoc + "Akte.van.Cessie.docx";
-
-            string destinationLoc = sourceLoc + UitvaartId;
-
-            bool destinationLocEndSlash = destinationLoc.EndsWith(@"\");
-            if (!destinationLocEndSlash)
-                destinationLoc += "\\";
+            string sourceLoc = EnsureTrailingSlash(DataProvider.DocumentenOpslag);
+            string templateLoc = EnsureTrailingSlash(DataProvider.TemplateFolder);
+            string fileToCopy = Path.Combine(templateLoc, "Akte.van.Cessie.docx");
+            string destinationLoc = EnsureTrailingSlash(Path.Combine(sourceLoc, UitvaartId));
 
             FileInfo sourceFile = new(fileToCopy);
 
-            bool isSingleAkte = IsSingleValue(documentName);
-            if (!isSingleAkte)
+            if (!sourceFile.Exists)
+                throw new FileNotFoundException($"Template file not found at {fileToCopy}");
+
+            if (IsSingleValue(documentName))
+                await HandleSingleDocument(documentName, sourceFile, destinationLoc, akteStatus, mail, sendMail);
+            else
+                await HandleMultipleDocuments(documentName, sourceFile, destinationLoc, akteStatus, mail, sendMail);
+
+            if (sendMail)
+                FinalizeAndDisplayMail(mail, outlookApp);
+            return;
+        }
+        private async Task HandleSingleDocument(string documentName, FileInfo sourceFile, string destinationLoc, bool akteStatus, MailItem mail, bool sendMail)
+        {
+            string destinationFile = Path.Combine(destinationLoc, $"AkteVanCessie_{SanitizeFileName(documentName)}.docx");
+            await CopyAndProcessFile(sourceFile, destinationFile, SelectedVerzekering.VerzekeringName, SelectedVerzekering.PolisInfoList, akteStatus, mail, sendMail, documentName);
+        }
+        private async Task HandleMultipleDocuments(string documentNames, FileInfo sourceFile, string destinationLoc, bool akteStatus, MailItem mail, bool sendMail)
+        {
+            foreach (string document in documentNames.Split(','))
             {
-                foreach (string document in documentName.Split(','))
-                {
-                    destinationFile = destinationLoc + "AkteVanCessie_" + document.Replace(" ", "").Replace("/","-") + ".docx";
+                string trimmedDocument = document.Trim();
+                string destinationFile = Path.Combine(destinationLoc, $"AkteVanCessie_{SanitizeFileName(trimmedDocument)}.docx");
 
-                    if (sourceFile.Exists)
-                    {
-                        if (!Directory.Exists(destinationLoc))
-                        {
-                            Directory.CreateDirectory(destinationLoc);
-                        }
-                        if (File.Exists(destinationFile))
-                        {
-                            File.Delete(destinationFile);
-                        }
-                        sourceFile.CopyTo(destinationFile);
+                var verzekering = VerzekeringenWithAll.FirstOrDefault(v => v.VerzekeringName == trimmedDocument);
+                if (verzekering == null || verzekering.VerzekeringName == "Alles")
+                    continue;
 
-                        foreach (var verzekeringElement in VerzekeringenWithAll)
-                        {
-                            if (verzekeringElement.VerzekeringName != "Alles" && verzekeringElement.VerzekeringName == document)
-                            {
-                                FillAkteFile(verzekeringElement.VerzekeringName, verzekeringElement.PolisInfoList, akteStatus);
-                            }
-                        }
-                        if (sendMail == true)
-                            mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, "AkteVanCessie_" + document.Replace(" ", "").Replace("/", "-") + ".docx");
-                    }
-                    if (sendMail == false)
-                    {
-                        Process.Start(new ProcessStartInfo()
-                        {
-                            FileName = destinationFile,
-                            UseShellExecute = true,
-                            Verb = "open"
-                        });
-                    }
-                }
-                if (sendMail == true)
-                    mail.Subject = "Akte van Cessies - " + documentName;
+                await CopyAndProcessFile(sourceFile, destinationFile, verzekering.VerzekeringName, verzekering.PolisInfoList, akteStatus, mail, sendMail, documentNames);
+            }
+        }
+        private static string SanitizeFileName(string fileName) =>
+            fileName.Replace(" ", "").Replace("/", "-");
+        private void FinalizeAndDisplayMail(MailItem mail, Microsoft.Office.Interop.Outlook.Application outlookApp)
+        {
+            mail.Display(true);
+            if (mail != null) Marshal.ReleaseComObject(mail);
+            if (outlookApp != null) Marshal.ReleaseComObject(outlookApp);
+        }
+        private async Task CopyAndProcessFile(FileInfo sourceFile, string destinationFile, string verzekeringName, List<Polis> polisInfoList, bool akteStatus, MailItem mail, bool sendMail, string documentName)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(destinationFile)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
+            }
+
+            if (File.Exists(destinationFile))
+            {
+                File.Delete(destinationFile);
+            }
+
+            sourceFile.CopyTo(destinationFile);
+            await FillAkteFile(verzekeringName, polisInfoList, destinationFile);
+
+            if (sendMail)
+            {
+                mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, Path.GetFileName(destinationFile));
+                mail.Subject = $"Akte van Cessie - {documentName}";
             }
             else
             {
-                destinationFile = destinationLoc + "AkteVanCessie_" + documentName.Replace(" ", "").Replace("/", "-") + ".docx";
-
-                if (sourceFile.Exists)
-                {
-                    if (!Directory.Exists(destinationLoc))
-                    {
-                        Directory.CreateDirectory(destinationLoc);
-                    }
-                    if (File.Exists(destinationFile))
-                    {
-                        File.Delete(destinationFile);
-                    }
-                    sourceFile.CopyTo(destinationFile);
-                    FillAkteFile(SelectedVerzekering.VerzekeringName, SelectedVerzekering.PolisInfoList, akteStatus);
-
-                    if (sendMail == true)
-                        mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, "AkteVanCessie_" + documentName.Replace(" ", "").Replace("/", "-") + ".docx");
-                }
-
-                if (sendMail == false)
-                {
-                    Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = destinationFile,
-                        UseShellExecute = true,
-                        Verb = "open"
-                    });
-                }
-                else
-                {
-                    if (sendMail == true)
-                        mail.Subject = "Akte van Cessie - " + documentName;
-                }
+                DocumentFunctions.OpenFile(destinationFile);
             }
-
-            if (sendMail == true)
-            {
-                mail.Display(true);
-                if (mail != null) Marshal.ReleaseComObject(mail);
-                if (outlookApp != null) Marshal.ReleaseComObject(outlookApp);
-            }
-            return Task.CompletedTask;
         }
-        private Task FillAkteFile(string verzekeringName, List<Polis> polisInfoList, bool akteStatus)
+        private async Task FillAkteFile(string verzekeringName, List<Polis> polisInfoList, string destinationFile)
         {
-            string opdrachtgeverNaam = string.Empty;
-            string opdrachtgeverAdres = string.Empty;
-            string opdrachtgeverRelatie = string.Empty;
-            string geslotenOpLevenVan = string.Empty;
-            string overledeneAdres = string.Empty;
-            DateTime geborenOp = DateTime.MinValue;
-            DateTime overledenOp = DateTime.MinValue;
+            AkteContent akteContent = await searchRepository.GetAkteContentByUitvaartIdAsync(Globals.UitvaartCodeGuid);
 
-            conn.Open();
-            SqlDataAdapter da = new("SELECT (CASE WHEN opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverAchternaam, ', ')  " +
-                "ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam, ', ') END) AS NaamOpdrachtgever,  " +
-                "opdrachtgeverVoornaamen," +
-                "(CASE WHEN opdrachtgeverHuisnummerToevoeging IS NULL THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) ELSE CONCAT(opdrachtgeverStraat, ' ', TRIM(opdrachtgeverHuisnummer), ' ', TRIM(opdrachtgeverHuisnummerToevoeging)) END) as AdresOpdrachtgever, " +
-                "opdrachtgeverRelatieTotOverledene, " +
-                "(CASE WHEN overledeneTussenvoegsel IS NULL THEN CONCAT(overledeneAanhef, ' ', overledeneAchternaam) " +
-                "ELSE CONCAT(overledeneAanhef, ' ', overledeneTussenvoegsel, ' ', overledeneAchternaam) END) AS NaamOverledene, " +
-                "overledeneGeboortedatum, overledenPlaats, overledenDatumTijd, " +
-                "(CASE WHEN overledenHuisnummerToevoeging IS NULL THEN CONCAT(overledenAdres, ' ', overledenHuisnummer, ', ', overledenPlaats) ELSE CONCAT(overledenAdres, ' ', TRIM(overledenHuisnummer), ' ', TRIM(overledenHuisnummerToevoeging), ', ', overledenPlaats) END) as AdresOpverledene " +
-                "FROM OverledeneOpdrachtgever OO " +
-                "INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId " +
-                "INNER JOIN OverledeneOverlijdenInfo OOI ON OO.uitvaartId = OOI.UitvaartId " +
-                "WHERE OO.uitvaartId = '" + Globals.UitvaartCodeGuid + "'", conn);
-            DataSet ds = new();
-            da.Fill(ds, "AkteInfo");
-
-            string voorletters = string.Empty;
-            if (ds.Tables[0].Rows.Count > 0)
-            {
-
-                if (!string.IsNullOrEmpty(ds.Tables[0].Rows[0]["opdrachtgeverVoornaamen"].ToString()))
-                {
-                    string[] words = ds.Tables[0].Rows[0]["opdrachtgeverVoornaamen"].ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    voorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
-                }
-
-                opdrachtgeverNaam = ds.Tables[0].Rows[0]["NaamOpdrachtgever"].ToString() + " " + voorletters;
-                opdrachtgeverAdres = ds.Tables[0].Rows[0]["AdresOpdrachtgever"].ToString();
-                opdrachtgeverRelatie = ds.Tables[0].Rows[0]["opdrachtgeverRelatieTotOverledene"].ToString();
-                geslotenOpLevenVan = ds.Tables[0].Rows[0]["NaamOverledene"].ToString();
-                geborenOp = (DateTime)ds.Tables[0].Rows[0]["overledeneGeboortedatum"];
-                overledenOp = (DateTime)ds.Tables[0].Rows[0]["overledenDatumTijd"];
-                overledeneAdres = ds.Tables[0].Rows[0]["AdresOpverledene"].ToString();
-            }
-
-            conn.Close();
-
+            var bookmarks = GetBookmarks(akteContent, verzekeringName);
             Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
             Document doc = app.Documents.Open(destinationFile);
 
-            string verzekeringNaam;
-            int polisBedragCount = 2;
+            AddPolisInfoToDocument(doc, polisInfoList, bookmarks);
+
+            await AddHeaderImageToDocument(doc);
+
+            doc.Save();
+            doc.Close();
+        }
+        private Dictionary<string, string> GetBookmarks(AkteContent akteContent, string verzekeringName)
+        {
+            return new Dictionary<string, string>
+    {
+        { "verzekeringMaatschappij", verzekeringName },
+        { "ondergetekendeNaamEnVoorletters", akteContent.OpdrachtgeverNaam },
+        { "ondergetekendeAdres", akteContent.OpdrachtgeverAdres },
+        { "ondergetekendeRelatieTotVerzekende", akteContent.OpdrachtgeverRelatie },
+        { "verzekerdeGeslotenOpHetLevenVan", akteContent.GeslotenOpHetLevenVan },
+        { "verzekerdeGeborenOp", akteContent.OverledenGeboorteDatum.ToString("dd-MM-yyyy") },
+        { "verzekerdeOverledenOp", akteContent.OverledenOpDatum.ToString("dd-MM-yyyy") },
+        { "verzekerdeAdres", akteContent.OverledenOpAdres },
+        { "vermeldingNummer", Globals.UitvaartCode },
+        { "PolisTable", "" },
+        { "OrganisatieNaam", DataProvider.OrganizationName },
+        { "OrganisatieIban", DataProvider.OrganizationIban }
+    };
+        }
+        private void AddPolisInfoToDocument(Document doc, List<Polis> polisInfoList, Dictionary<string, string> bookmarks)
+        {
+            foreach (var bookmark in bookmarks)
+            {
+                if (!doc.Bookmarks.Exists(bookmark.Key))
+                    throw new InvalidOperationException($"The bookmark '{bookmark.Key}' does not exist in the document.");
+
+                Bookmark bm = doc.Bookmarks[bookmark.Key];
+                Range range = bm.Range;
+
+                if (bookmark.Key == "PolisTable")
+                    AddPolisTableToDocument(doc, polisInfoList, range);
+                else
+                    range.Text = bookmark.Value;
+            }
+        }
+        private void AddPolisTableToDocument(Document doc, List<Polis> polisInfoList, Range polisTableRange)
+        {
+            int polisBedragCount = 2; 
             double totalPolisBedrag = 0;
 
-
-            Dictionary<string, string> bookmarks = new Dictionary<string, string>
+            foreach (var polisInfo in polisInfoList)
             {
-                { "verzekeringMaatschappij", verzekeringName },
-                { "ondergetekendeNaamEnVoorletters", opdrachtgeverNaam },
-                { "ondergetekendeAdres", opdrachtgeverAdres },
-                { "ondergetekendeRelatieTotVerzekende", opdrachtgeverRelatie },
-                { "verzekerdeGeslotenOpHetLevenVan", geslotenOpLevenVan },
-                { "verzekerdeGeborenOp", geborenOp.ToString("dd-MM-yyyy") },
-                { "verzekerdeOverledenOp", overledenOp.ToString("dd-MM-yyyy") },
-                { "verzekerdeAdres", overledeneAdres },
-                { "vermeldingNummer", Globals.UitvaartCode },
-                { "PolisTable", "" },
-                { "OrganisatieNaam", DataProvider.OrganizationName },
-                { "OrganisatieIban", DataProvider.OrganizationIban }
-            };
+                if (!string.IsNullOrEmpty(polisInfo.PolisBedrag) && double.TryParse(polisInfo.PolisBedrag, out double polisBedragValue))
+                {
+                    polisBedragCount++;
+                    totalPolisBedrag += polisBedragValue;
+                }
+            }
 
+            Microsoft.Office.Interop.Word.Table table = doc.Tables.Add(polisTableRange, polisBedragCount, 2);
+
+            table.Cell(1, 1).Range.Text = "Polisnummer";
+            table.Cell(1, 2).Range.Text = "Verzekerd bedrag";
+            table.Rows[1].Range.Font.Bold = 1;
+            table.Rows[1].Range.Borders[WdBorderType.wdBorderBottom].LineStyle = WdLineStyle.wdLineStyleDashSmallGap;
+
+            int rowIndex = 2;
             foreach (var polisInfo in polisInfoList)
             {
                 if (!string.IsNullOrEmpty(polisInfo.PolisBedrag))
                 {
-                    polisBedragCount++;
-
-                    if (double.TryParse(polisInfo.PolisBedrag, out double polisBedragValue))
-                        totalPolisBedrag += polisBedragValue;
+                    table.Cell(rowIndex, 1).Range.Text = polisInfo.PolisNr;
+                    table.Cell(rowIndex, 2).Range.Text = "€ " + polisInfo.PolisBedrag;
+                    rowIndex++;
                 }
             }
 
-            foreach (var bookmark in bookmarks)
-            {
-                Bookmark bm = doc.Bookmarks[bookmark.Key];
-                Range range = bm.Range;
-                range.Text = bookmark.Value;
-
-                if (bookmark.Key == "PolisTable")
-                {
-                    Microsoft.Office.Interop.Word.Table table = doc.Tables.Add(range, polisBedragCount, 2);
-
-                    table.Cell(1, 1).Range.Text = "Polisnummer";
-                    table.Cell(1, 2).Range.Text = "Verzekerd bedrag";
-                    table.Rows[1].Range.Font.Bold = 1;
-                    table.Rows[1].Range.Borders[WdBorderType.wdBorderBottom].LineStyle = WdLineStyle.wdLineStyleDashSmallGap;
-
-                    int rowIndex = 2;
-                    foreach (var polisInfo in polisInfoList)
-                    {
-                        if (!string.IsNullOrEmpty(polisInfo.PolisBedrag))
-                        {
-                            table.Cell(rowIndex, 1).Range.Text = polisInfo.PolisNr;
-                            table.Cell(rowIndex, 2).Range.Text = "€ " + polisInfo.PolisBedrag;
-
-                            rowIndex++;
-                        }
-                    }
-                    table.Rows[polisBedragCount].Range.Font.Bold = 1;
-                    table.Rows[polisBedragCount].Range.Borders[WdBorderType.wdBorderTop].LineStyle = WdLineStyle.wdLineStyleSingle;
-                    table.Cell(polisBedragCount, 1).Range.Text = "Totaal";
-                    table.Cell(polisBedragCount, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
-                    table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString("#,0.00", System.Globalization.CultureInfo.CreateSpecificCulture("nl-NL"));
-
-                }
-            }
-
+            table.Rows[polisBedragCount].Range.Font.Bold = 1;
+            table.Rows[polisBedragCount].Range.Borders[WdBorderType.wdBorderTop].LineStyle = WdLineStyle.wdLineStyleSingle;
+            table.Cell(polisBedragCount, 1).Range.Text = "Totaal";
+            table.Cell(polisBedragCount, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
+            table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString("#,0.00", System.Globalization.CultureInfo.CreateSpecificCulture("nl-NL"));
+        }
+        private async Task AddHeaderImageToDocument(Document doc)
+        {
             var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
             if (documentData != null && documentData.Length > 0)
             {
@@ -910,11 +838,10 @@ namespace Dossier_Registratie.ViewModels
                 catch (System.Exception ex)
                 {
                     ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    throw; // Re-throw the exception to be handled by the calling method
+                    throw;
                 }
                 finally
                 {
-                    // Ensure the temporary file is deleted
                     if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
                     {
                         try
@@ -928,41 +855,9 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
             }
-
-            doc.Save();
-            doc.Close();
-
-            string akteQuery;
-            if (akteStatus)
-            {
-                akteQuery = "UPDATE [OverledeneBijlages]" +
-                                    " SET [DocumentURL] = '" + destinationFile + "'," +
-                                    " [DocumentHash] = 'recreated_on_build'" +
-                                    " WHERE [UitvaartId] = '" + Globals.UitvaartCodeGuid + "'" +
-                                    " AND [DocumentName] = 'AkteVanCessie_" + verzekeringName + ".docx'";
-
-            }
-            else
-            {
-                Guid documentId = Guid.NewGuid();
-
-                akteQuery = "INSERT INTO [OverledeneBijlages] ([BijlageId],[UitvaartId],[DocumentName],[DocumentType],[DocumentURL],[DocumentHash],[DocumentInconsistent],[isDeleted]) " +
-                    "VALUES ('" + documentId + "', '" + Globals.UitvaartCodeGuid + "', 'AkteVanCessie_" + verzekeringName + ".docx', 'Word', '" + destinationFile + "', 'recreated_on_build',0,0)";
-            }
-
-            /* No need to import to Database cause it's regenerated every time.
-            using (SqlCommand command = new SqlCommand(akteQuery, conn))
-            {
-                conn.Open();
-                command.ExecuteNonQuery();
-                conn.Close();
-            }
-            */
-            return Task.CompletedTask;
         }
         private async Task GenererenCreateAkteVanCessie(object parameter)
         {
-
             System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
             bool sendMail = false;
@@ -2273,18 +2168,14 @@ namespace Dossier_Registratie.ViewModels
             List<string> documentUrls = new List<string>();
             bool recreationTrigger = false;
 
-            Debug.WriteLine("CreateDocumentTerugmelding started.");
-
             if (string.IsNullOrEmpty(TagModel.TerugmeldingTag))
             {
                 documentId = Guid.NewGuid();
                 initialCreation = true;
-                Debug.WriteLine("Initial document creation: " + documentId);
             }
             else
             {
                 var terugmeldingDocuments = await miscellaneousRepository.GetDocumentsInformationAsync(Globals.UitvaartCodeGuid, "Terugmelding").ConfigureAwait(false);
-                Debug.WriteLine($"Found {terugmeldingDocuments.Count} documents for Terugmelding.");
 
                 if (terugmeldingDocuments.Count > 1)
                 {
@@ -2568,7 +2459,6 @@ namespace Dossier_Registratie.ViewModels
                 return;
             }
         }
-
         public async Task CreateDocumentTevredenheid(object obj)
         {
             string documentOption = (string)obj;

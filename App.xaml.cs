@@ -34,14 +34,14 @@ namespace Dossier_Registratie
             try
             {
                 var searchOperation = new SearchOperations();
-                var (permissionLevelId, permissionLevelName, isActive) = searchOperation.FetchUserCredentials(Environment.UserName);
+                var (permissionLevelId, permissionLevelName) = searchOperation.FetchUserCredentials(Environment.UserName);
 
                 Globals.PermissionLevelId = permissionLevelId;
                 Globals.PermissionLevelName = permissionLevelName;
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
                 var dbError = MessageBox.Show("Database connectie error: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 if (dbError == MessageBoxResult.OK)
                     Current.Shutdown();
@@ -49,9 +49,8 @@ namespace Dossier_Registratie
         }
         static void ClearShutdownFile()
         {
-            if (!string.IsNullOrEmpty(DataProvider.ShutdownFile))
-                if (File.Exists(DataProvider.ShutdownFile))
-                    File.WriteAllText(DataProvider.ShutdownFile, string.Empty);
+            if (!string.IsNullOrEmpty(DataProvider.ShutdownFile) && File.Exists(DataProvider.ShutdownFile))
+                File.WriteAllText(DataProvider.ShutdownFile, string.Empty);
         }
         private static void ShowSetupWindow()
         {
