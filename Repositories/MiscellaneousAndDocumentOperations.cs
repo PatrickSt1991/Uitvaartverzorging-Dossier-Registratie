@@ -2686,7 +2686,7 @@ namespace Dossier_Registratie.Repositories
                 {
                     await connection.OpenAsync(); // Open the connection asynchronously
                     command.Connection = connection;
-                    command.CommandText = "SELECT uitvaartInfoDienstLocatie, uitvaartInfoType, " +
+                    command.CommandText = "SELECT uitvaartInfoUitvaartLocatie, uitvaartInfoType, " +
                                             "(CASE WHEN OO.opdrachtgeverTussenvoegsel IS NULL THEN OO.opdrachtgeverAchternaam ELSE CONCAT(OO.opdrachtgeverTussenvoegsel, ' ', OO.opdrachtgeverAchternaam) END) as Opdrachtgever, " +
                                             "OO.opdrachtgeverVoornaamen, CONCAT(OO.opdrachtgeverStraat, ' ', OO.opdrachtgeverHuisnummer, OO.opdrachtgeverHuisnummerToevoeging) as opdrachtgeverAdres, " +
                                             "OUI.uitvaartInfoDatumTijdUitvaart, OUL.Uitvaartnummer, CONCAT(Achternaam, ' ', CP.Initialen) as UitvaartLeider, " +
@@ -2722,7 +2722,7 @@ namespace Dossier_Registratie.Repositories
                                 Aanvangstrijd = reader["uitvaartInfoDatumTijdUitvaart"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDatumTijdUitvaart"] : default(DateTime),
                                 StartAula = reader["uitvaartInfoDienstDatumTijd"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDienstDatumTijd"] : default(DateTime),
                                 StartKoffie = reader["uitvaartInfoDienstDatumTijd"] != DBNull.Value ? (DateTime)reader["uitvaartInfoDienstDatumTijd"] : default(DateTime),
-                                CrematieLocatie = reader["uitvaartInfoDienstLocatie"] as string,
+                                CrematieLocatie = reader["uitvaartInfoUitvaartLocatie"] as string,
                                 CrematieVoor = reader["uitvaartInfoType"] as string,
                                 OpdrachtgeverNaam = reader["Opdrachtgever"] as string,
                                 OpdrachtgeverGebDatum = reader["opdrachtgeverGeboortedatum"] != DBNull.Value ? (DateTime)reader["opdrachtgeverGeboortedatum"] : default(DateTime),
