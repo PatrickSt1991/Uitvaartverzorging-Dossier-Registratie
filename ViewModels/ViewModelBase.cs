@@ -32,10 +32,14 @@ namespace Dossier_Registratie.ViewModels
             {
                 if (File.Exists(ShutdownFilePath))
                 {
-                    string command = File.ReadAllText(ShutdownFilePath);
-                    if (command.Trim().Equals("SHUTDOWN", StringComparison.OrdinalIgnoreCase))
+                    using (var fileStream = new FileStream(ShutdownFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var reader = new StreamReader(fileStream))
                     {
-                        ForceCloseApplication();
+                        string command = reader.ReadToEnd();
+                        if (command.Trim().Equals("SHUTDOWN", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ForceCloseApplication();
+                        }
                     }
                 }
             }
