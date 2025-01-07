@@ -34,10 +34,26 @@ namespace Dossier_Registratie.Views
                     if (bijlage.DocumentName == "Terugmelding")
                     {
                         attachmentCb.Tag = "Alles";
+                        foreach(var item in attachmentCb.Items)
+                        {
+                            if (item is ComboBoxItem comboBoxItem && (string)comboBoxItem.Tag == "Opnieuw")
+                            {
+                                comboBoxItem.Visibility = System.Windows.Visibility.Visible;
+                                break;
+                            }
+                        }
                     }
                     else
                     {
                         attachmentCb.Tag = bijlage.DocumentUrl;
+                        foreach (var item in attachmentCb.Items)
+                        {
+                            if (item is ComboBoxItem comboBoxItem && (string)comboBoxItem.Tag == "Opnieuw")
+                            {
+                                comboBoxItem.Visibility = System.Windows.Visibility.Visible;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -60,7 +76,6 @@ namespace Dossier_Registratie.Views
                         case "cb_DocumentDocument":
                             viewModel.CreateDocumentDocument(selectedItem.Tag);
                             break;
-
                         case "cb_DocumentChecklist":
                             viewModel.CreateDocumentChecklist(selectedItem.Tag);
                             break;

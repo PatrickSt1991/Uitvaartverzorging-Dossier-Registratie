@@ -7,8 +7,10 @@ namespace Dossier_Registratie.Models
 {
     public interface ISearchOperations
     {
+        Task<AkteContent> GetAkteContentByUitvaartIdAsync(Guid uitvaartId);
+        Task<WekbonnenContent> GetWerkbonInfoByUitvaartIdAsync(Guid uitvaartId);
         Task<bool> SearchBlobLogo(string appType);
-        (string PermissionLevelId, string PermissionLevelName, bool IsActive) FetchUserCredentials(string windowsUsername);
+        (string PermissionLevelId, string PermissionLevelName) FetchUserCredentials(string windowsUsername);
         string GetWerkbonWerknemer(Guid werknemerId);
         Task<int> SearchKostenbegrotingExistanceAsync(Guid uitvaartIdGuid);
         WerknemersModel SearchEmployee(WerknemersModel werknemerSearch);

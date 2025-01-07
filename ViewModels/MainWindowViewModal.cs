@@ -1,4 +1,5 @@
-﻿using Dossier_Registratie.Helper;
+﻿using CommunityToolkit.Mvvm.Input;
+using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
@@ -16,6 +17,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using static Dossier_Registratie.ViewModels.OverledeneAsbestemmingViewModel;
 using static Dossier_Registratie.ViewModels.OverledeneBijlagesViewModel;
@@ -39,6 +41,7 @@ namespace Dossier_Registratie.ViewModels
         private string _errorMessageUitvaartnummer = "Uitvaartnummer is verplicht";
         private string _errorMessageSurname = "* Verplicht veld";
         private string _currentTime;
+        private DispatcherTimer _timer;
         private string _archivePath;
         private string _Title;
         private string _selectedComboBoxItem;
@@ -46,12 +49,14 @@ namespace Dossier_Registratie.ViewModels
         private string _versionLabel = "Dossier Registratie - Versie: 3";
         private string _copyrightText = "© " + DateTime.Now.ToString("yyyy") + " - Patrick Stel - All Rights Reserved - " +
                                 "Licensed under GNU Affero General Public License v3.0 - .NET " + Environment.Version.ToString();
+        private bool _isSearchUitvaartFocused;
+        private bool _isSearchSurnameFocused;
 
         private int _selectedIndex;
 
-        private bool _isSearchVisible = false;
-        private bool _isUitvaartnumberVisible = false;
-        private bool _isSearchResultVisible = false;
+        private Visibility _isUitvaartnumberVisible = Visibility.Collapsed;
+        private Visibility _isSurnameVisible = Visibility.Collapsed;
+        private Visibility _searchResultList = Visibility.Collapsed;
         private bool isCreateUserPopupOpen;
         private bool _uitvaartNummerEnabled = false;
         private bool _isUnderMaintenance;
@@ -164,7 +169,14 @@ namespace Dossier_Registratie.ViewModels
         public string CurrentTime
         {
             get { return _currentTime; }
-            set { _currentTime = value; OnPropertyChanged(nameof(CurrentTime)); }
+            set
+            {
+                if (_currentTime != value)
+                {
+                    _currentTime = value;
+                    OnPropertyChanged(nameof(CurrentTime));
+                }
+            }
         }
         public string VersionLabel
         {
@@ -215,24 +227,7 @@ namespace Dossier_Registratie.ViewModels
                 OnPropertyChanged(nameof(SelectedIndex));
             }
         }
-        public bool IsSearchVisible
-        {
-            get { return _isSearchVisible; }
-            set { _isSearchVisible = value; OnPropertyChanged(nameof(IsSearchVisible)); }
-        }
-        public bool IsSearchResultVisible
-        {
-            get
-            {
-                return _isSearchResultVisible;
-            }
-            set
-            {
-                _isSearchResultVisible = value;
-                OnPropertyChanged(nameof(IsSearchResultVisible));
-            }
-        }
-        public bool IsUitvaartnumberVisible
+        public Visibility IsUitvaartnumberVisible
         {
             get
             {
@@ -242,6 +237,41 @@ namespace Dossier_Registratie.ViewModels
             {
                 _isUitvaartnumberVisible = value;
                 OnPropertyChanged(nameof(IsUitvaartnumberVisible));
+            }
+        }
+        public Visibility IsSurnameVisible
+        {
+            get
+            {
+                return _isSurnameVisible;
+            }
+            set
+            {
+                _isSurnameVisible = value;
+                OnPropertyChanged(nameof(IsSurnameVisible));
+            }
+        }
+        public Visibility SearchResultList
+        {
+            get { return _searchResultList; }
+            set { _searchResultList = value; OnPropertyChanged(nameof(SearchResultList)); }
+        }
+        public bool IsSearchUitvaartFocused
+        {
+            get => _isSearchUitvaartFocused;
+            set
+            {
+                _isSearchUitvaartFocused = value;
+                OnPropertyChanged(nameof(IsSearchUitvaartFocused));
+            }
+        }
+        public bool IsSearchSurnameFocused
+        {
+            get => _isSearchSurnameFocused;
+            set
+            {
+                _isSearchSurnameFocused = value;
+                OnPropertyChanged(nameof(IsSearchSurnameFocused));
             }
         }
         public bool IsCreateUserPopupOpen
@@ -352,9 +382,25 @@ namespace Dossier_Registratie.ViewModels
         public ICommand OpenAchternaamCommand { get; }
         public ICommand CreateNewUserCommand { get; }
         public ICommand ClearAllModelsCommand { get; }
-
+        public ICommand OpenBeheerCommand { get; }
+        public ICommand OpenDossierCommand { get; }
+        public ICommand SearchDossierCommand { get; }
+        public readonly ICommand CloseApplicationCommand = new RelayCommand<object>(param => Application.Current.Shutdown());
+        public ICommand CloseUitvaartnummerSearchCommand => new RelayCommand<object>(param => { IsUitvaartnumberVisible = Visibility.Collapsed; });
+        public ICommand CloseSurnameSearchCommand => new RelayCommand<object>(param => { IsSurnameVisible = Visibility.Collapsed; });
+        public ICommand CloseSearchResultListCommand => new RelayCommand<object>(param => { SearchResultList = Visibility.Collapsed; });
         public MainWindowViewModal()
         {
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += (sender, e) =>
+            {
+                CurrentTime = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss");
+            };
+            _timer.Start();
+
             NewUser = new WerknemersModel();
             searchRepository = new SearchOperations();
             createRepository = new CreateOperations();
@@ -393,7 +439,6 @@ namespace Dossier_Registratie.ViewModels
 
             VersionLabel = DataProvider.SystemTitle + " - Versie: " + version;
 
-            UpdateTime();
             CheckTabControl();
             ComboAggregator.OnDataTransmitted += ResetCombobox;
             IntAggregator.OnDataTransmitted += OnDataReceived;
@@ -404,6 +449,26 @@ namespace Dossier_Registratie.ViewModels
             OpenAchternaamCommand = new ViewModelCommand(ExecuteOpenAchternaamCommand);
             CreateNewUserCommand = new ViewModelCommand(ExecuteCreateNewUserCommand);
             ClearAllModelsCommand = new ViewModelCommand(ExecuteClearAllModels, CanExecuteClearAllModels);
+            OpenBeheerCommand = new ViewModelCommand(ExecuteOpenBeheer);
+            OpenDossierCommand = new ViewModelCommand(ExecuteOpenDossier);
+            SearchDossierCommand = new ViewModelCommand(ExecuteSearchDossier);
+        }
+        private static void ExecuteOpenBeheer(object obj)
+        {
+            BeheerWindow beheerWindow = new();
+            beheerWindow.Show();
+        }
+        private void ExecuteOpenDossier(object obj)
+        {
+            Globals.NewDossierCreation = false;
+            IsUitvaartnumberVisible = Visibility.Visible;
+            IsSearchUitvaartFocused = true;
+        }
+        private void ExecuteSearchDossier(object obj)
+        {
+            Globals.NewDossierCreation = false;
+            IsSurnameVisible = Visibility.Visible;
+            IsSearchSurnameFocused = true;
         }
         public async Task CheckMaintenanceWindow()
         {
@@ -564,8 +629,7 @@ namespace Dossier_Registratie.ViewModels
                     MessageBox.Show("Uitvaartnummer " + ZoekenUitvaartnummer + " niet gevonden!", "Uitvaartnummer " + ZoekenUitvaartnummer + " niet gevonden ", MessageBoxButton.OK);
 
                     ZoekenUitvaartnummer = null;
-                    IsSearchVisible = false;
-                    IsUitvaartnumberVisible = false;
+                    IsUitvaartnumberVisible = Visibility.Collapsed;
                     return;
                 }
                 SearchUitvaartSurname = new ObservableCollection<OverledeneSearchSurname>(combinedResults);
@@ -586,11 +650,10 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else if ((combinedResults.Count == 1 && combinedResults.FirstOrDefault().UitvaartId == Guid.Empty) || (combinedResults.Count > 1))
                 {
-                    IsSearchResultVisible = true;
+                    SearchResultList = Visibility.Visible;
                 }
-                IsUitvaartnumberVisible = false;
+                IsUitvaartnumberVisible = Visibility.Collapsed;
                 ZoekenUitvaartnummer = null;
-                IsSearchVisible = false;
             }
             catch (Exception ex)
             {
@@ -632,7 +695,8 @@ namespace Dossier_Registratie.ViewModels
 
                     ZoekenAchternaam = null;
                     ZoekenDoB = DateTime.MinValue;
-                    IsSearchVisible = false;
+                    IsSurnameVisible = Visibility.Collapsed;
+                    SearchResultList = Visibility.Collapsed;
                     return;
                 }
 
@@ -654,12 +718,12 @@ namespace Dossier_Registratie.ViewModels
                 }
                 else if ((combinedResults.Count == 1 && combinedResults.FirstOrDefault().UitvaartId == Guid.Empty) || (combinedResults.Count > 1))
                 {
-                    IsSearchResultVisible = true;
+                    SearchResultList = Visibility.Visible;
                 }
 
                 ZoekenAchternaam = null;
                 ZoekenDoB = DateTime.MinValue;
-                IsSearchVisible = false;
+                IsSurnameVisible = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -677,9 +741,13 @@ namespace Dossier_Registratie.ViewModels
             ExtraInfoInstance.CreateNewDossier();
             BijlagesInstance.CreateNewDossier();
             AsbestemmingInstance.CreateNewDossier();
-
+            
+            Globals.NewDossierCreation = true;
             UitvaartNummerEnabled = false;
             SelectedIndex = 1;
+
+            
+            //IntAggregator.Transmit(1);
         }
         private static string GetDatabasePath(string parameter)
         {
@@ -745,7 +813,7 @@ namespace Dossier_Registratie.ViewModels
                 Globals.DossierCompleted = false;
             }
 
-            IsSearchResultVisible = false;
+            SearchResultList = Visibility.Collapsed;
             UitvaartNummerEnabled = true;
             SelectedIndex = 1;
         }
@@ -838,12 +906,6 @@ namespace Dossier_Registratie.ViewModels
                                 "Het account is nu nog disabled en zal moeten worden geactiveerd door een bevoegd persoon.\r\n" +
                                 "Tot die tijd kun je geen dossier aanmaken maar wel bekijken.");
             }
-        }
-        private async void UpdateTime()
-        {
-            CurrentTime = DateTime.Now.ToString("dddd, dd MMMM yyyy HH: mm:ss");
-            await Task.Delay(1000);
-            UpdateTime();
         }
         public async void CheckTabControl()
         {

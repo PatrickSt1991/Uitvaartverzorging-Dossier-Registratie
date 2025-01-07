@@ -6,33 +6,34 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Application = Microsoft.Office.Interop.Word.Application;
 using Range = Microsoft.Office.Interop.Word.Range;
 
 namespace Dossier_Registratie.Helper
 {
+    [SupportedOSPlatform("windows")]
     public class DocumentGenerator : ViewModelBase
     {
-        private OverledeneBijlagesModel _bijlageModel;
-        public OverledeneBijlagesModel BijlageModel
+        private OverledeneBijlagesModel? _bijlageModel;
+        public OverledeneBijlagesModel? BijlageModel
         {
             get { return _bijlageModel; }
             set { _bijlageModel = value; OnPropertyChanged(nameof(BijlageModel)); }
         }
-        private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
+        private readonly MiscellaneousAndDocumentOperations miscellaneousRepository;
         public DocumentGenerator()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
         }
         public async Task<OverledeneBijlagesModel> UpdateOverdracht(OverdrachtDocument overdracht)
         {
-            OverledeneBijlagesModel bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            OverledeneBijlagesModel bijlageModel = new();
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
@@ -61,48 +62,13 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        // Add the image to each section's header
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        await System.Threading.Tasks.Task.Run(() => { DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f); });
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
@@ -110,7 +76,7 @@ namespace Dossier_Registratie.Helper
                 doc.Save();
                 doc.Close();
                 Marshal.ReleaseComObject(doc);
-                doc = null; // Avoid further access
+                doc = null; 
 
                 bijlageModel.DocumentHash = Checksum.GetMD5Checksum(overdracht.DestinationFile);
                 bijlageModel.UitvaartId = overdracht.UitvaartId;
@@ -127,27 +93,23 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
-                // Ensure COM objects are released and resources cleaned up
                 if (doc != null)
                 {
-                    doc.Close(false); // Close without saving changes; set to true if you want to save
+                    doc.Close(false);
                     Marshal.ReleaseComObject(doc);
-                    doc = null; // Avoid further access
+                    doc = null;
                 }
 
                 if (app != null)
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Avoid further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -155,130 +117,89 @@ namespace Dossier_Registratie.Helper
         }
         public async Task<OverledeneBijlagesModel> UpdateChecklist(ChecklistDocument checklist, List<ChecklistOpbarenDocument> werknemers)
         {
-            OverledeneBijlagesModel bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            OverledeneBijlagesModel bijlageModel = new();
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
                 app = new Application();
 
-                // Try to open the document
                 try
                 {
                     doc = app.Documents.Open(checklist.DestinationFile);
                     if (doc == null)
-                    {
-                        throw new Exception("Failed to open the document: " + checklist.DestinationFile);
-                    }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Failed to open the document: " + checklist.DestinationFile));
                 }
                 catch (Exception ex)
                 {
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Error opening document: " + ex.Message));
+                    await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     throw;
                 }
 
                 string formattedOverledenDate = checklist.OverledenDatum.Split(' ')[0];
                 string formattedUitvaartDate = checklist.DatumUitvaart.Split(' ')[0];
 
-                // Create the bookmarks dictionary
                 var bookmarks = new Dictionary<string, string>
-
-        {
-            { "OverledeneNaam", checklist.VolledigeNaam },
-            { "UitvaartDatum", formattedUitvaartDate },
-            { "OverlijdensDatum", formattedOverledenDate },
-            { "RegistratieNummer", checklist.UitvaartNummer },
-            { "Herkomst", checklist.Herkomst },
-            { "UitvaartType", checklist.UitvaartType },
-            { "UitvaartLeider", checklist.UitvartLeider }
-        };
+                {
+                    { "OverledeneNaam", checklist.VolledigeNaam },
+                    { "UitvaartDatum", formattedUitvaartDate },
+                    { "OverlijdensDatum", formattedOverledenDate },
+                    { "RegistratieNummer", checklist.UitvaartNummer },
+                    { "Herkomst", checklist.Herkomst },
+                    { "UitvaartType", checklist.UitvaartType },
+                    { "UitvaartLeider", checklist.UitvartLeider }
+                };
 
                 if (werknemers.Count > 0)
                 {
-                    int werknemerCount = 0;
+                    var werknemerBookmarks = werknemers
+                        .Select((werknemer, index) => new
+                        {
+                            BookmarkName = "Verzorging" + (index + 1),
+                            VerzorgerName = werknemer.WerknemerName
+                        })
+                        .Where(x => !bookmarks.ContainsKey(x.BookmarkName))
+                        .ToList();
 
-                    foreach (var werknemer in werknemers)
-                    {
-                        werknemerCount++;
-                        var bookmarkName = "Verzorging" + werknemerCount;
-                        var verzorgerName = werknemer.WerknemerName;
-
-                        if (!bookmarks.ContainsKey(bookmarkName))
-                            bookmarks.Add(bookmarkName, verzorgerName);
-                    }
+                    foreach (var item in werknemerBookmarks)
+                        bookmarks.Add(item.BookmarkName, item.VerzorgerName);
                 }
 
-                // Null check for doc and doc.Bookmarks
                 if (doc != null && doc.Bookmarks != null)
                 {
-                    foreach (var bookmark in bookmarks)
+                    foreach (var bookmark in bookmarks.Where(b => doc.Bookmarks.Exists(b.Key)))
                     {
-                        if (doc.Bookmarks.Exists(bookmark.Key)) // Check if bookmark exists before accessing
-                        {
-                            Bookmark bm = doc.Bookmarks[bookmark.Key];
-                            Range range = bm.Range;
-                            range.Text = bookmark.Value; // Update the bookmark's text
-                        }
+                        Bookmark bm = doc.Bookmarks[bookmark.Key];
+                        Range range = bm.Range;
+                        range.Text = bookmark.Value;
                     }
                 }
+
                 else
-                {
-                    // Log or handle the case where the document or bookmarks are null
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Document or Bookmarks collection is null"));
-                }
+                    await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(new Exception("Document or Bookmarks collection is null"));
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw;
-                    }
-                    finally
-                    {
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
-                doc.Save();
-                doc.Close();
-                Marshal.ReleaseComObject(doc);
-                doc = null; // Avoid further access
+                doc?.Save();
+                doc?.Close();
+                if (doc != null)
+                {
+                    Marshal.ReleaseComObject(doc);
+                    doc = null;
+                }
 
                 bijlageModel.DocumentHash = Checksum.GetMD5Checksum(checklist.DestinationFile);
 
@@ -286,9 +207,7 @@ namespace Dossier_Registratie.Helper
                 bijlageModel.DocumentName = "Checklist";
 
                 if (checklist.Updated)
-                {
                     bijlageModel.BijlageId = Guid.NewGuid();
-                }
                 else
                 {
                     bijlageModel.BijlageId = checklist.DocumentId;
@@ -297,26 +216,23 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
                 if (doc != null)
                 {
-                    doc.Close(false); // Close without saving changes; set to true if you want to save
+                    doc.Close(false);
                     Marshal.ReleaseComObject(doc);
-                    doc = null; // Avoid further access
+                    doc = null;
                 }
 
                 if (app != null)
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Avoid further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -324,9 +240,9 @@ namespace Dossier_Registratie.Helper
         }
         public async Task<OverledeneBijlagesModel> UpdateDienst(DienstDocument dienst)
         {
-            OverledeneBijlagesModel bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            OverledeneBijlagesModel bijlageModel = new();
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
@@ -343,7 +259,6 @@ namespace Dossier_Registratie.Helper
 
                 var bookmarks = new Dictionary<string, string>
                 {
-                    //{ "AanvraagDienstTe", dienst.AanvraagDienstTe },
                     { "datumUitvaart", dienst.DatumUitvaart.ToString("dd-MM-yyyy") },
                     { "naamUitvaart", dienst.NaamUitvaart },
                     { "locatieUitvaart", dienst.LocatieDienst },
@@ -354,63 +269,28 @@ namespace Dossier_Registratie.Helper
                     { "naamOpdrachtgever", dienst.OpdrachtgeverNaam }
                 };
 
-                foreach (var bookmark in bookmarks)
-                {
-                    if (doc.Bookmarks.Exists(bookmark.Key)) // Check if bookmark exists before accessing
+
+                bookmarks
+                    .Where(bookmark => doc.Bookmarks.Exists(bookmark.Key)) // Filter existing bookmarks
+                    .ToList() // Convert to list to enable iteration
+                    .ForEach(bookmark =>
                     {
                         Bookmark bm = doc.Bookmarks[bookmark.Key];
                         Range range = bm.Range;
-                        range.Text = bookmark.Value;
-                        doc.Bookmarks.Add(bookmark.Key, range);
-                    }
-                }
+                        range.Text = bookmark.Value; // Update the bookmark's text (no need to add it again)
+                    });
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        // Add the image to each section's header
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
@@ -435,7 +315,7 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
@@ -450,11 +330,8 @@ namespace Dossier_Registratie.Helper
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Avoid further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -462,13 +339,13 @@ namespace Dossier_Registratie.Helper
         }
         public async Task<OverledeneBijlagesModel> UpdateDocument(DocumentDocument document)
         {
-            OverledeneBijlagesModel bijlageModel = new OverledeneBijlagesModel();
-            Microsoft.Office.Interop.Word.Application app = null;
-            Document doc = null;
+            OverledeneBijlagesModel bijlageModel = new();
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
-                app = new Microsoft.Office.Interop.Word.Application();
+                app = new Application();
                 doc = app.Documents.Open(document.DestinationFile);
 
                 string OrganizationAdress = $"{DataProvider.OrganizationStreet} {DataProvider.OrganizationHouseNumber}, {DataProvider.OrganizationZipcode} {DataProvider.OrganizationCity}";
@@ -499,59 +376,27 @@ namespace Dossier_Registratie.Helper
             { "Uitvaartnummer", document.UitvaartNummer }
         };
 
-                foreach (var bookmark in bookmarks)
-                {
-                    Bookmark bm = doc.Bookmarks[bookmark.Key];
-                    Range range = bm.Range;
-                    range.Text = bookmark.Value;
-                    doc.Bookmarks.Add(bookmark.Key, range);
-                }
+                bookmarks
+                    .Where(bookmark => doc.Bookmarks.Exists(bookmark.Key))
+                    .ToList()
+                    .ForEach(bookmark =>
+                    {
+                        Bookmark bm = doc.Bookmarks[bookmark.Key];
+                        Range range = bm.Range;
+                        range.Text = bookmark.Value;
+                    });
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
@@ -578,14 +423,13 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
-                // Ensure COM objects are released and resources cleaned up
                 if (doc != null)
                 {
-                    doc.Close(false); // Close without saving changes; set to true if you want to save
+                    doc.Close(false);
                     Marshal.ReleaseComObject(doc);
                 }
 
@@ -595,8 +439,6 @@ namespace Dossier_Registratie.Helper
                     Marshal.ReleaseComObject(app);
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -604,9 +446,9 @@ namespace Dossier_Registratie.Helper
         }
         public async Task<OverledeneBijlagesModel> UpdateKoffie(KoffieKamerDocument koffieKamer)
         {
-            OverledeneBijlagesModel bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            OverledeneBijlagesModel bijlageModel = new();
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
@@ -615,7 +457,6 @@ namespace Dossier_Registratie.Helper
 
                 var bookmarks = new Dictionary<string, string>
         {
-            //{ "koffieLocatie", koffieKamer.DienstLocatie },
             { "koffieDatum", koffieKamer.DatumUitvaart.ToString("dd-MM-yyyy") },
             { "koffieNaam", koffieKamer.Opdrachtgever },
             { "Locatie", koffieKamer.DienstLocatie },
@@ -626,66 +467,30 @@ namespace Dossier_Registratie.Helper
             { "OpdrachtgeverNaam", koffieKamer.Naam }
         };
 
-                foreach (var bookmark in bookmarks)
-                {
-                    if (doc.Bookmarks.Exists(bookmark.Key)) // Check if bookmark exists before accessing
+                bookmarks
+                    .Where(bookmark => doc.Bookmarks.Exists(bookmark.Key)) 
+                    .ToList() 
+                    .ForEach(bookmark =>
                     {
                         Bookmark bm = doc.Bookmarks[bookmark.Key];
                         Range range = bm.Range;
                         range.Text = bookmark.Value;
-                        doc.Bookmarks.Add(bookmark.Key, range);
-                    }
-                }
+                    });
+
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
-
-
 
                 doc.Save();
                 doc.Close();
@@ -707,7 +512,7 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
@@ -722,11 +527,8 @@ namespace Dossier_Registratie.Helper
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Avoid further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -735,8 +537,8 @@ namespace Dossier_Registratie.Helper
         public async Task<OverledeneBijlagesModel> UpdateBezittingen(BezittingenDocument bezittingen)
         {
             var bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
@@ -758,62 +560,28 @@ namespace Dossier_Registratie.Helper
             { "opdrachtgeverNaamLetters", bezittingen.OpdrachtgeverNaamVoorletters}
         };
 
-                foreach (var bookmark in bookmarks)
-                {
-                    if (doc.Bookmarks.Exists(bookmark.Key)) // Check if bookmark exists before accessing
+                bookmarks
+                    .Where(bookmark => doc.Bookmarks.Exists(bookmark.Key)) 
+                    .ToList() 
+                    .ForEach(bookmark =>
                     {
-                        var bm = doc.Bookmarks[bookmark.Key];
-                        var range = bm.Range;
+                        Bookmark bm = doc.Bookmarks[bookmark.Key];
+                        Range range = bm.Range;
                         range.Text = bookmark.Value;
-                        doc.Bookmarks.Add(bookmark.Key, range);
-                    }
-                }
+                    });
+
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
@@ -838,7 +606,7 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
@@ -853,21 +621,18 @@ namespace Dossier_Registratie.Helper
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Avoid further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
             return bijlageModel;
         }
-        public async Task<OverledeneBijlagesModel> UpdateCrematie(CrematieDocument crematie, FactuurInfoCrematie factuur)
+        public static async Task<OverledeneBijlagesModel> UpdateCrematie(CrematieDocument crematie, FactuurInfoCrematie factuur)
         {
             var bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
@@ -890,61 +655,62 @@ namespace Dossier_Registratie.Helper
             { "CrematieAanvangstijd", crematie.Aanvangstrijd.ToString("HH:mm") },
             { "CrematieStartAula", crematie.StartAula.ToString("HH:mm") },
             { "CrematieStartKoffie", crematie.StartKoffie.ToString("HH:mm") },
-            { "CrematieAulaNaam", crematie.AulaNaam },
+            { "CrematieAulaNaam", crematie.AulaNaam ?? string.Empty },
             { "CrematieAantalPersonenAula", crematie.AulaPersonen.ToString() },
-            { "CrematieLocatie", crematie.CrematieLocatie },
-            { "CrematieOpdrachtVoor", crematie.CrematieVoor },
+            { "CrematieLocatie", crematie.CrematieLocatie ?? string.Empty },
+            { "CrematieOpdrachtVoor", crematie.CrematieVoor ?? string.Empty },
             { "CrematieDatum", crematie.CrematieDatum.ToString("dd-MM-yyyy") },
-            { "CrematieDossierNr", crematie.CrematieDossiernummer },
-            { "OverledeneNaam", crematie.OverledeneNaam },
-            { "OverledeneVoornaam", crematie.OverledeneVoornaam },
-            { "OverledeneBurgStaat", crematie.OverledeneBurgStaat },
+            { "CrematieDossierNr", crematie.CrematieDossiernummer ?? string.Empty },
+            { "OverledeneNaam", crematie.OverledeneNaam ?? string.Empty },
+            { "OverledeneVoornaam", crematie.OverledeneVoornaam ?? string.Empty },
+            { "OverledeneBurgStaat", crematie.OverledeneBurgStaat ?? string.Empty },
             { "OverledeneGebDatum", crematie.OverledeneGebDatum.ToString("dd-MM-yyyy") },
-            { "OverledeneGebPlaats", crematie.OverledeneGebPlaats },
-            { "OverledeneStraat", crematie.OverledeneStraat },
-            { "OverledenePostcode", crematie.OverledenePostcode },
-            { "OverledeneLevensovertuiging", crematie.OverledeneLevensovertuiging },
-            { "OverledeneGeslacht", crematie.OverledeneGeslacht },
-            { "OverledeneLeeftijd", crematie.OverledeneLeeftijd },
+            { "OverledeneGebPlaats", crematie.OverledeneGebPlaats ?? string.Empty },
+            { "OverledeneStraat", crematie.OverledeneStraat ?? string.Empty },
+            { "OverledenePostcode", crematie.OverledenePostcode ?? string.Empty },
+            { "OverledeneLevensovertuiging", crematie.OverledeneLevensovertuiging ?? string.Empty },
+            { "OverledeneGeslacht", crematie.OverledeneGeslacht ?? string.Empty },
+            { "OverledeneLeeftijd", crematie.OverledeneLeeftijd ?? string.Empty },
             { "OverledeneOverlDatum", crematie.OverledeneDatum.ToString("dd-MM-yyyy") },
-            { "OverledeneOverlPlaats", crematie.OverledenePlaats },
-            { "OverledenePlaats", crematie.OverledeneWoonplaats },
-            { "OpdrachtgeverNaam", crematie.OpdrachtgeverNaam },
-            { "OpdrachtgeverGeslacht", crematie.OpdrachtgeverGeslacht },
+            { "OverledeneOverlPlaats", crematie.OverledenePlaats ?? string.Empty },
+            { "OverledenePlaats", crematie.OverledeneWoonplaats ?? string.Empty },
+            { "OpdrachtgeverNaam", crematie.OpdrachtgeverNaam ?? string.Empty },
+            { "OpdrachtgeverGeslacht", crematie.OpdrachtgeverGeslacht ?? string.Empty },
             { "OpdrachtgeverGebDatum", crematie.OpdrachtgeverGebDatum.ToString("dd-MM-yyyy") },
-            { "OpdrachtgeverStraat", crematie.OpdrachtgeverStraat },
-            { "OpdrachtgeverPostcode", crematie.OpdrachtgeverPostcode },
-            { "OpdrachtgeverRelatieTotOverl", crematie.OpdrachtgeverRelatie },
-            { "OpdrachtgeverVoornamen", crematie.OpdrachtgeverVoornamen },
-            { "OpdrachtgeverTelefoon", crematie.OpdrachtgeverTelefoon },
-            { "OpdrachtgeverPlaats", crematie.OpdrachtgeverPlaats },
-            { "OpdrachtgeverEmail", crematie.OpdrachtgeverEmail },
-            { "Uitvaartverzorger", crematie.Uitvaartverzorger },
-            { "Asbestemming", crematie.Asbestemming },
-            { "Consumpties", crematie.Consumpties }
+            { "OpdrachtgeverStraat", crematie.OpdrachtgeverStraat ?? string.Empty },
+            { "OpdrachtgeverPostcode", crematie.OpdrachtgeverPostcode ?? string.Empty },
+            { "OpdrachtgeverRelatieTotOverl", crematie.OpdrachtgeverRelatie ?? string.Empty },
+            { "OpdrachtgeverVoornamen", crematie.OpdrachtgeverVoornamen ?? string.Empty },
+            { "OpdrachtgeverTelefoon", crematie.OpdrachtgeverTelefoon ?? string.Empty },
+            { "OpdrachtgeverPlaats", crematie.OpdrachtgeverPlaats ?? string.Empty },
+            { "OpdrachtgeverEmail", crematie.OpdrachtgeverEmail ?? string.Empty },
+            { "Uitvaartverzorger", crematie.Uitvaartverzorger ?? string.Empty },
+            { "Asbestemming", crematie.Asbestemming ?? string.Empty },
+            { "Consumpties", crematie.Consumpties ?? string.Empty }
         };
 
                 if (factuur.FactuurAdresOverride)
                 {
-                    bookmarks.Add("FactuuradresNaam", factuur.FactuurAdresNaam);
-                    bookmarks.Add("FactuuradresRelatietotoverl", factuur.FactuurAdresRelatie);
-                    bookmarks.Add("FactuuradresStraat", factuur.FactuurAdresStraat); //P/A Oostereinde 11
-                    bookmarks.Add("FactuuradresPostcode", factuur.FactuurAdresPostcode);
-                    bookmarks.Add("FactuuradresGeslacht", factuur.FactuurAdresGeslacht);
-                    bookmarks.Add("FactuuradresTelefoon", factuur.FactuurAdresTelefoon); //"0597 412 628"
-                    bookmarks.Add("FactuuradresPlaats", factuur.FactuurAdresPlaats);
+                    bookmarks.Add("FactuuradresNaam", factuur.FactuurAdresNaam ?? string.Empty);
+                    bookmarks.Add("FactuuradresRelatietotoverl", factuur.FactuurAdresRelatie ?? string.Empty);
+                    bookmarks.Add("FactuuradresStraat", factuur.FactuurAdresStraat ?? string.Empty);
+                    bookmarks.Add("FactuuradresPostcode", factuur.FactuurAdresPostcode ?? string.Empty);
+                    bookmarks.Add("FactuuradresGeslacht", factuur.FactuurAdresGeslacht ?? string.Empty);
+                    bookmarks.Add("FactuuradresTelefoon", factuur.FactuurAdresTelefoon ?? string.Empty); 
+                    bookmarks.Add("FactuuradresPlaats", factuur.FactuurAdresPlaats ?? string.Empty);
                 }
 
-                foreach (var bookmark in bookmarks)
-                {
-                    if (doc.Bookmarks.Exists(bookmark.Key)) // Check if bookmark exists before accessing
+
+                bookmarks
+                    .Where(bookmark => doc.Bookmarks.Exists(bookmark.Key))
+                    .ToList()
+                    .ForEach(bookmark =>
                     {
-                        var bm = doc.Bookmarks[bookmark.Key];
-                        var range = bm.Range;
+                        Bookmark bm = doc.Bookmarks[bookmark.Key];
+                        Range range = bm.Range;
                         range.Text = bookmark.Value;
-                        doc.Bookmarks.Add(bookmark.Key, range);
-                    }
-                }
+                    });
+
 
                 doc.Save();
                 doc.Close();
@@ -966,7 +732,7 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
@@ -981,11 +747,8 @@ namespace Dossier_Registratie.Helper
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Avoid further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -994,14 +757,13 @@ namespace Dossier_Registratie.Helper
         public async Task<OverledeneBijlagesModel> UpdateBegrafenis(BegrafenisDocument begrafenis)
         {
             var bijlageModel = new OverledeneBijlagesModel();
-            Application app = null;
-            Document doc = null;
+            Application? app = null;
+            Document? doc = null;
 
             try
             {
                 string HuurgrafActief = string.Empty;
                 string AulaActief = string.Empty;
-                string AantalPersonenString = string.Empty;
                 app = new Application();
                 doc = app.Documents.Open(begrafenis.DestinationFile);
 
@@ -1016,8 +778,6 @@ namespace Dossier_Registratie.Helper
                 if (!string.IsNullOrEmpty(begrafenis.AulaNaam))
                     AulaActief = "Ja";
 
-                if (begrafenis.AantalPersonen != 0)
-                    AantalPersonenString = begrafenis.AantalPersonen.ToString();
 
                 var bookmarks = new Dictionary<string, string>
         {
@@ -1042,71 +802,29 @@ namespace Dossier_Registratie.Helper
             { "BegraafplaatsHuurgraf", HuurgrafActief },
             { "DienstAula", AulaActief },
             { "DienstPersonen", begrafenis.AantalPersonen.ToString() }
-
-
         };
 
-                foreach (var bookmark in bookmarks)
-                {
-                    if (doc.Bookmarks.Exists(bookmark.Key)) // Check if bookmark exists before accessing
+                bookmarks
+                    .Where(bookmark => doc.Bookmarks.Exists(bookmark.Key))
+                    .ToList()
+                    .ForEach(bookmark =>
                     {
-                        var bm = doc.Bookmarks[bookmark.Key];
-                        var range = bm.Range;
+                        Bookmark bm = doc.Bookmarks[bookmark.Key];
+                        Range range = bm.Range;
                         range.Text = bookmark.Value;
-                        doc.Bookmarks.Add(bookmark.Key, range);
-                    }
-                    else
-                    {
-                        Exception ex = new Exception($"Bookmark '{bookmark.Key}' does not exist in the document.");
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    }
-                }
+                    });
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
+                        await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                     }
                 }
 
@@ -1131,7 +849,7 @@ namespace Dossier_Registratie.Helper
             }
             catch (Exception ex)
             {
-                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
             }
             finally
             {
@@ -1146,11 +864,8 @@ namespace Dossier_Registratie.Helper
                 {
                     app.Quit();
                     Marshal.ReleaseComObject(app);
-                    app = null; // Set to null to prevent further access
                 }
 
-                // Clean up any remaining COM objects
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
 
@@ -1238,47 +953,13 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
                     }
                 }
 
@@ -1373,47 +1054,13 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
                     }
                 }
 
@@ -1538,47 +1185,13 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
                     }
                 }
 
@@ -1719,47 +1332,13 @@ namespace Dossier_Registratie.Helper
 
                 if (documentData != null && documentData.Length > 0)
                 {
-                    string tempImagePath = string.Empty;
-
                     try
                     {
-                        tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                        string tempDir = Path.GetDirectoryName(tempImagePath);
-                        if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                        {
-                            throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                        }
-
-                        File.WriteAllBytes(tempImagePath, documentData);
-
-                        foreach (Section section in doc.Sections)
-                        {
-                            HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                            Range headerRange = header.Range;
-                            headerRange.InlineShapes.AddPicture(tempImagePath);
-                            headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                        }
+                        DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
                     }
                     catch (Exception ex)
                     {
                         ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        throw; // Re-throw the exception to be handled by the calling method
-                    }
-                    finally
-                    {
-                        // Ensure the temporary file is deleted
-                        if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                        {
-                            try
-                            {
-                                File.Delete(tempImagePath);
-                            }
-                            catch (Exception deleteEx)
-                            {
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                            }
-                        }
                     }
                 }
 

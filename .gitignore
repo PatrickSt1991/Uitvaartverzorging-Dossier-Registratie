@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 AppConnectionSettings.json
+.sonarqube/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

@@ -21,6 +21,7 @@
   </Target>
   <ItemGroup>
     <None Remove="Images\splash.png" />
+    <None Remove="Images\wordrefresh.png" />
   </ItemGroup>
   <ItemGroup>
     <!-- Resource files -->
@@ -29,6 +30,7 @@
     <Resource Include="Images\PersonUser.png" />
     <Resource Include="Images\printer.png" />
     <Resource Include="Images\word.png" />
+    <Resource Include="Images\wordrefresh.png" />
   </ItemGroup>
   <ItemGroup>
     <!-- Content files -->

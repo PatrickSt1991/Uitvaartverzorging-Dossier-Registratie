@@ -1218,45 +1218,13 @@ namespace Dossier_Registratie.ViewModels
         }
         private async Task FillWerkbonnenFile(string destinationFile)
         {
-            SqlConnection conn = new(DataProvider.ConnectionString);
-            string UitvaartType = string.Empty;
-            DateTime UitvaartDatumTijd = DateTime.MinValue;
-            DateTime OverledenDatumTijd = DateTime.MinValue;
-            string UitvaartLocatie = string.Empty;
-            string DienstLocatie = string.Empty;
-            string Overledene = string.Empty;
-
-            conn.Open();
-            SqlDataAdapter da = new("  SELECT uitvaartInfoType,uitvaartInfoDatumTijdUitvaart,OOI.overledenDatumTijd,uitvaartInfoUitvaartLocatie,uitvaartInfoDienstLocatie, " +
-                                        "CASE WHEN OPG.overledeneTussenvoegsel IS NULL THEN " +
-                                        "CONCAT(TRIM(OPG.overledeneAanhef), ' ', TRIM(OPG.overledeneVoornamen), ' ', TRIM(OPG.overledeneAchternaam)) " +
-                                        "ELSE " +
-                                        "CONCAT(OPG.overledeneAanhef, ' ', TRIM(OPG.overledeneVoornamen), ' ', TRIM(OPG.overledeneTussenvoegsel), ' ', TRIM(OPG.overledeneAchternaam)) " +
-                                        "END AS Overledene " +
-                                        "FROM OverledeneUitvaartInfo OUI " +
-                                        "INNER JOIN OverledeneOverlijdenInfo OOI ON OUI.uitvaartId = OOI.UitvaartId " +
-                                        "INNER JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
-                                        "WHERE OUI.UitvaartId = '" + Globals.UitvaartCodeGuid + "'", conn);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "Werkbonnen");
-
-            if (ds.Tables[0].Rows.Count > 0)
-            {
-                UitvaartType = ds.Tables[0].Rows[0]["uitvaartInfoType"].ToString();
-                UitvaartDatumTijd = (DateTime)ds.Tables[0].Rows[0]["uitvaartInfoDatumTijdUitvaart"];
-                OverledenDatumTijd = (DateTime)ds.Tables[0].Rows[0]["overledenDatumTijd"];
-                UitvaartLocatie = ds.Tables[0].Rows[0]["uitvaartInfoUitvaartLocatie"].ToString();
-                DienstLocatie = ds.Tables[0].Rows[0]["uitvaartInfoDienstLocatie"].ToString();
-                Overledene = ds.Tables[0].Rows[0]["Overledene"].ToString();
-            }
-
-            conn.Close();
-
+            WekbonnenContent werkbonnenContent = await searchRepository.GetWerkbonInfoByUitvaartIdAsync(Globals.UitvaartCodeGuid);
+     
             Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
             Document doc = app.Documents.Open(destinationFile);
 
-            string UitvaartDT = UitvaartDatumTijd.ToString("dd-MM-yyyy");
-            string OverledenDT = OverledenDatumTijd.ToString("dd-MM-yyyy");
+            string UitvaartDT = werkbonnenContent.UitvaartDatumTijd.ToString("dd-MM-yyyy");
+            string OverledenDT = werkbonnenContent.OverledenDatumTijd.ToString("dd-MM-yyyy");
 
             List<WerkbonnenData> werkbonList = JsonConvert.DeserializeObject<List<WerkbonnenData>>(WerkbonModel.WerkbonJson);
 
@@ -1266,12 +1234,12 @@ namespace Dossier_Registratie.ViewModels
             {
                 string indexSuffix = (i == 0) ? "" : (i + 1).ToString();
 
-                bookmarks[$"uitvaartTe{indexSuffix}"] = UitvaartLocatie;
-                bookmarks[$"dienstTe{indexSuffix}"] = DienstLocatie;
-                bookmarks[$"datumUitvaart{indexSuffix}"] = UitvaartDT;
-                bookmarks[$"datumOverlijden{indexSuffix}"] = OverledenDT;
-                bookmarks[$"uitvaartType{indexSuffix}"] = UitvaartType;
-                bookmarks[$"naamOverledene{indexSuffix}"] = Overledene;
+                bookmarks[$"uitvaartTe{indexSuffix}"] = werkbonnenContent.UitvaartLocatie;
+                bookmarks[$"dienstTe{indexSuffix}"] = werkbonnenContent.DienstLocatie;
+                bookmarks[$"datumUitvaart{indexSuffix}"] = werkbonnenContent.UitvaartDatumTijd.ToString("dd-MM-yyyy");
+                bookmarks[$"datumOverlijden{indexSuffix}"] = werkbonnenContent.OverledenDatumTijd.ToString("dd-MM-yyyy");
+                bookmarks[$"uitvaartType{indexSuffix}"] = werkbonnenContent.UitvaartType;
+                bookmarks[$"naamOverledene{indexSuffix}"] = werkbonnenContent.Overledene;
             }
 
             for (int i = 0; i < werkbonList.Count && i < 3; i++)

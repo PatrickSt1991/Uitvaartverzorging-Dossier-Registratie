@@ -1,15 +1,19 @@
 ﻿using Dossier_Registratie.ViewModels;
+using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Windows;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Word = Microsoft.Office.Interop.Word;
+using System.Linq;
 
 namespace Dossier_Registratie.Helper
 {
+    [SupportedOSPlatform("windows")]
     public class DocumentFunctions : ViewModelBase
     {
         public static void PrePrintFile(string filePath)
@@ -25,48 +29,39 @@ namespace Dossier_Registratie.Helper
         }
         public static void PrintFile(string filePath)
         {
-            // Initialize Word application object
-            Word.Application wordApp = new Word.Application();
-            Word.Document wordDoc = null;
+            Word.Application? wordApp = null;
+            Word.Document? wordDoc = null;
 
             try
             {
-                // Open the Word document
+                wordApp = new Word.Application();
                 wordDoc = wordApp.Documents.Open(filePath, ReadOnly: true, Visible: false);
-
-                // Ensure the document is activated
                 wordDoc.Activate();
 
-                // Print the document
                 wordDoc.PrintOut(
-                    Background: false, // Print synchronously
-                    PrintToFile: false // Print directly to the printer
+                    Background: false,
+                    PrintToFile: false
                 );
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error during printing: " + ex.Message);
+                MessageBox.Show($"Error during printing: {ex.Message}");
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
             }
             finally
             {
-                // Close the document without saving changes
                 if (wordDoc != null)
                 {
                     wordDoc.Close(SaveChanges: false);
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordDoc);
-                    wordDoc = null;
+                    Marshal.ReleaseComObject(wordDoc);
                 }
 
-                // Quit the Word application
                 if (wordApp != null)
                 {
                     wordApp.Quit();
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
-                    wordApp = null;
+                    Marshal.ReleaseComObject(wordApp);
                 }
 
-                // Force garbage collection to clean up
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
         }
@@ -76,29 +71,61 @@ namespace Dossier_Registratie.Helper
         }
         public static string PreEmailFile(string filePath)
         {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo(filePath) { UseShellExecute = true },
-                EnableRaisingEvents = true
-            };
+            string pdfPath = string.Empty;
 
-            string fileFolder = Path.GetDirectoryName(filePath);
-            string fileName = Path.GetFileNameWithoutExtension(filePath) + ".pdf";
-            string pdfPath = Path.Combine(fileFolder, fileName);
-
-            if (File.Exists(pdfPath))
+            try
             {
-                File.Delete(pdfPath);
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo(filePath) { UseShellExecute = true },
+                    EnableRaisingEvents = true
+                };
+
+                string fileFolder = Path.GetDirectoryName(filePath) ?? string.Empty;
+                string fileName = Path.GetFileNameWithoutExtension(filePath) + ".pdf";
+                pdfPath = Path.Combine(fileFolder, fileName);
+
+                if (File.Exists(pdfPath))
+                    File.Delete(pdfPath);
+
+                process.Exited += (sender, e) =>
+                {
+                    try
+                    {
+                        SaveWordFileAsPdf(filePath, pdfPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
+                        MessageBox.Show($"Error saving file as PDF: {ex.Message}");
+                    }
+                };
+
+                process.Start();
+            }
+            catch (FileNotFoundException fex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(fex).ConfigureAwait(false);
+                MessageBox.Show("The specified file was not found.");
+            }
+            catch (UnauthorizedAccessException aex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(aex).ConfigureAwait(false);
+                MessageBox.Show("You do not have the required permissions to access this file.");
+            }
+            catch (Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}");
             }
 
-            process.Exited += (sender, e) => SaveWordFileAsPdf(filePath, pdfPath);
-            process.Start();
             return pdfPath;
+
         }
         public static void EmailFile(string filePath)
         {
-            Outlook.Application outlookApp = null;
-            Outlook.MailItem mailItem = null;
+            Outlook.Application? outlookApp = null;
+            Outlook.MailItem? mailItem = null;
             try
             {
                 try
@@ -121,84 +148,67 @@ namespace Dossier_Registratie.Helper
             }
             catch (COMException comEx)
             {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(comEx).ConfigureAwait(false);
                 MessageBox.Show("COM Exception: " + comEx.Message);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
                 MessageBox.Show("Failed to open Outlook: " + ex.Message);
             }
             finally
             {
                 if (mailItem != null)
-                {
                     Marshal.ReleaseComObject(mailItem);
-                    mailItem = null;
-                }
+
                 if (outlookApp != null)
-                {
                     Marshal.ReleaseComObject(outlookApp);
-                    outlookApp = null;
-                }
             }
         }
         public static void PrintFiles(List<string> fileContentList)
         {
-            // Initialize Word application object
-            Word.Application wordApp = new Word.Application();
-            Word.Document wordDoc = null;
+            Word.Application? wordApp = new();
+            Document? wordDoc = null;
 
             try
             {
-                foreach (string filePath in fileContentList)
+                foreach (var filePath in fileContentList.Where(filePath => File.Exists(filePath)))
                 {
-                    MessageBox.Show(filePath);
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        // Open the Word document
-                        wordDoc = wordApp.Documents.Open(filePath, ReadOnly: true, Visible: false);
-                        wordDoc.Activate();
-                        // Print the document
-                        wordDoc.PrintOut(
-                            Background: false, // Print synchronously
-                            PrintToFile: false // Print directly to the printer
-                        );
-
-                        // Close the document without saving changes
-                        wordDoc.Close(SaveChanges: false);
-                        Marshal.ReleaseComObject(wordDoc);
-                        wordDoc = null;
-                    }
+                    wordDoc = wordApp.Documents.Open(filePath, ReadOnly: true, Visible: false);
+                    wordDoc.Activate();
+                    wordDoc.PrintOut(
+                                            Background: false,
+                                            PrintToFile: false
+                                        );
+                    wordDoc.Close(SaveChanges: false);
+                    Marshal.ReleaseComObject(wordDoc);
                 }
             }
             catch (Exception ex)
             {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
                 MessageBox.Show("Error during printing: " + ex.Message);
             }
             finally
             {
-                // Quit the Word application
                 if (wordApp != null)
                 {
                     wordApp.Quit();
                     Marshal.ReleaseComObject(wordApp);
-                    wordApp = null;
                 }
 
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
         }
         public static void OpenFiles(List<string> fileContentList)
         {
             foreach (string fileContent in fileContentList)
-            {
                 Process.Start(new ProcessStartInfo(fileContent) { UseShellExecute = true });
-            }
         }
         public static void EmailFiles(List<string> filePaths)
         {
-            Outlook.Application outlookApp = null;
-            Outlook.MailItem mailItem = null;
+            Outlook.Application? outlookApp = null;
+            Outlook.MailItem? mailItem = null;
 
             try
             {
@@ -227,43 +237,43 @@ namespace Dossier_Registratie.Helper
             }
             catch (COMException comEx)
             {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(comEx).ConfigureAwait(false);
                 MessageBox.Show("COM Exception: " + comEx.Message);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
                 MessageBox.Show("Exception: " + ex.Message);
             }
             finally
             {
                 if (mailItem != null)
-                {
                     Marshal.ReleaseComObject(mailItem);
-                    mailItem = null;
-                }
+
                 if (outlookApp != null)
-                {
                     Marshal.ReleaseComObject(outlookApp);
-                    outlookApp = null;
-                }
             }
         }
         private static void SaveWordFileAsPdf(string wordFilePath, string pdfFilePath)
         {
-            Word.Application wordApp = null;
-            Word.Document wordDoc = null;
+            Word.Application? wordApp = null;
+            Document? wordDoc = null;
 
             try
             {
-                wordApp = new Word.Application();
-                wordApp.Visible = false;
+                wordApp = new Word.Application
+                {
+                    Visible = false
+                };
                 wordDoc = wordApp.Documents.Open(wordFilePath);
 
-                wordDoc.ExportAsFixedFormat(pdfFilePath, Word.WdExportFormat.wdExportFormatPDF);
+                wordDoc.ExportAsFixedFormat(pdfFilePath, WdExportFormat.wdExportFormatPDF);
                 EmailFile(pdfFilePath);
             }
             catch (COMException ex)
             {
-                Console.WriteLine("Error: " + ex.Message);
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
+                MessageBox.Show("Error: " + ex.Message);
             }
             finally
             {
@@ -279,10 +289,55 @@ namespace Dossier_Registratie.Helper
                     Marshal.ReleaseComObject(wordApp);
                 }
 
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
         }
+        public static void AddImageToDocumentHeaders(Document doc, byte[] imageData, string imageExtension, float heightCm, float widthCm)
+        {
+            string? tempImagePath = null;
 
+            try
+            {
+                tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{imageExtension}");
+                string tempDir = Path.GetDirectoryName(tempImagePath) ?? string.Empty;
+
+
+                if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
+                    throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
+
+                File.WriteAllBytes(tempImagePath, imageData);
+
+                foreach (Section section in doc.Sections)
+                {
+                    HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
+                    Word.Range headerRange = header.Range;
+                    InlineShape picture = headerRange.InlineShapes.AddPicture(tempImagePath);
+
+                    picture.Height = heightCm * 28.35f; // 1 cm = 28.35 points
+                    picture.Width = widthCm * 28.35f;
+
+                    headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
+                }
+            }
+            catch (Exception ex)
+            {
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex).ConfigureAwait(false);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
+                {
+                    try
+                    {
+                        File.Delete(tempImagePath);
+                    }
+                    catch (Exception deleteEx)
+                    {
+                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx).ConfigureAwait(false);
+                    }
+                }
+            }
+        }
     }
 }

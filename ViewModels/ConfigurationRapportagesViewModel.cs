@@ -641,13 +641,12 @@ namespace Dossier_Registratie.ViewModels
         }
         public void VerzekeringRapportageData(string startNummer, string endNummer)
         {
-            // Clear existing data
+            Random rand = new Random();
             VerzekeringSeries.Clear();
             XAxes.Clear();
             YAxes.Clear();
             VerzekeringRapportages.Clear();
 
-            // Set chart title
             VerzekeringTitle = new LabelVisual
             {
                 Text = "Overleden Herkomsten",
@@ -656,31 +655,29 @@ namespace Dossier_Registratie.ViewModels
                 Paint = new SolidColorPaint(SKColors.DarkSlateGray)
             };
 
-            // Color generator function for unique colors
             Func<int, SKColor> GenerateColor = (index) =>
             {
-                Random rand = new Random(index);
-                return new SKColor(
-                    (byte)rand.Next(0, 255),
-                    (byte)rand.Next(0, 255),
-                    (byte)rand.Next(0, 255));
+                lock (rand)
+                {
+                    return new SKColor(
+                        (byte)rand.Next(0, 255),
+                        (byte)rand.Next(0, 255),
+                        (byte)rand.Next(0, 255));
+                }
             };
 
-            // Fetch data from the database
             var verzekeringResults = miscellaneousRepository.GetRapportagesVerzekeringWoonplaats(startNummer, endNummer);
 
-            // Group results by VerzekeringHerkomst
             var groupedResults = verzekeringResults
                 .GroupBy(v => v.VerzekeringHerkomst)
                 .Select(g => new
                 {
                     VerzekeringHerkomst = g.Key,
-                    HerkomstCount = g.Sum(v => v.VerzekeringHerkomstCount) // Sum the counts for the same insurance type
+                    HerkomstCount = g.Sum(v => v.VerzekeringHerkomstCount)
                 }).ToList();
 
             int colorIndex = 0;
 
-            // Add series for each unique VerzekeringHerkomst
             foreach (var groupedResult in groupedResults)
             {
                 var color = GenerateColor(colorIndex++);
