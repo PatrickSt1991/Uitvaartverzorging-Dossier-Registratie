@@ -1951,7 +1951,7 @@ namespace Dossier_Registratie.ViewModels
                 FactuurCreatieModel.FactuurAdresPlaats = string.Empty;
             }
                 
-            OverledeneBijlagesModel crematieResults = await documentGenerator.UpdateCrematie(CrematieModel, FactuurCreatieModel).ConfigureAwait(true);
+            OverledeneBijlagesModel crematieResults = await DocumentGenerator.UpdateCrematie(CrematieModel, FactuurCreatieModel).ConfigureAwait(true);
             if (crematieResults != null)
             {
                 crematieResults.DocumentInconsistent = false;
