@@ -394,11 +394,6 @@ namespace Dossier_Registratie.ViewModels
             IsBegrafenis = Globals.UitvaartType == "Begrafenis";
             IsCrematie = Globals.UitvaartType == "Crematie";
 
-            Debug.WriteLine(Globals.UitvaartType);
-            Debug.WriteLine(IsBegrafenis);
-            Debug.WriteLine(IsCrematie);
-
-
             var dossierStatus = miscellaneousRepository.GetVerlofDossier(Globals.UitvaartCodeGuid);
             if (dossierStatus.BijlageId != Guid.Empty)
             {
@@ -928,6 +923,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.OverdrachtTag))
+                    File.Delete(TagModel.OverdrachtTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Overdracht");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Overdracht.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var overdrachtDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Overdracht").ConfigureAwait(false);
@@ -947,6 +952,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.OverdrachtTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.OverdrachtTag);
                                 break;
                             case "Email":
@@ -974,6 +980,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.OverdrachtTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.OverdrachtTag);
                             break;
                         case "Email":
@@ -1051,6 +1058,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(TagModel.OverdrachtTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.OverdrachtTag);
                     break;
                 case "Email":
@@ -1079,6 +1087,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.ChecklistTag))
+                    File.Delete(TagModel.ChecklistTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Checklist");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var checklistDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Checklist").ConfigureAwait(false);
@@ -1099,6 +1117,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.ChecklistTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.ChecklistTag);
                                 break;
                             case "Email":
@@ -1126,6 +1145,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.ChecklistTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.ChecklistTag);
                             break;
                         case "Email":
@@ -1228,6 +1248,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(TagModel.ChecklistTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.ChecklistTag);
                     break;
                 case "Email":
@@ -1256,9 +1277,18 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.AanvraagDienstTag))
+                    File.Delete(TagModel.AanvraagDienstTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "AanvraagDienst");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
-                Debug.WriteLine("Else");
                 var dienstDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "AanvraagDienst").ConfigureAwait(false);
                 documentId = dienstDocument.BijlageId;
                 string savedHash = dienstDocument.DocumentHash;
@@ -1276,6 +1306,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.AanvraagDienstTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.AanvraagDienstTag);
                                 break;
                             case "Email":
@@ -1303,6 +1334,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.AanvraagDienstTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.AanvraagDienstTag);
                             break;
                         case "Email":
@@ -1380,6 +1412,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(TagModel.AanvraagDienstTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.AanvraagDienstTag);
                     break;
                 case "Email":
@@ -1407,6 +1440,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.DocumentTag))
+                    File.Delete(TagModel.DocumentTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Document");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Document.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var docDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Document").ConfigureAwait(false);
@@ -1426,6 +1469,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.DocumentTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.DocumentTag);
                                 break;
                             case "Email":
@@ -1454,6 +1498,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.DocumentTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.DocumentTag);
                             break;
                         case "Email":
@@ -1532,6 +1577,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(destinationFile);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(destinationFile);
                     break;
                 case "Email":
@@ -1561,6 +1607,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.KoffiekamerTag))
+                    File.Delete(TagModel.KoffiekamerTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Koffiekamer");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var koffieDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Koffiekamer").ConfigureAwait(false);
@@ -1580,6 +1636,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.KoffiekamerTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.KoffiekamerTag);
                                 break;
                             case "Email":
@@ -1607,6 +1664,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.KoffiekamerTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.KoffiekamerTag);
                             break;
                         case "Email":
@@ -1685,6 +1743,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(TagModel.KoffiekamerTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.KoffiekamerTag);
                     break;
                 case "Email":
@@ -1713,6 +1772,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.BezittingenTag))
+                    File.Delete(TagModel.BezittingenTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Bezittingen");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Bezittingen.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var bezittingenDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Bezittingen").ConfigureAwait(false);
@@ -1732,6 +1801,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.BezittingenTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.BezittingenTag);
                                 break;
                             case "Email":
@@ -1759,6 +1829,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.BezittingenTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.BezittingenTag);
                             break;
                         case "Email":
@@ -1834,6 +1905,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(TagModel.BezittingenTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.BezittingenTag);
                     break;
                 case "Email":
@@ -1862,6 +1934,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.OpdrachtCrematieTag))
+                    File.Delete(TagModel.OpdrachtCrematieTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "OpdrachtCrematie");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Crematie.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var crematieDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "OpdrachtCrematie").ConfigureAwait(false);
@@ -1881,6 +1963,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.OpdrachtCrematieTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.OpdrachtCrematieTag);
                                 break;
                             case "Email":
@@ -1908,6 +1991,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrePrintFile(TagModel.OpdrachtCrematieTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.OpdrachtCrematieTag);
                             break;
                         case "Email":
@@ -1998,6 +2082,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrePrintFile(TagModel.OpdrachtCrematieTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.OpdrachtCrematieTag);
                     break;
                 case "Email":
@@ -2026,6 +2111,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.OpdrachtBegrafenisTag))
+                    File.Delete(TagModel.OpdrachtBegrafenisTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "OpdrachtBegrafenis");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Begrafenis.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var begrafenisDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "OpdrachtBegrafenis").ConfigureAwait(false);
@@ -2045,6 +2140,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.OpdrachtBegrafenisTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.OpdrachtBegrafenisTag);
                                 break;
                             case "Email":
@@ -2072,6 +2168,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.OpdrachtBegrafenisTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.OpdrachtBegrafenisTag);
                             break;
                         case "Email":
@@ -2148,6 +2245,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrePrintFile(TagModel.OpdrachtBegrafenisTag);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(TagModel.OpdrachtBegrafenisTag);
                     break;
                 case "Email":
@@ -2181,6 +2279,7 @@ namespace Dossier_Registratie.ViewModels
                 {
                     foreach (var document in terugmeldingDocuments)
                     {
+                        Debug.WriteLine(document.DocumentName);
                         documentId = document.BijlageId;
 
                         if (!File.Exists(document.DocumentUrl))
@@ -2196,15 +2295,10 @@ namespace Dossier_Registratie.ViewModels
                             Debug.WriteLine($"Processing document: {document.DocumentUrl}, Hash: {documentHash}, Saved Hash: {savedHash}");
                         }
 
-                        if (savedHash == documentHash && File.Exists(document.DocumentUrl))
-                        {
-                            documentUrls.Add(document.DocumentUrl);
-                        }
-                        else
-                        {
+                        if (documentOption == "Opnieuw" || savedHash != documentHash || !File.Exists(document.DocumentUrl))
                             recreationTrigger = true;
-                            Debug.WriteLine("Recreation triggered for document: " + document.DocumentUrl);
-                        }
+                        else
+                            documentUrls.Add(document.DocumentUrl);
                     }
 
                     if (!recreationTrigger)
@@ -2216,6 +2310,10 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrintFiles(documentUrls);
                                 break;
                             case "Word":
+                            case "Opnieuw":
+                                foreach(var doc in documentUrls)
+                                    Debug.WriteLine(doc);
+
                                 DocumentFunctions.OpenFiles(documentUrls);
                                 break;
                             case "Email":
@@ -2228,6 +2326,7 @@ namespace Dossier_Registratie.ViewModels
                     {
                         foreach (var document in terugmeldingDocuments)
                         {
+                            deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Terugmelding");
                             if (File.Exists(document.DocumentUrl))
                             {
                                 File.Delete(document.DocumentUrl);
@@ -2247,9 +2346,18 @@ namespace Dossier_Registratie.ViewModels
                     savedHash = document.DocumentHash;
                     documentHash = Checksum.GetMD5Checksum(TagModel.TerugmeldingTag);
 
-                    Debug.WriteLine($"Single document found, checking hashes. Document Hash: {documentHash}, Saved Hash: {savedHash}");
+                    if (documentOption == "Opnieuw")
+                    {
+                        if (File.Exists(document.DocumentUrl))
+                            File.Delete(document.DocumentUrl);
 
-                    if (savedHash == documentHash && File.Exists(document.DocumentUrl))
+                        TerugmeldingModel.Updated = true;
+                        deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Terugmelding");
+                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
+                        documentId = Guid.NewGuid();
+                        initialCreation = true;
+                    }
+                    else if (savedHash == documentHash && File.Exists(document.DocumentUrl))
                     {
                         switch (documentOption)
                         {
@@ -2257,6 +2365,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrintFile(TagModel.TerugmeldingTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.TerugmeldingTag);
                                 break;
                             case "Email":
@@ -2301,15 +2410,9 @@ namespace Dossier_Registratie.ViewModels
             List<string> distinctPolissen = new List<string>();
 
             foreach (var terugmeldingPolis in terugmeldingPolissen)
-            {
                 foreach (var polis in terugmeldingPolis.PolisInfoList)
-                {
                     if (!string.IsNullOrEmpty(polis.PolisNr) && !distinctPolissen.Contains(polis.PolisNr))
-                    {
                         distinctPolissen.Add(polis.PolisNr);
-                    }
-                }
-            }
 
             Debug.WriteLine($"Found {distinctPolissen.Count} unique policies.");
 
@@ -2344,10 +2447,13 @@ namespace Dossier_Registratie.ViewModels
                         terugmeldingResults.DocumentName = "Terugmelding";
                         terugmeldingResults.DocumentHash = Checksum.GetMD5Checksum(destinationFile);
 
+                        Debug.WriteLine(terugmeldingResults.DocumentUrl);
+
                         if (initialCreation)
                         {
                             try
                             {
+                                Debug.WriteLine("insert");
                                 await createRepository.InsertDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
                                 Debug.WriteLine("Inserted document info into repository.");
                             }
@@ -2362,6 +2468,7 @@ namespace Dossier_Registratie.ViewModels
                         {
                             try
                             {
+                                Debug.WriteLine("update");
                                 await updateRepository.UpdateDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
                                 Debug.WriteLine("Updated document info in repository.");
                             }
@@ -2375,13 +2482,14 @@ namespace Dossier_Registratie.ViewModels
                     }
                 }
                 System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                
+                TagModel.TerugmeldingTag = "Alles";
                 switch (documentOption)
                 {
                     case "Print":
                         DocumentFunctions.PrintFiles(documentUrls);
                         break;
                     case "Word":
+                    case "Opnieuw":
                         DocumentFunctions.OpenFiles(documentUrls);
                         break;
                     case "Email":
@@ -2414,6 +2522,8 @@ namespace Dossier_Registratie.ViewModels
                     terugmeldingResults.DocumentUrl = newPolisFilePath;
                     terugmeldingResults.DocumentName = "Terugmelding";
                     terugmeldingResults.DocumentHash = Checksum.GetMD5Checksum(newPolisFilePath);
+
+                    TagModel.TerugmeldingTag = newPolisFilePath;
 
                     if (initialCreation)
                     {
@@ -2450,6 +2560,7 @@ namespace Dossier_Registratie.ViewModels
                         DocumentFunctions.PrintFile(destinationFile);
                         break;
                     case "Word":
+                    case "Opnieuw":
                         DocumentFunctions.OpenFile(destinationFile);
                         break;
                     case "Email":
@@ -2479,6 +2590,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.TevredenheidTag))
+                    File.Delete(TagModel.TevredenheidTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Tevredenheid");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var tevredenheidDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Tevredenheid").ConfigureAwait(false);
@@ -2500,6 +2621,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.TevredenheidTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.TevredenheidTag);
                                 break;
                             case "Email":
@@ -2527,6 +2649,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrintFile(TagModel.TevredenheidTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.TevredenheidTag);
                             break;
                         case "Email":
@@ -2603,6 +2726,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(destinationFile);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(destinationFile);
                     break;
                 case "Email":
@@ -2631,6 +2755,16 @@ namespace Dossier_Registratie.ViewModels
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
+            else if (documentOption == "Opnieuw")
+            {
+                if (File.Exists(TagModel.AangifteTag))
+                    File.Delete(TagModel.AangifteTag);
+
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Aangifte");
+                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aangifte.docx").ConfigureAwait(true);
+                documentId = Guid.NewGuid();
+                initialCreation = true;
+            }
             else
             {
                 var aangifteDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Aangifte").ConfigureAwait(false);
@@ -2651,6 +2785,7 @@ namespace Dossier_Registratie.ViewModels
                                 DocumentFunctions.PrePrintFile(TagModel.AangifteTag);
                                 break;
                             case "Word":
+                            case "Opnieuw":
                                 DocumentFunctions.OpenFile(TagModel.AangifteTag);
                                 break;
                             case "Email":
@@ -2678,6 +2813,7 @@ namespace Dossier_Registratie.ViewModels
                             DocumentFunctions.PrePrintFile(TagModel.AangifteTag);
                             break;
                         case "Word":
+                        case "Opnieuw":
                             DocumentFunctions.OpenFile(TagModel.AangifteTag);
                             break;
                         case "Email":
@@ -2755,6 +2891,7 @@ namespace Dossier_Registratie.ViewModels
                     DocumentFunctions.PrintFile(destinationFile);
                     break;
                 case "Word":
+                case "Opnieuw":
                     DocumentFunctions.OpenFile(destinationFile);
                     break;
                 case "Email":

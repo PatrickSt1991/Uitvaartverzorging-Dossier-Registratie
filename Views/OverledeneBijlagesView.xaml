@@ -51,6 +51,16 @@
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
                 </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
                 <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -84,6 +94,16 @@
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
                 </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
                 <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -113,6 +133,16 @@
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
                                 <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
@@ -153,6 +183,16 @@
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
                 </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
                 <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -182,6 +222,16 @@
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
                                 <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
@@ -219,6 +269,16 @@
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
                 </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
                 <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -248,6 +308,16 @@
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
                                 <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
@@ -285,6 +355,16 @@
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
                 </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
                 <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -318,6 +398,16 @@
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
                 </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
                 <ComboBoxItem Tag="Email" Content="Email bijlage" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>
                         <DataTemplate>
@@ -347,6 +437,16 @@
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
                                 <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
@@ -409,6 +509,16 @@
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="5"/>
                                 <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBoxItem.ContentTemplate>
+                </ComboBoxItem>
+                <ComboBoxItem Visibility="Collapsed" Tag="Opnieuw" Content="Opnieuw" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
+                    <ComboBoxItem.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <Image Source="pack://application:,,,/Images/wordrefresh.png" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="Opnieuw maken" VerticalAlignment="Center" Margin="5,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ComboBoxItem.ContentTemplate>
