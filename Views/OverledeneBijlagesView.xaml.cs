@@ -2,6 +2,7 @@
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
 using System;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace Dossier_Registratie.Views
@@ -19,42 +20,41 @@ namespace Dossier_Registratie.Views
             if (Globals.PermissionLevelName == "Gebruiker")
                 BijlageGrid.IsEnabled = false;
         }
-        public void ViewModel_DataLoaded(object sender, EventArgs e)
+        public void ViewModel_DataLoaded(object? sender, EventArgs e)
         {
-            foreach (var bijlage in searchOperations.GetOverlijdenBijlagesByUitvaartId(Globals.UitvaartCode))
-            {
-                if ((!bijlage.IsDeleted) && 
-                    (!bijlage.DocumentName.StartsWith("AkteVanCessie_")) &&
-                    (!bijlage.DocumentName.Equals("Bloemen")) && 
-                    (!bijlage.DocumentName.Equals("Verlof")) && 
-                    (!bijlage.DocumentName.Equals("Dossier")))
-                {
-                    ComboBox attachmentCb = (ComboBox)this.FindName("cb_Document" + bijlage.DocumentName);
+            searchOperations
+                .GetOverlijdenBijlagesByUitvaartId(Globals.UitvaartCode)
+                .Where(ShouldProcessBijlage)
+                .ToList()
+                .ForEach(ProcessBijlage);
+        }
+        private static bool ShouldProcessBijlage(OverledeneBijlagesModel bijlage)
+        {
+            return !bijlage.IsDeleted &&
+                   !bijlage.DocumentName.StartsWith("AkteVanCessie_") &&
+                   !bijlage.DocumentName.Equals("Bloemen") &&
+                   !bijlage.DocumentName.Equals("Verlof") &&
+                   !bijlage.DocumentName.Equals("Dossier");
+        }
+        private void ProcessBijlage(OverledeneBijlagesModel bijlage)
+        {
+            ComboBox attachmentCb = (ComboBox)this.FindName("cb_Document" + bijlage.DocumentName);
 
-                    if (bijlage.DocumentName == "Terugmelding")
-                    {
-                        attachmentCb.Tag = "Alles";
-                        foreach(var item in attachmentCb.Items)
-                        {
-                            if (item is ComboBoxItem comboBoxItem && (string)comboBoxItem.Tag == "Opnieuw")
-                            {
-                                comboBoxItem.Visibility = System.Windows.Visibility.Visible;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        attachmentCb.Tag = bijlage.DocumentUrl;
-                        foreach (var item in attachmentCb.Items)
-                        {
-                            if (item is ComboBoxItem comboBoxItem && (string)comboBoxItem.Tag == "Opnieuw")
-                            {
-                                comboBoxItem.Visibility = System.Windows.Visibility.Visible;
-                                break;
-                            }
-                        }
-                    }
+            if (bijlage.DocumentName == "Terugmelding")
+                UpdateComboBox(attachmentCb, "Alles");
+            else
+                UpdateComboBox(attachmentCb, bijlage.DocumentUrl);
+        }
+        private static void UpdateComboBox(ComboBox comboBox, string tag)
+        {
+            comboBox.Tag = tag;
+
+            foreach (var item in comboBox.Items)
+            {
+                if (item is ComboBoxItem comboBoxItem && (string)comboBoxItem.Tag == "Opnieuw")
+                {
+                    comboBoxItem.Visibility = System.Windows.Visibility.Visible;
+                    break;
                 }
             }
         }
