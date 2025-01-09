@@ -3,7 +3,14 @@ using System;
 
 namespace Dossier_Registratie.Models
 {
-    public class WekbonnenContent : ViewModelBase
+    public interface IGenericDocument
+    {
+        string DestinationFile { get; }
+        Guid UitvaartId { get; }
+        bool Updated { get; }
+        Guid DocumentId { get; }
+    }
+    public class WekbonnenContent : ViewModelBase, IGenericDocument
     {
         private string? _uitvaartType;
         private DateTime _uitvaartDatumTijd;
@@ -42,8 +49,12 @@ namespace Dossier_Registratie.Models
             get { return _overledene; }
             set { _overledene = value; OnPropertyChanged(nameof(Overledene)); }
         }
+        public string DestinationFile { get; set; }
+        public Guid UitvaartId { get; set; }
+        public bool Updated { get; set; }
+        public Guid DocumentId { get; set; }
     }
-    public class AkteContent : ViewModelBase
+    public class AkteContent : ViewModelBase, IGenericDocument
     {
         private string? _opdrachtgeverVoorletters;
         private string? _opdrachtgeverNaam;
@@ -98,8 +109,12 @@ namespace Dossier_Registratie.Models
             get { return _overledenOpAdres; }
             set { _overledenOpAdres = value; OnPropertyChanged(nameof(OverledenOpAdres)); }
         }
+        public string DestinationFile { get; set; }
+        public Guid UitvaartId { get; set; }
+        public bool Updated { get; set; }
+        public Guid DocumentId { get; set; }
     }
-    public class TevredenheidDocument : ViewModelBase
+    public class TevredenheidDocument : ViewModelBase, IGenericDocument
     {
         private string? _dossiernummer;
         private string? _ingevuldDoorAdres;
@@ -181,7 +196,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(Uitvaartverzorger);
         }
     }
-    public class TerugmeldingDocument : ViewModelBase
+    public class TerugmeldingDocument : ViewModelBase, IGenericDocument
     {
         private string? _dossiernummer;
         private string? _uitvaartverzorger;
@@ -384,7 +399,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OpdrachtgeverTelefoon);
         }
     }
-    public class BegrafenisDocument : ViewModelBase
+    public class BegrafenisDocument : ViewModelBase, IGenericDocument
     {
         private string? _naamOpdrachtgever;
         private string? _adresOpdrachtgever;
@@ -559,7 +574,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(UitvaartLeiderEmail);
         }
     }
-    public class FactuurInfoCrematie : ViewModelBase
+    public class FactuurInfoCrematie : ViewModelBase, IGenericDocument
     {
         private string? _factuurAdresNaam;
         private string? _factuurAdresRelatie;
@@ -642,8 +657,12 @@ namespace Dossier_Registratie.Models
                 OnPropertyChanged(nameof(FactuurAdresOverride));
             }
         }
+        public string DestinationFile { get; set; }
+        public Guid UitvaartId { get; set; }
+        public bool Updated { get; set; }
+        public Guid DocumentId { get; set; }
     }
-    public class CrematieDocument : ViewModelBase
+    public class CrematieDocument : ViewModelBase, IGenericDocument
     {
         private string? _aulaNaam;
         private int _aulaPersonen;
@@ -939,7 +958,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(Consumpties);
         }
     }
-    public class BezittingenDocument : ViewModelBase
+    public class BezittingenDocument : ViewModelBase, IGenericDocument
     {
         private string? _dossiernummer;
         private string? _overledeneNaam;
@@ -1076,7 +1095,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OverledeneRelatie);
         }
     }
-    public class OverdrachtDocument : ViewModelBase
+    public class OverdrachtDocument : ViewModelBase, IGenericDocument
     {
         private string? _overdrachtType;
         private string? _overledeAanhef;
@@ -1152,7 +1171,7 @@ namespace Dossier_Registratie.Models
                    !string.IsNullOrEmpty(OverdragendePartij);
         }
     }
-    public class ChecklistOpbarenDocument : ViewModelBase
+    public class ChecklistOpbarenDocument : ViewModelBase, IGenericDocument
     {
         private Guid _werknemerId;
         private string? _werknemerName;
@@ -1167,8 +1186,12 @@ namespace Dossier_Registratie.Models
             get { return _werknemerName; }
             set { _werknemerName = value; OnPropertyChanged(nameof(WerknemerName)); }
         }
+        public string DestinationFile { get; set; }
+        public Guid UitvaartId { get; set; }
+        public bool Updated { get; set; }
+        public Guid DocumentId { get; set; }
     }
-    public class ChecklistDocument : ViewModelBase
+    public class ChecklistDocument : ViewModelBase, IGenericDocument
     {
         private string? _documentType;
         private string? _achternaam;
@@ -1279,7 +1302,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(UitvartLeider);
         }
     }
-    public class DienstDocument : ViewModelBase
+    public class DienstDocument : ViewModelBase, IGenericDocument
     {
         private string? _aanvraagDienstTe;
         private DateTime _datumUitvaart;
@@ -1486,7 +1509,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(Opmerkingen);
         }
     }
-    public class DocumentDocument : ViewModelBase
+    public class DocumentDocument : ViewModelBase, IGenericDocument
     {
         private string? _documentType;
         private string? _uitvaartverzorger;
@@ -1629,7 +1652,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OndergetekendeUitvaart);
         }
     }
-    public class KoffieKamerDocument : ViewModelBase
+    public class KoffieKamerDocument : ViewModelBase, IGenericDocument
     {
         private DateTime _datumUitvaart;
         private string? _naam;
@@ -1725,7 +1748,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OpdrachtgeverTelefoon);
         }
     }
-    public class BloemenDocument : ViewModelBase
+    public class BloemenDocument : ViewModelBase, IGenericDocument
     {
         private string? _leverancierNaam;
         private string? _uitvaartleider;
@@ -1850,7 +1873,7 @@ namespace Dossier_Registratie.Models
                     DatumBezorgen != DateTime.MinValue;
         }
     }
-    public class AangifteDocument : ViewModelBase
+    public class AangifteDocument : ViewModelBase, IGenericDocument
     {
         private string? _overledeneAanhef;
         private string? _overledeneAchternaam;

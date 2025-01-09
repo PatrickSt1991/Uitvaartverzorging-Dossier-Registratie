@@ -10,6 +10,12 @@ using System.Windows;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Word = Microsoft.Office.Interop.Word;
 using System.Linq;
+using Dossier_Registratie.Models;
+using System.Threading.Tasks;
+using Application = Microsoft.Office.Interop.Word.Application;
+using Task = System.Threading.Tasks.Task;
+using Range = Microsoft.Office.Interop.Word.Range;
+using Newtonsoft.Json;
 
 namespace Dossier_Registratie.Helper
 {
@@ -292,6 +298,43 @@ namespace Dossier_Registratie.Helper
                 GC.WaitForPendingFinalizers();
             }
         }
+        public static async Task<Document?> OpenDocumentAsync(Application app, string filePath)
+        {
+            try
+            {
+                var doc = app.Documents.Open(filePath);
+                if (doc == null)
+                {
+                    await ReportErrorAsync(new Exception("Failed to open document: " + filePath));
+                }
+                return doc;
+            }
+            catch (Exception ex)
+            {
+                await ReportErrorAsync(ex);
+                return null;
+            }
+        }
+        public static void UpdateBookmarks(Document doc, Dictionary<string, string> bookmarks)
+        {
+            if (doc.Bookmarks == null)
+                throw new Exception("Document or Bookmarks collection is null");
+
+            foreach (var bookmark in bookmarks)
+            {
+                if (doc.Bookmarks.Exists(bookmark.Key))
+                {
+                    var bm = doc.Bookmarks[bookmark.Key];
+                    var range = bm.Range;
+                    range.Text = bookmark.Value;
+                    doc.Bookmarks.Add(bookmark.Key, range);
+                }
+                else
+                {
+                    throw new Exception($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                }
+            }
+        }
         public static void AddImageToDocumentHeaders(Document doc, byte[] imageData, string imageExtension, float heightCm, float widthCm)
         {
             string? tempImagePath = null;
@@ -310,7 +353,7 @@ namespace Dossier_Registratie.Helper
                 foreach (Section section in doc.Sections)
                 {
                     HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                    Word.Range headerRange = header.Range;
+                    Range headerRange = header.Range;
                     InlineShape picture = headerRange.InlineShapes.AddPicture(tempImagePath);
 
                     picture.Height = heightCm * 28.35f; // 1 cm = 28.35 points
@@ -338,6 +381,68 @@ namespace Dossier_Registratie.Helper
                     }
                 }
             }
+        }
+        public static void SaveAndCloseDocument(Document? doc)
+        {
+            if (doc == null) return;
+
+            doc.Save();
+            doc.Close();
+            Marshal.ReleaseComObject(doc);
+        }
+        public static void CleanupResources(Application? app, Document? doc)
+        {
+            if (doc != null)
+            {
+                doc.Close(false);
+                Marshal.ReleaseComObject(doc);
+            }
+
+            if (app != null)
+            {
+                app.Quit();
+                Marshal.ReleaseComObject(app);
+            }
+
+            GC.WaitForPendingFinalizers();
+        }
+        public static OverledeneBijlagesModel GenerateBijlageModel<T>(T document) where T : IGenericDocument
+        {
+            return new OverledeneBijlagesModel
+            {
+                DocumentHash = Checksum.GetMD5Checksum(document.DestinationFile),
+                UitvaartId = document.UitvaartId,
+                BijlageId = document.Updated ? Guid.NewGuid() : document.DocumentId,
+                IsModified = !document.Updated
+            };
+        }
+        public static string GenerateOrganizationAddress()
+        {
+            var address = $"{DataProvider.OrganizationStreet} {DataProvider.OrganizationHouseNumber}, {DataProvider.OrganizationZipcode} {DataProvider.OrganizationCity}";
+            if (!string.IsNullOrEmpty(DataProvider.OrganizationHouseNumberAddition))
+            {
+                address = $"{DataProvider.OrganizationStreet} {DataProvider.OrganizationHouseNumber} {DataProvider.OrganizationHouseNumberAddition}, {DataProvider.OrganizationZipcode} {DataProvider.OrganizationCity}";
+            }
+            return address;
+        }
+        public static List<string> ParseLintTexts(string? lintJson)
+        {
+            return string.IsNullOrEmpty(lintJson)
+                ? new List<string>()
+                : JsonConvert.DeserializeObject<List<string>>(lintJson) ?? new List<string>();
+        }
+        public static string CreateOpdrachtgeverAdres(DienstDocument dienst)
+        {
+            return string.Join(", ", new[]
+            {
+                dienst.OpdrachtgeverAdres,
+                dienst.OpdrachtgeverPostcode,
+                dienst.OpdrachtgeverPlaats
+            }.Where(part => !string.IsNullOrEmpty(part)));
+        }
+        private static async Task ReportErrorAsync(Exception ex)
+        {
+            await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
         }
     }
 }

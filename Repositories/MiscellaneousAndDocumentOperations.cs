@@ -2356,8 +2356,8 @@ namespace Dossier_Registratie.Repositories
                     command.Connection = connection;
                     command.CommandText = "SELECT OUI.uitvaartInfoDatumTijdUitvaart ," +
                                             "CASE WHEN opg.overledeneTussenvoegsel IS NULL " +
-                                            "THEN TRIM(OPG.overledeneAchternaam) " +
-                                            "ELSE TRIM(CONCAT(opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
+                                            "THEN TRIM(CONCAT(OPG.overledeneVoornamen, ' ', OPG.overledeneAchternaam)) " +
+                                            "ELSE TRIM(CONCAT(OPG.overledeneVoornamen, ' ',opg.overledeneTussenvoegsel, ' ', opg.overledeneAchternaam)) " +
                                             "END AS Naam, uitvaartInfoDienstLocatie, " +
                                             "uitvaartInfoDienstDatumTijd, uitvaartInfoDienstDatumTijd, " +
                                             "(CASE WHEN OOG.opdrachtgeverTussenvoegsel IS NULL THEN CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverAchternaam) ELSE CONCAT(OOG.opdrachtgeverAanhef, ' ', OOG.opdrachtgeverVoornaamen, ' ', OOG.opdrachtgeverTussenvoegsel, ' ', OOG.opdrachtgeverAchternaam) END) as Opdrachtgever, " +

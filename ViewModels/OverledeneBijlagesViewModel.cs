@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -30,6 +31,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Dossier_Registratie.ViewModels
 {
+    [SupportedOSPlatform("windows")]
     public class AllChosenVerzekering
     {
         public string VerzekeringName { get; set; }
@@ -53,7 +55,6 @@ namespace Dossier_Registratie.ViewModels
         private ObservableCollection<PolisVerzekering> _verzekeringen;
         private PolisVerzekering _selectedVerzekering;
         private ObservableCollection<PolisVerzekering> _verzekeringenWithAll;
-        private ModelCompare modelCompare;
         private ObservableCollection<OverledeneBijlagesModel> _originalBijlageList;
         private OverledeneBijlagesModel _originelBijlageModel;
         private BijlageTagModel _tagModel;
@@ -294,7 +295,6 @@ namespace Dossier_Registratie.ViewModels
             updateRepository = new UpdateOperations();
             deleteRepository = new DeleteAndActivateDisableOperations();
 
-            modelCompare = new ModelCompare();
             InfoUitvaartleider = new OverledeneUitvaartleiderModel();
             BijlageModel = new OverledeneBijlagesModel();
             VerlofDossier = new OverledeneBijlagesModel();
@@ -339,7 +339,6 @@ namespace Dossier_Registratie.ViewModels
         }
         public void CreateNewDossier()
         {
-            modelCompare = new ModelCompare();
             InfoUitvaartleider = new OverledeneUitvaartleiderModel();
             BijlageModel = new OverledeneBijlagesModel();
             TagModel = new BijlageTagModel();
@@ -366,8 +365,6 @@ namespace Dossier_Registratie.ViewModels
         public static OverledeneBijlagesViewModel BijlagesInstance { get; } = new();
         public void RequestedDossierInformationBasedOnUitvaartId(string uitvaartNummer)
         {
-
-            modelCompare = new ModelCompare();
             InfoUitvaartleider = new OverledeneUitvaartleiderModel();
             BijlageModel = new OverledeneBijlagesModel();
             TagModel = new BijlageTagModel();
@@ -2034,8 +2031,9 @@ namespace Dossier_Registratie.ViewModels
                 FactuurCreatieModel.FactuurAdresTelefoon = string.Empty;
                 FactuurCreatieModel.FactuurAdresPlaats = string.Empty;
             }
-                
-            OverledeneBijlagesModel crematieResults = await DocumentGenerator.UpdateCrematie(CrematieModel, FactuurCreatieModel).ConfigureAwait(true);
+
+            OverledeneBijlagesModel crematieResults = await documentGenerator.UpdateCrematie(CrematieModel, FactuurCreatieModel).ConfigureAwait(true);
+
             if (crematieResults != null)
             {
                 crematieResults.DocumentInconsistent = false;
@@ -2460,7 +2458,7 @@ namespace Dossier_Registratie.ViewModels
                             catch (System.Exception ex)
                             {
                                 MessageBox.Show($"Error inserting terugmelding: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                                 return;
                             }
                         }
@@ -2475,7 +2473,7 @@ namespace Dossier_Registratie.ViewModels
                             catch (System.Exception ex)
                             {
                                 MessageBox.Show($"Error updating terugmelding: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
                                 return;
                             }
                         }

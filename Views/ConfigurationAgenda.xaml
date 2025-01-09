@@ -44,7 +44,7 @@
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Tijd dienst" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding TijdstipDienst}"/>
-                    <DataGridTextColumn Header="Uitvaatleider" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Uitvaartleider}"/>
+                    <DataGridTextColumn Header="Uitvaartleider" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Uitvaartleider}"/>
                     <DataGridTemplateColumn IsReadOnly="True" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
