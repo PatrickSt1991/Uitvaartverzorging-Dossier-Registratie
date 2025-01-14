@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.IO;
+using Dossier_Registratie.Helper;
 
 namespace Dossier_Registratie.Repositories
 {
@@ -160,20 +161,20 @@ namespace Dossier_Registratie.Repositories
                 command.Parameters.AddWithValue("@id", uitvaartMisc.Id);
                 command.Parameters.AddWithValue("@uitvaartid", uitvaartMisc.UitvaartId);
                 command.Parameters.AddWithValue("@rouwbrievenid", uitvaartMisc.RouwbrievenId);
-                command.Parameters.AddWithValue("@aantalrouwbrieven", uitvaartMisc.AantalRouwbrieven != null ? uitvaartMisc.AantalRouwbrieven : string.Empty);
-                command.Parameters.AddWithValue("@aantaluitnodiging", uitvaartMisc.AantalUitnodigingen != null ? uitvaartMisc.AantalUitnodigingen : string.Empty);
-                command.Parameters.AddWithValue("@aantalkennisgeving", uitvaartMisc.AantalKennisgeving != null ? uitvaartMisc.AantalKennisgeving : string.Empty);
-                command.Parameters.AddWithValue("@advertenties", uitvaartMisc.Advertenties != null ? uitvaartMisc.Advertenties : string.Empty);
+                command.Parameters.AddWithValue("@aantalrouwbrieven", uitvaartMisc.AantalRouwbrieven ?? string.Empty);
+                command.Parameters.AddWithValue("@aantaluitnodiging", uitvaartMisc.AantalUitnodigingen ?? string.Empty);
+                command.Parameters.AddWithValue("@aantalkennisgeving", uitvaartMisc.AantalKennisgeving ?? string.Empty);
+                command.Parameters.AddWithValue("@advertenties", uitvaartMisc.Advertenties ?? string.Empty);
                 command.Parameters.AddWithValue("@ubs", uitvaartMisc.UBS != null ? uitvaartMisc.UBS : '0');
-                command.Parameters.AddWithValue("@aulanaam", uitvaartMisc.AulaNaam != null ? uitvaartMisc.AulaNaam : string.Empty);
-                command.Parameters.AddWithValue("@aulapersonen", uitvaartMisc.AulaPersonen != null ? uitvaartMisc.AulaPersonen : 0);
-                command.Parameters.AddWithValue("@grafnummer", uitvaartMisc.GrafNummer != null ? uitvaartMisc.GrafNummer : string.Empty);
-                command.Parameters.AddWithValue("@begraafplaats", uitvaartMisc.Begraafplaats != null ? uitvaartMisc.Begraafplaats : string.Empty);
+                command.Parameters.AddWithValue("@aulanaam", uitvaartMisc.AulaNaam ?? string.Empty);
+                command.Parameters.AddWithValue("@aulapersonen", uitvaartMisc.AulaPersonen);
+                command.Parameters.AddWithValue("@grafnummer", uitvaartMisc.GrafNummer ?? string.Empty);
+                command.Parameters.AddWithValue("@begraafplaats", uitvaartMisc.Begraafplaats ?? string.Empty);
                 if (command.ExecuteNonQuery() == 0)
                     throw new InvalidOperationException("InsertUitvaartMiscFailed");
             }
         }
-        public void AddPersoonsGegevens(OverledenePersoonsGegevensModel persoonsGegevensModel)
+        public void AddPersoonsGegevens(OverledenePersoonsGegevensModel GetDocumentOverdrachtInfo)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
@@ -185,23 +186,23 @@ namespace Dossier_Registratie.Repositories
                                         "[overledeneWoonplaats], [overledeneVoorregeling]) VALUES (@PersoonsGegevensId, @UitvaartId, @SurNameOverledene, @PrepositionOverledene, @FirstnameOverledene, @SalutationOverledene, " +
                                         "@DateOfBirthOverledene, @PlaceOfBirthOverledene,@CountyOverledene, @AgeOverledene, @BSNOverledene, @AddressOverledene, @HousenumberOverledene, @HousenumberAdditionOverledene, " +
                                         "@PostalCodeOverledene, @CityOverledene, @VoorregelingOverledene)";
-                command.Parameters.AddWithValue("@PersoonsGegevensId", persoonsGegevensModel.Id);
-                command.Parameters.AddWithValue("@UitvaartId", persoonsGegevensModel.UitvaartId);
-                command.Parameters.AddWithValue("@SurNameOverledene", persoonsGegevensModel.OverledeneAchternaam);
-                command.Parameters.AddWithValue("@PrepositionOverledene", persoonsGegevensModel.OverledeneTussenvoegsel != null ? persoonsGegevensModel.OverledeneTussenvoegsel : DBNull.Value);
-                command.Parameters.AddWithValue("@FirstnameOverledene", persoonsGegevensModel.OverledeneVoornamen);
-                command.Parameters.AddWithValue("@SalutationOverledene", persoonsGegevensModel.OverledeneAanhef);
-                command.Parameters.AddWithValue("@DateOfBirthOverledene", persoonsGegevensModel.OverledeneGeboortedatum);
-                command.Parameters.AddWithValue("@PlaceOfBirthOverledene", persoonsGegevensModel.OverledeneGeboorteplaats);
-                command.Parameters.AddWithValue("@CountyOverledene", persoonsGegevensModel.OverledeneGemeente);
-                command.Parameters.AddWithValue("@AgeOverledene", persoonsGegevensModel.OverledeneLeeftijd);
-                command.Parameters.AddWithValue("@BSNOverledene", persoonsGegevensModel.OverledeneBSN);
-                command.Parameters.AddWithValue("@AddressOverledene", persoonsGegevensModel.OverledeneAdres);
-                command.Parameters.AddWithValue("@HousenumberOverledene", persoonsGegevensModel.OverledeneHuisnummer);
-                command.Parameters.AddWithValue("@HousenumberAdditionOverledene", persoonsGegevensModel.OverledeneHuisnummerToevoeging != null ? persoonsGegevensModel.OverledeneHuisnummerToevoeging : DBNull.Value);
-                command.Parameters.AddWithValue("@PostalCodeOverledene", persoonsGegevensModel.OverledenePostcode);
-                command.Parameters.AddWithValue("@CityOverledene", persoonsGegevensModel.OverledeneWoonplaats);
-                command.Parameters.AddWithValue("@VoorregelingOverledene", persoonsGegevensModel.OverledeneVoorregeling ? persoonsGegevensModel.OverledeneVoorregeling : DBNull.Value);
+                command.Parameters.AddWithValue("@PersoonsGegevensId", GetDocumentOverdrachtInfo.Id);
+                command.Parameters.AddWithValue("@UitvaartId", GetDocumentOverdrachtInfo.UitvaartId);
+                command.Parameters.AddWithValue("@SurNameOverledene", GetDocumentOverdrachtInfo.OverledeneAchternaam);
+                command.Parameters.AddWithValue("@PrepositionOverledene", GetDocumentOverdrachtInfo.OverledeneTussenvoegsel != null ? GetDocumentOverdrachtInfo.OverledeneTussenvoegsel : DBNull.Value);
+                command.Parameters.AddWithValue("@FirstnameOverledene", GetDocumentOverdrachtInfo.OverledeneVoornamen);
+                command.Parameters.AddWithValue("@SalutationOverledene", GetDocumentOverdrachtInfo.OverledeneAanhef);
+                command.Parameters.AddWithValue("@DateOfBirthOverledene", GetDocumentOverdrachtInfo.OverledeneGeboortedatum);
+                command.Parameters.AddWithValue("@PlaceOfBirthOverledene", GetDocumentOverdrachtInfo.OverledeneGeboorteplaats);
+                command.Parameters.AddWithValue("@CountyOverledene", GetDocumentOverdrachtInfo.OverledeneGemeente);
+                command.Parameters.AddWithValue("@AgeOverledene", GetDocumentOverdrachtInfo.OverledeneLeeftijd);
+                command.Parameters.AddWithValue("@BSNOverledene", GetDocumentOverdrachtInfo.OverledeneBSN);
+                command.Parameters.AddWithValue("@AddressOverledene", GetDocumentOverdrachtInfo.OverledeneAdres);
+                command.Parameters.AddWithValue("@HousenumberOverledene", GetDocumentOverdrachtInfo.OverledeneHuisnummer);
+                command.Parameters.AddWithValue("@HousenumberAdditionOverledene", GetDocumentOverdrachtInfo.OverledeneHuisnummerToevoeging != null ? GetDocumentOverdrachtInfo.OverledeneHuisnummerToevoeging : DBNull.Value);
+                command.Parameters.AddWithValue("@PostalCodeOverledene", GetDocumentOverdrachtInfo.OverledenePostcode);
+                command.Parameters.AddWithValue("@CityOverledene", GetDocumentOverdrachtInfo.OverledeneWoonplaats);
+                command.Parameters.AddWithValue("@VoorregelingOverledene", GetDocumentOverdrachtInfo.OverledeneVoorregeling ? GetDocumentOverdrachtInfo.OverledeneVoorregeling : DBNull.Value);
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertPersoonsGegevensFailed");
@@ -246,59 +247,59 @@ namespace Dossier_Registratie.Repositories
         }
         public void AddOverlijdenExtraInfo(OverledeneExtraInfoModel overledeneExtraInfoModel)
         {
-            using (var connection = GetConnection())
-            using (var command = new SqlCommand())
-            {
-                connection.Open();
-                command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneExtraInfo] ([Id], [uitvaartId], [overledeneBurgelijkestaat], " +
-                                    "[overledeneGescheidenVan],[overledeneWedenaarVan], [overledeneTrouwboekje], [overledeneAantalKinderen], " +
-                                    "[overledeneKinderenMinderjarig], [overledeneAantalKinderenOverleden], [overledeneEersteOuder], [overledeneEersteOuderOverleden], [overledeneTweedeOuder], [overledeneTweedeOuderOverleden],[overledeneLevensovertuiging], " +
-                                    "[overledeneExecuteur], [overledeneExecuteurTelefoon], [overledeneNotaris], [overledeneNotarisTelefoon], " +
-                                    "[overledeneTestament], [overledeneTrouwDatumTijd], [overledeneGeregistreerdDatumTijd], [naamWederhelft], [voornaamWederhelft]) " +
-                                    "VALUES(@ExtraInfoId, @UitvaartCodeGuid, @MaritalStatus_Family, @Divorsed_Family, " +
-                                    "@Widow_Family, @MarriageCertificate_Family, @KidsAmount_Family, @KidsMinor_Family, @KinderenOverleden, @ParentOne_Family, " +
-                                    "@ParentOne_Overleden, @ParentTwo_Family, @ParentTwo_Overleden, @Religion_Family, @Executeur_Family,@ExecuteurPhone_Family,@Notaris_Family," +
-                                    "@NotarisPhone_Family,@Will_Family,@DateTimeMarried_Family,@DateTimePartner_Family, @WederhelftNaam, @WederhelftVoornaam)";
-                command.Parameters.AddWithValue("@ExtraInfoId", overledeneExtraInfoModel.Id);
-                command.Parameters.AddWithValue("@UitvaartCodeGuid", overledeneExtraInfoModel.UitvaartId);
-                command.Parameters.AddWithValue("@MaritalStatus_Family", overledeneExtraInfoModel.OverledeneBurgelijkestaat != null ? overledeneExtraInfoModel.OverledeneBurgelijkestaat : DBNull.Value);
-                command.Parameters.AddWithValue("@Divorsed_Family", overledeneExtraInfoModel.OverledeneGescheidenVan != null ? overledeneExtraInfoModel.OverledeneGescheidenVan : DBNull.Value);
-                command.Parameters.AddWithValue("@Widow_Family", overledeneExtraInfoModel.OverledeneWedenaarVan != null ? overledeneExtraInfoModel.OverledeneWedenaarVan : DBNull.Value);
-                command.Parameters.AddWithValue("@MarriageCertificate_Family", overledeneExtraInfoModel.OverledeneTrouwboekje != null ? overledeneExtraInfoModel.OverledeneTrouwboekje : DBNull.Value);
-                command.Parameters.AddWithValue("@KidsAmount_Family", overledeneExtraInfoModel.OverledeneAantalKinderen != null ? overledeneExtraInfoModel.OverledeneAantalKinderen : DBNull.Value);
-                command.Parameters.AddWithValue("@KidsMinor_Family", overledeneExtraInfoModel.OverledeneKinderenMinderjarig != null ? overledeneExtraInfoModel.OverledeneKinderenMinderjarig : DBNull.Value);
-                command.Parameters.AddWithValue("@KinderenOverleden", overledeneExtraInfoModel.OverledeneKinderenMinderjarigOverleden != null ? overledeneExtraInfoModel.OverledeneKinderenMinderjarigOverleden : DBNull.Value);
-                command.Parameters.AddWithValue("@ParentOne_Family", overledeneExtraInfoModel.OverledeneEersteOuder != null ? overledeneExtraInfoModel.OverledeneEersteOuder : DBNull.Value);
-                command.Parameters.AddWithValue("@ParentOne_Overleden", overledeneExtraInfoModel.OverledeneEersteOuderOverleden != null ? overledeneExtraInfoModel.OverledeneEersteOuderOverleden : DBNull.Value);
-                command.Parameters.AddWithValue("@ParentTwo_Family", overledeneExtraInfoModel.OverledeneTweedeOuder != null ? overledeneExtraInfoModel.OverledeneTweedeOuder : DBNull.Value);
-                command.Parameters.AddWithValue("@ParentTwo_Overleden", overledeneExtraInfoModel.OverledeneTweedeOuderOverleden != null ? overledeneExtraInfoModel.OverledeneTweedeOuderOverleden : DBNull.Value);
-                command.Parameters.AddWithValue("@Religion_Family", overledeneExtraInfoModel.OverledeneLevensovertuiging != null ? overledeneExtraInfoModel.OverledeneLevensovertuiging : DBNull.Value);
-                command.Parameters.AddWithValue("@Executeur_Family", overledeneExtraInfoModel.OverledeneExecuteur != null ? overledeneExtraInfoModel.OverledeneExecuteur : DBNull.Value);
-                command.Parameters.AddWithValue("@ExecuteurPhone_Family", overledeneExtraInfoModel.OverledeneExecuteurTelefoon != null ? overledeneExtraInfoModel.OverledeneExecuteurTelefoon : DBNull.Value);
-                command.Parameters.AddWithValue("@Notaris_Family", overledeneExtraInfoModel.OverledeneNotaris != null ? overledeneExtraInfoModel.OverledeneNotaris : DBNull.Value);
-                command.Parameters.AddWithValue("@NotarisPhone_Family", overledeneExtraInfoModel.OverledeneNotarisTelefoon != null ? overledeneExtraInfoModel.OverledeneNotarisTelefoon : DBNull.Value);
-                command.Parameters.AddWithValue("@Will_Family", overledeneExtraInfoModel.OverledeneTestament != null ? overledeneExtraInfoModel.OverledeneTestament : DBNull.Value);
-                command.Parameters.AddWithValue("@WederhelftNaam", overledeneExtraInfoModel.NaamWederhelft != null ? overledeneExtraInfoModel.NaamWederhelft : DBNull.Value);
-                command.Parameters.AddWithValue("@WederhelftVoornaam", overledeneExtraInfoModel.VoornaamWederhelft != null ? overledeneExtraInfoModel.VoornaamWederhelft : DBNull.Value);
-                command.Parameters.Add(new SqlParameter("@DateTimeMarried_Family", SqlDbType.DateTime)
-                {
-                    Value = overledeneExtraInfoModel.OverledeneTrouwDatumTijd.HasValue
-                                ? (object)overledeneExtraInfoModel.OverledeneTrouwDatumTijd.Value
-                                : DBNull.Value
-                });
-                command.Parameters.Add(new SqlParameter("@DateTimePartner_Family", SqlDbType.DateTime)
-                {
-                    Value = overledeneExtraInfoModel.OverledeneGeregistreerdDatumTijd.HasValue
-                ? (object)overledeneExtraInfoModel.OverledeneGeregistreerdDatumTijd.Value
-                : DBNull.Value
-                });
+            if (overledeneExtraInfoModel == null)
+                throw new ArgumentNullException(nameof(overledeneExtraInfoModel));
 
-                if (command.ExecuteNonQuery() == 0)
-                {
-                    throw new InvalidOperationException("InsertOverlijdenExtraInfoFailed");
-                }
-            }
+            using var connection = GetConnection();
+            using var command = new SqlCommand
+            {
+                Connection = connection,
+                CommandText = @"
+            INSERT INTO [OverledeneExtraInfo] 
+            ([Id], [uitvaartId], [overledeneBurgelijkestaat], [overledeneGescheidenVan], [overledeneWedenaarVan], 
+             [overledeneTrouwboekje], [overledeneAantalKinderen], [overledeneKinderenMinderjarig], 
+             [overledeneAantalKinderenOverleden], [overledeneEersteOuder], [overledeneEersteOuderOverleden], 
+             [overledeneTweedeOuder], [overledeneTweedeOuderOverleden], [overledeneLevensovertuiging], 
+             [overledeneExecuteur], [overledeneExecuteurTelefoon], [overledeneNotaris], [overledeneNotarisTelefoon], 
+             [overledeneTestament], [overledeneTrouwDatumTijd], [overledeneGeregistreerdDatumTijd], 
+             [naamWederhelft], [voornaamWederhelft])
+            VALUES 
+            (@ExtraInfoId, @UitvaartCodeGuid, @MaritalStatus_Family, @Divorsed_Family, @Widow_Family, 
+             @MarriageCertificate_Family, @KidsAmount_Family, @KidsMinor_Family, @KinderenOverleden, 
+             @ParentOne_Family, @ParentOne_Overleden, @ParentTwo_Family, @ParentTwo_Overleden, 
+             @Religion_Family, @Executeur_Family, @ExecuteurPhone_Family, @Notaris_Family, 
+             @NotarisPhone_Family, @Will_Family, @DateTimeMarried_Family, @DateTimePartner_Family, 
+             @WederhelftNaam, @WederhelftVoornaam)"
+            };
+
+            QueryParameters.AddDbNull(command, "@ExtraInfoId", overledeneExtraInfoModel.Id);
+            QueryParameters.AddDbNull(command, "@UitvaartCodeGuid", overledeneExtraInfoModel.UitvaartId);
+            QueryParameters.AddDbNull(command, "@MaritalStatus_Family", overledeneExtraInfoModel.OverledeneBurgelijkestaat);
+            QueryParameters.AddDbNull(command, "@Divorsed_Family", overledeneExtraInfoModel.OverledeneGescheidenVan);
+            QueryParameters.AddDbNull(command, "@Widow_Family", overledeneExtraInfoModel.OverledeneWedenaarVan);
+            QueryParameters.AddDbNull(command, "@MarriageCertificate_Family", overledeneExtraInfoModel.OverledeneTrouwboekje);
+            QueryParameters.AddDbNull(command, "@KidsAmount_Family", overledeneExtraInfoModel.OverledeneAantalKinderen);
+            QueryParameters.AddDbNull(command, "@KidsMinor_Family", overledeneExtraInfoModel.OverledeneKinderenMinderjarig);
+            QueryParameters.AddDbNull(command, "@KinderenOverleden", overledeneExtraInfoModel.OverledeneKinderenMinderjarigOverleden);
+            QueryParameters.AddDbNull(command, "@ParentOne_Family", overledeneExtraInfoModel.OverledeneEersteOuder);
+            QueryParameters.AddDbNull(command, "@ParentOne_Overleden", overledeneExtraInfoModel.OverledeneEersteOuderOverleden);
+            QueryParameters.AddDbNull(command, "@ParentTwo_Family", overledeneExtraInfoModel.OverledeneTweedeOuder);
+            QueryParameters.AddDbNull(command, "@ParentTwo_Overleden", overledeneExtraInfoModel.OverledeneTweedeOuderOverleden);
+            QueryParameters.AddDbNull(command, "@Religion_Family", overledeneExtraInfoModel.OverledeneLevensovertuiging);
+            QueryParameters.AddDbNull(command, "@Executeur_Family", overledeneExtraInfoModel.OverledeneExecuteur);
+            QueryParameters.AddDbNull(command, "@ExecuteurPhone_Family", overledeneExtraInfoModel.OverledeneExecuteurTelefoon);
+            QueryParameters.AddDbNull(command, "@Notaris_Family", overledeneExtraInfoModel.OverledeneNotaris);
+            QueryParameters.AddDbNull(command, "@NotarisPhone_Family", overledeneExtraInfoModel.OverledeneNotarisTelefoon);
+            QueryParameters.AddDbNull(command, "@Will_Family", overledeneExtraInfoModel.OverledeneTestament);
+            QueryParameters.AddDbNull(command, "@WederhelftNaam", overledeneExtraInfoModel.NaamWederhelft);
+            QueryParameters.AddDbNull(command, "@WederhelftVoornaam", overledeneExtraInfoModel.VoornaamWederhelft);
+            QueryParameters.AddDateTime(command, "@DateTimeMarried_Family", overledeneExtraInfoModel.OverledeneTrouwDatumTijd);
+            QueryParameters.AddDateTime(command, "@DateTimePartner_Family", overledeneExtraInfoModel.OverledeneGeregistreerdDatumTijd);
+
+            connection.Open();
+
+            if (command.ExecuteNonQuery() == 0)
+                throw new InvalidOperationException("InsertOverlijdenExtraInfoFailed");
         }
         public void AddOpdrachtgeverPersoonsGegevens(OpdrachtgeverPersoonsGegevensModel opdrachtgeverPersoonsGegevensModel)
         {
@@ -310,33 +311,36 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneOpdrachtgever] ([Id], [uitvaartId], [opdrachtgeverAanhef], [opdrachtgeverAchternaam]," +
-                        " [opdrachtgeverVoornaamen], [opdrachtgeverTussenvoegsel], [opdrachtgeverGeboortedatum], " +
-                        "[opdrachtgeverLeeftijd], [opdrachtgeverStraat], [opdrachtgeverHuisnummer], [opdrachtgeverHuisnummerToevoeging], " +
-                        "[opdrachtgeverPostcode], [opdrachtgeverWoonplaats],[opdrachtgeverGemeente], [opdrachtgeverTelefoon], [opdrachtgeverBSN], " +
-                        "[opdrachtgeverRelatieTotOverledene],[opdrachtgeverExtraInfo],[opdrachtgeverEmail]) VALUES (@OpdrachtId, @UitvaartId, @Salutation_Family, @SurName_Family, " +
-                        "@Firstname_Family, @Preposition_Family, @DateOfBirth_Family, @Age_Family, @Address_Family, " +
-                        "@Housenumber_Family, @HousenumberAddition_Family, @PostalCode_Family, @City_Family, @County_Family, @PhoneNumber_Family, " +
-                        "@BSN_Family, @RelationToDeceased_Family, @extraInformatie, @Email)";
-                command.Parameters.AddWithValue("@OpdrachtId", opdrachtgeverPersoonsGegevensModel.Id);
-                command.Parameters.AddWithValue("@UitvaartId", opdrachtgeverPersoonsGegevensModel.UitvaartId);
-                command.Parameters.AddWithValue("@Salutation_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAanhef != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAanhef : DBNull.Value);
-                command.Parameters.AddWithValue("@SurName_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAchternaam != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAchternaam : DBNull.Value);
-                command.Parameters.AddWithValue("@Firstname_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverVoornaamen != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverVoornaamen : DBNull.Value);
-                command.Parameters.AddWithValue("@Preposition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTussenvoegsel != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTussenvoegsel : DBNull.Value);
-                command.Parameters.AddWithValue("@DateOfBirth_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGeboortedatum != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGeboortedatum : DBNull.Value);
-                command.Parameters.AddWithValue("@Age_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverLeeftijd != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverLeeftijd : DBNull.Value);
-                command.Parameters.AddWithValue("@Address_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverStraat != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverStraat : DBNull.Value);
-                command.Parameters.AddWithValue("@Housenumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummer != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummer : DBNull.Value);
-                command.Parameters.AddWithValue("@HousenumberAddition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummerToevoeging != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummerToevoeging : DBNull.Value);
-                command.Parameters.AddWithValue("@PostalCode_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverPostcode != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverPostcode : DBNull.Value);
-                command.Parameters.AddWithValue("@City_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverWoonplaats != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverWoonplaats : DBNull.Value);
-                command.Parameters.AddWithValue("@County_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGemeente != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGemeente : DBNull.Value);
-                command.Parameters.AddWithValue("@PhoneNumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTelefoon != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTelefoon : DBNull.Value);
-                command.Parameters.AddWithValue("@BSN_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverBSN != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverBSN : DBNull.Value);
-                command.Parameters.AddWithValue("@RelationToDeceased_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverRelatieTotOverledene != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverRelatieTotOverledene : DBNull.Value);
-                command.Parameters.AddWithValue("@extraInformatie", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverExtraInformatie != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverExtraInformatie : DBNull.Value);
-                command.Parameters.AddWithValue("@Email", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverEmail != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverEmail : DBNull.Value);
+                command.CommandText = "INSERT INTO [OverledeneOpdrachtgever] ([Id], [uitvaartId], [opdrachtgeverAanhef], [opdrachtgeverAchternaam], " +
+                    "[opdrachtgeverVoornaamen], [opdrachtgeverTussenvoegsel], [opdrachtgeverGeboortedatum], " +
+                    "[opdrachtgeverLeeftijd], [opdrachtgeverStraat], [opdrachtgeverHuisnummer], [opdrachtgeverHuisnummerToevoeging], " +
+                    "[opdrachtgeverPostcode], [opdrachtgeverWoonplaats], [opdrachtgeverGemeente], [opdrachtgeverTelefoon], [opdrachtgeverBSN], " +
+                    "[opdrachtgeverRelatieTotOverledene], [opdrachtgeverExtraInfo], [opdrachtgeverEmail]) VALUES " +
+                    "(@OpdrachtId, @UitvaartId, @Salutation_Family, @SurName_Family, " +
+                    "@Firstname_Family, @Preposition_Family, @DateOfBirth_Family, @Age_Family, @Address_Family, " +
+                    "@Housenumber_Family, @HousenumberAddition_Family, @PostalCode_Family, @City_Family, @County_Family, " +
+                    "@PhoneNumber_Family, @BSN_Family, @RelationToDeceased_Family, @extraInformatie, @Email)";
+
+                QueryParameters.AddDbNull(command, "@OpdrachtId", opdrachtgeverPersoonsGegevensModel.Id);
+                QueryParameters.AddDbNull(command, "@UitvaartId", opdrachtgeverPersoonsGegevensModel.UitvaartId);
+                QueryParameters.AddDbNull(command, "@Salutation_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAanhef);
+                QueryParameters.AddDbNull(command, "@SurName_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAchternaam);
+                QueryParameters.AddDbNull(command, "@Firstname_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverVoornaamen);
+                QueryParameters.AddDbNull(command, "@Preposition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTussenvoegsel);
+                QueryParameters.AddDateTime(command, "@DateOfBirth_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGeboortedatum);
+                QueryParameters.AddDbNull(command, "@Age_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverLeeftijd);
+                QueryParameters.AddDbNull(command, "@Address_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverStraat);
+                QueryParameters.AddDbNull(command, "@Housenumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummer);
+                QueryParameters.AddDbNull(command, "@HousenumberAddition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummerToevoeging);
+                QueryParameters.AddDbNull(command, "@PostalCode_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverPostcode);
+                QueryParameters.AddDbNull(command, "@City_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverWoonplaats);
+                QueryParameters.AddDbNull(command, "@County_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGemeente);
+                QueryParameters.AddDbNull(command, "@PhoneNumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTelefoon);
+                QueryParameters.AddDbNull(command, "@BSN_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverBSN);
+                QueryParameters.AddDbNull(command, "@RelationToDeceased_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverRelatieTotOverledene);
+                QueryParameters.AddDbNull(command, "@extraInformatie", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverExtraInformatie);
+                QueryParameters.AddDbNull(command, "@Email", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverEmail);
+
                 if (command.ExecuteNonQuery() == 0)
                 {
                     throw new InvalidOperationException("InsertOpdrachtgeverPersoonsGegevensFailed");
@@ -353,36 +357,36 @@ namespace Dossier_Registratie.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneExtraOpdrachtgever] ([Id], [uitvaartId], [opdrachtgeverAanhef], [opdrachtgeverAchternaam]," +
-                        " [opdrachtgeverVoornaamen], [opdrachtgeverTussenvoegsel], [opdrachtgeverGeboortedatum], " +
-                        "[opdrachtgeverLeeftijd], [opdrachtgeverStraat], [opdrachtgeverHuisnummer], [opdrachtgeverHuisnummerToevoeging], " +
-                        "[opdrachtgeverPostcode], [opdrachtgeverWoonplaats],[opdrachtgeverGemeente], [opdrachtgeverTelefoon], [opdrachtgeverBSN], " +
-                        "[opdrachtgeverRelatieTotOverledene],[opdrachtgeverEmail]) VALUES (@OpdrachtId, @UitvaartId, @Salutation_Family, @SurName_Family, " +
-                        "@Firstname_Family, @Preposition_Family, @DateOfBirth_Family, @Age_Family, @Address_Family, " +
-                        "@Housenumber_Family, @HousenumberAddition_Family, @PostalCode_Family, @City_Family, @County_Family, @PhoneNumber_Family, " +
-                        "@BSN_Family, @RelationToDeceased_Family, @Email)";
-                command.Parameters.AddWithValue("@OpdrachtId", opdrachtgeverPersoonsGegevensModel.Id);
-                command.Parameters.AddWithValue("@UitvaartId", opdrachtgeverPersoonsGegevensModel.UitvaartId);
-                command.Parameters.AddWithValue("@Salutation_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAanhef != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAanhef : DBNull.Value);
-                command.Parameters.AddWithValue("@SurName_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAchternaam != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAchternaam : DBNull.Value);
-                command.Parameters.AddWithValue("@Firstname_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverVoornaamen != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverVoornaamen : DBNull.Value);
-                command.Parameters.AddWithValue("@Preposition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTussenvoegsel != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTussenvoegsel : DBNull.Value);
-                command.Parameters.AddWithValue("@DateOfBirth_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGeboortedatum != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGeboortedatum : DBNull.Value);
-                command.Parameters.AddWithValue("@Age_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverLeeftijd != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverLeeftijd : DBNull.Value);
-                command.Parameters.AddWithValue("@Address_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverStraat != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverStraat : DBNull.Value);
-                command.Parameters.AddWithValue("@Housenumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummer != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummer : DBNull.Value);
-                command.Parameters.AddWithValue("@HousenumberAddition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummerToevoeging != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummerToevoeging : DBNull.Value);
-                command.Parameters.AddWithValue("@PostalCode_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverPostcode != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverPostcode : DBNull.Value);
-                command.Parameters.AddWithValue("@City_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverWoonplaats != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverWoonplaats : DBNull.Value);
-                command.Parameters.AddWithValue("@County_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGemeente != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGemeente : DBNull.Value);
-                command.Parameters.AddWithValue("@PhoneNumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTelefoon != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTelefoon : DBNull.Value);
-                command.Parameters.AddWithValue("@BSN_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverBSN != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverBSN : DBNull.Value);
-                command.Parameters.AddWithValue("@RelationToDeceased_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverRelatieTotOverledene != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverRelatieTotOverledene : DBNull.Value);
-                command.Parameters.AddWithValue("@Email", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverEmail != null ? opdrachtgeverPersoonsGegevensModel.OpdrachtgeverEmail : DBNull.Value);
+                command.CommandText = "INSERT INTO [OverledeneExtraOpdrachtgever] ([Id], [uitvaartId], [opdrachtgeverAanhef], [opdrachtgeverAchternaam], " +
+                    "[opdrachtgeverVoornaamen], [opdrachtgeverTussenvoegsel], [opdrachtgeverGeboortedatum], " +
+                    "[opdrachtgeverLeeftijd], [opdrachtgeverStraat], [opdrachtgeverHuisnummer], [opdrachtgeverHuisnummerToevoeging], " +
+                    "[opdrachtgeverPostcode], [opdrachtgeverWoonplaats], [opdrachtgeverGemeente], [opdrachtgeverTelefoon], [opdrachtgeverBSN], " +
+                    "[opdrachtgeverRelatieTotOverledene], [opdrachtgeverEmail]) VALUES " +
+                    "(@OpdrachtId, @UitvaartId, @Salutation_Family, @SurName_Family, @Firstname_Family, @Preposition_Family, " +
+                    "@DateOfBirth_Family, @Age_Family, @Address_Family, @Housenumber_Family, @HousenumberAddition_Family, " +
+                    "@PostalCode_Family, @City_Family, @County_Family, @PhoneNumber_Family, @BSN_Family, @RelationToDeceased_Family, @Email)";
+
+                QueryParameters.AddDbNull(command, "@OpdrachtId", opdrachtgeverPersoonsGegevensModel.Id);
+                QueryParameters.AddDbNull(command, "@UitvaartId", opdrachtgeverPersoonsGegevensModel.UitvaartId);
+                QueryParameters.AddDbNull(command, "@Salutation_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAanhef);
+                QueryParameters.AddDbNull(command, "@SurName_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverAchternaam);
+                QueryParameters.AddDbNull(command, "@Firstname_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverVoornaamen);
+                QueryParameters.AddDbNull(command, "@Preposition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTussenvoegsel);
+                QueryParameters.AddDateTime(command, "@DateOfBirth_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGeboortedatum);
+                QueryParameters.AddDbNull(command, "@Age_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverLeeftijd);
+                QueryParameters.AddDbNull(command, "@Address_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverStraat);
+                QueryParameters.AddDbNull(command, "@Housenumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummer);
+                QueryParameters.AddDbNull(command, "@HousenumberAddition_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverHuisnummerToevoeging);
+                QueryParameters.AddDbNull(command, "@PostalCode_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverPostcode);
+                QueryParameters.AddDbNull(command, "@City_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverWoonplaats);
+                QueryParameters.AddDbNull(command, "@County_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverGemeente);
+                QueryParameters.AddDbNull(command, "@PhoneNumber_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverTelefoon);
+                QueryParameters.AddDbNull(command, "@BSN_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverBSN);
+                QueryParameters.AddDbNull(command, "@RelationToDeceased_Family", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverRelatieTotOverledene);
+                QueryParameters.AddDbNull(command, "@Email", opdrachtgeverPersoonsGegevensModel.OpdrachtgeverEmail);
+
                 if (command.ExecuteNonQuery() == 0)
-                {
                     throw new InvalidOperationException("InsertOpdrachtgeverExtraPersoonsGegevensFailed");
-                }
             }
         }
         public void AddVerzekering(OverledeneVerzekeringModel overledeneVerzekeringModel)
@@ -403,38 +407,38 @@ namespace Dossier_Registratie.Repositories
                 }
             }
         }
-        public void AddOpbaren(OverledeneOpbarenModel overledeneOpbarenModel)
+        public void AddOpbaren(OverledeneOpbarenModel opbarenModel)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO OverledeneOpbaring ([opbaringId], [uitvaartId], [opbaringLocatie],[opbaringKistId], [opbaringKistOmschrijving]," +
-                                    "[opbaringKistLengte],[opbaringVerzorging],[opbaringVerzorgingJson],[opbaringKoeling],[opbaringKledingMee]," +
-                                    "[opbaringKledingRetour],[opbaringSieraden],[opbaringSieradenOmschrijving],[opbaringSieradenRetour], [opbaringBezoek], [opbaringExtraInfo]) " +
-                                    "VALUES (@OpbarenId, @UitvaartId, @Locatie, @KistId, @KistOmschrijving, @KistLengte, @Verzorging, @VerzorgingJson, @Koeling, @KledingMee, @KledingRetour," +
-                                    " @Sieraden, @SieradenOmschrijving, @SieradenRetour, @Bezoek, @ExtraInfo)";
-                command.Parameters.AddWithValue("@OpbarenId", overledeneOpbarenModel.OpbaringId);
-                command.Parameters.AddWithValue("@UitvaartId", overledeneOpbarenModel.UitvaartId);
-                command.Parameters.AddWithValue("@Locatie", overledeneOpbarenModel.OpbaringLocatie);
-                command.Parameters.AddWithValue("@KistId", overledeneOpbarenModel.OpbaringKistId);
-                command.Parameters.AddWithValue("@KistOmschrijving", overledeneOpbarenModel.OpbaringKistOmschrijving);
-                command.Parameters.AddWithValue("@KistLengte", overledeneOpbarenModel.OpbaringKistLengte);
-                command.Parameters.AddWithValue("@Verzorging", overledeneOpbarenModel.OpbaringVerzorging != null ? overledeneOpbarenModel.OpbaringVerzorging : DBNull.Value);
-                command.Parameters.AddWithValue("@VerzorgingJson", overledeneOpbarenModel.OpbaringVerzorgingJson != null ? overledeneOpbarenModel.OpbaringVerzorgingJson : DBNull.Value);
-                command.Parameters.AddWithValue("@Koeling", overledeneOpbarenModel.OpbaringKoeling != null ? overledeneOpbarenModel.OpbaringKoeling : DBNull.Value);
-                command.Parameters.AddWithValue("@KledingMee", overledeneOpbarenModel.OpbaringKledingMee != null ? overledeneOpbarenModel.OpbaringKledingMee : DBNull.Value);
-                command.Parameters.AddWithValue("@KledingRetour", overledeneOpbarenModel.OpbaringKledingRetour != null ? overledeneOpbarenModel.OpbaringKledingRetour : DBNull.Value);
-                command.Parameters.AddWithValue("@Sieraden", overledeneOpbarenModel.OpbaringSieraden != null ? overledeneOpbarenModel.OpbaringSieraden : DBNull.Value);
-                command.Parameters.AddWithValue("@SieradenOmschrijving", overledeneOpbarenModel.OpbaringSieradenOmschrijving != null ? overledeneOpbarenModel.OpbaringSieradenOmschrijving : DBNull.Value);
-                command.Parameters.AddWithValue("@SieradenRetour", overledeneOpbarenModel.OpbaringSieradenRetour != null ? overledeneOpbarenModel.OpbaringSieradenRetour : DBNull.Value);
-                command.Parameters.AddWithValue("@Bezoek", overledeneOpbarenModel.OpbaringBezoek != null ? overledeneOpbarenModel.OpbaringBezoek : DBNull.Value);
-                command.Parameters.AddWithValue("@ExtraInfo", overledeneOpbarenModel.OpbaringExtraInfo != null ? overledeneOpbarenModel.OpbaringExtraInfo : DBNull.Value);
+                command.CommandText = "INSERT INTO OverledeneOpbaring ([opbaringId], [uitvaartId], [opbaringLocatie], [opbaringKistId], [opbaringKistOmschrijving], " +
+                    "[opbaringKistLengte], [opbaringVerzorging], [opbaringVerzorgingJson], [opbaringKoeling], [opbaringKledingMee], [opbaringKledingRetour], " +
+                    "[opbaringSieraden], [opbaringSieradenOmschrijving], [opbaringSieradenRetour], [opbaringBezoek], [opbaringExtraInfo]) " +
+                    "VALUES (@OpbarenId, @UitvaartId, @Locatie, @KistId, @KistOmschrijving, @KistLengte, @Verzorging, @VerzorgingJson, @Koeling, @KledingMee, @KledingRetour, " +
+                    "@Sieraden, @SieradenOmschrijving, @SieradenRetour, @Bezoek, @ExtraInfo)";
+
+                QueryParameters.AddDbNull(command, "@OpbarenId", opbarenModel.OpbaringId);
+                QueryParameters.AddDbNull(command, "@UitvaartId", opbarenModel.UitvaartId);
+                QueryParameters.AddDbNull(command, "@Locatie", opbarenModel.OpbaringLocatie);
+                QueryParameters.AddDbNull(command, "@KistId", opbarenModel.OpbaringKistId);
+                QueryParameters.AddDbNull(command, "@KistOmschrijving", opbarenModel.OpbaringKistOmschrijving);
+                QueryParameters.AddDbNull(command, "@KistLengte", opbarenModel.OpbaringKistLengte);
+                QueryParameters.AddDbNull(command, "@Verzorging", opbarenModel.OpbaringVerzorging);
+                QueryParameters.AddDbNull(command, "@VerzorgingJson", opbarenModel.OpbaringVerzorgingJson);
+                QueryParameters.AddDbNull(command, "@Koeling", opbarenModel.OpbaringKoeling);
+                QueryParameters.AddDbNull(command, "@KledingMee", opbarenModel.OpbaringKledingMee);
+                QueryParameters.AddDbNull(command, "@KledingRetour", opbarenModel.OpbaringKledingRetour);
+                QueryParameters.AddDbNull(command, "@Sieraden", opbarenModel.OpbaringSieraden);
+                QueryParameters.AddDbNull(command, "@SieradenOmschrijving", opbarenModel.OpbaringSieradenOmschrijving);
+                QueryParameters.AddDbNull(command, "@SieradenRetour", opbarenModel.OpbaringSieradenRetour);
+                QueryParameters.AddDbNull(command, "@Bezoek", opbarenModel.OpbaringBezoek);
+                QueryParameters.AddDbNull(command, "@ExtraInfo", opbarenModel.OpbaringExtraInfo);
+
                 if (command.ExecuteNonQuery() == 0)
-                {
                     throw new InvalidOperationException("InsertOpbarenFailed");
-                }
             }
         }
         public void AddUitvaart(OverledeneUitvaartModel overledeneUitvaartModel)
@@ -792,45 +796,44 @@ namespace Dossier_Registratie.Repositories
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "INSERT INTO ConfigurationAsbestemming (asbestemmingId, asbestemmingOmschrijving, isDeleted) VALUES (@Id, @omschrijving, 0)";
-                command.Parameters.AddWithValue("@Id", asbestemmingCreate.AsbestemmingId);
-                command.Parameters.AddWithValue("@omschrijving", asbestemmingCreate.AsbestemmingOmschrijving);
+                QueryParameters.AddDbNull(command, "@Id", asbestemmingCreate.AsbestemmingId);
+                QueryParameters.AddDbNull(command, "@omschrijving", asbestemmingCreate.AsbestemmingOmschrijving);
+
                 if (command.ExecuteNonQuery() == 0)
-                {
                     throw new InvalidOperationException("AsbestemmingCreateFailed");
-                }
             }
         }
-        public void VerzekeringCreate(VerzekeraarsModel verzekeringCreate)
+        public void VerzekeringCreate(VerzekeraarsModel verzkeringCreate)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO ConfigurationVerzekeraar (Id, verzekeraarNaam, isHerkomst, isVerzekeraar, hasLidnummer, postbusAddress, postbusNaam, addressStreet, addressHousenumber, addressHousenumberAddition, addressZipcode,  addressCity, factuurType, correspondentieType, isDeleted, isPakket, OverrideFactuurAdress, verzekeraarTelefoon, CustomLogo) " +
+                command.CommandText = "INSERT INTO ConfigurationVerzekeraar (Id, verzekeraarNaam, isHerkomst, isVerzekeraar, hasLidnummer, postbusAddress, postbusNaam, addressStreet, addressHousenumber, addressHousenumberAddition, addressZipcode, addressCity, factuurType, correspondentieType, isDeleted, isPakket, OverrideFactuurAdress, verzekeraarTelefoon, CustomLogo) " +
                     "VALUES (@Id, @naam, @herkomst, @verzekeraar, @lidnummer, @postbusAdres, @postbusNaam, @street, @housenumber, @addition, @zipcode, @city, @factuurtype, @correspondentieType, 0, @isPakket, @isOverrideAddress, @telefoon, @customLogo)";
-                command.Parameters.AddWithValue("@Id", verzekeringCreate.Id);
-                command.Parameters.AddWithValue("@naam", verzekeringCreate.Name);
-                command.Parameters.AddWithValue("@herkomst", verzekeringCreate.IsHerkomst);
-                command.Parameters.AddWithValue("@verzekeraar", verzekeringCreate.IsVerzekeraar);
-                command.Parameters.AddWithValue("@lidnummer", verzekeringCreate.HasLidnummer);
-                command.Parameters.AddWithValue("@postbusAdres", string.IsNullOrEmpty(verzekeringCreate.PostbusAddress) ? (object)DBNull.Value : verzekeringCreate.PostbusAddress);
-                command.Parameters.AddWithValue("@postbusNaam", string.IsNullOrEmpty(verzekeringCreate.PostbusName) ? (object)DBNull.Value : verzekeringCreate.PostbusName);
-                command.Parameters.AddWithValue("@street", string.IsNullOrEmpty(verzekeringCreate.AddressStreet) ? (object)DBNull.Value : verzekeringCreate.AddressStreet);
-                command.Parameters.AddWithValue("@housenumber", string.IsNullOrEmpty(verzekeringCreate.AddressHousenumber) ? (object)DBNull.Value : verzekeringCreate.AddressHousenumber);
-                command.Parameters.AddWithValue("@addition", string.IsNullOrEmpty(verzekeringCreate.AddressHousenumberAddition) ? (object)DBNull.Value : verzekeringCreate.AddressHousenumberAddition);
-                command.Parameters.AddWithValue("@zipcode", string.IsNullOrEmpty(verzekeringCreate.AddressZipCode) ? (object)DBNull.Value : verzekeringCreate.AddressZipCode);
-                command.Parameters.AddWithValue("@city", string.IsNullOrEmpty(verzekeringCreate.AddressCity) ? (object)DBNull.Value : verzekeringCreate.AddressCity);
-                command.Parameters.AddWithValue("@factuurtype", string.IsNullOrEmpty(verzekeringCreate.FactuurType) ? (object)DBNull.Value : verzekeringCreate.FactuurType);
-                command.Parameters.AddWithValue("@correspondentieType", string.IsNullOrEmpty(verzekeringCreate.CorrespondentieType) ? (object)DBNull.Value : verzekeringCreate.CorrespondentieType);
-                command.Parameters.AddWithValue("@isPakket", verzekeringCreate.Pakket);
-                command.Parameters.AddWithValue("@isOverrideAddress", verzekeringCreate.IsOverrideFactuurAdress);
-                command.Parameters.AddWithValue("@telefoon", string.IsNullOrEmpty(verzekeringCreate.Telefoon) ? (object)DBNull.Value : verzekeringCreate.Telefoon);
-                command.Parameters.AddWithValue("@customLogo", verzekeringCreate.CustomLogo);
+
+                QueryParameters.AddDbNull(command, "@Id", verzkeringCreate.Id);
+                QueryParameters.AddDbNull(command, "@naam", verzkeringCreate.Name);
+                QueryParameters.AddBoolean(command, "@herkomst", verzkeringCreate.IsHerkomst);
+                QueryParameters.AddBoolean(command, "@verzekeraar", verzkeringCreate.IsVerzekeraar);
+                QueryParameters.AddBoolean(command, "@lidnummer", verzkeringCreate.HasLidnummer);
+                QueryParameters.AddDbNull(command, "@postbusAdres", verzkeringCreate.PostbusAddress);
+                QueryParameters.AddDbNull(command, "@postbusNaam", verzkeringCreate.PostbusName);
+                QueryParameters.AddDbNull(command, "@street", verzkeringCreate.AddressStreet);
+                QueryParameters.AddDbNull(command, "@housenumber", verzkeringCreate.AddressHousenumber);
+                QueryParameters.AddDbNull(command, "@addition", verzkeringCreate.AddressHousenumberAddition);
+                QueryParameters.AddDbNull(command, "@zipcode", verzkeringCreate.AddressZipCode);
+                QueryParameters.AddDbNull(command, "@city", verzkeringCreate.AddressCity);
+                QueryParameters.AddDbNull(command, "@factuurtype", verzkeringCreate.FactuurType);
+                QueryParameters.AddDbNull(command, "@correspondentieType", verzkeringCreate.CorrespondentieType);
+                QueryParameters.AddBoolean(command, "@isPakket", verzkeringCreate.Pakket);
+                QueryParameters.AddDbNull(command, "@isOverrideAddress", verzkeringCreate.IsOverrideFactuurAdress);
+                QueryParameters.AddDbNull(command, "@telefoon", verzkeringCreate.Telefoon);
+                QueryParameters.AddBoolean(command, "@customLogo", verzkeringCreate.CustomLogo);
+
                 if (command.ExecuteNonQuery() == 0)
-                {
                     throw new InvalidOperationException("CreateVerzekeringFailed");
-                }
             }
         }
         public void CreateSuggestion(SuggestionModel suggestionCreate)

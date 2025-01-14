@@ -248,28 +248,28 @@
                     <Label x:Name="lbl_copyright" Content="{Binding CopyrightText}" HorizontalAlignment="Center" Width="811" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Arial" FontSize="10" Height="25" VerticalAlignment="Bottom"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Overledene" Background="#FFC92F39" x:Name="OverledeneTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Overledene" Background="#FFC92F39" x:Name="OverledeneTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneView x:Name="OverledeneViewTab"></localview:OverledeneView>
             </TabItem>
-            <TabItem Header="Extra Info overledene" Background="#FFC92F39" x:Name="ExtraInfoTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Extra Info overledene" Background="#FFC92F39" x:Name="ExtraInfoTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneExtraInfoView x:Name="OverledeneExtraInfoViewTab"></localview:OverledeneExtraInfoView>
             </TabItem>
-            <TabItem Header="Verzekeringen" Background="#FFC92F39" x:Name="VerzekeringTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Verzekeringen" Background="#FFC92F39" x:Name="VerzekeringTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneVerzekeringView x:Name="OverledeneVerzekeringViewTab"></localview:OverledeneVerzekeringView>
             </TabItem>
-            <TabItem Header="Opbaren" Background="#FFC92F39" x:Name="OpbarenTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Opbaren" Background="#FFC92F39" x:Name="OpbarenTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneOpbarenView x:Name="OverledeneOpbarenViewTab"></localview:OverledeneOpbarenView>
             </TabItem>
-            <TabItem Header="Uitvaart / Condoleance" Background="#FFC92F39" x:Name="UitvaartTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Uitvaart / Condoleance" Background="#FFC92F39" x:Name="UitvaartTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneUitvaartView x:Name="OverledeneUitvaartViewTab"></localview:OverledeneUitvaartView>
             </TabItem>
-            <TabItem Header="Asbestemming" Background="#FFC92F39" x:Name="AsbestemmingTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Asbestemming" Background="#FFC92F39" x:Name="AsbestemmingTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneAsbestemmingView x:Name="OverledeneAsbestemmingViewTab"></localview:OverledeneAsbestemmingView>
             </TabItem>
-            <TabItem Header="Documenten" Background="#FFC92F39" x:Name="BijlagesTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Documenten" Background="#FFC92F39" x:Name="BijlagesTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneBijlagesView x:Name="OverledeneBijlagesViewTab"></localview:OverledeneBijlagesView>
             </TabItem>
-            <TabItem Header="Steenhouwerij / Bloemen / Urnen &amp; Gedenksieraden / Werkbonnen" Background="#FFC92F39" x:Name="SteenhouwerijTab" IsEnabled="{Binding UitvaartNummerEnabled}">
+            <TabItem Header="Steenhouwerij / Bloemen / Urnen &amp; Gedenksieraden / Werkbonnen" Background="#FFC92F39" x:Name="SteenhouwerijTab" PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
                 <localview:OverledeneSteenhouwerijView x:Name="OverledeneSteenhouwerijViewTab"></localview:OverledeneSteenhouwerijView>
             </TabItem>
             <TabItem Header="Beheer" Background="#FFC92F39" x:Name="BeheerTab" Visibility="Collapsed">
@@ -292,7 +292,7 @@
         <Label x:Name="lblLoggedIn" Content="Label" Margin="0,33,34,0" VerticalAlignment="Top" Height="25" FontWeight="Bold" HorizontalAlignment="Right" Width="143" VerticalContentAlignment="Bottom"/>
         <Image Margin="0,33,177,0" Source="pack://application:,,,/Images/PersonUser.png" Stretch="Fill" HorizontalAlignment="Right" Width="42" Height="45" VerticalAlignment="Top"/>
         <!-- Search (popup) Uitvaartnummer -->
-        <Grid x:Name="SearchUitvaartNumber" Visibility="{Binding IsUitvaartnumberVisible}">
+        <Grid x:Name="SearchUitvaartNumber" Visibility="{Binding IsUitvaartnumberVisible}" d:Visibility="Collapsed">
             <Grid Background="Black" Opacity="0.5"/>
             <Border
                 MinWidth="250"
@@ -343,7 +343,7 @@
             </Border>
         </Grid>
         <!-- Search (popup) Achternaam -->
-        <Grid x:Name="SearchSurname" Visibility="{Binding IsSurnameVisible}">
+        <Grid x:Name="SearchSurname" Visibility="{Binding IsSurnameVisible}" d:Visibility="Collapsed">
             <Grid Background="Black" Opacity="0.5"/>
             <Border
                 MinWidth="250"
@@ -409,7 +409,7 @@
             </Border>
         </Grid>
         <!-- Select (Popup) Surname from multiple sources-->
-        <Grid x:Name="SelectUitvaartnummer" Visibility="{Binding SearchResultList}">
+        <Grid x:Name="SelectUitvaartnummer" Visibility="{Binding SearchResultList}" d:Visibility="Collapsed">
             <Grid Background="Black" Opacity="0.5"/>
             <Border MinWidth="250" Background="#FFF0F0F0" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Center" Height="500" Width="1250">
                 <Grid>

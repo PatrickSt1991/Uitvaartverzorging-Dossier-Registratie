@@ -129,8 +129,10 @@ namespace Dossier_Registratie
                 else if (selectedItemString.Contains("Notificaties"))
                 {
                     var notificatieViewModel = new OverledeneNotificationViewModel();
-                    OverledeneNotification notificatieWindow = new();
-                    notificatieWindow.DataContext = notificatieViewModel;
+                    OverledeneNotification notificatieWindow = new()
+                    {
+                        DataContext = notificatieViewModel
+                    };
                     notificatieWindow.Show();
                     MainComboBox.SelectedItem = null;
                 }
@@ -169,71 +171,167 @@ namespace Dossier_Registratie
         }
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!Globals.NewDossierCreation)
+            if (Globals.NewDossierCreation)
+                return;
+
+            if (sender is not TabControl tabControl) 
+                return;
+
+            HandleFirstSelection(tabControl, e);
+            HandleTabChange(tabControl, e);
+        }
+        private void HandleFirstSelection(TabControl tabControl, SelectionChangedEventArgs e)
+        {
+            if (_isFirstSelection)
             {
-                if (sender is not TabControl tabControl) return;
+                _isFirstSelection = false;
+                return;
+            }
 
-                if (tabControl.SelectedIndex == 0) MainComboBox.SelectedIndex = -1;
+            if (tabControl.SelectedIndex == 0) MainComboBox.SelectedIndex = -1;
+        }
+        private void HandleTabChange(TabControl tabControl, SelectionChangedEventArgs e)
+        {
+            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is TabItem oldTabItem)
+            {
+                HandleTabDeactivation(oldTabItem);
+            }
 
-                if (e.Source is TabControl && e.RemovedItems.Count > 0 && e.RemovedItems[0] is TabItem oldTabItem && oldTabItem.Content is FrameworkElement oldTabContent)
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is TabItem selectedTabItem)
+            {
+                HandleTabActivation(selectedTabItem);
+                _previousTabItem = selectedTabItem;
+            }
+        }
+        private void HandleTabDeactivation(TabItem oldTabItem)
+        {
+            if (oldTabItem.Content is FrameworkElement oldTabContent)
+            {
+                var viewModel = oldTabContent.DataContext;
+                if (viewModel != null)
                 {
-                    var viewModel = oldTabContent.DataContext;
-                    if (viewModel != null)
-                    {
-                        var saveCommandProperty = viewModel.GetType().GetProperty("SaveCommand");
-                        if (saveCommandProperty?.GetValue(viewModel) is ICommand saveCommand && saveCommand.CanExecute(null))
-                        {
-                            saveCommand.Execute(null);
-                            TabControlChecked = true;
-                        }
-                        else
-                        {
-                            TabControlChecked = false;
-                            return;
-                        }
-                    }
-                }
-
-                if (_isFirstSelection)
-                {
-                    _isFirstSelection = false;
-                    return;
-                }
-
-                if (e.AddedItems.Count > 0 && e.AddedItems[0] is TabItem selectedTabItem &&
-                    selectedTabItem != _previousTabItem)
-                {
-                    if (selectedTabItem.Content is FrameworkElement selectedTabContent)
-                    {
-                        var viewModel = selectedTabContent.DataContext;
-                        if (viewModel != null)
-                        {
-                            if (viewModel.GetType().Name == "MainWindowViewModal")
-                            {
-                                var clearCommandProperty = viewModel.GetType().GetProperty("ClearAllModelsCommand");
-                                if (clearCommandProperty?.GetValue(viewModel) is ICommand clearCommand && clearCommand.CanExecute(null))
-                                {
-                                    clearCommand.Execute(null);
-                                    TabControlChecked = false;
-                                }
-                            }
-                            else
-                            {
-                                InvokeRequestedDossierInformationMethod(viewModel, Globals.UitvaartCode);
-                            }
-                        }
-                    }
-
-                    _previousTabItem = selectedTabItem;
+                    ExecuteSaveCommand(viewModel);
                 }
             }
         }
+        private void ExecuteSaveCommand(object viewModel)
+        {
+            var saveCommandProperty = viewModel.GetType().GetProperty("SaveCommand");
+            if (saveCommandProperty?.GetValue(viewModel) is ICommand saveCommand && saveCommand.CanExecute(null))
+            {
+                saveCommand.Execute(null);
+                TabControlChecked = true;
+            }
+            else
+            {
+                TabControlChecked = false;
+            }
+        }
+        private void HandleTabActivation(TabItem selectedTabItem)
+        {
+            if (selectedTabItem.Content is FrameworkElement selectedTabContent)
+            {
+                var viewModel = selectedTabContent.DataContext;
+                if (viewModel != null)
+                {
+                    ExecuteTabSpecificActions(viewModel);
+                }
+            }
+        }
+        private void ExecuteTabSpecificActions(object viewModel)
+        {
+            if (viewModel.GetType().Name == "MainWindowViewModal")
+                ExecuteClearAllModelsCommand(viewModel);
+            else
+                InvokeRequestedDossierInformationMethod(viewModel, Globals.UitvaartCode);
+        }
+        private void ExecuteClearAllModelsCommand(object viewModel)
+        {
+            var clearCommandProperty = viewModel.GetType().GetProperty("ClearAllModelsCommand");
+            if (clearCommandProperty?.GetValue(viewModel) is ICommand clearCommand && clearCommand.CanExecute(null))
+            {
+                clearCommand.Execute(null);
+                TabControlChecked = false;
+            }
+        }
+        private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TabItem && Globals.NewDossierCreation)
+            {
+                new ToastWindow("De navigatie balk is alleen beschikbaar bij een bestaand dossier!").Show();
+                e.Handled = true;
+            }
+        }
+        /*
+                private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+                {
+                    if (!Globals.NewDossierCreation)
+                    {
+                        if (sender is not TabControl tabControl) return;
+
+                        if (tabControl.SelectedIndex == 0) MainComboBox.SelectedIndex = -1;
+
+                        if (e.Source is TabControl && e.RemovedItems.Count > 0 && e.RemovedItems[0] is TabItem oldTabItem && oldTabItem.Content is FrameworkElement oldTabContent)
+                        {
+                            var viewModel = oldTabContent.DataContext;
+                            if (viewModel != null)
+                            {
+                                var saveCommandProperty = viewModel.GetType().GetProperty("SaveCommand");
+                                if (saveCommandProperty?.GetValue(viewModel) is ICommand saveCommand && saveCommand.CanExecute(null))
+                                {
+                                    saveCommand.Execute(null);
+                                    TabControlChecked = true;
+                                }
+                                else
+                                {
+                                    TabControlChecked = false;
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (_isFirstSelection)
+                        {
+                            _isFirstSelection = false;
+                            return;
+                        }
+
+                        if (e.AddedItems.Count > 0 && e.AddedItems[0] is TabItem selectedTabItem &&
+                            selectedTabItem != _previousTabItem)
+                        {
+                            if (selectedTabItem.Content is FrameworkElement selectedTabContent)
+                            {
+                                var viewModel = selectedTabContent.DataContext;
+                                if (viewModel != null)
+                                {
+                                    if (viewModel.GetType().Name == "MainWindowViewModal")
+                                    {
+                                        var clearCommandProperty = viewModel.GetType().GetProperty("ClearAllModelsCommand");
+                                        if (clearCommandProperty?.GetValue(viewModel) is ICommand clearCommand && clearCommand.CanExecute(null))
+                                        {
+                                            clearCommand.Execute(null);
+                                            TabControlChecked = false;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        InvokeRequestedDossierInformationMethod(viewModel, Globals.UitvaartCode);
+                                    }
+                                }
+                            }
+
+                            _previousTabItem = selectedTabItem;
+                        }
+                    }
+                }
+        */
         private static void InvokeRequestedDossierInformationMethod(object viewModel, string uitvaartNummer)
         {
             var method = viewModel.GetType().GetMethod("RequestedDossierInformationBasedOnUitvaartId");
             if (method != null)
                 _ = method.Invoke(viewModel, new object[] { uitvaartNummer });
         }
+        /*
         public static class AgenAggregator
         {
             public static void BroadCast(string message)
@@ -244,6 +342,7 @@ namespace Dossier_Registratie
 
             public static Action<string> OnMessageTransmitted;
         }
+        */
         private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
             if (DataContext is MainWindowViewModal viewModel)

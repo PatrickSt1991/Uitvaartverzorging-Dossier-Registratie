@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dossier_Registratie.Helper;
 
 namespace Dossier_Registratie.Repositories
 {
@@ -726,7 +727,7 @@ namespace Dossier_Registratie.Repositories
             }
             return Herkomst;
         }
-        public VerzekeraarsModel GetVerzekeraarsById(Guid verzekeringId)
+        public VerzekeraarsModel GetVerzekeraarsById(Guid verzekeraarId)
         {
             VerzekeraarsModel Verzekeraar = new();
             using (var connecion = GetConnection())
@@ -735,35 +736,36 @@ namespace Dossier_Registratie.Repositories
                 connecion.Open();
                 command.Connection = connecion;
                 command.CommandText = "SELECT [Id],[verzekeraarNaam],[isHerkomst],[isVerzekeraar],[hasLidnummer],[isDeleted]," +
-                                        "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType]," +
-                                        "postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon], isPakket, CustomLogo " +
-                                        "FROM ConfigurationVerzekeraar WHERE id = @verzekeraarId";
-                command.Parameters.AddWithValue("@verzekeraarId", verzekeringId);
+                                      "[addressStreet],[addressHousenumber],[addressHousenumberAddition],[addressZipcode],[addressCity],[factuurType]," +
+                                      "postbusAddress, postbusNaam, [correspondentieType],[OverrideFactuurAdress],[verzekeraarTelefoon], isPakket, CustomLogo " +
+                                      "FROM ConfigurationVerzekeraar WHERE id = @verzekeraarId";
+                command.Parameters.AddWithValue("@verzekeraarId", verzekeraarId);
+
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
                         Verzekeraar = new VerzekeraarsModel()
                         {
-                            Id = (Guid)reader["Id"],
-                            Name = reader["verzekeraarNaam"].ToString(),
-                            IsHerkomst = (bool)reader["isHerkomst"],
-                            IsVerzekeraar = (bool)reader["isVerzekeraar"],
-                            HasLidnummer = (bool)reader["hasLidnummer"],
-                            IsDeleted = (bool)reader["isDeleted"],
-                            AddressStreet = reader["addressStreet"].ToString(),
-                            AddressHousenumber = reader["addressHousenumber"].ToString(),
-                            AddressHousenumberAddition = reader["addressHousenumberAddition"].ToString(),
-                            AddressZipCode = reader["addressZipcode"].ToString(),
-                            AddressCity = reader["addressCity"].ToString(),
-                            FactuurType = System.Net.WebUtility.HtmlDecode(reader["factuurType"].ToString()),
-                            PostbusAddress = reader["postbusAddress"].ToString(),
-                            PostbusName = reader["postbusNaam"].ToString(),
-                            CorrespondentieType = reader["correspondentieType"].ToString(),
-                            IsOverrideFactuurAdress = (bool)reader["OverrideFactuurAdress"],
-                            Telefoon = reader["verzekeraarTelefoon"].ToString(),
-                            Pakket = reader["isPakket"] is DBNull ? false : (bool)reader["isPakket"],
-                            CustomLogo = reader.GetBoolean("CustomLogo")
+                            Id = reader.GetGuid("Id"),
+                            Name = reader.GetString("verzekeraarNaam"),
+                            IsHerkomst = reader.GetBoolean("isHerkomst"),
+                            IsVerzekeraar = reader.GetBoolean("isVerzekeraar"),
+                            HasLidnummer = reader.GetBoolean("hasLidnummer"),
+                            IsDeleted = reader.GetBoolean("isDeleted"),
+                            AddressStreet = reader.GetString("addressStreet"),
+                            AddressHousenumber = reader.GetString("addressHousenumber"),
+                            AddressHousenumberAddition = reader.GetString("addressHousenumberAddition"),
+                            AddressZipCode = reader.GetString("addressZipcode"),
+                            AddressCity = reader.GetString("addressCity"),
+                            FactuurType = System.Net.WebUtility.HtmlDecode(reader.GetString("factuurType")),
+                            PostbusAddress = reader.GetString("postbusAddress"),
+                            PostbusName = reader.GetString("postbusNaam"),
+                            CorrespondentieType = reader.GetString("correspondentieType"),
+                            IsOverrideFactuurAdress = reader.GetBoolean("OverrideFactuurAdress"),
+                            Telefoon = reader.GetString("verzekeraarTelefoon"),
+                            Pakket = reader["isPakket"] is DBNull ? false : reader.GetBoolean("isPakket"),
+                            CustomLogo = reader.GetBoolean("CustomLogo") is DBNull ? false : reader.GetBoolean("CustomLogo")
                         };
                     }
                 }
@@ -1268,6 +1270,61 @@ namespace Dossier_Registratie.Repositories
             var kostenbegrotingGegevens = new ObservableCollection<FactuurModel>();
 
             using (var connection = GetConnection())
+            using (var command = new SqlCommand("SELECT [Id], OU.UitvaartId AS OUUitvaartId, Uitvaartnummer, [kostenbegrotingUrl], [kostenbegrotingJson], " +
+                                                "[kostenbegrotingCreationDate], [kostenbegrotingCreated], [factuurCreationDate], [factuurUrl], [factuurCreated] " +
+                                                "FROM [OverledeneFacturen] AS OFA " +
+                                                "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
+                                                "WHERE kostenbegrotingUrl IS NOT NULL AND kostenbegrotingUrl != ''", connection))
+            {
+                connection.Open();
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    string factuurUrlValue = reader.GetString("factuurUrl");
+                    string opdrachtUrl = string.Empty;
+                    string verenigingUrl = string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(factuurUrlValue) &&
+                        JsonConvert.DeserializeObject<ExpandoObject>(factuurUrlValue) is IDictionary<string, object> jsonFactuur)
+                    {
+                        opdrachtUrl = jsonFactuur.TryGetValue("opdrachtgeverFactuurUrl", out var opdrachtgeverFactuurUrl)
+                            ? opdrachtgeverFactuurUrl?.ToString() ?? string.Empty
+                            : string.Empty;
+
+                        verenigingUrl = jsonFactuur.TryGetValue("verenigingFactuurUrl", out var verenigingFactuurUrl)
+                            ? verenigingFactuurUrl?.ToString() ?? string.Empty
+                            : string.Empty;
+                    }
+
+
+                    kostenbegrotingGegevens.Add(new FactuurModel
+                    {
+                        Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
+                        UitvaartId = reader["OUUitvaartId"] != DBNull.Value ? (Guid)reader["OUUitvaartId"] : Guid.Empty,
+                        UitvaartNummer = reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
+                        KostenbegrotingUrl = reader["kostenbegrotingUrl"]?.ToString() ?? string.Empty,
+                        KostenbegrotingJson = reader["kostenbegrotingJson"]?.ToString() ?? string.Empty,
+                        KostenbegrotingCreationDate = reader["kostenbegrotingCreationDate"] != DBNull.Value ? (DateTime)reader["kostenbegrotingCreationDate"] : DateTime.MinValue,
+                        KostenbegrotingCreated = reader["kostenbegrotingCreated"] != DBNull.Value && (bool)reader["kostenbegrotingCreated"],
+                        FactuurCreationDate = reader["factuurCreationDate"] != DBNull.Value ? (DateTime)reader["factuurCreationDate"] : DateTime.MinValue,
+                        FactuurVerenigingUrl = verenigingUrl,
+                        FactuurOpdrachtgeverUrl = opdrachtUrl,
+                        FactuurCreated = reader["factuurCreated"] != DBNull.Value && (bool)reader["factuurCreated"],
+                    });
+                }
+            }
+
+            return kostenbegrotingGegevens;
+        }
+
+
+        /*
+        public ObservableCollection<FactuurModel> GetAllKostenbegrotingen()
+        {
+            var kostenbegrotingGegevens = new ObservableCollection<FactuurModel>();
+
+            using (var connection = GetConnection())
             using (var command = new SqlCommand("SELECT [Id], OU.UitvaartId AS OUUitvaartId, Uitvaartnummer, [kostenbegrotingUrl], [kostenbegrotingJson], [kostenbegrotingCreationDate], [kostenbegrotingCreated], [factuurCreationDate], [factuurUrl], [factuurCreated] " +
                                                 "FROM [OverledeneFacturen] AS OFA " +
                                                 "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
@@ -1327,6 +1384,7 @@ namespace Dossier_Registratie.Repositories
 
             return kostenbegrotingGegevens;
         }
+        */
         public async Task<KostenbegrotingInfoModel> GetKostenbegrotingPersonaliaAsync(Guid uitvaartIdGuid)
         {
             KostenbegrotingInfoModel personalia = new();
@@ -2419,36 +2477,34 @@ namespace Dossier_Registratie.Repositories
         }
         public async Task<ChecklistDocument> GetDocumentChecklistInfoAsync(Guid UitvaartId)
         {
-            ChecklistDocument checklistInfo = new ChecklistDocument();
+            ChecklistDocument checklistInfo = new();
 
             try
             {
-                using (var connection = GetConnection())
-                using (var command = new SqlCommand())
-                {
-                    await connection.OpenAsync();
-                    command.Connection = connection;
-                    command.CommandText = "SELECT OUI.[uitvaartInfoType], OUI.uitvaartInfoDatumTijdUitvaart, " +
-                                            "CASE WHEN OPG.overledeneTussenvoegsel IS NULL " +
-                                            "THEN TRIM(OPG.overledeneAchternaam) " +
-                                            "ELSE TRIM(CONCAT(OPG.overledeneTussenvoegsel, ' ', OPG.overledeneAchternaam)) END AS overledeneAchternaam, " +
-                                            "CASE WHEN OPG.overledeneTussenvoegsel IS NOT NULL AND LEN(OPG.overledeneTussenvoegsel) > 0 THEN CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneTussenvoegsel,' ',OPG.overledeneAchternaam) ELSE " +
-                                            "CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneAchternaam) END AS volledigeNaam, " +
-                                            "OOI.overledenDatumTijd, CV.verzekeraarNaam, OO.opbaringVerzorgingJson " +
-                                            "FROM OverledeneUitvaartInfo OUI " +
-                                            "LEFT JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
-                                            "LEFT JOIN OverledeneOverlijdenInfo OOI ON OUI.UitvaartId = OOI.uitvaartId " +
-                                            "INNER JOIN ConfigurationVerzekeraar CV ON OOI.overledenHerkomst = CV.Id " +
-                                            "LEFT JOIN OverledeneOpbaring OO ON OUI.uitvaartId = OO.uitvaartId " +
-                                            "WHERE OUI.uitvaartId = @UitvaartId";
-                    command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
+                using var connection = GetConnection();
+                using var command = new SqlCommand();
+                await connection.OpenAsync();
+                command.Connection = connection;
+                command.CommandText = "SELECT OUI.[uitvaartInfoType], OUI.uitvaartInfoDatumTijdUitvaart, " +
+                                        "CASE WHEN OPG.overledeneTussenvoegsel IS NULL " +
+                                        "THEN TRIM(OPG.overledeneAchternaam) " +
+                                        "ELSE TRIM(CONCAT(OPG.overledeneTussenvoegsel, ' ', OPG.overledeneAchternaam)) END AS overledeneAchternaam, " +
+                                        "CASE WHEN OPG.overledeneTussenvoegsel IS NOT NULL AND LEN(OPG.overledeneTussenvoegsel) > 0 THEN CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneTussenvoegsel,' ',OPG.overledeneAchternaam) ELSE " +
+                                        "CONCAT(OPG.overledeneAanhef,' ',OPG.overledeneVoornamen,' ',OPG.overledeneAchternaam) END AS volledigeNaam, " +
+                                        "OOI.overledenDatumTijd, CV.verzekeraarNaam, OO.opbaringVerzorgingJson " +
+                                        "FROM OverledeneUitvaartInfo OUI " +
+                                        "LEFT JOIN OverledenePersoonsGegevens OPG ON OUI.uitvaartId = OPG.uitvaartId " +
+                                        "LEFT JOIN OverledeneOverlijdenInfo OOI ON OUI.UitvaartId = OOI.uitvaartId " +
+                                        "INNER JOIN ConfigurationVerzekeraar CV ON OOI.overledenHerkomst = CV.Id " +
+                                        "LEFT JOIN OverledeneOpbaring OO ON OUI.uitvaartId = OO.uitvaartId " +
+                                        "WHERE OUI.uitvaartId = @UitvaartId";
+                command.Parameters.AddWithValue("@UitvaartId", UitvaartId);
 
-                    using (var reader = await command.ExecuteReaderAsync())
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    checklistInfo = new ChecklistDocument()
                     {
-                        while (await reader.ReadAsync())
-                        {
-                            checklistInfo = new ChecklistDocument()
-                            {
                                 UitvaartType = reader["uitvaartInfoType"] != DBNull.Value ? reader["uitvaartInfoType"].ToString() : string.Empty,
                                 DatumUitvaart = reader["uitvaartInfoDatumTijdUitvaart"] != DBNull.Value ? reader["uitvaartInfoDatumTijdUitvaart"].ToString() : string.Empty,
                                 Achternaam = reader["overledeneAchternaam"] != DBNull.Value ? reader["overledeneAchternaam"].ToString() : string.Empty,
@@ -2457,9 +2513,7 @@ namespace Dossier_Registratie.Repositories
                                 VolledigeNaam = reader["volledigeNaam"] != DBNull.Value ? reader["volledigeNaam"].ToString() : string.Empty,
                                 OpbarenInfo = reader["opbaringVerzorgingJson"] != DBNull.Value ? reader["opbaringVerzorgingJson"].ToString() : string.Empty
 
-                            };
-                        }
-                    }
+                    };
                 }
             }
             catch (Exception ex)

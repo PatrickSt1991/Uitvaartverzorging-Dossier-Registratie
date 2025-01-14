@@ -45,7 +45,6 @@ namespace Dossier_Registratie.ViewModels
         private readonly IUpdateOperations updateRepository;
         private readonly IDeleteAndActivateDisableOperations deleteRepository;
         private readonly DocumentGenerator documentGenerator = new();
-        private readonly GeneratingDocumentView _generatingDocumentView;
 
         private OverledeneUitvaartleiderModel _uitvaartLeiderModel;
         private OverledeneBijlagesModel _bijlageModel;
@@ -304,7 +303,6 @@ namespace Dossier_Registratie.ViewModels
             TerugmeldingModel = new TerugmeldingDocument();
             TevredenheidModel = new TevredenheidDocument();
             AangifteModel = new AangifteDocument();
-            _generatingDocumentView = new GeneratingDocumentView();
             VerlofTagContent = "Verlof uploaden";
 
             SaveCommand = new ViewModelCommand(ExecuteSaveCommand, CanExecuteSaveCommand);
