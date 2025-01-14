@@ -763,7 +763,7 @@ namespace Dossier_Registratie.Repositories
                             IsOverrideFactuurAdress = (bool)reader["OverrideFactuurAdress"],
                             Telefoon = reader["verzekeraarTelefoon"].ToString(),
                             Pakket = reader["isPakket"] is DBNull ? false : (bool)reader["isPakket"],
-                            CustomLogo = reader["CustomLogo"] is DBNull ? false : (bool)reader["CustomLogo"]
+                            CustomLogo = reader.GetBoolean("CustomLogo")
                         };
                     }
                 }
