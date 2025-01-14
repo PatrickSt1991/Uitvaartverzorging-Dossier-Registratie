@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Dossier_Registratie.Models;
+using System;
 using System.Threading.Tasks;
 
-namespace Dossier_Registratie.Models
+namespace Dossier_Registratie.Interfaces
 {
     public interface IUpdateOperations
     {

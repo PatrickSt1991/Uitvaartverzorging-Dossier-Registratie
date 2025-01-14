@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dossier_Registratie.Models;
 
-namespace Dossier_Registratie.Models
+namespace Dossier_Registratie.Interfaces
 {
     public interface ICreateOperations
     {

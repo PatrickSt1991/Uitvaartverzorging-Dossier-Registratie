@@ -1,15 +1,9 @@
 ﻿using Dossier_Registratie.ViewModels;
+using Dossier_Registratie.Interfaces;
 using System;
 
 namespace Dossier_Registratie.Models
 {
-    public interface IGenericDocument
-    {
-        string DestinationFile { get; }
-        Guid UitvaartId { get; }
-        bool Updated { get; }
-        Guid DocumentId { get; }
-    }
     public class WekbonnenContent : ViewModelBase, IGenericDocument
     {
         private string? _uitvaartType;
@@ -53,9 +47,12 @@ namespace Dossier_Registratie.Models
         public Guid UitvaartId { get; set; }
         public bool Updated { get; set; }
         public Guid DocumentId { get; set; }
+        public string DocumentName { get; set; }
+        public string FileType { get; set; }
     }
-    public class AkteContent : ViewModelBase, IGenericDocument
+    public class AkteDocument : ViewModelBase, IGenericDocument, IHasData
     {
+        private string? _dossiernummer;
         private string? _opdrachtgeverVoorletters;
         private string? _opdrachtgeverNaam;
         private string? _opdrachtgeverAdres;
@@ -64,7 +61,13 @@ namespace Dossier_Registratie.Models
         private DateTime _overledeneGeboorteDatum;
         private DateTime _overledenOpDatum;
         private string? _overledenOpAdres;
+        private string? _verzekeringInfo;
 
+        public string Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
         public string? OpdrachtgeverVoorletters
         {
             get { return _opdrachtgeverVoorletters; }
@@ -109,12 +112,23 @@ namespace Dossier_Registratie.Models
             get { return _overledenOpAdres; }
             set { _overledenOpAdres = value; OnPropertyChanged(nameof(OverledenOpAdres)); }
         }
+        public string? VerzekeringInfo
+        {
+            get { return _verzekeringInfo; }
+            set { _verzekeringInfo = value; OnPropertyChanged(nameof(VerzekeringInfo)); }
+        }
         public string DestinationFile { get; set; }
         public Guid UitvaartId { get; set; }
         public bool Updated { get; set; }
         public Guid DocumentId { get; set; }
+        public string DocumentName { get; set; }
+        public string FileType { get; set; }
+        public bool HasData()
+        {
+            return !string.IsNullOrEmpty(VerzekeringInfo);
+        }
     }
-    public class TevredenheidDocument : ViewModelBase, IGenericDocument
+    public class TevredenheidDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _dossiernummer;
         private string? _ingevuldDoorAdres;
@@ -127,6 +141,7 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
 
         public string? Dossiernummer
         {
@@ -186,6 +201,12 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(Dossiernummer) ||
@@ -196,7 +217,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(Uitvaartverzorger);
         }
     }
-    public class TerugmeldingDocument : ViewModelBase, IGenericDocument
+    public class TerugmeldingDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _dossiernummer;
         private string? _uitvaartverzorger;
@@ -228,6 +249,7 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
 
         public string Dossiernummer
         {
@@ -372,6 +394,12 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(Dossiernummer) ||
@@ -399,7 +427,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OpdrachtgeverTelefoon);
         }
     }
-    public class BegrafenisDocument : ViewModelBase, IGenericDocument
+    public class BegrafenisDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _naamOpdrachtgever;
         private string? _adresOpdrachtgever;
@@ -426,6 +454,8 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
+        private string? _dossiernummer;
         public string NaamOpdrachtgever
         {
             get { return _naamOpdrachtgever; }
@@ -554,6 +584,17 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(NaamOpdrachtgever) ||
@@ -661,8 +702,10 @@ namespace Dossier_Registratie.Models
         public Guid UitvaartId { get; set; }
         public bool Updated { get; set; }
         public Guid DocumentId { get; set; }
+        public string DocumentName { get; set; }
+        public string FileType { get; set; }
     }
-    public class CrematieDocument : ViewModelBase, IGenericDocument
+    public class CrematieDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _aulaNaam;
         private int _aulaPersonen;
@@ -709,6 +752,8 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
+        private string? _dossiernummer;
 
         public string? AulaNaam
         {
@@ -923,6 +968,18 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
+
         public bool HasData()
         {
             return !string.IsNullOrEmpty(CrematieLocatie) ||
@@ -958,7 +1015,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(Consumpties);
         }
     }
-    public class BezittingenDocument : ViewModelBase, IGenericDocument
+    public class BezittingenDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _dossiernummer;
         private string? _overledeneNaam;
@@ -977,11 +1034,12 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
 
-        public string DossierNummer
+        public string Dossiernummer
         {
             get { return _dossiernummer; }
-            set { _dossiernummer = value; OnPropertyChanged(nameof(DossierNummer)); }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
         }
         public string OverledeneNaam
         {
@@ -1081,9 +1139,15 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
-            return !string.IsNullOrEmpty(DossierNummer) ||
+            return !string.IsNullOrEmpty(Dossiernummer) ||
                     !string.IsNullOrEmpty(OverledeneNaam) ||
                     !string.IsNullOrEmpty(OverledeneVoornaam) ||
                     OverledeneGeborenOp != DateTime.MinValue ||
@@ -1095,7 +1159,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OverledeneRelatie);
         }
     }
-    public class OverdrachtDocument : ViewModelBase, IGenericDocument
+    public class OverdrachtDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _overdrachtType;
         private string? _overledeAanhef;
@@ -1107,6 +1171,8 @@ namespace Dossier_Registratie.Models
         private bool _updated = false;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
+        private string? _dossiernummer;
 
         public string OverdrachtType
         {
@@ -1161,6 +1227,17 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(OverdrachtType) ||
@@ -1190,8 +1267,10 @@ namespace Dossier_Registratie.Models
         public Guid UitvaartId { get; set; }
         public bool Updated { get; set; }
         public Guid DocumentId { get; set; }
+        public string DocumentName { get; set; }
+        public string FileType { get; set; }
     }
-    public class ChecklistDocument : ViewModelBase, IGenericDocument
+    public class ChecklistDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _documentType;
         private string? _achternaam;
@@ -1207,6 +1286,8 @@ namespace Dossier_Registratie.Models
         private bool _updated = false;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
+        private string? _dossiernummer;
 
         public string DocumentType
         {
@@ -1290,6 +1371,17 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(DocumentType) ||
@@ -1302,7 +1394,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(UitvartLeider);
         }
     }
-    public class DienstDocument : ViewModelBase, IGenericDocument
+    public class DienstDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _aanvraagDienstTe;
         private DateTime _datumUitvaart;
@@ -1333,6 +1425,8 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
+        private string? _documentName;
+        private string? _dossiernummer;
 
         public string AanvraagDienstTe
         {
@@ -1482,6 +1576,17 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(AanvraagDienstTe) ||
@@ -1509,7 +1614,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(Opmerkingen);
         }
     }
-    public class DocumentDocument : ViewModelBase, IGenericDocument
+    public class DocumentDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _documentType;
         private string? _uitvaartverzorger;
@@ -1531,6 +1636,8 @@ namespace Dossier_Registratie.Models
         private Guid _uitvaartId;
         private Guid _documentId;
         private string? _uitvaartNummer;
+        private string? _dossiernummer;
+        private string? _documentName;
         public string DocumentType
         {
             get { return _documentType; }
@@ -1634,6 +1741,17 @@ namespace Dossier_Registratie.Models
             get { return _uitvaartNummer; }
             set { _uitvaartNummer = value; OnPropertyChanged(nameof(UitvaartNummer)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(DocumentType) ||
@@ -1652,7 +1770,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OndergetekendeUitvaart);
         }
     }
-    public class KoffieKamerDocument : ViewModelBase, IGenericDocument
+    public class KoffieKamerDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private DateTime _datumUitvaart;
         private string? _naam;
@@ -1667,7 +1785,8 @@ namespace Dossier_Registratie.Models
         private string? _destinationFile;
         private Guid _uitvaartId;
         private Guid _documentId;
-
+        private string? _documentName;
+        private string? _dossiernummer;
         public DateTime DatumUitvaart
         {
             get { return _datumUitvaart; }
@@ -1736,6 +1855,17 @@ namespace Dossier_Registratie.Models
             get { return _documentId; }
             set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return DatumUitvaart != DateTime.MinValue ||
@@ -1748,7 +1878,7 @@ namespace Dossier_Registratie.Models
                     !string.IsNullOrEmpty(OpdrachtgeverTelefoon);
         }
     }
-    public class BloemenDocument : ViewModelBase, IGenericDocument
+    public class BloemenDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _leverancierNaam;
         private string? _uitvaartleider;
@@ -1766,7 +1896,8 @@ namespace Dossier_Registratie.Models
         private Guid _uitvaartId;
         private Guid _documentId;
         private string? _lintJson;
-
+        private string? _documentName;
+        private string? _dossiernummer;
         public string LeverancierNaam
         {
             get { return _leverancierNaam; }
@@ -1859,6 +1990,17 @@ namespace Dossier_Registratie.Models
             get { return _lintJson; }
             set { _lintJson = value; OnPropertyChanged(nameof(LintJson)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(LeverancierNaam) ||
@@ -1873,7 +2015,7 @@ namespace Dossier_Registratie.Models
                     DatumBezorgen != DateTime.MinValue;
         }
     }
-    public class AangifteDocument : ViewModelBase, IGenericDocument
+    public class AangifteDocument : ViewModelBase, IGenericDocument, IHasData
     {
         private string? _overledeneAanhef;
         private string? _overledeneAchternaam;
@@ -1915,7 +2057,8 @@ namespace Dossier_Registratie.Models
         private Guid _documentId;
         private string? _uitvaartnummer;
         private string? _burgelijkestaat;
-
+        private string? _documentName;
+        private string? _dossiernummer;
 
         public string OverledeneAanhef
         {
@@ -2120,6 +2263,17 @@ namespace Dossier_Registratie.Models
             get { return _burgelijkestaat; }
             set { _burgelijkestaat = value; OnPropertyChanged(nameof(Burgelijkestaat)); }
         }
+        public string? DocumentName
+        {
+            get { return _documentName; }
+            set { _documentName = value; OnPropertyChanged(nameof(DocumentName)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string FileType { get; set; }
         public bool HasData()
         {
             return !string.IsNullOrEmpty(OverledeneAanhef) ||

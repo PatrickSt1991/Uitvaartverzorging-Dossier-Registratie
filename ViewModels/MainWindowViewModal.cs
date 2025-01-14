@@ -2,6 +2,7 @@
 using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
@@ -385,7 +386,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand OpenBeheerCommand { get; }
         public ICommand OpenDossierCommand { get; }
         public ICommand SearchDossierCommand { get; }
-        public readonly ICommand CloseApplicationCommand = new RelayCommand<object>(param => Application.Current.Shutdown());
+        public ICommand CloseApplicationCommand { get; }
         public ICommand CloseUitvaartnummerSearchCommand => new RelayCommand<object>(param => { IsUitvaartnumberVisible = Visibility.Collapsed; });
         public ICommand CloseSurnameSearchCommand => new RelayCommand<object>(param => { IsSurnameVisible = Visibility.Collapsed; });
         public ICommand CloseSearchResultListCommand => new RelayCommand<object>(param => { SearchResultList = Visibility.Collapsed; });
@@ -452,6 +453,7 @@ namespace Dossier_Registratie.ViewModels
             OpenBeheerCommand = new ViewModelCommand(ExecuteOpenBeheer);
             OpenDossierCommand = new ViewModelCommand(ExecuteOpenDossier);
             SearchDossierCommand = new ViewModelCommand(ExecuteSearchDossier);
+            CloseApplicationCommand = new RelayCommand<object>(param => Application.Current.Shutdown());
         }
         private static void ExecuteOpenBeheer(object obj)
         {
@@ -547,16 +549,9 @@ namespace Dossier_Registratie.ViewModels
         }
         private bool CanExecuteSearchUitvaartnummerCommand(object obj)
         {
-            bool validNummerSearch;
-            if (string.IsNullOrWhiteSpace(ZoekenUitvaartnummer))
-            {
-                validNummerSearch = false;
-            }
-            else
-            {
-                validNummerSearch = true;
-            }
+            bool validNummerSearch = !string.IsNullOrWhiteSpace(ZoekenUitvaartnummer) && ZoekenUitvaartnummer.All(char.IsDigit);
             return validNummerSearch;
+
         }
         private bool CanExecuteSearchAchternaamCommand(object obj)
         {

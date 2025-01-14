@@ -1,4 +1,5 @@
-﻿using Dossier_Registratie.ViewModels;
+﻿using Dossier_Registratie.Interfaces;
+using Dossier_Registratie.ViewModels;
 using System;
 
 namespace Dossier_Registratie.Models
@@ -217,6 +218,9 @@ namespace Dossier_Registratie.Models
     {
         private Guid _bijlageId;
         private Guid _uitvaartId;
+        private Guid _documentId;
+        private string? _dossiernummer;
+        private string? _destinationFile;
         private string? _documentName;
         private string? _documentType;
         private string? _documentUrl;
@@ -234,6 +238,24 @@ namespace Dossier_Registratie.Models
         {
             get { return _uitvaartId; }
             set { _uitvaartId = value; OnPropertyChanged(nameof(UitvaartId)); }
+        }
+        public Guid DocumentId
+        {
+            get { return _documentId; }
+            set { _documentId = value; OnPropertyChanged(nameof(DocumentId)); }
+        }
+        public string? Dossiernummer
+        {
+            get { return _dossiernummer; }
+            set { _dossiernummer = value; OnPropertyChanged(nameof(Dossiernummer)); }
+        }
+        public string? DestinationFile
+        {
+            get { return _destinationFile; }
+            set
+            {
+                _destinationFile = value; OnPropertyChanged(nameof(DestinationFile));
+            }
         }
         public string DocumentName
         {

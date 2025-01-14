@@ -1,6 +1,7 @@
 ﻿using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.ViewModels;
+using Dossier_Registratie.Interfaces;
 using System;
 using System.Linq;
 using System.Windows.Controls;
@@ -47,6 +48,11 @@ namespace Dossier_Registratie.Views
         }
         private static void UpdateComboBox(ComboBox comboBox, string tag)
         {
+            if (comboBox == null)
+            {
+                return; // Do nothing if comboBox is null.
+            }
+
             comboBox.Tag = tag;
 
             foreach (var item in comboBox.Items)

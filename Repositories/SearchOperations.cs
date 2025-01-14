@@ -1,5 +1,6 @@
 ﻿using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
+using Dossier_Registratie.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace Dossier_Registratie.Repositories
 {
     public class SearchOperations : RepositoryBase, ISearchOperations
     {
-        public async Task<AkteContent> GetAkteContentByUitvaartIdAsync(Guid uitvaartId)
+        public async Task<AkteDocument> GetAkteContentByUitvaartIdAsync(Guid uitvaartId)
         {
-            AkteContent? akteContent = null;
+            AkteDocument? akteContent = null;
 
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
@@ -44,10 +45,12 @@ namespace Dossier_Registratie.Repositories
                                     (CASE 
                                         WHEN overledenHuisnummerToevoeging IS NULL THEN CONCAT(overledenAdres, ' ', overledenHuisnummer, ', ', overledenPlaats) 
                                         ELSE CONCAT(overledenAdres, ' ', TRIM(overledenHuisnummer), ' ', TRIM(overledenHuisnummerToevoeging), ', ', overledenPlaats) 
-                                    END) AS AdresOpverledene
+                                    END) AS AdresOpverledene,
+                                    OVI.verzekeringProperties
                                  FROM OverledeneOpdrachtgever OO 
                                  INNER JOIN OverledenePersoonsGegevens OPG ON OO.uitvaartId = OPG.uitvaartId 
                                  INNER JOIN OverledeneOverlijdenInfo OOI ON OO.uitvaartId = OOI.UitvaartId 
+                                 INNER JOIN OverledeneVerzerkeringInfo OVI ON OPG.uitvaartId = OVI.uitvaartId 
                                  WHERE OO.uitvaartId = @uitvaartId";
 
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
@@ -56,7 +59,7 @@ namespace Dossier_Registratie.Repositories
                 {
                     if (await reader.ReadAsync())
                     {
-                        akteContent = new AkteContent()
+                        akteContent = new AkteDocument()
                         {
                             OpdrachtgeverNaam = reader["NaamOpdrachtgever"]?.ToString(),
                             OpdrachtgeverAdres = reader["AdresOpdrachtgever"]?.ToString(),
@@ -64,7 +67,8 @@ namespace Dossier_Registratie.Repositories
                             GeslotenOpHetLevenVan = reader["NaamOverledene"]?.ToString(),
                             OverledenGeboorteDatum = reader["overledeneGeboortedatum"] != DBNull.Value ? (DateTime)reader["overledeneGeboortedatum"] : DateTime.MinValue,
                             OverledenOpDatum = reader["overledenDatumTijd"] != DBNull.Value ? (DateTime)reader["overledenDatumTijd"] : DateTime.MinValue,
-                            OverledenOpAdres = reader["AdresOpverledene"]?.ToString()
+                            OverledenOpAdres = reader["AdresOpverledene"]?.ToString(),
+                            VerzekeringInfo = reader["verzekeringProperties"].ToString()
                         };
 
                         if (!string.IsNullOrEmpty(reader["opdrachtgeverVoornaamen"]?.ToString()))
@@ -77,7 +81,7 @@ namespace Dossier_Registratie.Repositories
                 }
             }
 
-            return akteContent ?? new AkteContent();
+            return akteContent ?? new AkteDocument();
         }
         public async Task<WekbonnenContent> GetWerkbonInfoByUitvaartIdAsync(Guid uitvaartId)
         {

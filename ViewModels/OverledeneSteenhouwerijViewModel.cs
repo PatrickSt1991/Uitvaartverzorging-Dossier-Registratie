@@ -2,6 +2,7 @@
 using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using Dossier_Registratie.Views;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
@@ -1284,7 +1285,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (string.IsNullOrWhiteSpace(BloemenModel.BloemenDocument))
             {
-                destinationFile = await OverledeneBijlagesViewModel.BijlagesInstance.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx");//.ConfigureAwait(true);
+                destinationFile = await DocumentFunctions.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx");
                 documentId = Guid.NewGuid();
                 initialCreation = true;
             }
@@ -1313,7 +1314,7 @@ namespace Dossier_Registratie.ViewModels
                         BloemenModel.BloemenDocumentUpdated = true;
                     }
                 }
-                destinationFile = await OverledeneBijlagesViewModel.BijlagesInstance.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx").ConfigureAwait(true);
+                destinationFile = await DocumentFunctions.CreateDirectory(Globals.UitvaartCode, "Aanvraag.Bloemen.docx").ConfigureAwait(true);
 
             }
 

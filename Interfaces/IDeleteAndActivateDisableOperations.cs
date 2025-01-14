@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dossier_Registratie.Models
+namespace Dossier_Registratie.Interfaces
 {
     public interface IDeleteAndActivateDisableOperations
     {

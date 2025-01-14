@@ -2,6 +2,7 @@
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
+using Dossier_Registratie.Interfaces;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Win32;
@@ -10,12 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
@@ -23,32 +22,31 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Xml.Linq;
 using static Dossier_Registratie.ViewModels.OverledeneFactuurViewModel;
 using static Dossier_Registratie.ViewModels.OverledeneSteenhouwerijViewModel;
 using Range = Microsoft.Office.Interop.Word.Range;
 using Task = System.Threading.Tasks.Task;
+using Exception = System.Exception;
 
 namespace Dossier_Registratie.ViewModels
 {
     [SupportedOSPlatform("windows")]
     public class AllChosenVerzekering
     {
-        public string VerzekeringName { get; set; }
-        public ObservableCollection<PolisVerzekering> PolisInfoList { get; set; }
+        public string? VerzekeringName { get; set; }
+        public ObservableCollection<PolisVerzekering>? PolisInfoList { get; set; }
     }
     public class OverledeneBijlagesViewModel : ViewModelBase
     {
+        private readonly IGeneratingDocumentWindow generatingView;
         private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
         private readonly ISearchOperations searchRepository;
         private readonly ICreateOperations createRepository;
         private readonly IUpdateOperations updateRepository;
         private readonly IDeleteAndActivateDisableOperations deleteRepository;
+        private readonly DocumentGenerator documentGenerator = new();
+        private readonly GeneratingDocumentView _generatingDocumentView;
 
-        readonly DocumentGenerator documentGenerator = new DocumentGenerator();
-        readonly SqlConnection conn = new(DataProvider.ConnectionString);
-
-        private GeneratingDocumentView _generatingDocumentView;
         private OverledeneUitvaartleiderModel _uitvaartLeiderModel;
         private OverledeneBijlagesModel _bijlageModel;
         private OverledeneBijlagesModel _verlofDossier;
@@ -74,7 +72,6 @@ namespace Dossier_Registratie.ViewModels
         private AangifteDocument _aangifteModel;
 
         public bool initialLoadDone;
-        private bool _isBusy;
         private bool _correctAccessOrNotCompleted = true;
         private bool _isBegrafenis = false;
         private bool _isCrematie = false;
@@ -109,15 +106,6 @@ namespace Dossier_Registratie.ViewModels
             {
                 _isCrematie = value;
                 OnPropertyChanged(nameof(IsCrematie));
-            }
-        }
-        public bool IsBusy
-        {
-            get { return _isBusy; }
-            set
-            {
-                _isBusy = value;
-                OnPropertyChanged(nameof(IsBusy));
             }
         }
         public string DocumentOption
@@ -265,7 +253,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand ClosePopupCommand { get; }
         public ICommand PreviousCommand { get; }
         public ICommand OpenKostenbegrotingCommand { get; }
-        public ICommand GenererenAkteVanCessieCommand { get; }
+        public ICommand CreateDocumentAkteVanCessieCommand { get; }
         public ICommand CreateDocumentKoffieCommand { get; }
         public ICommand DocumentDocumentCommand { get; }
         public ICommand CreateDocumentDocumentCommand { get; }
@@ -289,6 +277,7 @@ namespace Dossier_Registratie.ViewModels
             if (Globals.DossierCompleted || Globals.PermissionLevelName == "Gebruiker")
                 CorrectAccessOrNotCompleted = false;
 
+            generatingView = new GeneratingDocumentView();
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             searchRepository = new SearchOperations();
             createRepository = new CreateOperations();
@@ -324,7 +313,7 @@ namespace Dossier_Registratie.ViewModels
             ClosePopupCommand = new ViewModelCommand(ExecuteClosePopupCommand);
             OpenKostenbegrotingCommand = new ViewModelCommand(ExecuteKostenbegrotingCommand);
             VerlofUploadenCommand = new ViewModelCommand(ExecuteVerlofUploadenCommand);
-            GenererenAkteVanCessieCommand = new ViewModelCommand(async (parameter) => await GenererenCreateAkteVanCessie(parameter));
+            CreateDocumentAkteVanCessieCommand = new ViewModelCommand(async (parameter) => await CreateDocumentAkteVanCessie(parameter));
             CreateDocumentKoffieCommand = new ViewModelCommand(async (parameter) => await CreateDocumentKoffie(parameter));
             CreateDocumentDocumentCommand = new ViewModelCommand(async (parameter) => await CreateDocumentDocument(parameter));
             CreateDocumentDienstCommand = new ViewModelCommand(async (parameter) => await CreateDocumentDienst(parameter));
@@ -541,2362 +530,697 @@ namespace Dossier_Registratie.ViewModels
         private void ExecutePreviousCommand(object obj)
         {
             IntAggregator.Transmit(6);
-        }
-        public async Task<string> CreateDirectory(string UitvaartId, string DocumentType)
-        {
-            var opslagFolder = DataProvider.DocumentenOpslag;
-            var templateFolder = DataProvider.TemplateFolder;
-
-            Debug.WriteLine(opslagFolder);
-            Debug.WriteLine(templateFolder);
-
-            bool sourceLocEndSlash = opslagFolder.EndsWith(@"\");
-
-            if (!sourceLocEndSlash)
-                opslagFolder += "\\";
-
-            string fileToCopy = templateFolder + "\\" + DocumentType;
-            string destinationLoc = opslagFolder + UitvaartId;
-
-            destinationFile = destinationLoc + "\\" + DocumentType;
-            FileInfo sourceFile = new(fileToCopy);
-
-            if (sourceFile.Exists)
-            {
-                if (!Directory.Exists(destinationLoc))
-                    Directory.CreateDirectory(destinationLoc);
-
-                if (File.Exists(destinationFile))
-                    File.Delete(destinationFile);
-
-                sourceFile.CopyTo(destinationFile);
-            }
-            return destinationFile;
-        }
-        public async Task<string> CreateDirectoryPolis(string uitvaartId, string documentType, string polisNr)
-        {
-            var opslagFolder = DataProvider.DocumentenOpslag;
-            var templateFolder = DataProvider.TemplateFolder;
-
-            if (!opslagFolder.EndsWith(@"\"))
-            {
-                opslagFolder += "\\";
-            }
-
-            string fileToCopy = Path.Combine(templateFolder, documentType);
-            string destinationLoc = Path.Combine(opslagFolder, uitvaartId);
-            string destinationFile = Path.Combine(destinationLoc, documentType);
-
-            // Create the new file name with the polis number
-            string strippedFileName = Path.GetFileNameWithoutExtension(destinationFile);
-            string newPolisFileName = $"{strippedFileName}.{polisNr}.docx";
-            string destinationFileWithPolisNr = Path.Combine(destinationLoc, newPolisFileName);
-
-            FileInfo sourceFile = new(fileToCopy);
-
-            if (sourceFile.Exists)
-            {
-                // Ensure the destination directory exists
-                if (!Directory.Exists(destinationLoc))
-                {
-                    Directory.CreateDirectory(destinationLoc);
-                }
-
-                // Delete the destination file if it already exists
-                if (File.Exists(destinationFileWithPolisNr))
-                {
-                    File.Delete(destinationFileWithPolisNr);
-                }
-
-                sourceFile.CopyTo(destinationFileWithPolisNr);
-            }
-            else
-            {
-                throw new FileNotFoundException("The template file does not exist.", fileToCopy);
-            }
-
-            if (File.Exists(destinationFile))
-                File.Delete(destinationFile);
-
-            return destinationFileWithPolisNr;
-        }
+        }       
         private void ExecuteKostenbegrotingCommand(object obj)
         {
             KostenbegrotingInstance.RequestedDossierInformationBasedOnUitvaartId(Globals.UitvaartCode);
             IntAggregator.Transmit(11);
         }
-        static bool IsSingleValue(string input)
+        /* NEW */
+        public async Task CreateDocumentAkteVanCessie(object obj)
         {
-            input = input.Trim();
+            if (SelectedVerzekering == null)
+                return;
 
-            if (input.Contains(','))
+            AkteDocument akteDocument = await searchRepository.GetAkteContentByUitvaartIdAsync(Globals.UitvaartCodeGuid);
+            if (akteDocument == null || string.IsNullOrWhiteSpace(akteDocument.VerzekeringInfo))
             {
-                return false;
+                MessageBox.Show("Géén verzekering data gevonden.", "Data Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
-            return true;
-        }
-        private static string EnsureTrailingSlash(string path) => path.EndsWith("\\") ? path : path + "\\";
-        private async Task CreateAkteFile(string UitvaartId, string documentName, bool akteStatus, bool sendMail)
-        {
-            var outlookApp = sendMail ? new Microsoft.Office.Interop.Outlook.Application() : null;
-            var mail = sendMail ? (MailItem)outlookApp.CreateItem(OlItemType.olMailItem) : null;
-
-            string sourceLoc = EnsureTrailingSlash(DataProvider.DocumentenOpslag);
-            string templateLoc = EnsureTrailingSlash(DataProvider.TemplateFolder);
-            string fileToCopy = Path.Combine(templateLoc, "Akte.van.Cessie.docx");
-            string destinationLoc = EnsureTrailingSlash(Path.Combine(sourceLoc, UitvaartId));
-
-            FileInfo sourceFile = new(fileToCopy);
-
-            if (!sourceFile.Exists)
-                throw new FileNotFoundException($"Template file not found at {fileToCopy}");
-
-            if (IsSingleValue(documentName))
-                await HandleSingleDocument(documentName, sourceFile, destinationLoc, akteStatus, mail, sendMail);
-            else
-                await HandleMultipleDocuments(documentName, sourceFile, destinationLoc, akteStatus, mail, sendMail);
-
-            if (sendMail)
-                FinalizeAndDisplayMail(mail, outlookApp);
-            return;
-        }
-        private async Task HandleSingleDocument(string documentName, FileInfo sourceFile, string destinationLoc, bool akteStatus, MailItem mail, bool sendMail)
-        {
-            string destinationFile = Path.Combine(destinationLoc, $"AkteVanCessie_{SanitizeFileName(documentName)}.docx");
-            await CopyAndProcessFile(sourceFile, destinationFile, SelectedVerzekering.VerzekeringName, SelectedVerzekering.PolisInfoList, akteStatus, mail, sendMail, documentName);
-        }
-        private async Task HandleMultipleDocuments(string documentNames, FileInfo sourceFile, string destinationLoc, bool akteStatus, MailItem mail, bool sendMail)
-        {
-            foreach (string document in documentNames.Split(','))
+            var akteVerzekeringen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(akteDocument.VerzekeringInfo);
+            if (akteVerzekeringen == null || akteVerzekeringen.Count == 0)
             {
-                string trimmedDocument = document.Trim();
-                string destinationFile = Path.Combine(destinationLoc, $"AkteVanCessie_{SanitizeFileName(trimmedDocument)}.docx");
-
-                var verzekering = VerzekeringenWithAll.FirstOrDefault(v => v.VerzekeringName == trimmedDocument);
-                if (verzekering == null || verzekering.VerzekeringName == "Alles")
-                    continue;
-
-                await CopyAndProcessFile(sourceFile, destinationFile, verzekering.VerzekeringName, verzekering.PolisInfoList, akteStatus, mail, sendMail, documentNames);
-            }
-        }
-        private static string SanitizeFileName(string fileName) =>
-            fileName.Replace(" ", "").Replace("/", "-");
-        private void FinalizeAndDisplayMail(MailItem mail, Microsoft.Office.Interop.Outlook.Application outlookApp)
-        {
-            mail.Display(true);
-            if (mail != null) Marshal.ReleaseComObject(mail);
-            if (outlookApp != null) Marshal.ReleaseComObject(outlookApp);
-        }
-        private async Task CopyAndProcessFile(FileInfo sourceFile, string destinationFile, string verzekeringName, List<Polis> polisInfoList, bool akteStatus, MailItem mail, bool sendMail, string documentName)
-        {
-            if (!Directory.Exists(Path.GetDirectoryName(destinationFile)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
+                MessageBox.Show("Géén polis informatie gevonden.","Data Error",MessageBoxButton.OK,MessageBoxImage.Warning);
+                return;
             }
 
-            if (File.Exists(destinationFile))
+            var documentsInfo = akteVerzekeringen
+                .Where(v => !string.IsNullOrEmpty(v.VerzekeringName))
+                .Select(v => (
+                    fileName: $"AkteVanCessie_{v.VerzekeringName}.docx",
+                    documentType: "AktevanCessie",
+                    tag: ""
+                ))
+                .ToList();
+
+            if (documentsInfo.Count == 0)
             {
-                File.Delete(destinationFile);
+                MessageBox.Show("Géén valide verzekeringen gevonden voor document generatie.","Géén Documents",MessageBoxButton.OK,MessageBoxImage.Information);
+                return;
             }
 
-            sourceFile.CopyTo(destinationFile);
-            await FillAkteFile(verzekeringName, polisInfoList, destinationFile);
-
-            if (sendMail)
-            {
-                mail.Attachments.Add(destinationFile, OlAttachmentType.olByValue, 1, Path.GetFileName(destinationFile));
-                mail.Subject = $"Akte van Cessie - {documentName}";
-            }
-            else
-            {
-                DocumentFunctions.OpenFile(destinationFile);
-            }
-        }
-        private async Task FillAkteFile(string verzekeringName, List<Polis> polisInfoList, string destinationFile)
-        {
-            AkteContent akteContent = await searchRepository.GetAkteContentByUitvaartIdAsync(Globals.UitvaartCodeGuid);
-
-            var bookmarks = GetBookmarks(akteContent, verzekeringName);
-            Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-            Document doc = app.Documents.Open(destinationFile);
-
-            AddPolisInfoToDocument(doc, polisInfoList, bookmarks);
-
-            await AddHeaderImageToDocument(doc);
-
-            doc.Save();
-            doc.Close();
-        }
-        private Dictionary<string, string> GetBookmarks(AkteContent akteContent, string verzekeringName)
-        {
-            return new Dictionary<string, string>
-    {
-        { "verzekeringMaatschappij", verzekeringName },
-        { "ondergetekendeNaamEnVoorletters", akteContent.OpdrachtgeverNaam },
-        { "ondergetekendeAdres", akteContent.OpdrachtgeverAdres },
-        { "ondergetekendeRelatieTotVerzekende", akteContent.OpdrachtgeverRelatie },
-        { "verzekerdeGeslotenOpHetLevenVan", akteContent.GeslotenOpHetLevenVan },
-        { "verzekerdeGeborenOp", akteContent.OverledenGeboorteDatum.ToString("dd-MM-yyyy") },
-        { "verzekerdeOverledenOp", akteContent.OverledenOpDatum.ToString("dd-MM-yyyy") },
-        { "verzekerdeAdres", akteContent.OverledenOpAdres },
-        { "vermeldingNummer", Globals.UitvaartCode },
-        { "PolisTable", "" },
-        { "OrganisatieNaam", DataProvider.OrganizationName },
-        { "OrganisatieIban", DataProvider.OrganizationIban }
-    };
-        }
-        private void AddPolisInfoToDocument(Document doc, List<Polis> polisInfoList, Dictionary<string, string> bookmarks)
-        {
-            foreach (var bookmark in bookmarks)
-            {
-                if (!doc.Bookmarks.Exists(bookmark.Key))
-                    throw new InvalidOperationException($"The bookmark '{bookmark.Key}' does not exist in the document.");
-
-                Bookmark bm = doc.Bookmarks[bookmark.Key];
-                Range range = bm.Range;
-
-                if (bookmark.Key == "PolisTable")
-                    AddPolisTableToDocument(doc, polisInfoList, range);
-                else
-                    range.Text = bookmark.Value;
-            }
-        }
-        private void AddPolisTableToDocument(Document doc, List<Polis> polisInfoList, Range polisTableRange)
-        {
-            int polisBedragCount = 2; 
-            double totalPolisBedrag = 0;
-
-            foreach (var polisInfo in polisInfoList)
-            {
-                if (!string.IsNullOrEmpty(polisInfo.PolisBedrag) && double.TryParse(polisInfo.PolisBedrag, out double polisBedragValue))
+            await CreateMultipleDocuments<AkteDocument, AkteDocument?>(
+                documentOption: obj.ToString(),
+                documentsInfo: documentsInfo,
+                templateFile: "Akte.van.Cessie.docx",
+                fileType: "Word",
+                fetchModel: async (guid) => akteDocument,
+                generateDocument: async (model, additionalData) =>
                 {
-                    polisBedragCount++;
-                    totalPolisBedrag += polisBedragValue;
-                }
-            }
-
-            Microsoft.Office.Interop.Word.Table table = doc.Tables.Add(polisTableRange, polisBedragCount, 2);
-
-            table.Cell(1, 1).Range.Text = "Polisnummer";
-            table.Cell(1, 2).Range.Text = "Verzekerd bedrag";
-            table.Rows[1].Range.Font.Bold = 1;
-            table.Rows[1].Range.Borders[WdBorderType.wdBorderBottom].LineStyle = WdLineStyle.wdLineStyleDashSmallGap;
-
-            int rowIndex = 2;
-            foreach (var polisInfo in polisInfoList)
-            {
-                if (!string.IsNullOrEmpty(polisInfo.PolisBedrag))
-                {
-                    table.Cell(rowIndex, 1).Range.Text = polisInfo.PolisNr;
-                    table.Cell(rowIndex, 2).Range.Text = "€ " + polisInfo.PolisBedrag;
-                    rowIndex++;
-                }
-            }
-
-            table.Rows[polisBedragCount].Range.Font.Bold = 1;
-            table.Rows[polisBedragCount].Range.Borders[WdBorderType.wdBorderTop].LineStyle = WdLineStyle.wdLineStyleSingle;
-            table.Cell(polisBedragCount, 1).Range.Text = "Totaal";
-            table.Cell(polisBedragCount, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
-            table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString("#,0.00", System.Globalization.CultureInfo.CreateSpecificCulture("nl-NL"));
-        }
-        private async Task AddHeaderImageToDocument(Document doc)
-        {
-            var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
-            if (documentData != null && documentData.Length > 0)
-            {
-                string tempImagePath = string.Empty;
-
-                try
-                {
-                    tempImagePath = Path.Combine(Path.GetTempPath(), $"headerImage.{documentType}");
-
-                    string tempDir = Path.GetDirectoryName(tempImagePath);
-                    if (string.IsNullOrEmpty(tempDir) || !Directory.Exists(tempDir))
-                    {
-                        throw new DirectoryNotFoundException($"Temporary directory not found: {tempDir}");
-                    }
-
-                    File.WriteAllBytes(tempImagePath, documentData);
-
-                    foreach (Section section in doc.Sections)
-                    {
-                        HeaderFooter header = section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary];
-                        Range headerRange = header.Range;
-                        headerRange.InlineShapes.AddPicture(tempImagePath);
-                        headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    throw;
-                }
-                finally
-                {
-                    if (!string.IsNullOrEmpty(tempImagePath) && File.Exists(tempImagePath))
-                    {
-                        try
-                        {
-                            File.Delete(tempImagePath);
-                        }
-                        catch (System.Exception deleteEx)
-                        {
-                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(deleteEx);
-                        }
-                    }
-                }
-            }
-        }
-        private async Task GenererenCreateAkteVanCessie(object parameter)
-        {
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-
-            bool sendMail = false;
-            bool akteStatus = false;
-
-            if (parameter != null && parameter.ToString() == "mail")
-                sendMail = true;
-
-            if (SelectedVerzekering != null)
-            {
-                IsBusy = true;
-                if (SelectedVerzekering.VerzekeringName == "Alles")
-                {
-                    foreach (var multipleAktes in miscellaneousRepository.GetAktesVanCessieByUitvaatId(Globals.UitvaartCode))
-                    {
-                        if (multipleAktes != null && !multipleAktes.IsDeleted && File.Exists(multipleAktes.DocumentUrl))
-                        {
-                            File.Delete(multipleAktes.DocumentUrl);
-                            akteStatus = true;
-                        }
-                    }
-
-                    var AlleVerzekeringenElementen = VerzekeringenWithAll
-                        .Where(item => item.VerzekeringName != "Alles")
-                        .Select(item => item.VerzekeringName);
-
-                    string AlleVerzekeringen = string.Join(",", AlleVerzekeringenElementen);
-
-                    await CreateAkteFile(Globals.UitvaartCode, string.Join(",", AlleVerzekeringen), akteStatus, sendMail);
-                    IsBusy = false;
-                    ExecuteClosePopupCommand("close");
-                }
-                else
-                {
-                    foreach (var singleAkte in miscellaneousRepository.GetAktesVanCessieByUitvaatId(Globals.UitvaartCode))
-                    {
-                        if (singleAkte != null && !singleAkte.IsDeleted && File.Exists(singleAkte.DocumentUrl) && "AkteVanCessie_" + SelectedVerzekering.VerzekeringName == singleAkte.DocumentName)
-                        {
-                            File.Delete(singleAkte.DocumentUrl);
-                            akteStatus = true;
-                        }
-                    }
-
-                    await CreateAkteFile(Globals.UitvaartCode, SelectedVerzekering.VerzekeringName, akteStatus, sendMail);
-                    IsBusy = false;
-                    ExecuteClosePopupCommand("close");
-                }
-            }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-        }
-        public async Task CreateDocumentOverdracht(object obj)
-        {
-            string documentOption = obj.ToString();
-            string destinationFile = string.Empty;
-            Guid documentId;
-            bool initialCreation = false;
-
-            if (string.IsNullOrWhiteSpace(TagModel.OverdrachtTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Overdracht.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.OverdrachtTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Overdracht");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Overdracht.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.OverdrachtTag))
-                    File.Delete(TagModel.OverdrachtTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Overdracht");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Overdracht.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var overdrachtDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Overdracht").ConfigureAwait(false);
-                documentId = overdrachtDocument.BijlageId;
-                string savedHash = overdrachtDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.OverdrachtTag);
-
-                if (savedHash != documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{overdrachtDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.OverdrachtTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.OverdrachtTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.OverdrachtTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.OverdrachtTag))
-                        {
-                            File.Delete(TagModel.OverdrachtTag);
-                            OverdrachtModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Overdracht.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.OverdrachtTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.OverdrachtTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.OverdrachtTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-
-            OverdrachtModel = await miscellaneousRepository.GetDocumentOverdrachtInfoAsync(Globals.UitvaartCodeGuid);
-            OverdrachtModel.DocumentId = documentId;
-            OverdrachtModel.DestinationFile = destinationFile;
-            OverdrachtModel.UitvaartId = Globals.UitvaartCodeGuid;
-            OverdrachtModel.UitvaartNummer = Globals.UitvaartCode;
-
-            if (!OverdrachtModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-            OverledeneBijlagesModel docResults = await documentGenerator.UpdateOverdracht(OverdrachtModel).ConfigureAwait(true);
-
-            if (docResults != null)
-            {
-                docResults.DocumentInconsistent = false;
-                docResults.IsDeleted = false;
-                docResults.DocumentType = "Word";
-                docResults.DocumentName = "Overdracht";
-                docResults.DocumentUrl = OverdrachtModel.DestinationFile;
-                docResults.DocumentHash = Checksum.GetMD5Checksum(OverdrachtModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting overdracht docinfo: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating overdracht docinfo: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-            TagModel.OverdrachtTag = docResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(TagModel.OverdrachtTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.OverdrachtTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(TagModel.OverdrachtTag);
-                    break;
-            }
-            return;
+                    var bijlageModels = await documentGenerator.UpdateAkte(model);
+                    return bijlageModels;
+                },
+                prepareAdditionalData: () => Task.FromResult<AkteDocument?>(null),
+                createRepository: createRepository,
+                updateRepository: updateRepository,
+                deleteRepository: deleteRepository,
+                updateTagModels: (docResults) =>{},
+                generatingWindow: generatingView
+            );
         }
         public async Task CreateDocumentChecklist(object obj)
         {
-            string documentOption = obj.ToString();
-            string destinationFile = string.Empty;
-            bool initialCreation = false;
-            Guid documentId = Guid.Empty;
-
-            if (string.IsNullOrWhiteSpace(TagModel.ChecklistTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.ChecklistTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Checklist");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.ChecklistTag))
-                    File.Delete(TagModel.ChecklistTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Checklist");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var checklistDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Checklist").ConfigureAwait(false);
-                documentId = checklistDocument.BijlageId;
-
-                string savedHash = checklistDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.ChecklistTag);
-
-                if (savedHash != documentHash)
+            await CreateDocument<ChecklistDocument, ChecklistDocument?>(
+                obj.ToString(),
+                "Checklist.docx",
+                "Checklist",
+                "Word",
+                TagModel.ChecklistTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentChecklistInfoAsync(guid),
+                generateDocument: async (model, additionalData) =>
                 {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{checklistDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.ChecklistTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.ChecklistTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.ChecklistTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.ChecklistTag))
-                        {
-                            File.Delete(TagModel.ChecklistTag);
-                            ChecklistModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Checklist.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.ChecklistTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.ChecklistTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.ChecklistTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-            ChecklistModel = await miscellaneousRepository.GetDocumentChecklistInfoAsync(Globals.UitvaartCodeGuid);
-            ChecklistModel.DocumentId = documentId;
-            ChecklistModel.DestinationFile = destinationFile;
-            ChecklistModel.UitvaartNummer = Globals.UitvaartCode;
-            ChecklistModel.UitvartLeider = Globals.UitvaarLeider;
-
-            var werknemers = new List<ChecklistOpbarenDocument>();
-
-            if (ChecklistModel.OpbarenInfo != null)
-            {
-                werknemers = JsonConvert.DeserializeObject<List<ChecklistOpbarenDocument>>(ChecklistModel.OpbarenInfo);
-
-                foreach (var werknemer in werknemers)
-                {
-                    var searchEmployeeName = miscellaneousRepository.GetWerknemer(werknemer.WerknemerId);
-
-                    if (searchEmployeeName != null)
-                    {
-                        if (string.IsNullOrEmpty(searchEmployeeName.Tussenvoegsel))
-                        {
-                            werknemer.WerknemerName = searchEmployeeName.Initialen + ' ' + searchEmployeeName.Achternaam;
-                        }
-                        else
-                        {
-                            werknemer.WerknemerName = searchEmployeeName.Initialen + ' ' + searchEmployeeName.Tussenvoegsel + ' ' + searchEmployeeName.Achternaam;
-                        }
-                    }
-                }
-            }
-
-            if (!ChecklistModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-
-            OverledeneBijlagesModel docResults = await documentGenerator.UpdateChecklist(ChecklistModel, werknemers);
-
-            if (docResults != null)
-            {
-                docResults.DocumentInconsistent = false;
-                docResults.IsDeleted = false;
-                docResults.DocumentType = "Word";
-                docResults.DocumentName = "Checklist";
-                docResults.DocumentUrl = ChecklistModel.DestinationFile;
-                docResults.UitvaartId = Globals.UitvaartCodeGuid;
-                docResults.DocumentHash = Checksum.GetMD5Checksum(ChecklistModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting checklist: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating checklist: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-            TagModel.ChecklistTag = docResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(TagModel.ChecklistTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.ChecklistTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(TagModel.ChecklistTag);
-                    break;
-            }
-            return;
+                    model.UitvaartNummer = Globals.UitvaartCode;
+                    model.UitvartLeider = Globals.UitvaarLeider;
+                    var werknemers = GetWerknemersFromModel(model.OpbarenInfo);
+                    return await documentGenerator.UpdateChecklist(model, werknemers);
+                },
+                prepareAdditionalData: () => Task.FromResult<ChecklistDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.ChecklistTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentDienst(object obj)
         {
-            string documentOption = obj.ToString();
-            string destinationFile = string.Empty;
-            bool initialCreation = false;
-            Guid documentId;
-
-            if (string.IsNullOrWhiteSpace(TagModel.AanvraagDienstTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.AanvraagDienstTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "AanvraagDienst");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.AanvraagDienstTag))
-                    File.Delete(TagModel.AanvraagDienstTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "AanvraagDienst");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var dienstDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "AanvraagDienst").ConfigureAwait(false);
-                documentId = dienstDocument.BijlageId;
-                string savedHash = dienstDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.AanvraagDienstTag);
-
-                if (savedHash != documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{dienstDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.AanvraagDienstTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.AanvraagDienstTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.AanvraagDienstTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.AanvraagDienstTag))
-                        {
-                            File.Delete(TagModel.AanvraagDienstTag);
-                            DienstAanvraagModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Dienst.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.AanvraagDienstTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.AanvraagDienstTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.AanvraagDienstTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-
-            DienstAanvraagModel = await miscellaneousRepository.GetDienstInfoAsync(Globals.UitvaartCodeGuid);
-            DienstAanvraagModel.DocumentId = documentId;
-            DienstAanvraagModel.DestinationFile = destinationFile;
-
-            if (!DienstAanvraagModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult dienstaanvraag = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (dienstaanvraag == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-            OverledeneBijlagesModel docResults = await documentGenerator.UpdateDienst(DienstAanvraagModel).ConfigureAwait(true);
-
-            if (docResults != null)
-            {
-                docResults.DocumentInconsistent = false;
-                docResults.IsDeleted = false;
-                docResults.DocumentType = "Word";
-                docResults.UitvaartId = Globals.UitvaartCodeGuid;
-                docResults.DocumentName = "AanvraagDienst";
-                docResults.DocumentUrl = DienstAanvraagModel.DestinationFile;
-                docResults.DocumentHash = Checksum.GetMD5Checksum(DienstAanvraagModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting dienstaanvraag: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating dienstaanvraag: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-
-            TagModel.AanvraagDienstTag = docResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(TagModel.AanvraagDienstTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.AanvraagDienstTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(TagModel.AanvraagDienstTag);
-                    break;
-            }
-            return;
+            await CreateDocument<DienstDocument, DienstDocument?>(
+                obj.ToString(),
+                "Aanvraag.Dienst.docx",
+                "AanvraagDienst",
+                "Word",
+                TagModel.AanvraagDienstTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDienstInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateDienst(model),
+                prepareAdditionalData: () => Task.FromResult<DienstDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.AanvraagDienstTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentDocument(object obj)
         {
-            string documentOption = obj.ToString();
-            string destinationFile = string.Empty;
-            Guid documentId;
-            bool initialCreation = false;
-            if (string.IsNullOrWhiteSpace(TagModel.DocumentTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Document.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.DocumentTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Document");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Document.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.DocumentTag))
-                    File.Delete(TagModel.DocumentTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Document");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Document.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var docDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Document").ConfigureAwait(false);
-                documentId = docDocument.BijlageId;
-                string savedHash = docDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.DocumentTag);
-
-                if (savedHash != documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{docDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.DocumentTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.DocumentTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.DocumentTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.DocumentTag))
-                        {
-                            File.Delete(TagModel.DocumentTag);
-                            DocumentModel.Updated = true;
-                            DocumentModel.InitialCreation = false;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Document.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.DocumentTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.DocumentTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.DocumentTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-
-            DocumentModel = await miscellaneousRepository.GetDocumentDocumentInfoAsync(Globals.UitvaartCodeGuid);
-            DocumentModel.DocumentId = documentId;
-            DocumentModel.DestinationFile = destinationFile;
-            DocumentModel.UitvaartId = Globals.UitvaartCodeGuid;
-            DocumentModel.UitvaartNummer = Globals.UitvaartCode;
-
-            if (!DocumentModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-            OverledeneBijlagesModel docResults = await documentGenerator.UpdateDocument(DocumentModel).ConfigureAwait(true);
-
-            if (docResults != null)
-            {
-                docResults.DocumentInconsistent = false;
-                docResults.IsDeleted = false;
-                docResults.DocumentType = "Word";
-                docResults.UitvaartId = Globals.UitvaartCodeGuid;
-                docResults.DocumentName = "Document";
-                docResults.DocumentUrl = DocumentModel.DestinationFile;
-                docResults.DocumentHash = Checksum.GetMD5Checksum(DocumentModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting Document: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(docResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating Document: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-            TagModel.DocumentTag = docResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(destinationFile);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(destinationFile);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(destinationFile);
-                    break;
-            }
-            return;
+            await CreateDocument<DocumentDocument, DocumentDocument?>(
+                obj.ToString(),
+                "Document.docx",
+                "Document",
+                "Word",
+                TagModel.DocumentTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentDocumentInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateDocument(model),
+                prepareAdditionalData: () => Task.FromResult<DocumentDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.DocumentTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentKoffie(object obj)
         {
-            string documentOption = (string)obj;
-            string destinationFile = string.Empty;
-            Guid documentId;
-            bool initialCreation = false;
-
-
-            if (string.IsNullOrEmpty(TagModel.KoffiekamerTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.KoffiekamerTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Koffiekamer");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.KoffiekamerTag))
-                    File.Delete(TagModel.KoffiekamerTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Koffiekamer");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var koffieDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Koffiekamer").ConfigureAwait(false);
-                documentId = koffieDocument.BijlageId;
-                string savedHash = koffieDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.KoffiekamerTag);
-
-                if (savedHash == documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{koffieDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.KoffiekamerTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.KoffiekamerTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.KoffiekamerTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.KoffiekamerTag))
-                        {
-                            File.Delete(TagModel.KoffiekamerTag);
-                            KoffieKamerModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aanvraag.Koffiekamer.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.KoffiekamerTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.KoffiekamerTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.KoffiekamerTag);
-                            break;
-                    }
-                    return;
-                }
-
-            }
-
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-            KoffieKamerModel = await miscellaneousRepository.GetKoffieKamerInfoAsync(Globals.UitvaartCodeGuid);
-            KoffieKamerModel.DocumentId = documentId;
-            KoffieKamerModel.DestinationFile = destinationFile;
-
-            if (!KoffieKamerModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                }
-            }
-
-            OverledeneBijlagesModel koffieResults = await documentGenerator.UpdateKoffie(KoffieKamerModel).ConfigureAwait(true);
-
-            if (koffieResults != null)
-            {
-                koffieResults.DocumentInconsistent = false;
-                koffieResults.IsDeleted = false;
-                koffieResults.DocumentType = "Word";
-                koffieResults.UitvaartId = Globals.UitvaartCodeGuid;
-                koffieResults.DocumentName = "Koffiekamer";
-                koffieResults.DocumentUrl = KoffieKamerModel.DestinationFile;
-                koffieResults.DocumentHash = Checksum.GetMD5Checksum(KoffieKamerModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(koffieResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting koffie: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(koffieResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating koffie: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-
-            TagModel.KoffiekamerTag = koffieResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(TagModel.KoffiekamerTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.KoffiekamerTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(TagModel.KoffiekamerTag);
-                    break;
-            }
-            return;
+            await CreateDocument<KoffieKamerDocument, KoffieKamerDocument?>(
+                obj.ToString(),
+                "Aanvraag.Koffiekamer.docx",
+                "Koffiekamer",
+                "Word",
+                TagModel.KoffiekamerTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetKoffieKamerInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateKoffie(model),
+                prepareAdditionalData: () => Task.FromResult<KoffieKamerDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.KoffiekamerTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentBezittingen(object obj)
         {
-            string documentOption = (string)obj;
-            string destinationFile = string.Empty;
-            Guid documentId;
-            bool initialCreation = false;
-
-            if (string.IsNullOrEmpty(TagModel.BezittingenTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Bezittingen.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.BezittingenTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Bezittingen");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Bezittingen.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.BezittingenTag))
-                    File.Delete(TagModel.BezittingenTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Bezittingen");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Bezittingen.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var bezittingenDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Bezittingen").ConfigureAwait(false);
-                documentId = bezittingenDocument.BijlageId;
-                string savedHash = bezittingenDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.BezittingenTag);
-
-                if (savedHash != documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{bezittingenDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.BezittingenTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.BezittingenTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.BezittingenTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.BezittingenTag))
-                        {
-                            File.Delete(TagModel.BezittingenTag);
-                            BezittingenModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Bezittingen.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.BezittingenTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.BezittingenTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.BezittingenTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-            BezittingenModel = await miscellaneousRepository.GetDocumentBezittingInfoAsync(Globals.UitvaartCodeGuid);
-            BezittingenModel.DocumentId = documentId;
-            BezittingenModel.DestinationFile = destinationFile;
-
-            if (!BezittingenModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-
-            OverledeneBijlagesModel bezittingResults = await documentGenerator.UpdateBezittingen(BezittingenModel).ConfigureAwait(true);
-
-            if (bezittingResults != null)
-            {
-                bezittingResults.DocumentInconsistent = false;
-                bezittingResults.IsDeleted = false;
-                bezittingResults.DocumentType = "Word";
-                bezittingResults.UitvaartId = Globals.UitvaartCodeGuid;
-                bezittingResults.DocumentName = "Bezittingen";
-                bezittingResults.DocumentUrl = BezittingenModel.DestinationFile;
-                bezittingResults.DocumentHash = Checksum.GetMD5Checksum(BezittingenModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(bezittingResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error insert bezitting: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(bezittingResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating bezitting: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-            TagModel.BezittingenTag = bezittingResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(TagModel.BezittingenTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.BezittingenTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(TagModel.BezittingenTag);
-                    break;
-            }
-            return;
+            await CreateDocument<BezittingenDocument, BezittingenDocument?>(
+                obj.ToString(),
+                "Bezittingen.docx",
+                "Bezittingen",
+                "Word",
+                TagModel.BezittingenTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentBezittingInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateBezittingen(model),
+                prepareAdditionalData: () => Task.FromResult<BezittingenDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.BezittingenTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentCrematie(object obj)
         {
-            string documentOption = (string)obj;
-            string destinationFile = string.Empty;
-            Guid documentId;
-            bool initialCreation = false;
-
-            if (string.IsNullOrEmpty(TagModel.OpdrachtCrematieTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Crematie.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.OpdrachtCrematieTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "OpdrachtCrematie");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Crematie.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.OpdrachtCrematieTag))
-                    File.Delete(TagModel.OpdrachtCrematieTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "OpdrachtCrematie");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Crematie.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var crematieDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "OpdrachtCrematie").ConfigureAwait(false);
-                documentId = crematieDocument.BijlageId;
-                string savedHash = crematieDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.OpdrachtCrematieTag);
-
-                if (savedHash != documentHash)
+            await CreateDocument<CrematieDocument, FactuurInfoCrematie?>(
+                documentOption: obj.ToString(),
+                fileName: "Opdracht.Crematie.docx",
+                documentType: "OpdrachtCrematie",
+                fileType: "Word",
+                tag: TagModel.OpdrachtCrematieTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentCrematieInfoAsync(Globals.UitvaartCodeGuid),
+                generateDocument: async (model, additionalData) =>
                 {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{crematieDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.OpdrachtCrematieTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.OpdrachtCrematieTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.OpdrachtCrematieTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.OpdrachtCrematieTag))
-                        {
-                            File.Delete(TagModel.OpdrachtCrematieTag);
-                            CrematieModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Crematie.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrePrintFile(TagModel.OpdrachtCrematieTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.OpdrachtCrematieTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.PreEmailFile(TagModel.OpdrachtCrematieTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-            CrematieModel = await miscellaneousRepository.GetDocumentCrematieInfoAsync(Globals.UitvaartCodeGuid);
-            CrematieModel.DocumentId = documentId;
-            CrematieModel.DestinationFile = destinationFile;
+                    var crematieDocument = model;
 
-            if (!CrematieModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
+                    FactuurInfoCrematie? additionalDataResult = null;
+                    if (crematieDocument.Herkomst != Guid.Empty)
+                        additionalDataResult = await miscellaneousRepository.GetFactuurInfo(crematieDocument.Herkomst);
 
-            if(CrematieModel.Herkomst != Guid.Empty)
-            {
-                FactuurCreatieModel = await miscellaneousRepository.GetFactuurInfo(CrematieModel.Herkomst);
-            }
-            else
-            {
-                FactuurCreatieModel.FactuurAdresNaam = string.Empty;
-                FactuurCreatieModel.FactuurAdresRelatie = string.Empty;
-                FactuurCreatieModel.FactuurAdresStraat = string.Empty; 
-                FactuurCreatieModel.FactuurAdresPostcode = string.Empty;
-                FactuurCreatieModel.FactuurAdresGeslacht = string.Empty;
-                FactuurCreatieModel.FactuurAdresTelefoon = string.Empty;
-                FactuurCreatieModel.FactuurAdresPlaats = string.Empty;
-            }
-
-            OverledeneBijlagesModel crematieResults = await documentGenerator.UpdateCrematie(CrematieModel, FactuurCreatieModel).ConfigureAwait(true);
-
-            if (crematieResults != null)
-            {
-                crematieResults.DocumentInconsistent = false;
-                crematieResults.IsDeleted = false;
-                crematieResults.DocumentType = "Word";
-                crematieResults.UitvaartId = Globals.UitvaartCodeGuid;
-                crematieResults.DocumentUrl = CrematieModel.DestinationFile;
-                crematieResults.DocumentName = "OpdrachtCrematie";
-                crematieResults.DocumentHash = Checksum.GetMD5Checksum(CrematieModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(crematieResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting crematie: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(crematieResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating crematie: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-
-            TagModel.OpdrachtCrematieTag = crematieResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrePrintFile(TagModel.OpdrachtCrematieTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.OpdrachtCrematieTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.PreEmailFile(TagModel.OpdrachtCrematieTag);
-                    break;
-            }
-            return;
+                    return await documentGenerator.UpdateCrematie(crematieDocument, additionalDataResult);
+                },
+                prepareAdditionalData: async () => null,
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.OpdrachtCrematieTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentBegrafenis(object obj)
         {
-            string documentOption = (string)obj;
-            string destinationFile = string.Empty;
-            Guid documentId;
-            bool initialCreation = false;
-
-            if (string.IsNullOrEmpty(TagModel.OpdrachtBegrafenisTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Begrafenis.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.OpdrachtBegrafenisTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "OpdrachtBegrafenis");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Begrafenis.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.OpdrachtBegrafenisTag))
-                    File.Delete(TagModel.OpdrachtBegrafenisTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "OpdrachtBegrafenis");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Begrafenis.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var begrafenisDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "OpdrachtBegrafenis").ConfigureAwait(false);
-                documentId = begrafenisDocument.BijlageId;
-                string savedHash = begrafenisDocument.DocumentHash;
-
-                string documentHash = Checksum.GetMD5Checksum(TagModel.OpdrachtBegrafenisTag);
-
-                if (savedHash != documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{begrafenisDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.OpdrachtBegrafenisTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.OpdrachtBegrafenisTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.OpdrachtBegrafenisTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.OpdrachtBegrafenisTag))
-                        {
-                            File.Delete(TagModel.OpdrachtBegrafenisTag);
-                            BegrafenisModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Opdracht.Begrafenis.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.OpdrachtBegrafenisTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.OpdrachtBegrafenisTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.OpdrachtBegrafenisTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-            BegrafenisModel = await miscellaneousRepository.GetDocumentBegrafenisInfoAsync(Globals.UitvaartCodeGuid);
-            BegrafenisModel.DocumentId = documentId;
-            BegrafenisModel.DestinationFile = destinationFile;
-
-            if (!BegrafenisModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-
-            OverledeneBijlagesModel begrafenisResults = await documentGenerator.UpdateBegrafenis(BegrafenisModel).ConfigureAwait(true);
-
-            if (begrafenisResults != null)
-            {
-                begrafenisResults.DocumentInconsistent = false;
-                begrafenisResults.IsDeleted = false;
-                begrafenisResults.DocumentType = "Word";
-                begrafenisResults.UitvaartId = Globals.UitvaartCodeGuid;
-                begrafenisResults.DocumentUrl = BegrafenisModel.DestinationFile;
-                begrafenisResults.DocumentName = "OpdrachtBegrafenis";
-                begrafenisResults.DocumentHash = Checksum.GetMD5Checksum(BegrafenisModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(begrafenisResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting begrafenis: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(begrafenisResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating begrafenis: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-            ButtonContentModel.OpdrachtBegrafenisContent = "Bewerken";
-            TagModel.OpdrachtBegrafenisTag = begrafenisResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrePrintFile(TagModel.OpdrachtBegrafenisTag);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(TagModel.OpdrachtBegrafenisTag);
-                    break;
-                case "Email":
-                    DocumentFunctions.PreEmailFile(TagModel.OpdrachtBegrafenisTag);
-                    break;
-            }
-            return;
+            await CreateDocument<BegrafenisDocument, BegrafenisDocument?>(
+                obj.ToString(),
+                "Opdracht.Begrafenis.docx",
+                "OpdrachtBegrafenis",
+                "Word",
+                TagModel.OpdrachtBegrafenisTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentBegrafenisInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateBegrafenis(model),
+                prepareAdditionalData: () => Task.FromResult<BegrafenisDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.OpdrachtBegrafenisTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentTerugmelding(object obj)
         {
-            string documentOption = (string)obj;
-            string destinationFile = string.Empty;
-            string savedHash = string.Empty;
-            string documentHash = string.Empty;
-            Guid documentId;
-
-            bool initialCreation = false;
-            List<string> documentUrls = new List<string>();
-            bool recreationTrigger = false;
-
-            if (string.IsNullOrEmpty(TagModel.TerugmeldingTag))
+            var terugmeldingData = await miscellaneousRepository.GetDocumentTerugmeldingInfoAsync(Globals.UitvaartCodeGuid);
+            if (terugmeldingData == null || string.IsNullOrWhiteSpace(terugmeldingData.Polisnummer))
             {
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var terugmeldingDocuments = await miscellaneousRepository.GetDocumentsInformationAsync(Globals.UitvaartCodeGuid, "Terugmelding").ConfigureAwait(false);
-
-                if (terugmeldingDocuments.Count > 1)
-                {
-                    foreach (var document in terugmeldingDocuments)
-                    {
-                        Debug.WriteLine(document.DocumentName);
-                        documentId = document.BijlageId;
-
-                        if (!File.Exists(document.DocumentUrl))
-                        {
-                            recreationTrigger = true;
-                            Debug.WriteLine($"File does not exist: {document.DocumentUrl}");
-                        }
-                        else
-                        {
-                            documentHash = Checksum.GetMD5Checksum(document.DocumentUrl);
-                            savedHash = document.DocumentHash;
-
-                            Debug.WriteLine($"Processing document: {document.DocumentUrl}, Hash: {documentHash}, Saved Hash: {savedHash}");
-                        }
-
-                        if (documentOption == "Opnieuw" || savedHash != documentHash || !File.Exists(document.DocumentUrl))
-                            recreationTrigger = true;
-                        else
-                            documentUrls.Add(document.DocumentUrl);
-                    }
-
-                    if (!recreationTrigger)
-                    {
-                        Debug.WriteLine("No recreation required, proceeding with selected document option.");
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrintFiles(documentUrls);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                foreach(var doc in documentUrls)
-                                    Debug.WriteLine(doc);
-
-                                DocumentFunctions.OpenFiles(documentUrls);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFiles(documentUrls);
-                                break;
-                        }
-                        return;
-                    }
-                    else
-                    {
-                        foreach (var document in terugmeldingDocuments)
-                        {
-                            deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Terugmelding");
-                            if (File.Exists(document.DocumentUrl))
-                            {
-                                File.Delete(document.DocumentUrl);
-                                TerugmeldingModel.Updated = true;
-                                Debug.WriteLine($"Deleted old document: {document.DocumentUrl}");
-                            }
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
-                        Debug.WriteLine("New document will be created at: " + destinationFile);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else
-                {
-                    var document = terugmeldingDocuments.First();
-                    documentId = document.BijlageId;
-                    savedHash = document.DocumentHash;
-                    documentHash = Checksum.GetMD5Checksum(TagModel.TerugmeldingTag);
-
-                    if (documentOption == "Opnieuw")
-                    {
-                        if (File.Exists(document.DocumentUrl))
-                            File.Delete(document.DocumentUrl);
-
-                        TerugmeldingModel.Updated = true;
-                        deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Terugmelding");
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                        initialCreation = true;
-                    }
-                    else if (savedHash == documentHash && File.Exists(document.DocumentUrl))
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrintFile(TagModel.TerugmeldingTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.TerugmeldingTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.TerugmeldingTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else
-                    {
-                        if (File.Exists(TagModel.TerugmeldingTag))
-                        {
-                            File.Delete(TagModel.TerugmeldingTag);
-                            TerugmeldingModel.Updated = true;
-                            Debug.WriteLine("Deleted existing document: " + TagModel.TerugmeldingTag);
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Terugmelding.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-            }
-            
-            TerugmeldingModel.DestinationFile = destinationFile;
-            TerugmeldingModel = await miscellaneousRepository.GetDocumentTerugmeldingInfoAsync(Globals.UitvaartCodeGuid).ConfigureAwait(false);
-
-            if (!TerugmeldingModel.HasData())
-            {
-                Debug.WriteLine("No data found for Terugmelding, prompting user.");
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-
-            var terugmeldingPolissen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(TerugmeldingModel.Polisnummer);
-            List<string> distinctPolissen = new List<string>();
-
-            foreach (var terugmeldingPolis in terugmeldingPolissen)
-                foreach (var polis in terugmeldingPolis.PolisInfoList)
-                    if (!string.IsNullOrEmpty(polis.PolisNr) && !distinctPolissen.Contains(polis.PolisNr))
-                        distinctPolissen.Add(polis.PolisNr);
-
-            Debug.WriteLine($"Found {distinctPolissen.Count} unique policies.");
-
-            if (distinctPolissen.Count == 0)
-            {
-                MessageBox.Show("Er zijn geen polissen opggeven voor dit uitvaartnummer\r\n" +
-                    "Je kunt dus ook geen terugmelding maken.", "Geen polis", MessageBoxButton.OK, MessageBoxImage.Hand);
+                MessageBox.Show("Géén terugmelding data gevonden.","Data Error",MessageBoxButton.OK,MessageBoxImage.Warning);
                 return;
             }
 
-            if (distinctPolissen.Count > 1)
+            var verzekeringen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(terugmeldingData.Polisnummer);
+            if (verzekeringen == null || verzekeringen.Count == 0)
             {
-                foreach (var polis in distinctPolissen)
-                {
-                    TerugmeldingModel.DocumentId = Guid.NewGuid();
-                    TerugmeldingModel.Polisnummer = polis;
-                    destinationFile = await CreateDirectoryPolis(Globals.UitvaartCode, "Terugmelding.docx", polis).ConfigureAwait(true);
-                    TerugmeldingModel.DestinationFile = destinationFile;
-
-                    Debug.WriteLine($"Creating document for policy: {polis}, file destination: {destinationFile}");
-                    documentUrls.Add(destinationFile);
-
-                    var terugmeldingResults = await documentGenerator.UpdateTerugmelding(TerugmeldingModel).ConfigureAwait(true);
-
-                    if (terugmeldingResults != null)
-                    {
-                        terugmeldingResults.DocumentInconsistent = false;
-                        terugmeldingResults.IsDeleted = false;
-                        terugmeldingResults.DocumentType = "Word";
-                        terugmeldingResults.UitvaartId = Globals.UitvaartCodeGuid;
-                        terugmeldingResults.DocumentUrl = destinationFile;
-                        terugmeldingResults.DocumentName = "Terugmelding";
-                        terugmeldingResults.DocumentHash = Checksum.GetMD5Checksum(destinationFile);
-
-                        Debug.WriteLine(terugmeldingResults.DocumentUrl);
-
-                        if (initialCreation)
-                        {
-                            try
-                            {
-                                Debug.WriteLine("insert");
-                                await createRepository.InsertDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
-                                Debug.WriteLine("Inserted document info into repository.");
-                            }
-                            catch (System.Exception ex)
-                            {
-                                MessageBox.Show($"Error inserting terugmelding: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                Debug.WriteLine("update");
-                                await updateRepository.UpdateDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
-                                Debug.WriteLine("Updated document info in repository.");
-                            }
-                            catch (System.Exception ex)
-                            {
-                                MessageBox.Show($"Error updating terugmelding: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                                return;
-                            }
-                        }
-                    }
-                }
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                TagModel.TerugmeldingTag = "Alles";
-                switch (documentOption)
-                {
-                    case "Print":
-                        DocumentFunctions.PrintFiles(documentUrls);
-                        break;
-                    case "Word":
-                    case "Opnieuw":
-                        DocumentFunctions.OpenFiles(documentUrls);
-                        break;
-                    case "Email":
-                        DocumentFunctions.EmailFiles(documentUrls);
-                        break;
-                }
+                MessageBox.Show("Géén verzekering data gevonden in terugmelding.","Data Error",MessageBoxButton.OK,MessageBoxImage.Warning);
                 return;
             }
-            else if (distinctPolissen.Count == 1)
+
+            var documentsInfo = verzekeringen
+                .Where(v => !string.IsNullOrEmpty(v.VerzekeringName))
+                .Select(v => (
+                    fileName: $"{v.VerzekeringName}_Terugmelding.docx",
+                    documentType: "Terugmelding",
+                    tag: TagModel.TerugmeldingTag
+                ))
+                .ToList();
+
+            if (documentsInfo.Count == 0)
             {
-                destinationFile = await CreateDirectoryPolis(Globals.UitvaartCode, "Terugmelding.docx", distinctPolissen.First()).ConfigureAwait(true);
-                TerugmeldingModel.DestinationFile = destinationFile;
-                TerugmeldingModel.Polisnummer = distinctPolissen.First();
-
-                var terugmeldingResults = await documentGenerator.UpdateTerugmelding(TerugmeldingModel).ConfigureAwait(true);
-
-                if (terugmeldingResults != null)
-                {
-                    terugmeldingResults.DocumentInconsistent = false;
-                    terugmeldingResults.IsDeleted = false;
-                    terugmeldingResults.DocumentType = "Word";
-                    terugmeldingResults.UitvaartId = Globals.UitvaartCodeGuid;
-
-                    string dirPath = Path.GetDirectoryName(terugmeldingResults.DocumentUrl);
-                    string newPolisFilePath = Path.Combine(dirPath, $"Terugmelding.{TerugmeldingModel.Polisnummer}.docx");
-                    File.Move(terugmeldingResults.DocumentUrl, newPolisFilePath);
-
-                    Debug.WriteLine($"File moved to new path: {newPolisFilePath}");
-
-                    terugmeldingResults.DocumentUrl = newPolisFilePath;
-                    terugmeldingResults.DocumentName = "Terugmelding";
-                    terugmeldingResults.DocumentHash = Checksum.GetMD5Checksum(newPolisFilePath);
-
-                    TagModel.TerugmeldingTag = newPolisFilePath;
-
-                    if (initialCreation)
-                    {
-                        try
-                        {
-                            await createRepository.InsertDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
-                        }
-                        catch (System.Exception ex)
-                        {
-                            MessageBox.Show($"Error inserting terugmelding: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            await updateRepository.UpdateDocumentInfoAsync(terugmeldingResults).ConfigureAwait(false);
-                        }
-                        catch (System.Exception ex)
-                        {
-                            MessageBox.Show($"Error updating terugmelding: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                            ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                            return;
-                        }
-                    }
-                }
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                Debug.WriteLine(documentOption);
-                switch (documentOption)
-                {
-                    case "Print":
-                        DocumentFunctions.PrintFile(destinationFile);
-                        break;
-                    case "Word":
-                    case "Opnieuw":
-                        DocumentFunctions.OpenFile(destinationFile);
-                        break;
-                    case "Email":
-                        DocumentFunctions.EmailFile(destinationFile);
-                        break;
-                }
+                MessageBox.Show(
+                    "No valid verzekeringen found for document generation.",
+                    "No Documents",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
                 return;
             }
+
+            await CreateMultipleDocuments<TerugmeldingDocument, TerugmeldingDocument?>(
+                documentOption: obj.ToString(),
+                documentsInfo: documentsInfo,
+                templateFile: "Terugmelding.docx",
+                fileType: "Word",
+                fetchModel: async (guid) => terugmeldingData,
+                generateDocument: async (model, additionalData) =>
+                {
+                    var bijlageModels = await documentGenerator.UpdateTerugmelding(model);
+                    return bijlageModels;
+                },
+                prepareAdditionalData: () => Task.FromResult<TerugmeldingDocument?>(null),
+                createRepository: createRepository,
+                updateRepository: updateRepository,
+                deleteRepository: deleteRepository,
+                updateTagModels: (docResults) =>
+                {
+                    if (docResults.Any())
+                        TagModel.TerugmeldingTag = "Alles";
+                },
+                generatingWindow: generatingView
+            );
         }
         public async Task CreateDocumentTevredenheid(object obj)
         {
-            string documentOption = (string)obj;
-            string destinationFile = string.Empty;
-            bool initialCreation = false;
-            Guid documentId;
-
-            if (string.IsNullOrEmpty(TagModel.TevredenheidTag))
-            {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.TevredenheidTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Tevredenheid");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.TevredenheidTag))
-                    File.Delete(TagModel.TevredenheidTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Tevredenheid");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var tevredenheidDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Tevredenheid").ConfigureAwait(false);
-                documentId = tevredenheidDocument.BijlageId;
-
-                string savedHash = tevredenheidDocument.DocumentHash;
-                string documentHash = Checksum.GetMD5Checksum(TagModel.TevredenheidTag);
-
-
-
-                if (savedHash != documentHash)
-                {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{tevredenheidDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.TevredenheidTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.TevredenheidTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.TevredenheidTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.TevredenheidTag))
-                        {
-                            File.Delete(TagModel.TevredenheidTag);
-                            TevredenheidModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Tevredenheidsonderzoek.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
-                }
-                else if (savedHash == documentHash)
-                {
-                    switch (documentOption)
-                    {
-                        case "Print":
-                            DocumentFunctions.PrintFile(TagModel.TevredenheidTag);
-                            break;
-                        case "Word":
-                        case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.TevredenheidTag);
-                            break;
-                        case "Email":
-                            DocumentFunctions.EmailFile(TagModel.TevredenheidTag);
-                            break;
-                    }
-                    return;
-                }
-            }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-            TevredenheidModel = await miscellaneousRepository.GetDocumentTevredenheidsInfoAsync(Globals.UitvaartCodeGuid);
-            TevredenheidModel.DocumentId = documentId;
-            TevredenheidModel.DestinationFile = destinationFile;
-
-            if (!TevredenheidModel.HasData())
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-                else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
-            }
-
-            OverledeneBijlagesModel tevredenheidResults = await documentGenerator.UpdateTevredenheid(TevredenheidModel).ConfigureAwait(true);
-
-            if (tevredenheidResults != null)
-            {
-                tevredenheidResults.DocumentInconsistent = false;
-                tevredenheidResults.IsDeleted = false;
-                tevredenheidResults.DocumentType = "Word";
-                tevredenheidResults.UitvaartId = Globals.UitvaartCodeGuid;
-                tevredenheidResults.DocumentName = "Tevredenheid";
-                tevredenheidResults.DocumentUrl = TevredenheidModel.DestinationFile;
-                tevredenheidResults.DocumentHash = Checksum.GetMD5Checksum(TevredenheidModel.DestinationFile);
-
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(tevredenheidResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting tevredenheids docinfo: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(tevredenheidResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updatign tevredenheids docinfo: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-            }
-
-            TagModel.TevredenheidTag = tevredenheidResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-            switch (documentOption)
-            {
-                case "Print":
-                    DocumentFunctions.PrintFile(destinationFile);
-                    break;
-                case "Word":
-                case "Opnieuw":
-                    DocumentFunctions.OpenFile(destinationFile);
-                    break;
-                case "Email":
-                    DocumentFunctions.EmailFile(destinationFile);
-                    break;
-            }
-            return;
+            await CreateDocument<TevredenheidDocument, TevredenheidDocument?>(
+                obj.ToString(),
+                "Tevredenheidsonderzoek.docx",
+                "Tevredenheid",
+                "Word",
+                TagModel.TevredenheidTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentTevredenheidsInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateTevredenheid(model),
+                prepareAdditionalData: () => Task.FromResult<TevredenheidDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.TevredenheidTag = docResults.DocumentUrl; },
+                generatingView
+            );
         }
         public async Task CreateDocumentAangifte(object obj)
         {
-            string documentOption = obj.ToString();
-            string destinationFile = string.Empty;
-            bool initialCreation = false;
-            Guid documentId;
+            await CreateDocument<AangifteDocument, AangifteDocument?>(
+                obj.ToString(),
+                "Aangifte.docx",
+                "Aangifte",
+                "Word",
+                TagModel.AangifteTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentAangifteInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateAangifte(model),
+                prepareAdditionalData: () => Task.FromResult<AangifteDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.AangifteTag = docResults.DocumentUrl; },
+                generatingView
+            );
+        }
+        public async Task CreateDocumentOverdracht(object obj)
+        {
+            await CreateDocument<OverdrachtDocument, OverdrachtDocument?>(
+                obj.ToString(),
+                "Overdracht.docx",
+                "Overdracht",
+                "Word",
+                TagModel.OverdrachtTag,
+                fetchModel: async (guid) => await miscellaneousRepository.GetDocumentOverdrachtInfoAsync(guid),
+                generateDocument: async (model, additionalData) => await documentGenerator.UpdateOverdracht(model),
+                prepareAdditionalData: () => Task.FromResult<OverdrachtDocument?>(null),
+                createRepository,
+                updateRepository,
+                deleteRepository,
+                updateTagModel: (docResults) => { TagModel.OverdrachtTag = docResults.DocumentUrl; },
+                generatingView
+            );
+        }
+        private List<ChecklistOpbarenDocument> GetWerknemersFromModel(string opbarenInfoJson)
+        {
+            if (string.IsNullOrEmpty(opbarenInfoJson))
+                return new List<ChecklistOpbarenDocument>();
 
-            if (string.IsNullOrEmpty(TagModel.AangifteTag))
+            var werknemers = JsonConvert.DeserializeObject<List<ChecklistOpbarenDocument>>(opbarenInfoJson);
+
+            foreach (var werknemer in werknemers)
             {
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aangifte.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (!File.Exists(TagModel.AangifteTag))
-            {
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Aangifte");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aangifte.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else if (documentOption == "Opnieuw")
-            {
-                if (File.Exists(TagModel.AangifteTag))
-                    File.Delete(TagModel.AangifteTag);
-
-                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, "Aangifte");
-                destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aangifte.docx").ConfigureAwait(true);
-                documentId = Guid.NewGuid();
-                initialCreation = true;
-            }
-            else
-            {
-                var aangifteDocument = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, "Aangifte").ConfigureAwait(false);
-                documentId = aangifteDocument.BijlageId;
-
-                string savedHash = aangifteDocument.DocumentHash;
-                string documentHash = Checksum.GetMD5Checksum(TagModel.AangifteTag);
-
-
-                if (savedHash != documentHash)
+                var employee = miscellaneousRepository.GetWerknemer(werknemer.WerknemerId);
+                if (employee != null)
                 {
-                    CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show($"{aangifteDocument.DocumentName} - {Globals.UitvaartCode}", "Document inconsistent!", "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?", "Openen", "Nieuw");
-                    if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
-                    {
-                        switch (documentOption)
-                        {
-                            case "Print":
-                                DocumentFunctions.PrePrintFile(TagModel.AangifteTag);
-                                break;
-                            case "Word":
-                            case "Opnieuw":
-                                DocumentFunctions.OpenFile(TagModel.AangifteTag);
-                                break;
-                            case "Email":
-                                DocumentFunctions.EmailFile(TagModel.AangifteTag);
-                                break;
-                        }
-                        return;
-                    }
-                    else if (result == CustomMessageBox.CustomMessageBoxResult.Stop)
-                    {
-                        if (File.Exists(TagModel.AangifteTag))
-                        {
-                            File.Delete(TagModel.AangifteTag);
-                            AangifteModel.Updated = true;
-                        }
-                        destinationFile = await CreateDirectory(Globals.UitvaartCode, "Aangifte.docx").ConfigureAwait(true);
-                        documentId = Guid.NewGuid();
-                    }
+                    werknemer.WerknemerName = string.IsNullOrEmpty(employee.Tussenvoegsel)
+                        ? $"{employee.Initialen} {employee.Achternaam}"
+                        : $"{employee.Initialen} {employee.Tussenvoegsel} {employee.Achternaam}";
                 }
-                else if (savedHash == documentHash)
+            }
+
+            return werknemers;
+        }
+
+        public static async Task<(string destinationFile, Guid documentId, bool initialCreation)> InitializeDocument(
+            string tag,
+            string fileName,
+            string documentType,
+            string documentOption,
+            IDeleteAndActivateDisableOperations deleteRepository
+        )
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                string destinationUrl = await DocumentFunctions.CreateDirectory(Globals.UitvaartCode, fileName).ConfigureAwait(true);
+                return (destinationUrl, Guid.NewGuid(), true);
+            }
+
+            if (!File.Exists(tag) || documentOption == "Opnieuw")
+            {
+                deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, documentType);
+                string destinationUrl = await DocumentFunctions.CreateDirectory(Globals.UitvaartCode, fileName).ConfigureAwait(true);
+                return (destinationUrl, Guid.NewGuid(), true);
+            }
+
+            return (tag, Guid.Empty, false);
+        }
+        public static async Task<(string destinationUrl, bool initialCreation)> HandleDocumentConsistency(
+            string tag,
+            string documentType,
+            string fileName,
+            IDeleteAndActivateDisableOperations deleteRepository,
+            IMiscellaneousAndDocumentOperations miscellaneousRepository,
+            string documentOption,
+            bool initialCreation
+        )
+        {
+            if (initialCreation)
+                return (string.Empty, true);
+
+            if (string.IsNullOrWhiteSpace(tag))
+                return (string.Empty, true);
+
+            if (!File.Exists(tag))
+                return (string.Empty, true);
+
+            var documentInfo = await miscellaneousRepository.GetDocumentInformationAsync(Globals.UitvaartCodeGuid, documentType).ConfigureAwait(true);
+            if (documentInfo == null)
+                return (string.Empty, true);
+
+            string savedHash = documentInfo.DocumentHash;
+            string currentHash = Checksum.GetMD5Checksum(tag);
+
+            if (savedHash != currentHash)
+            {
+                var result = CustomMessageBox.Show(
+                    $"{documentInfo.DocumentName} - {Globals.UitvaartCode}",
+                    "Document inconsistent!",
+                    "Het bestaande document is aangepast buiten de applicatie...\r\n Wil je de bestaande openen of een nieuwe aanmaken?",
+                    "Openen",
+                    "Nieuw"
+                );
+
+                if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
                 {
                     switch (documentOption)
                     {
                         case "Print":
-                            DocumentFunctions.PrePrintFile(TagModel.AangifteTag);
+                            DocumentFunctions.PrintFile(tag);
                             break;
                         case "Word":
                         case "Opnieuw":
-                            DocumentFunctions.OpenFile(TagModel.AangifteTag);
+                            DocumentFunctions.OpenFile(tag);
                             break;
                         case "Email":
-                            DocumentFunctions.EmailFile(TagModel.AangifteTag);
+                            DocumentFunctions.EmailFile(tag);
                             break;
                     }
-                    return;
+                    return (tag, false);
+                }
+                else if ((result == CustomMessageBox.CustomMessageBoxResult.Stop) && File.Exists(tag))
+                {
+                    File.Delete(tag);
+                    deleteRepository.SetDocumentDeleted(Globals.UitvaartCodeGuid, documentType);
+                    string destinationUrl = await DocumentFunctions.CreateDirectory(Globals.UitvaartCode, fileName).ConfigureAwait(true);
+                    return (destinationUrl, true);
                 }
             }
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
 
-            AangifteModel = await miscellaneousRepository.GetDocumentAangifteInfoAsync(Globals.UitvaartCodeGuid);
-            AangifteModel.DocumentId = documentId;
-            AangifteModel.DestinationFile = destinationFile;
-            AangifteModel.UitvaartNummer = Globals.UitvaartCode;
+            return (tag, false);
+        }
+        private static bool HandleEmptyModel(string uitvaartCode)
+        {
+            var result = MessageBox.Show(
+                $"Geen data gevonden voor {uitvaartCode}, leeg formulier maken?",
+                "Geen data gevonden",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
 
-            if (!AangifteModel.HasData())
+            return result == MessageBoxResult.Yes;
+        }
+        private static async Task<bool> SaveOrUpdateDocumentInfo(
+            OverledeneBijlagesModel docResults,
+            bool isNewDocument,
+            ICreateOperations createRepository,
+            IUpdateOperations updateRepository,
+            string documentType
+        )
+        {
+            try
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
-                MessageBoxResult result = MessageBox.Show("Geen data gevonden voor " + Globals.UitvaartCode + ", leeg formulier maken?", "Geen data gevonden", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
+                docResults.UitvaartId = Globals.UitvaartCodeGuid;
+                if (isNewDocument)
+                    await createRepository.InsertDocumentInfoAsync(docResults);
                 else
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Show(); });
-                }
+                    await updateRepository.UpdateDocumentInfoAsync(docResults);
+
+                return true;
             }
-
-            OverledeneBijlagesModel aangifteResults = await documentGenerator.UpdateAangifte(AangifteModel).ConfigureAwait(true);
-
-            if (aangifteResults != null)
+            catch (Exception ex)
             {
-                aangifteResults.DocumentInconsistent = false;
-                aangifteResults.IsDeleted = false;
-                aangifteResults.DocumentType = "Word";
-                aangifteResults.UitvaartId = Globals.UitvaartCodeGuid;
-                aangifteResults.DocumentName = "Aangifte";
-                aangifteResults.DocumentUrl = AangifteModel.DestinationFile;
-                aangifteResults.DocumentHash = Checksum.GetMD5Checksum(AangifteModel.DestinationFile);
+                MessageBox.Show(
+                    $"Error while {(isNewDocument ? "saving" : "updating")} the document info for {documentType}: {ex.Message}",
+                    $"{(isNewDocument ? "Save" : "Update")} Failed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
 
-                if (initialCreation)
-                {
-                    try
-                    {
-                        await createRepository.InsertDocumentInfoAsync(aangifteResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error inserting aangifte docinfo: {ex.Message}", "Insert Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        await updateRepository.UpdateDocumentInfoAsync(aangifteResults);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Error updating aangifte docinfo: {ex.Message}", "Update Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                        ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                        return;
-                    }
-                }
+                ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                return false;
             }
-            TagModel.AangifteTag = aangifteResults.DocumentUrl;
-            System.Windows.Application.Current.Dispatcher.Invoke(() => { _generatingDocumentView.Hide(); });
+        }
+        private static void PerformPostGenerationAction(string documentOption, string documentUrl)
+        {
             switch (documentOption)
             {
                 case "Print":
-                    DocumentFunctions.PrintFile(destinationFile);
+                    DocumentFunctions.PrintFile(documentUrl);
                     break;
+
                 case "Word":
                 case "Opnieuw":
-                    DocumentFunctions.OpenFile(destinationFile);
+                    DocumentFunctions.OpenFile(documentUrl);
                     break;
+
                 case "Email":
-                    DocumentFunctions.EmailFile(destinationFile);
+                    DocumentFunctions.EmailFile(documentUrl);
+                    break;
+
+                default:
+                    MessageBox.Show(
+                        $"The action '{documentOption}' is not supported.",
+                        "Unsupported Action",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     break;
             }
-            return;
+        }
+
+        public async Task CreateDocument<TModel, TAdditionalData>(
+            string documentOption,
+            string fileName,
+            string documentType,
+            string fileType,
+            string tag,
+            Func<Guid, Task<TModel>> fetchModel,
+            Func<TModel, TAdditionalData, Task<OverledeneBijlagesModel>> generateDocument,
+            Func<Task<TAdditionalData>> prepareAdditionalData,
+            ICreateOperations createRepository,
+            IUpdateOperations updateRepository,
+            IDeleteAndActivateDisableOperations deleteRepository,
+            Action<OverledeneBijlagesModel> updateTagModel,
+            IGeneratingDocumentWindow generatingWindow
+        ) where TModel : class, IHasData
+        {
+            var (destinationFile, documentId, initialCreation) = await InitializeDocument(
+                tag,
+                fileName,
+                documentType,
+                documentOption,
+                deleteRepository
+            ).ConfigureAwait(true);
+
+            var (destinationUrl, initialCreationCheck) = await HandleDocumentConsistency(tag,
+                documentType,
+                fileName,
+                deleteRepository,
+                miscellaneousRepository,
+                documentOption,
+                initialCreation).ConfigureAwait(true);
+
+            if (documentOption != "Opnieuw" && !initialCreation && !initialCreationCheck)
+            {
+                PerformPostGenerationAction(documentOption, tag);
+            }else
+            {
+                generatingWindow.Show();
+
+                var model = await fetchModel(Globals.UitvaartCodeGuid);
+                model.DocumentId = documentId == Guid.Empty ? model.DocumentId : documentId;
+                model.DestinationFile = destinationFile;
+                model.DocumentName = documentType;
+                model.FileType = fileType;
+                model.UitvaartId = Globals.UitvaartCodeGuid;
+                model.Dossiernummer = Globals.UitvaartCode;
+
+                if (!model.HasData())
+                {
+                    generatingWindow.Hide();
+                    if (!HandleEmptyModel(Globals.UitvaartCode))
+                        return;
+
+                    generatingWindow.Show();
+                }
+
+                var additionalData = await prepareAdditionalData();
+
+                var docResults = await generateDocument(model, additionalData).ConfigureAwait(true);
+                docResults.DocumentType = model.FileType;
+                docResults.DocumentUrl = model.DestinationFile;
+                docResults.UitvaartId = model.UitvaartId;
+                docResults.Dossiernummer = model.Dossiernummer;
+                if (docResults == null)
+                {
+                    generatingWindow.Hide();
+                    return;
+                }
+
+                var success = await SaveOrUpdateDocumentInfo(
+                    docResults,
+                    initialCreation,
+                    createRepository,
+                    updateRepository,
+                    documentType
+                );
+
+                if (!success)
+                {
+                    generatingWindow.Hide();
+                    return;
+                }
+
+                updateTagModel(docResults);
+                generatingWindow.Hide();
+                PerformPostGenerationAction(documentOption, docResults.DocumentUrl);
+            }
+        }
+        public static async Task CreateMultipleDocuments<TModel, TAdditionalData>(
+            string documentOption,
+            List<(string fileName, string documentType, string tag)> documentsInfo,
+            string templateFile,
+            string fileType,
+            Func<Guid, Task<TModel>> fetchModel,
+            Func<TModel, TAdditionalData, Task<OverledeneBijlagesModel>> generateDocument,
+            Func<Task<TAdditionalData>> prepareAdditionalData,
+            ICreateOperations createRepository,
+            IUpdateOperations updateRepository,
+            IDeleteAndActivateDisableOperations deleteRepository,
+            Action<List<OverledeneBijlagesModel>> updateTagModels,
+            IGeneratingDocumentWindow generatingWindow
+        ) where TModel : class, IHasData
+        {
+            var results = new List<OverledeneBijlagesModel>();
+            string baseTemplateCopy = string.Empty;
+
+            foreach (var (fileName, documentType, tag) in documentsInfo)
+            {
+                try
+                {
+                    var (destinationFile, documentId, initialCreation) = await InitializeDocument(
+                        tag,
+                        templateFile,
+                        documentType,
+                        documentOption,
+                        deleteRepository
+                    ).ConfigureAwait(true);
+
+                    var uniqueDestinationFile = Path.Combine(Path.GetDirectoryName(destinationFile), fileName);
+
+                    if (File.Exists(uniqueDestinationFile))
+                        File.Delete(uniqueDestinationFile);
+
+                    baseTemplateCopy = destinationFile;
+                    if (!File.Exists(uniqueDestinationFile))
+                    {
+                        try
+                        {
+                            File.Copy(destinationFile, uniqueDestinationFile, overwrite: false);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                            await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                            continue;
+                        }
+                    }
+
+
+
+                    if (documentOption != "Opnieuw" && !initialCreation)
+                    {
+                        PerformPostGenerationAction(documentOption, tag);
+                        continue;
+                    }
+
+                    generatingWindow.Show();
+
+                    var model = await fetchModel(Globals.UitvaartCodeGuid);
+                    model.DocumentId = documentId == Guid.Empty ? model.DocumentId : documentId;
+                    model.DestinationFile = uniqueDestinationFile;
+                    model.DocumentName = fileName;
+                    model.FileType = fileType;
+                    model.UitvaartId = Globals.UitvaartCodeGuid;
+                    model.Dossiernummer = Globals.UitvaartCode;
+
+                    if (!model.HasData())
+                    {
+                        generatingWindow.Hide();
+                        if (!HandleEmptyModel(Globals.UitvaartCode))
+                            continue;
+
+                        generatingWindow.Show();
+                    }
+
+                    var additionalData = await prepareAdditionalData();
+
+                    var docResults = await generateDocument(model, additionalData).ConfigureAwait(true);
+                    if (docResults == null)
+                    {
+                        generatingWindow.Hide();
+                        continue;
+                    }
+
+                    string currentHash = Checksum.GetMD5Checksum(model.DestinationFile);
+
+                    docResults.DocumentType = model.FileType;
+                    docResults.DocumentUrl = model.DestinationFile;
+                    docResults.UitvaartId = model.UitvaartId;
+                    docResults.Dossiernummer = model.Dossiernummer;
+                    docResults.DocumentHash = currentHash;
+                    docResults.BijlageId = Guid.NewGuid();
+
+                    results.Add(docResults);
+                    generatingWindow.Hide();
+                    PerformPostGenerationAction(documentOption, docResults.DocumentUrl);
+                }
+                catch (Exception ex)
+                {
+                    generatingWindow.Hide();
+                    Debug.WriteLine(ex);
+                    await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                }
+            }
+
+            if (File.Exists(baseTemplateCopy))
+                File.Delete(baseTemplateCopy);
+
+            updateTagModels(results);
         }
     }
     public class JsonDeserializer
@@ -2916,23 +1240,6 @@ namespace Dossier_Registratie.ViewModels
                 .ToList();
 
             return new ObservableCollection<PolisVerzekering>(filteredVerzekeringen);
-        }
-    }
-    public class BoolToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool boolValue)
-            {
-                return boolValue ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-            return DependencyProperty.UnsetValue;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
         }
     }
 }

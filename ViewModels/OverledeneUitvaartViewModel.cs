@@ -2,6 +2,7 @@
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
 using Dossier_Registratie.Views;
+using Dossier_Registratie.Interfaces;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;

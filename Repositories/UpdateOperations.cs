@@ -1,4 +1,5 @@
 ﻿using Dossier_Registratie.Models;
+using Dossier_Registratie.Interfaces;
 using System;
 using System.Data;
 using System.Data.SqlClient;

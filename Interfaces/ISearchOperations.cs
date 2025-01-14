@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Dossier_Registratie.Models;
 
-namespace Dossier_Registratie.Models
+namespace Dossier_Registratie.Interfaces
 {
     public interface ISearchOperations
     {
-        Task<AkteContent> GetAkteContentByUitvaartIdAsync(Guid uitvaartId);
+        Task<AkteDocument> GetAkteContentByUitvaartIdAsync(Guid uitvaartId);
         Task<WekbonnenContent> GetWerkbonInfoByUitvaartIdAsync(Guid uitvaartId);
         Task<bool> SearchBlobLogo(string appType);
         (string PermissionLevelId, string PermissionLevelName) FetchUserCredentials(string windowsUsername);

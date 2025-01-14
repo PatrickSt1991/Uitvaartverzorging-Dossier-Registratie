@@ -1,9 +1,11 @@
 ﻿using Dossier_Registratie.Models;
+using Dossier_Registratie.Interfaces;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Dossier_Registratie.Repositories
 {
@@ -80,6 +82,9 @@ namespace Dossier_Registratie.Repositories
         }
         public async Task InsertDocumentInfoAsync(OverledeneBijlagesModel documentInfo)
         {
+            
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(documentInfo.DocumentName).Split('_')[1];
+
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
@@ -89,7 +94,7 @@ namespace Dossier_Registratie.Repositories
                                       "VALUES (@bijlageId, @uitvaartId, @documentName, @documentType, @documentUrl, @documentHash, @documentInconsistent, @isDeleted)";
                 command.Parameters.AddWithValue("@bijlageId", documentInfo.BijlageId);
                 command.Parameters.AddWithValue("@UitvaartId", documentInfo.UitvaartId);
-                command.Parameters.AddWithValue("@documentName", documentInfo.DocumentName);
+                command.Parameters.AddWithValue("@documentName", fileNameWithoutExtension);
                 command.Parameters.AddWithValue("@documentType", documentInfo.DocumentType);
                 command.Parameters.AddWithValue("@documentUrl", documentInfo.DocumentUrl);
                 command.Parameters.AddWithValue("@documentHash", documentInfo.DocumentHash);

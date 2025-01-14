@@ -1,7 +1,6 @@
-﻿using Dossier_Registratie.Models;
+﻿using Dossier_Registratie.Interfaces;
 using System;
 using System.Data.SqlClient;
-using System.Diagnostics;
 
 namespace Dossier_Registratie.Repositories
 {

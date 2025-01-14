@@ -1,11 +1,11 @@
 ﻿using Dossier_Registratie.Models;
+using Dossier_Registratie.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -1485,41 +1485,6 @@ namespace Dossier_Registratie.Repositories
             }
             return urnSieraden;
         }
-        public IEnumerable<OverledeneBijlagesModel> GetAktesVanCessieByUitvaatId(string uitvaartId)
-        {
-            var AkteList = new List<OverledeneBijlagesModel>();
-            using (var connection = GetConnection())
-            using (var command = new SqlCommand())
-            {
-                connection.Open();
-                command.Connection = connection;
-                command.CommandText = "SELECT [BijlageId], OB.[UitvaartId], [DocumentName], [DocumentType], [DocumentURL], [DocumentHash], [DocumentInconsistent] " +
-                                      "FROM [OverledeneBijlages] OB " +
-                                      "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OB.UitvaartId " +
-                                      "WHERE Uitvaartnummer = @uitvaartNummer AND [DocumentName] LIKE 'AkteVanCessie%'";
-
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var AkteGegevens = new OverledeneBijlagesModel()
-                        {
-                            BijlageId = (Guid)reader[0],
-                            UitvaartId = (Guid)reader[1],
-                            DocumentName = reader[2].ToString(),
-                            DocumentType = reader[3].ToString(),
-                            DocumentUrl = reader[4].ToString(),
-                            DocumentHash = reader[5].ToString(),
-                            DocumentInconsistent = (bool)reader[6],
-                        };
-
-                        AkteList.Add(AkteGegevens);
-                    }
-                }
-            }
-            return AkteList;
-        }
         public ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponentsId(Guid verzekeraarId, bool pakketVerzekering)
         {
             ObservableCollection<GeneratedKostenbegrotingModel> PriceComponents = new();
@@ -1815,7 +1780,6 @@ namespace Dossier_Registratie.Repositories
             }
             return uitvaartleiderRapport;
         }
-
         public ObservableCollection<Volgautos> GetVolgautos(string startNummer, string endNummer)
         {
             ObservableCollection<Volgautos> autos = new();
@@ -2500,8 +2464,6 @@ namespace Dossier_Registratie.Repositories
             }
             catch (Exception ex)
             {
-                // Handle exception (e.g., log it, rethrow it, or return a default value)
-                // For simplicity, this example just rethrows the exception
                 throw new InvalidOperationException("An error occurred while retrieving checklist information.", ex);
             }
 
@@ -2516,7 +2478,7 @@ namespace Dossier_Registratie.Repositories
             {
                 await connection.OpenAsync().ConfigureAwait(false);
                 command.Connection = connection;
-                command.CommandText = "SELECT uitvaartInfoType, overledeneAanhef, overledeneVoornamen, " +
+                command.CommandText = "SELECT Uitvaartnummer, uitvaartInfoType, overledeneAanhef, overledeneVoornamen, " +
                                       "CASE WHEN overledeneTussenvoegsel IS NOT NULL THEN TRIM(CONCAT(overledeneTussenvoegsel, ' ', overledeneAchternaam)) ELSE TRIM(overledeneAchternaam) END AS Achternaam, " +
                                       "CASE WHEN CP.Tussenvoegsel IS NOT NULL THEN CONCAT(CP.Voornaam, ' ', CP.Tussenvoegsel, ' ', CP.Achternaam) ELSE CONCAT(CP.Voornaam, ' ', CP.Achternaam) END AS PersoneelName " +
                                       "FROM OverledeneUitvaartInfo OUI " +
@@ -2536,7 +2498,8 @@ namespace Dossier_Registratie.Repositories
                             OverledeAanhef = reader["overledeneAanhef"].ToString(),
                             OverledeneVoornaam = reader["overledeneVoornamen"].ToString(),
                             OverledeneAchternaam = reader["Achternaam"].ToString(),
-                            OverdragendePartij = reader["PersoneelName"].ToString()
+                            OverdragendePartij = reader["PersoneelName"].ToString(),
+                            UitvaartNummer = reader["Uitvaartnummer"].ToString()
                         };
                     }
                 }
@@ -2650,7 +2613,7 @@ namespace Dossier_Registratie.Repositories
 
                             bezittingInfo = new BezittingenDocument()
                             {
-                                DossierNummer = reader["Uitvaartnummer"].ToString(),
+                                Dossiernummer = reader["Uitvaartnummer"].ToString(),
                                 OverledeneNaam = reader["overledeneAchternaam"].ToString(),
                                 OverledeneVoornaam = reader["overledeneVoornamen"].ToString(),
                                 OverledeneGeborenOp = reader["overledeneGeboortedatum"] as DateTime? ?? default,

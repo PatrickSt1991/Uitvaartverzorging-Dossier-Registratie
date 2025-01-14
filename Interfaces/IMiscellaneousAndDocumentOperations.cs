@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Dossier_Registratie.Models;
 
-namespace Dossier_Registratie.Models
+namespace Dossier_Registratie.Interfaces
 {
     public interface IMiscellaneousAndDocumentOperations
     {
@@ -59,7 +60,6 @@ namespace Dossier_Registratie.Models
         OverledeneSteenhouwerijModel GetSteenUitbetaling(Guid UitvaartIdGuid);
         OverledeneUrnSieradenModel GetUrnSieradenUitbetaling(Guid UitvaartIdGuid);
         OverledeneBloemenModel GetBloemenUitbetaling(Guid UitvaartIdGuid);
-        IEnumerable<OverledeneBijlagesModel> GetAktesVanCessieByUitvaatId(string uitvaartId);
         ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponentsId(Guid verzekeraarId, bool pakketVerzekering);
         ObservableCollection<GeneratedKostenbegrotingModel> GetPriceComponents(string verzekeringMaatschapij, bool pakketVerzekering);
         ObservableCollection<KostenbegrotingModel> GetAllPriceComponentsBeheer();

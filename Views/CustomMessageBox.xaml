@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Dossier_Registratie.Views"
         mc:Ignorable="d"
-        Title="dummyTitle" Height="200" Width="300" WindowStartupLocation="CenterScreen">
+        Title="dummyTitle" Height="400" Width="300" WindowStartupLocation="CenterScreen">
     <Grid>
         <TextBlock Name="HeaderTextBlock" Text="dummyHeader" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,25,0,110" Width="280"/>
         <TextBlock Name="MessageTextBlock" Text="dummyText" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,79,0,44" Width="280"/>
