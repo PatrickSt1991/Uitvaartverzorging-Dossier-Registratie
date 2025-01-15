@@ -440,6 +440,13 @@ namespace Dossier_Registratie.Models
             get { return _sortOrder; }
             set { _sortOrder = value; OnPropertyChanged(nameof(SortOrder)); }
         }
+
+        public bool HasData()
+        {
+            return !SortOrder.HasValue ||
+                   !string.IsNullOrEmpty(ComponentOmschrijving);
+        }
+
     }
     public class GeneratedKostenbegrotingModel : ViewModelBase
     {
