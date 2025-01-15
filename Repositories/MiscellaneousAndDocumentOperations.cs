@@ -1397,8 +1397,8 @@ namespace Dossier_Registratie.Repositories
                                       "overledeneAanhef, overledeneVoornamen," +
                                       "(CASE WHEN (overledeneTussenvoegsel IS NOT NULL) THEN CONCAT(overledeneTussenvoegsel, ' ',overledeneAchternaam) " +
                                       "ELSE overledeneAchternaam END) AS OverledeneAchternaam,  " +
-                                      "(CASE WHEN (opdrachtgeverTussenvoegsel IS NOT NULL) THEN CONCAT(opdrachtgeverVoornaamen, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam) " +
-                                      "ELSE CONCAT(opdrachtgeverVoornaamen, ' ',opdrachtgeverAchternaam) END) AS OpdrachtgeverNaam, " +
+                                      "(CASE WHEN (opdrachtgeverTussenvoegsel IS NOT NULL) THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverVoornaamen, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam) " +
+                                      "ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverVoornaamen, ' ',opdrachtgeverAchternaam) END) AS OpdrachtgeverNaam, " +
                                       "(CASE WHEN (opdrachtgeverHuisnummerToevoeging IS NOT NULL) THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer, ' ', opdrachtgeverHuisnummerToevoeging) " +
                                       "ELSE CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) END) AS OpdrachtgeverStraat, " +
                                       "opdrachtgeverPostcode, opdrachtgeverWoonplaats, OOI.overledenDatumTijd " +
