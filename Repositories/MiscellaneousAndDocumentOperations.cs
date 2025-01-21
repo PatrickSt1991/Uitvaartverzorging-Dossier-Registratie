@@ -748,24 +748,24 @@ namespace Dossier_Registratie.Repositories
                         Verzekeraar = new VerzekeraarsModel()
                         {
                             Id = reader.GetGuid("Id"),
-                            Name = reader.GetString("verzekeraarNaam"),
-                            IsHerkomst = reader.GetBoolean("isHerkomst"),
-                            IsVerzekeraar = reader.GetBoolean("isVerzekeraar"),
-                            HasLidnummer = reader.GetBoolean("hasLidnummer"),
-                            IsDeleted = reader.GetBoolean("isDeleted"),
-                            AddressStreet = reader.GetString("addressStreet"),
-                            AddressHousenumber = reader.GetString("addressHousenumber"),
-                            AddressHousenumberAddition = reader.GetString("addressHousenumberAddition"),
-                            AddressZipCode = reader.GetString("addressZipcode"),
-                            AddressCity = reader.GetString("addressCity"),
-                            FactuurType = System.Net.WebUtility.HtmlDecode(reader.GetString("factuurType")),
-                            PostbusAddress = reader.GetString("postbusAddress"),
-                            PostbusName = reader.GetString("postbusNaam"),
-                            CorrespondentieType = reader.GetString("correspondentieType"),
-                            IsOverrideFactuurAdress = reader.GetBoolean("OverrideFactuurAdress"),
-                            Telefoon = reader.GetString("verzekeraarTelefoon"),
-                            Pakket = reader["isPakket"] is DBNull ? false : reader.GetBoolean("isPakket"),
-                            CustomLogo = reader.GetBoolean("CustomLogo") is DBNull ? false : reader.GetBoolean("CustomLogo")
+                            Name = reader.IsDBNull(reader.GetOrdinal("verzekeraarNaam")) ? null : reader.GetString("verzekeraarNaam"),
+                            IsHerkomst = reader.IsDBNull(reader.GetOrdinal("isHerkomst")) ? false : reader.GetBoolean("isHerkomst"),
+                            IsVerzekeraar = reader.IsDBNull(reader.GetOrdinal("isVerzekeraar")) ? false : reader.GetBoolean("isVerzekeraar"),
+                            HasLidnummer = reader.IsDBNull(reader.GetOrdinal("hasLidnummer")) ? false : reader.GetBoolean("hasLidnummer"),
+                            IsDeleted = reader.IsDBNull(reader.GetOrdinal("isDeleted")) ? false : reader.GetBoolean("isDeleted"),
+                            AddressStreet = reader.IsDBNull(reader.GetOrdinal("addressStreet")) ? null : reader.GetString("addressStreet"),
+                            AddressHousenumber = reader.IsDBNull(reader.GetOrdinal("addressHousenumber")) ? null : reader.GetString("addressHousenumber"),
+                            AddressHousenumberAddition = reader.IsDBNull(reader.GetOrdinal("addressHousenumberAddition")) ? null : reader.GetString("addressHousenumberAddition"),
+                            AddressZipCode = reader.IsDBNull(reader.GetOrdinal("addressZipcode")) ? null : reader.GetString("addressZipcode"),
+                            AddressCity = reader.IsDBNull(reader.GetOrdinal("addressCity")) ? null : reader.GetString("addressCity"),
+                            FactuurType = reader.IsDBNull(reader.GetOrdinal("factuurType")) ? null : System.Net.WebUtility.HtmlDecode(reader.GetString("factuurType")),
+                            PostbusAddress = reader.IsDBNull(reader.GetOrdinal("postbusAddress")) ? null : reader.GetString("postbusAddress"),
+                            PostbusName = reader.IsDBNull(reader.GetOrdinal("postbusNaam")) ? null : reader.GetString("postbusNaam"),
+                            CorrespondentieType = reader.IsDBNull(reader.GetOrdinal("correspondentieType")) ? null : reader.GetString("correspondentieType"),
+                            IsOverrideFactuurAdress = reader.IsDBNull(reader.GetOrdinal("OverrideFactuurAdress")) ? false : reader.GetBoolean("OverrideFactuurAdress"),
+                            Telefoon = reader.IsDBNull(reader.GetOrdinal("verzekeraarTelefoon")) ? null : reader.GetString("verzekeraarTelefoon"),
+                            Pakket = reader.IsDBNull(reader.GetOrdinal("isPakket")) ? false : reader.GetBoolean("isPakket"),
+                            CustomLogo = reader.IsDBNull(reader.GetOrdinal("CustomLogo")) ? false : reader.GetBoolean("CustomLogo")
                         };
                     }
                 }
@@ -1396,9 +1396,10 @@ namespace Dossier_Registratie.Repositories
                 command.CommandText = "SELECT OUL.Uitvaartnummer AS UitvaartNummer, " +
                                       "overledeneAanhef, overledeneVoornamen," +
                                       "(CASE WHEN (overledeneTussenvoegsel IS NOT NULL) THEN CONCAT(overledeneTussenvoegsel, ' ',overledeneAchternaam) " +
-                                      "ELSE overledeneAchternaam END) AS OverledeneAchternaam,  " +
-                                      "(CASE WHEN (opdrachtgeverTussenvoegsel IS NOT NULL) THEN CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverVoornaamen, ' ', opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam) " +
-                                      "ELSE CONCAT(opdrachtgeverAanhef, ' ', opdrachtgeverVoornaamen, ' ',opdrachtgeverAchternaam) END) AS OpdrachtgeverNaam, " +
+                                      "ELSE overledeneAchternaam END) AS OverledeneAchternaam, " +
+                                      "opdrachtgeverAanhef, opdrachtgeverVoornaamen, " +
+                                      "(CASE WHEN (opdrachtgeverTussenvoegsel IS NOT NULL) THEN TRIM(CONCAT(opdrachtgeverTussenvoegsel, ' ', opdrachtgeverAchternaam)) " +
+                                      "ELSE TRIM(opdrachtgeverAchternaam) END) AS OpdrachtgeverAchternaam, " +
                                       "(CASE WHEN (opdrachtgeverHuisnummerToevoeging IS NOT NULL) THEN CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer, ' ', opdrachtgeverHuisnummerToevoeging) " +
                                       "ELSE CONCAT(opdrachtgeverStraat, ' ', opdrachtgeverHuisnummer) END) AS OpdrachtgeverStraat, " +
                                       "opdrachtgeverPostcode, opdrachtgeverWoonplaats, OOI.overledenDatumTijd " +
@@ -1420,11 +1421,13 @@ namespace Dossier_Registratie.Repositories
                             OverledeneVoornaam = reader[2].ToString(),
                             OverledeneAchternaam = reader[3].ToString(),
                             OverledeneNaam = string.Empty,
-                            OpdrachtgeverNaam = reader[4].ToString(),
-                            OpdrachtgeverStraat = reader[5].ToString(),
-                            OpdrachtgeverPostcode = reader[6].ToString(),
-                            OpdrachtgeverWoonplaats = reader[7].ToString(),
-                            OverledenDatum = reader[8] != DBNull.Value ? (DateTime)reader[8] : default(DateTime),
+                            OpdrachtgeverAanhef = reader[4].ToString(),
+                            OpdrachtgeverVoornaam = reader[5].ToString(),
+                            OpdrachtgeverAchternaam = reader[6].ToString(),
+                            OpdrachtgeverStraat = reader[7].ToString(),
+                            OpdrachtgeverPostcode = reader[8].ToString(),
+                            OpdrachtgeverWoonplaats = reader[9].ToString(),
+                            OverledenDatum = reader[10] != DBNull.Value ? (DateTime)reader[10] : default,
                         };
                     }
                 }

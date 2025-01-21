@@ -31,19 +31,20 @@ namespace Dossier_Registratie.Repositories
             }
 
         }
-        public async Task InsertKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid id, Guid verzekeraarId)
+        public async Task InsertKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid id, Guid verzekeraarId, decimal korting)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
             {
                 await connection.OpenAsync();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO [OverledeneFacturen] ([Id],[uitvaartId],[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate],[kostenbegrotingCreated],[kostenbegrotingVerzekeraar]) " +
-                                        "VALUES (@id, @uitvaartId, @kostenbegrotingUrl, @kostenbegrotingData, @kostenbegrotingCreationDate, 1, @verzekeraarId)";
+                command.CommandText = "INSERT INTO [OverledeneFacturen] ([Id],[uitvaartId],[kostenbegrotingUrl],[kostenbegrotingJson],[kostenbegrotingCreationDate],[kostenbegrotingCreated],[kostenbegrotingVerzekeraar], [Korting]) " +
+                                        "VALUES (@id, @uitvaartId, @kostenbegrotingUrl, @kostenbegrotingData, @kostenbegrotingCreationDate, 1, @verzekeraarId, @korting)";
                 command.Parameters.AddWithValue("@kostenbegrotingUrl", kostenbegrotingUrl);
                 command.Parameters.AddWithValue("@kostenbegrotingData", kostenbegrotingData);
                 command.Parameters.AddWithValue("@kostenbegrotingCreationDate", creationDate);
                 command.Parameters.AddWithValue("@verzekeraarId", verzekeraarId);
+                command.Parameters.AddWithValue("@korting", korting);
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
                 command.Parameters.AddWithValue("@id", id);
 

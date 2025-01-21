@@ -450,7 +450,6 @@ namespace Dossier_Registratie.ViewModels
                 OverledeneFactuurModel.Korting = factuurResult.Korting;
                 DiscountAmount = factuurResult.Korting;
 
-
                 var previouslySelected = miscellaneousRepository.GetVerzekeraarsById(OverledeneFactuurModel.KostenbegrotingVerzekeraar);
 
                 SelectedVerzekeraar.Id = previouslySelected.Id;
@@ -560,10 +559,8 @@ namespace Dossier_Registratie.ViewModels
             IsExcelButtonEnabled = false;
             string destinationFile = await searchRepository.GetOverlijdenKostenbegrotingAsync(Globals.UitvaartCodeGuid);
 
-            if (!string.IsNullOrEmpty(destinationFile))
+            if (!string.IsNullOrEmpty(destinationFile) && File.Exists(destinationFile))
             {
-                if (File.Exists(destinationFile))
-                {
                     CustomMessageBox.CustomMessageBoxResult result = CustomMessageBox.Show("Kostenbegroting gevonden", "De kostenbegroting (Excel) bestaat al.", $"Nieuw maken en de oude verwijderen?", "Ja", "Nee");
                     if (result == CustomMessageBox.CustomMessageBoxResult.Continue)
                     {
@@ -602,7 +599,6 @@ namespace Dossier_Registratie.ViewModels
                         IsExcelButtonEnabled = true;
                         return;
                     }
-                }
             }
 
             _generatingDocumentView.Show();
@@ -947,15 +943,15 @@ namespace Dossier_Registratie.ViewModels
             }
 
             string voorletters = string.Empty;
-            if (!string.IsNullOrEmpty(kostenbegrotingInfoResult.OverledeneVoornaam))
+            if (!string.IsNullOrEmpty(kostenbegrotingInfoResult.OpdrachtgeverVoornaam))
             {
-                string[] words = kostenbegrotingInfoResult.OverledeneVoornaam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string[] words = kostenbegrotingInfoResult.OpdrachtgeverVoornaam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 voorletters = string.Join(" ", words.Select(word => char.ToUpper(word[0])));
             }
 
 
-            kostenbegrotingInfoResult.OverledeneNaam = $"{kostenbegrotingInfoResult.OverledeneAanhef} {voorletters} {kostenbegrotingInfoResult.OverledeneAchternaam}";
+            kostenbegrotingInfoResult.OverledeneNaam = $"{kostenbegrotingInfoResult.OverledeneAanhef} {kostenbegrotingInfoResult.OverledeneVoornaam} {kostenbegrotingInfoResult.OverledeneAchternaam}";
 
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
 
@@ -1039,8 +1035,10 @@ namespace Dossier_Registratie.ViewModels
                 totalAmount = (double)((decimal)totalAmount - CalculatedSubtotal - DiscountAmount);
 
             worksheet.Cells[excelRow + 2, 8] = totalAmount;
-            ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
-            worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverNaam;
+            ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).Formula = $"=SUM(H8:H{excelRow})";
+            ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
+            
+            worksheet.Cells[excelRow + 6, 4] = $"{kostenbegrotingInfoResult.OpdrachtgeverAanhef} {voorletters} {kostenbegrotingInfoResult.OpdrachtgeverAchternaam}";
             worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
             worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
             worksheet.Cells[excelRow + 9, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
@@ -1058,12 +1056,12 @@ namespace Dossier_Registratie.ViewModels
 
             if (returnedKostenbegrotingCount > 0)
             {
-                await updateRepository.UpdateKostenbegrotingAsync(kostenbegrotingUrl, priceComponentsOnly, DateTime.Now, UitvaartCodeGuid, SelectedVerzekeraar.Id);
+                await updateRepository.UpdateKostenbegrotingAsync(kostenbegrotingUrl, priceComponentsOnly, DateTime.Now, UitvaartCodeGuid, SelectedVerzekeraar.Id, DiscountAmount);
             }
             else
             {
                 Guid documentId = Guid.NewGuid();
-                await createRepository.InsertKostenbegrotingAsync(kostenbegrotingUrl, priceComponentsOnly, DateTime.Now, UitvaartCodeGuid, documentId, SelectedVerzekeraar.Id);
+                await createRepository.InsertKostenbegrotingAsync(kostenbegrotingUrl, priceComponentsOnly, DateTime.Now, UitvaartCodeGuid, documentId, SelectedVerzekeraar.Id, DiscountAmount);
             }
         }
         public bool CanExecuteSaveCommand(object obj)

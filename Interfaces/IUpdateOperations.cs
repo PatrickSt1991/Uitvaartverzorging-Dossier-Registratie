@@ -40,6 +40,6 @@ namespace Dossier_Registratie.Interfaces
         void UpdateUrnSieradenBetaling(OverledeneUrnSieradenModel urnSieradenInfo);
         void UpdateSuggestion(SuggestionModel suggestionCreate);
         Task UpdateDocumentInfoAsync(OverledeneBijlagesModel documentInfo);
-        Task UpdateKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid verzekeraarId);
+        Task UpdateKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid verzekeraarId, decimal korting);
     }
 }

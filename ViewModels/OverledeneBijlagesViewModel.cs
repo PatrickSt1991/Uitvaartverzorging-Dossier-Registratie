@@ -534,7 +534,6 @@ namespace Dossier_Registratie.ViewModels
             KostenbegrotingInstance.RequestedDossierInformationBasedOnUitvaartId(Globals.UitvaartCode);
             IntAggregator.Transmit(11);
         }
-        /* NEW */
         public async Task CreateDocumentAkteVanCessie(object obj)
         {
             if (SelectedVerzekering == null)
