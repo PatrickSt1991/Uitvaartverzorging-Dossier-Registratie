@@ -1085,6 +1085,7 @@ namespace Dossier_Registratie.ViewModels
                     OverledeneFactuurModel.Id = Guid.NewGuid();
                     try
                     {
+                        Debug.WriteLine("add factuur");
                         createRepository.AddFactuur(OverledeneFactuurModel);
                     }
                     catch (Exception ex)
@@ -1102,6 +1103,7 @@ namespace Dossier_Registratie.ViewModels
                     {
                         try
                         {
+                            Debug.WriteLine("edit factuur");
                             updateRepository.EditFactuur(OverledeneFactuurModel);
                         }
                         catch (Exception ex)
@@ -1126,7 +1128,6 @@ namespace Dossier_Registratie.ViewModels
                 }
                 IntAggregator.Transmit(7);
             }
-
         }
         private void ExecuteCloseCommand(object obj)
         {

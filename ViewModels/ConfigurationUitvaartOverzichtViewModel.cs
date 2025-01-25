@@ -115,10 +115,9 @@ namespace Dossier_Registratie.ViewModels
                 &&(string.IsNullOrEmpty(SearchAchternaam) || item.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
             ).ToList();
 
-
-            // Assuming filteredItems is already created
-            foreach (var item in filteredItems.OrderByDescending(item => item.DatumOverlijden ?? DateTime.MinValue)) 
-                UitvaartOverzicht.Add(item);
+            UitvaartOverzicht = new ObservableCollection<UitvaartOverzichtModel>(
+                filteredItems.OrderByDescending(item => Convert.ToInt64(item.UitvaartNr))
+            );
 
         }
         public void GetAllUitvaartItems()
