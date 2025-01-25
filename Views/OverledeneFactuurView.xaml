@@ -89,7 +89,7 @@
                         Converter={StaticResource DecimalToStringConverter}, 
                         FallbackValue=0, 
                         TargetNullValue=''}" />
-            <Label x:Name="lbl_korting" Content="Korting:" HorizontalAlignment="Left" Margin="990,885,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="lbl_korting" Content="Reductie:" HorizontalAlignment="Left" Margin="990,885,0,0" VerticalAlignment="Top"/>
             <TextBox x:Name="input_total" Margin="1119,916,10,0" TextWrapping="Wrap" Text="{Binding Total, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False" IsReadOnly="True"/>
 
             <Label x:Name="lbl_totaal" Content="Totaal:" HorizontalAlignment="Left" Margin="990,916,0,0" VerticalAlignment="Top"/>

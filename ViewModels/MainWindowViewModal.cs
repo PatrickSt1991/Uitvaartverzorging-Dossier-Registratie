@@ -2,6 +2,7 @@
 using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
@@ -58,7 +59,6 @@ namespace Dossier_Registratie.ViewModels
         private Visibility _isSurnameVisible = Visibility.Collapsed;
         private Visibility _searchResultList = Visibility.Collapsed;
         private bool isCreateUserPopupOpen;
-        private bool _uitvaartNummerEnabled = false;
         private bool _isUnderMaintenance;
         private bool _maintenanceDisabled = true;
         private bool _searchOldDatabaseSurname = false;
@@ -196,15 +196,6 @@ namespace Dossier_Registratie.ViewModels
         {
             get { return _copyrightText; }
             set { _copyrightText = value; OnPropertyChanged(nameof(CopyrightText)); }
-        }
-        public bool UitvaartNummerEnabled
-        {
-            get { return _uitvaartNummerEnabled; }
-            set
-            {
-                _uitvaartNummerEnabled = value;
-                OnPropertyChanged(nameof(UitvaartNummerEnabled));
-            }
         }
         public string SelectedComboBoxItem
         {
@@ -351,8 +342,8 @@ namespace Dossier_Registratie.ViewModels
         {
             if (indexNumber == 666)
             {
-                CheckTabControl();
                 SelectedIndex = 1;
+                Globals.NewDossierCreation = false;
             }
             else
             {
@@ -367,6 +358,7 @@ namespace Dossier_Registratie.ViewModels
                     ExtraInfoInstance.CreateNewDossier();
                     BijlagesInstance.CreateNewDossier();
                     AsbestemmingInstance.CreateNewDossier();
+                    Globals.NewDossierCreation = true;
                 }
 
                 SelectedIndex = indexNumber;
@@ -385,7 +377,7 @@ namespace Dossier_Registratie.ViewModels
         public ICommand OpenBeheerCommand { get; }
         public ICommand OpenDossierCommand { get; }
         public ICommand SearchDossierCommand { get; }
-        public readonly ICommand CloseApplicationCommand = new RelayCommand<object>(param => Application.Current.Shutdown());
+        public ICommand CloseApplicationCommand { get; }
         public ICommand CloseUitvaartnummerSearchCommand => new RelayCommand<object>(param => { IsUitvaartnumberVisible = Visibility.Collapsed; });
         public ICommand CloseSurnameSearchCommand => new RelayCommand<object>(param => { IsSurnameVisible = Visibility.Collapsed; });
         public ICommand CloseSearchResultListCommand => new RelayCommand<object>(param => { SearchResultList = Visibility.Collapsed; });
@@ -439,7 +431,6 @@ namespace Dossier_Registratie.ViewModels
 
             VersionLabel = DataProvider.SystemTitle + " - Versie: " + version;
 
-            CheckTabControl();
             ComboAggregator.OnDataTransmitted += ResetCombobox;
             IntAggregator.OnDataTransmitted += OnDataReceived;
 
@@ -452,6 +443,7 @@ namespace Dossier_Registratie.ViewModels
             OpenBeheerCommand = new ViewModelCommand(ExecuteOpenBeheer);
             OpenDossierCommand = new ViewModelCommand(ExecuteOpenDossier);
             SearchDossierCommand = new ViewModelCommand(ExecuteSearchDossier);
+            CloseApplicationCommand = new RelayCommand<object>(param => Application.Current.Shutdown());
         }
         private static void ExecuteOpenBeheer(object obj)
         {
@@ -547,16 +539,9 @@ namespace Dossier_Registratie.ViewModels
         }
         private bool CanExecuteSearchUitvaartnummerCommand(object obj)
         {
-            bool validNummerSearch;
-            if (string.IsNullOrWhiteSpace(ZoekenUitvaartnummer))
-            {
-                validNummerSearch = false;
-            }
-            else
-            {
-                validNummerSearch = true;
-            }
+            bool validNummerSearch = !string.IsNullOrWhiteSpace(ZoekenUitvaartnummer) && ZoekenUitvaartnummer.All(char.IsDigit);
             return validNummerSearch;
+
         }
         private bool CanExecuteSearchAchternaamCommand(object obj)
         {
@@ -645,7 +630,7 @@ namespace Dossier_Registratie.ViewModels
 
                     Globals.UitvaartCodeGuid = firstSearchResult.UitvaartId;
                     Globals.DossierCompleted = firstSearchResult.DossierCompleted;
-                    UitvaartNummerEnabled = true;
+                    Globals.NewDossierCreation = false;
                     SelectedIndex = 1;
                 }
                 else if ((combinedResults.Count == 1 && combinedResults.FirstOrDefault().UitvaartId == Guid.Empty) || (combinedResults.Count > 1))
@@ -713,7 +698,7 @@ namespace Dossier_Registratie.ViewModels
 
                     Globals.UitvaartCodeGuid = firstSearchResult.UitvaartId;
                     Globals.DossierCompleted = firstSearchResult.DossierCompleted;
-                    UitvaartNummerEnabled = true;
+                    Globals.NewDossierCreation = false;
                     SelectedIndex = 1;
                 }
                 else if ((combinedResults.Count == 1 && combinedResults.FirstOrDefault().UitvaartId == Guid.Empty) || (combinedResults.Count > 1))
@@ -743,7 +728,6 @@ namespace Dossier_Registratie.ViewModels
             AsbestemmingInstance.CreateNewDossier();
             
             Globals.NewDossierCreation = true;
-            UitvaartNummerEnabled = false;
             SelectedIndex = 1;
 
             
@@ -805,16 +789,11 @@ namespace Dossier_Registratie.ViewModels
                 Globals.UitvaartCodeGuid = SearchUitvaartleider.UitvaartId;
 
             if (SearchUitvaartleider.DossierCompleted)
-            {
                 Globals.DossierCompleted = true;
-            }
             else
-            {
                 Globals.DossierCompleted = false;
-            }
 
             SearchResultList = Visibility.Collapsed;
-            UitvaartNummerEnabled = true;
             SelectedIndex = 1;
         }
         private void ExecuteCreateNewUserCommand(object obj)
@@ -907,19 +886,7 @@ namespace Dossier_Registratie.ViewModels
                                 "Tot die tijd kun je geen dossier aanmaken maar wel bekijken.");
             }
         }
-        public async void CheckTabControl()
-        {
-            if (Globals.UitvaartCodeGuid != Guid.Empty)
-                UitvaartNummerEnabled = true;
-        }
-        public void EnableTabControl(Guid uitvaartGuid)
-        {
-            if (uitvaartGuid != Guid.Empty)
-                UitvaartNummerEnabled = true;
 
-            IntAggregator.Transmit(1);
-
-        }
         private bool CanExecuteClearAllModels(object obj)
         {
             return true;
@@ -948,8 +915,6 @@ namespace Dossier_Registratie.ViewModels
             ZoekenUitvaartnummer = string.Empty;
             ZoekenAchternaam = string.Empty;
             ZoekenDoB = DateTime.MinValue;
-
-            UitvaartNummerEnabled = false;
         }
         public void LoadImageFromDatabase()
         {

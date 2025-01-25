@@ -5,11 +5,13 @@ using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Application = Microsoft.Office.Interop.Word.Application;
 using Range = Microsoft.Office.Interop.Word.Range;
@@ -267,18 +269,18 @@ namespace Dossier_Registratie.Helper
 
                     var bookmarks = CreateCrematieBookmarks(crematie, organizationAdress);
 
-                    if (factuur.FactuurAdresOverride)
+                    if (factuur != null && factuur.FactuurAdresOverride)
                     {
-                        AddFactuurBookmarks(bookmarks, factuur);
+                        var factuurBookmarks = AddFactuurBookmarks(factuur);
+                        foreach (var factuurMark in factuurBookmarks)
+                            bookmarks[factuurMark.Key] = factuurMark.Value;
                     }
 
                     DocumentFunctions.UpdateBookmarks(doc, bookmarks);
 
                     var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
                     if (documentData != null)
-                    {
                         DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
-                    }
 
                     DocumentFunctions.SaveAndCloseDocument(doc);
                     doc = null;
@@ -338,17 +340,50 @@ namespace Dossier_Registratie.Helper
         }
         public async Task<OverledeneBijlagesModel> UpdateTerugmelding(TerugmeldingDocument terugmelding)
         {
-            var bijlageModel = new OverledeneBijlagesModel();
             Application? app = null;
             Document? doc = null;
 
             try
             {
+                string fileName = Path.GetFileName(terugmelding.DestinationFile);
+                string extractedVerzekeringName = fileName.Split('_')[0];
+
+                var verzekeringData = JsonConvert.DeserializeObject<List<PolisVerzekering>>(terugmelding.Polisnummer);
+                if (verzekeringData == null)
+                {
+                    throw new Exception("No verzekering data found.");
+                }
+
+                var verzekering = verzekeringData.FirstOrDefault(v =>
+                    string.Equals(v.VerzekeringName, extractedVerzekeringName, StringComparison.Ordinal));
+
+                var validPolissen = verzekering.PolisInfoList?
+                    .Where(p => !string.IsNullOrEmpty(p.PolisNr))
+                    .ToList();
+
+                if (!validPolissen.Any())
+                {
+                    throw new Exception($"No valid polissen found for verzekering {verzekering.VerzekeringName}.");
+                }
+
+                string documentName = $"{verzekering.VerzekeringName}_Terugmelding.docx";
+                string destinationFile = Path.Combine(Path.GetDirectoryName(terugmelding.DestinationFile), documentName);
+                Debug.WriteLine($"Processing document: {terugmelding.DestinationFile}");
                 app = new Application();
                 doc = await DocumentFunctions.OpenDocumentAsync(app, terugmelding.DestinationFile);
-                if (doc == null) return bijlageModel;
+                if (doc == null)
+                {
+                    Debug.WriteLine($"Document not found: {terugmelding.DestinationFile}");
+                    throw new Exception($"Failed to open document {terugmelding.DestinationFile}.");
+                }
 
                 var bookmarks = CreateTerugmeldingBookmarks(terugmelding);
+
+                bookmarks["polisNummer"] = string.Join(", ", validPolissen
+                    .Where(p => !string.IsNullOrEmpty(p.PolisNr))
+                    .Select(p => p.PolisNr));
+
+
                 DocumentFunctions.UpdateBookmarks(doc, bookmarks);
 
                 var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
@@ -357,19 +392,22 @@ namespace Dossier_Registratie.Helper
 
                 DocumentFunctions.SaveAndCloseDocument(doc);
                 doc = null;
-
-                bijlageModel = DocumentFunctions.GenerateBijlageModel(terugmelding);
+                Debug.WriteLine($"Document successfully created: {destinationFile}");
+                return new OverledeneBijlagesModel
+                {
+                    DocumentUrl = destinationFile,
+                    DocumentName = documentName,
+                };
             }
             catch (Exception ex)
             {
                 await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                throw;
             }
             finally
             {
                 DocumentFunctions.CleanupResources(app, doc);
             }
-
-            return bijlageModel;
         }
         public async Task<OverledeneBijlagesModel> UpdateTevredenheid(TevredenheidDocument tevredenheid)
         {
@@ -517,8 +555,95 @@ namespace Dossier_Registratie.Helper
 
             return bijlageModel;
         }
+        public async Task<OverledeneBijlagesModel> UpdateAkte(AkteDocument akte)
+        {
+            Application? app = null;
+            Document? doc = null;
 
-        //Bookmarks Dictionaries
+            try
+            {
+                string extractedVerzekeringName = Path.GetFileNameWithoutExtension(akte.DestinationFile).Split('_')[1];
+
+                var verzekeringData = JsonConvert.DeserializeObject<List<PolisVerzekering>>(akte.VerzekeringInfo);
+                if (verzekeringData == null || !verzekeringData.Any())
+                    throw new Exception("No verzekering data found.");
+
+                var matchingVerzekeringen = verzekeringData
+                    .Where(v => string.Equals(v.VerzekeringName, extractedVerzekeringName, StringComparison.Ordinal))
+                    .ToList();
+
+                if (!matchingVerzekeringen.Any())
+                    throw new Exception($"No verzekering found with the name '{extractedVerzekeringName}'.");
+
+                var validPolissen = matchingVerzekeringen
+                    .SelectMany(v => v.PolisInfoList ?? Enumerable.Empty<Polis>())
+                    .Where(p => !string.IsNullOrEmpty(p.PolisNr) && !string.IsNullOrEmpty(p.PolisBedrag))
+                    .ToList();
+
+                if (!validPolissen.Any())
+                    throw new Exception($"No valid polissen found for verzekering '{extractedVerzekeringName}'.");
+
+                string documentName = $"{extractedVerzekeringName}_AkteVanCessie.docx";
+                string destinationFile = Path.Combine(Path.GetDirectoryName(akte.DestinationFile) ?? string.Empty, documentName);
+
+                app = new Application();
+                doc = await DocumentFunctions.OpenDocumentAsync(app, akte.DestinationFile);
+                if (doc == null)
+                    throw new Exception($"Failed to open document {akte.DestinationFile}.");
+
+                Debug.WriteLine(extractedVerzekeringName);
+                Debug.WriteLine(akte.DestinationFile);
+                var bookmarks = CreateAkteBookmarks(akte, extractedVerzekeringName);
+
+                if (doc.Bookmarks.Exists("PolisTable"))
+                {
+                    var range = doc.Bookmarks["PolisTable"].Range;
+                    DocumentFunctions.AddPolisTableToAkteDocument(doc, validPolissen, range);
+                }
+
+                DocumentFunctions.UpdateBookmarks(doc, bookmarks);
+
+                var (documentData, documentType) = miscellaneousRepository.GetLogoBlob("Document");
+                if (documentData != null)
+                    DocumentFunctions.AddImageToDocumentHeaders(doc, documentData, documentType, 1.94f, 9.7f);
+
+                DocumentFunctions.SaveAndCloseDocument(doc);
+                doc = null;
+
+                return new OverledeneBijlagesModel
+                {
+                    DocumentUrl = destinationFile,
+                    DocumentName = documentName,
+                };
+            }
+            catch (Exception ex)
+            {
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                throw;
+            }
+            finally
+            {
+                DocumentFunctions.CleanupResources(app, doc);
+            }
+        }
+
+        private static Dictionary<string, string> CreateAkteBookmarks(AkteDocument akteContent, string verzekeringName)
+        {
+            return new Dictionary<string, string>
+    {
+        { "verzekeringMaatschappij", verzekeringName },
+        { "ondergetekendeNaamEnVoorletters", akteContent.OpdrachtgeverNaam ?? string.Empty },
+        { "ondergetekendeAdres", akteContent.OpdrachtgeverAdres ?? string.Empty },
+        { "ondergetekendeRelatieTotVerzekende", akteContent.OpdrachtgeverRelatie ?? string.Empty },
+        { "verzekerdeGeslotenOpHetLevenVan", akteContent.GeslotenOpHetLevenVan ?? string.Empty },
+        { "verzekerdeGeborenOp", akteContent.OverledenGeboorteDatum.ToString("dd-MM-yyyy") },
+        { "verzekerdeOverledenOp", akteContent.OverledenOpDatum.ToString("dd-MM-yyyy") },
+        { "verzekerdeAdres", akteContent.OverledenOpAdres ?? string.Empty },
+        { "vermeldingNummer", Globals.UitvaartCode },
+        { "OrganisatieNaam", DataProvider.OrganizationName },
+        { "OrganisatieIban", DataProvider.OrganizationIban }
+    };
+        }
         private static Dictionary<string, string> CreateOverdrachtBookmarks(OverdrachtDocument overdracht)
         {
             return new Dictionary<string, string>
@@ -649,15 +774,18 @@ namespace Dossier_Registratie.Helper
         { "Consumpties", crematie.Consumpties ?? string.Empty }
     };
         }
-        private static void AddFactuurBookmarks(Dictionary<string, string> bookmarks, FactuurInfoCrematie factuur)
+        private static Dictionary<string, string> AddFactuurBookmarks(FactuurInfoCrematie factuur)
         {
-            bookmarks.Add("FactuuradresNaam", factuur.FactuurAdresNaam ?? string.Empty);
-            bookmarks.Add("FactuuradresRelatietotoverl", factuur.FactuurAdresRelatie ?? string.Empty);
-            bookmarks.Add("FactuuradresStraat", factuur.FactuurAdresStraat ?? string.Empty);
-            bookmarks.Add("FactuuradresPostcode", factuur.FactuurAdresPostcode ?? string.Empty);
-            bookmarks.Add("FactuuradresGeslacht", factuur.FactuurAdresGeslacht ?? string.Empty);
-            bookmarks.Add("FactuuradresTelefoon", factuur.FactuurAdresTelefoon ?? string.Empty);
-            bookmarks.Add("FactuuradresPlaats", factuur.FactuurAdresPlaats ?? string.Empty);
+            return new Dictionary<string, string>
+            {
+                { "FactuuradresNaam", factuur.FactuurAdresNaam ?? string.Empty },
+                { "FactuuradresRelatietotoverl", factuur.FactuurAdresRelatie ?? string.Empty },
+                { "FactuuradresStraat", factuur.FactuurAdresStraat ?? string.Empty },
+                { "FactuuradresPostcode", factuur.FactuurAdresPostcode ?? string.Empty },
+                { "FactuuradresGeslacht", factuur.FactuurAdresGeslacht ?? string.Empty },
+                { "FactuuradresTelefoon", factuur.FactuurAdresTelefoon ?? string.Empty },
+                { "FactuuradresPlaats", factuur.FactuurAdresPlaats ?? string.Empty },
+            };
         }
         private static Dictionary<string, string> CreateBegrafenisBookmarks(BegrafenisDocument begrafenis, string huurgrafActief, string aulaActief, string organizationAdress)
         {

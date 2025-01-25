@@ -1,4 +1,5 @@
 ﻿using Dossier_Registratie.ViewModels;
+using Dossier_Registratie.Interfaces;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
@@ -318,7 +319,7 @@ namespace Dossier_Registratie.Helper
         public static void UpdateBookmarks(Document doc, Dictionary<string, string> bookmarks)
         {
             if (doc.Bookmarks == null)
-                throw new Exception("Document or Bookmarks collection is null");
+                ReportErrorAsync(new Exception("Document or Bookmarks collection is null")).ConfigureAwait(false);
 
             foreach (var bookmark in bookmarks)
             {
@@ -331,7 +332,7 @@ namespace Dossier_Registratie.Helper
                 }
                 else
                 {
-                    throw new Exception($"Bookmark '{bookmark.Key}' does not exist in the document.");
+                    ReportErrorAsync(new Exception($"Bookmark '{bookmark.Key}' does not exist in the document.")).ConfigureAwait(false);
                 }
             }
         }
@@ -356,7 +357,7 @@ namespace Dossier_Registratie.Helper
                     Range headerRange = header.Range;
                     InlineShape picture = headerRange.InlineShapes.AddPicture(tempImagePath);
 
-                    picture.Height = heightCm * 28.35f; // 1 cm = 28.35 points
+                    picture.Height = heightCm * 28.35f; 
                     picture.Width = widthCm * 28.35f;
 
                     headerRange.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
@@ -410,6 +411,7 @@ namespace Dossier_Registratie.Helper
         {
             return new OverledeneBijlagesModel
             {
+                DocumentName = document.DocumentName,
                 DocumentHash = Checksum.GetMD5Checksum(document.DestinationFile),
                 UitvaartId = document.UitvaartId,
                 BijlageId = document.Updated ? Guid.NewGuid() : document.DocumentId,
@@ -443,6 +445,72 @@ namespace Dossier_Registratie.Helper
         private static async Task ReportErrorAsync(Exception ex)
         {
             await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+        }
+        public static async Task<string> CreateDirectory(string uitvaartId, string documentType)
+        {
+            var opslagFolder = DataProvider.DocumentenOpslag;
+            var templateFolder = DataProvider.TemplateFolder;
+
+            if (!opslagFolder.EndsWith('\\'))
+                opslagFolder += @"\";
+                    
+            string templateFilePath = Path.Combine(templateFolder, documentType);
+            string destinationFolder = Path.Combine(opslagFolder, uitvaartId);
+            string destinationFilePath = Path.Combine(destinationFolder, documentType);
+
+            if (!File.Exists(templateFilePath))
+            {
+                await ReportErrorAsync(new Exception($"Template file '{templateFilePath}' not found."));
+                throw new FileNotFoundException($"Template file '{templateFilePath}' not found.");
+            }
+
+            if (!Directory.Exists(destinationFolder))
+                Directory.CreateDirectory(destinationFolder);
+
+            if (File.Exists(destinationFilePath))
+                File.Delete(destinationFilePath);
+
+            File.Copy(templateFilePath, destinationFilePath);
+
+            return destinationFilePath;
+        }
+        public static void AddPolisTableToAkteDocument(Document doc, List<Polis> polisInfoList, Range polisTableRange)
+        {
+            int polisBedragCount = 2;
+            double totalPolisBedrag = 0;
+
+            foreach (var polisInfo in polisInfoList)
+            {
+                if (!string.IsNullOrEmpty(polisInfo.PolisBedrag) && double.TryParse(polisInfo.PolisBedrag, out double polisBedragValue))
+                {
+                    polisBedragCount++;
+                    totalPolisBedrag += polisBedragValue;
+                }
+            }
+
+            Table table = doc.Tables.Add(polisTableRange, polisBedragCount, 2);
+
+            table.Cell(1, 1).Range.Text = "Polisnummer";
+            table.Cell(1, 2).Range.Text = "Verzekerd bedrag";
+            table.Rows[1].Range.Font.Bold = 1;
+            table.Rows[1].Range.Borders[WdBorderType.wdBorderBottom].LineStyle = WdLineStyle.wdLineStyleDashSmallGap;
+
+            int rowIndex = 2;
+            foreach (var polisInfo in polisInfoList)
+            {
+                if (!string.IsNullOrEmpty(polisInfo.PolisBedrag))
+                {
+                    table.Cell(rowIndex, 1).Range.Text = polisInfo.PolisNr;
+                    table.Cell(rowIndex, 2).Range.Text = "€ " + polisInfo.PolisBedrag;
+                    rowIndex++;
+                }
+            }
+
+            table.Rows[polisBedragCount].Range.Font.Bold = 1;
+            table.Rows[polisBedragCount].Range.Borders[WdBorderType.wdBorderTop].LineStyle = WdLineStyle.wdLineStyleSingle;
+            table.Cell(polisBedragCount, 1).Range.Text = "Totaal";
+            table.Cell(polisBedragCount, 1).Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphRight;
+            table.Cell(polisBedragCount, 2).Range.Text = "€ " + totalPolisBedrag.ToString("#,0.00", System.Globalization.CultureInfo.CreateSpecificCulture("nl-NL"));
         }
     }
 }

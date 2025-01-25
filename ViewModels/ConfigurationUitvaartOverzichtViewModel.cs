@@ -1,10 +1,10 @@
 ﻿using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using static Dossier_Registratie.ViewModels.OverledeneViewModel;
@@ -87,7 +87,6 @@ namespace Dossier_Registratie.ViewModels
             ClearFilterCommand = new ViewModelCommand(ExecuteClearFilterCommand);
 
             LoadAllItems();
-            //GetAllUitvaartItems();
         }
         public static ConfigurationUitvaartOverzichtViewModel OverzichtInstance { get; } = new();
         public void LoadAllItems()
@@ -116,10 +115,9 @@ namespace Dossier_Registratie.ViewModels
                 &&(string.IsNullOrEmpty(SearchAchternaam) || item.AchternaamOverledene.Contains(SearchAchternaam, StringComparison.OrdinalIgnoreCase))
             ).ToList();
 
-
-            // Assuming filteredItems is already created
-            foreach (var item in filteredItems.OrderByDescending(item => item.DatumOverlijden ?? DateTime.MinValue)) 
-                UitvaartOverzicht.Add(item);
+            UitvaartOverzicht = new ObservableCollection<UitvaartOverzichtModel>(
+                filteredItems.OrderByDescending(item => Convert.ToInt64(item.UitvaartNr))
+            );
 
         }
         public void GetAllUitvaartItems()
@@ -189,7 +187,6 @@ namespace Dossier_Registratie.ViewModels
             SelectedVoorregeling = string.Empty;
             SelectedVoornaam = string.Empty;
             SearchAchternaam = string.Empty;
-            //GetAllUitvaartItems();
             ApplyFilters();
         }
         public void ExecuteOpenDossierViaOverzichtCommand(object obj)

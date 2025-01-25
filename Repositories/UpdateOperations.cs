@@ -1,4 +1,5 @@
 ﻿using Dossier_Registratie.Models;
+using Dossier_Registratie.Interfaces;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -1005,7 +1006,7 @@ namespace Dossier_Registratie.Repositories
                 }
             }
         }
-        public async Task UpdateKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid verzekeraarId)
+        public async Task UpdateKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid verzekeraarId, decimal korting)
         {
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
@@ -1016,11 +1017,13 @@ namespace Dossier_Registratie.Repositories
                                     " SET [kostenbegrotingUrl] = @kostenbegrotingUrl," +
                                     " [kostenbegrotingJson] = @kostenbegrotingData," +
                                     " [kostenbegrotingCreationDate] = @kostenbegrotingCreationDate," +
-                                    " [kostenbegrotingVerzekeraar] = @verzekeraarId" +
+                                    " [kostenbegrotingVerzekeraar] = @verzekeraarId," +
+                                    " [Korting] = @korting" +
                                     " WHERE [UitvaartId] = @uitvaartId";
                 command.Parameters.AddWithValue("@kostenbegrotingUrl", kostenbegrotingUrl);
                 command.Parameters.AddWithValue("@kostenbegrotingData", kostenbegrotingData);
                 command.Parameters.AddWithValue("@kostenbegrotingCreationDate", creationDate);
+                command.Parameters.AddWithValue("@korting", korting);
                 command.Parameters.AddWithValue("@verzekeraarId", verzekeraarId);
                 command.Parameters.AddWithValue("@uitvaartId", uitvaartId);
 

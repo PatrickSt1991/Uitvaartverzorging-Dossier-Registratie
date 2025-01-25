@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dossier_Registratie.Models;
 
-namespace Dossier_Registratie.Models
+namespace Dossier_Registratie.Interfaces
 {
     public interface ICreateOperations
     {
         Task InsertBlobLogo(string imageName, string imageType, byte[] imageData, string appType);
-        Task InsertKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid id, Guid verzekeraarId);
+        Task InsertKostenbegrotingAsync(string kostenbegrotingUrl, string kostenbegrotingData, DateTime creationDate, Guid uitvaartId, Guid id, Guid verzekeraarId, decimal korting);
         void EmployeeCreate(WerknemersModel werknemerCreate);
         Task InsertDocumentInfoAsync(OverledeneBijlagesModel documentInfo);
         void InsertDossier(OverledeneBijlagesModel finishDossier);

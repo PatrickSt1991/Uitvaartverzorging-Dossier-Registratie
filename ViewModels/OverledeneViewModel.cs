@@ -1,6 +1,7 @@
 ﻿using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using Dossier_Registratie.Views;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using static Dossier_Registratie.ViewModels.OverledeneExtraInfoViewModal;
+using System.Diagnostics;
 
 namespace Dossier_Registratie.ViewModels
 {
@@ -459,6 +461,7 @@ namespace Dossier_Registratie.ViewModels
             UitvaartLeider = new OverledeneUitvaartleiderModel();
             PersoonsGegevens = new OverledenePersoonsGegevensModel();
             OverlijdenInfo = new OverledeneOverlijdenInfoModel();
+            OverlijdenLocatieLocal = string.Empty;
         }
         public static OverledeneViewModel Instance { get; } = new();
         private void UpdateLidnummerVisibility()
@@ -591,41 +594,6 @@ namespace Dossier_Registratie.ViewModels
         }
         private bool CanExecuteSaveCommand(object obj)
         {
-            /*
-            IsPersoonsGegevensValid = !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAchternaam) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneVoornamen) &&
-                                      PersoonsGegevens.OverledeneGeboortedatum != DateTime.MinValue &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneGeboorteplaats) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAdres) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledenePostcode) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneWoonplaats) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneBSN) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneHuisnummer) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneGemeente) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneLeeftijd) &&
-                                      !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAanhef);
-
-            IsOverlijdenInfoValid = OverlijdenInfo.OverledenDatumTijd != DateTime.MinValue &&
-                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenAdres) &&
-                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisnummer) &&
-                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenPlaats) &&
-                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenGemeente) &&
-                                    !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenLijkvinding) &&
-                                    OverlijdenInfo.OverledenHerkomst != Guid.Empty;
-
-            if (IsPersoonsGegevensValid && IsOverlijdenInfoValid)
-            {
-                return true;
-            }
-            else if (IsPersoonsGegevensValid && PersoonsGegevens.OverledeneVoorregeling)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            */
             return true;
         }
         private void ExecuteSaveCommand(object obj)
@@ -644,6 +612,7 @@ namespace Dossier_Registratie.ViewModels
                                       !string.IsNullOrWhiteSpace(PersoonsGegevens.OverledeneAanhef);
 
             IsOverlijdenInfoValid = OverlijdenInfo.OverledenDatumTijd != DateTime.MinValue &&
+                                    OverlijdenInfo.OverledenDatumTijd != null &&
                                     !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenAdres) &&
                                     !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisnummer) &&
                                     !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenPlaats) &&
@@ -669,6 +638,12 @@ namespace Dossier_Registratie.ViewModels
             if (UitvaartnummerExists && UitvaartLeider.UitvaartId == Guid.Empty)
             {
                 new ToastWindow($"Uitvaartnummer {UitvaartLeider.Uitvaartnummer} is al in gebruik!").Show();
+                return;
+            }
+
+            if (!long.TryParse(UitvaartLeider.Uitvaartnummer, out long result) || result > int.MaxValue)
+            {
+                new ToastWindow("Het uitvaartnummer mag niet groter zijn dan: 2147483647!").Show();
                 return;
             }
 

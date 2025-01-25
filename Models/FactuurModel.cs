@@ -10,11 +10,12 @@ namespace Dossier_Registratie.Models
         private string _overledeneAanhef;
         private string _overledeneVoornaam;
         private string _overledeneAchternaam;
-        private string _opdrachtgeverNaam;
+        private string _opdrachtgeverAanhef;
+        private string _opdrachtgeverVoornaam;
+        private string _opdrachtgeverAchternaam;
         private string _opdrachtgeverStraat;
         private string _opdrachtgeverPostcode;
         private string _opdrachtgeverWoonplaats;
-        //private string _overledenDatum;
         private DateTime _overledenDatum;
         public string UitvaartNummer
         {
@@ -41,10 +42,20 @@ namespace Dossier_Registratie.Models
             get { return _overledeneAchternaam; }
             set { _overledeneAchternaam = value; OnPropertyChanged(nameof(OverledeneAchternaam)); }
         }
-        public string OpdrachtgeverNaam
+        public string OpdrachtgeverAanhef
         {
-            get { return _opdrachtgeverNaam; }
-            set { _opdrachtgeverNaam = value; OnPropertyChanged(nameof(OpdrachtgeverNaam)); }
+            get { return _opdrachtgeverAanhef; }
+            set { _opdrachtgeverAanhef = value; OnPropertyChanged(nameof(OpdrachtgeverAanhef)); }
+        }
+        public string OpdrachtgeverVoornaam
+        {
+            get { return _opdrachtgeverVoornaam; }
+            set { _opdrachtgeverVoornaam = value; OnPropertyChanged(nameof(OpdrachtgeverVoornaam)); }
+        }
+        public string OpdrachtgeverAchternaam
+        {
+            get { return _opdrachtgeverAchternaam; }
+            set { _opdrachtgeverAchternaam = value; OnPropertyChanged(nameof(OpdrachtgeverAchternaam)); }
         }
         public string OpdrachtgeverStraat
         {
@@ -440,6 +451,13 @@ namespace Dossier_Registratie.Models
             get { return _sortOrder; }
             set { _sortOrder = value; OnPropertyChanged(nameof(SortOrder)); }
         }
+
+        public bool HasData()
+        {
+            return !SortOrder.HasValue ||
+                   !string.IsNullOrEmpty(ComponentOmschrijving);
+        }
+
     }
     public class GeneratedKostenbegrotingModel : ViewModelBase
     {

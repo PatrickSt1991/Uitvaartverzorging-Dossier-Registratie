@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,129 +15,135 @@ namespace Dossier_Registratie.Helper
     {
         public static async Task<SearchAddressApiModel> GetAddressAsync(string postalCode, string houseNumber, string houseNumberAddition)
         {
-            string combinedHouseNumber = string.Empty;
-            if (string.IsNullOrEmpty(houseNumberAddition))
-            {
-                combinedHouseNumber = houseNumber.Trim().ToUpper();
-            }
-            else
-            {
-                combinedHouseNumber = houseNumber.Trim() + houseNumberAddition.Trim().ToUpper();
-            }
+            string combinedHouseNumber = CombineHouseNumber(houseNumber, houseNumberAddition);
+            string apiUrl = BuildApiUrl(postalCode, combinedHouseNumber);
 
-            string apiUrl = $"https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=postcode:{postalCode} AND huisnummer:{combinedHouseNumber}";
-            using HttpClient client = new HttpClient();
-
+            using HttpClient client = new();
             HttpResponseMessage response = await client.GetAsync(apiUrl);
-            if (response.IsSuccessStatusCode)
+
+            if (!response.IsSuccessStatusCode)
             {
-                string responseBody = await response.Content.ReadAsStringAsync();
-                JObject jsonResponse = JObject.Parse(responseBody);
+                ShowOfflineMessage(response.StatusCode);
+                return new SearchAddressApiModel(); 
+            }
 
-                if (jsonResponse["response"]["docs"] is JArray docsArray && docsArray.HasValues)
+            string responseBody = await response.Content.ReadAsStringAsync();
+            JObject jsonResponse = JObject.Parse(responseBody);
+
+            return ParseAddressResponse(jsonResponse, combinedHouseNumber, ref houseNumberAddition) ?? new SearchAddressApiModel(); 
+        }
+        private static string CombineHouseNumber(string houseNumber, string houseNumberAddition)
+        {
+            return string.IsNullOrEmpty(houseNumberAddition)
+                ? houseNumber.Trim().ToUpper()
+                : houseNumber.Trim() + houseNumberAddition.Trim().ToUpper();
+        }
+        private static string BuildApiUrl(string postalCode, string combinedHouseNumber)
+        {
+            return $"https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=postcode:{postalCode} AND huisnummer:{combinedHouseNumber}";
+        }
+        private static void ShowOfflineMessage(HttpStatusCode statusCode)
+        {
+            MessageBox.Show($"PDOK is offline {statusCode}", "Publieke Dienstverlening Op de Kaart", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        private static SearchAddressApiModel? ParseAddressResponse(JObject jsonResponse, string combinedHouseNumber, ref string houseNumberAddition)
+        {
+            if (jsonResponse["response"]?["docs"] is not JArray docsArray || !docsArray.HasValues)
+                return null;
+
+            var firstDoc = docsArray.FirstOrDefault();
+
+            if (firstDoc == null)
+                return null;
+
+            string streetResult = ExtractStreetResult(docsArray.First, combinedHouseNumber);
+
+            foreach (var doc in docsArray.OfType<JObject>())
+            {
+                if (doc["weergavenaam"]?.ToString() == streetResult)
                 {
-                    var adressResult = docsArray.First;
-                    if (adressResult != null && adressResult.Type == JTokenType.Object)
-                    {
-                        var addressObject = (JObject)adressResult;
-                        string streetResult = $"{addressObject["straatnaam"]} {combinedHouseNumber}, {addressObject["postcode"]} {addressObject["woonplaatsnaam"]}";
-
-                        foreach (var doc in docsArray)
-                        {
-                            var docObject = doc as JObject;
-                            if (docObject != null)
-                            {
-                                if (docObject["weergavenaam"]?.ToString() == streetResult)
-                                {
-                                    houseNumberAddition = docObject["huisletter"]?.ToString() ?? houseNumberAddition;
-
-                                    var address = new SearchAddressApiModel
-                                    {
-                                        PostalCode = docObject["postcode"]?.ToString(),
-                                        HouseNumber = docObject["huisnummer"]?.ToString(),
-                                        HouseNumberAddition = houseNumberAddition,
-                                        Street = docObject["straatnaam"]?.ToString(),
-                                        City = docObject["woonplaatsnaam"]?.ToString(),
-                                        County = docObject["gemeentenaam"]?.ToString()
-                                    };
-
-                                    return address;
-                                }
-                            }
-                        }
-                    }
+                    houseNumberAddition = doc["huisletter"]?.ToString() ?? houseNumberAddition;
+                    return CreateAddressModel(doc, houseNumberAddition);
                 }
             }
-            else
-            {
-                MessageBox.Show($"PDOK is offline {response.StatusCode}", "Publieke Dienstverlening Op de Kaart", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+
             return null;
+        }
+        private static string ExtractStreetResult(JToken? firstDoc, string combinedHouseNumber)
+        {
+            if (firstDoc is not JObject addressObject) return string.Empty;
+
+            return $"{addressObject["straatnaam"]} {combinedHouseNumber}, {addressObject["postcode"]} {addressObject["woonplaatsnaam"]}";
+        }
+        private static SearchAddressApiModel CreateAddressModel(JObject doc, string houseNumberAddition)
+        {
+            return new SearchAddressApiModel
+            {
+                PostalCode = doc["postcode"]?.ToString() ?? string.Empty,
+                HouseNumber = doc["huisnummer"]?.ToString() ?? string.Empty,
+                HouseNumberAddition = houseNumberAddition,
+                Street = doc["straatnaam"]?.ToString() ?? string.Empty,
+                City = doc["woonplaatsnaam"]?.ToString() ?? string.Empty,
+                County = doc["gemeentenaam"]?.ToString() ?? string.Empty
+            };
         }
         public static async Task<SearchAddressApiModel> GetLocationAsync(string queryLocation)
         {
             string url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(queryLocation)}&format=json";
 
-            using (HttpClient client = new HttpClient())
+            using HttpClient client = new();
+            try
             {
-                try
+                client.DefaultRequestHeaders.Add("User-Agent", "DossierRegistratie/1.0");
+
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                JArray results = JArray.Parse(responseBody);
+
+                var place = results.FirstOrDefault();
+
+                if (place != null)
                 {
-                    // Add a User-Agent header to the request
-                    client.DefaultRequestHeaders.Add("User-Agent", "DossierRegistratie/1.0");
+                    string[]? parts = place["display_name"]?.ToString()
+                                          .Split([','], StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(p => p.Trim()).ToArray();
 
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-
-                    string responseBody = await response.Content.ReadAsStringAsync();
-
-                    JArray results = JArray.Parse(responseBody);
-
-                    // Get the first result or null if none exist
-                    var place = results.FirstOrDefault();
-
-                    if (place != null)
+                    var address = new SearchAddressApiModel
                     {
-                        string[] parts = place["display_name"]?.ToString()
-                                              .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                              .Select(p => p.Trim()).ToArray();
+                        Location = place["name"]?.ToString() ?? string.Empty,
+                        PostalCode = parts?.Length > 1 ? parts.ElementAtOrDefault(parts.Length - 2) : null,
+                        County = parts?.Length > 4 ? parts.ElementAtOrDefault(parts.Length - 5) : null,
+                        City = parts?.Length > 6 ? parts.ElementAtOrDefault(parts.Length - 6) : null,
+                        Street = parts?.Length > 7 ? parts.ElementAtOrDefault(parts.Length - 7) : null,
+                        HouseNumber = parts?.Length > 8 ? parts.ElementAtOrDefault(parts.Length - 8) : null
 
+                    };
 
-                        // Create an instance of SearchAddressApiModel with safe access to array elements
-                        var address = new SearchAddressApiModel
-                        {
-                            Location = place["name"]?.ToString(),
-                            PostalCode = parts.Length > 1 ? parts.ElementAtOrDefault(parts.Length - 2) : null,
-                            County = parts.Length > 4 ? parts.ElementAtOrDefault(parts.Length - 5) : null,
-                            City = parts.Length > 6 ? parts.ElementAtOrDefault(parts.Length - 6) : null,
-                            Street = parts.Length > 7 ? parts.ElementAtOrDefault(parts.Length - 7) : null,
-                            HouseNumber = parts.Length > 8 ? parts.ElementAtOrDefault(parts.Length - 8) : null,
-                        };
-
-                        return address; // Return the address object
-                    }
-                    else
-                    {
-                        return null; // Return null if no results
-                    }
+                    return address;
                 }
-                catch (HttpRequestException httpEx)
+                else
                 {
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(httpEx);
-                    return null; // Return null in case of an exception
-                }
-                catch (JsonException jsonEx)
-                {
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(jsonEx);
-                    return null; // Return null if JSON parsing fails
-                }
-                catch (Exception ex)
-                {
-                    ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
-                    return null; // Return null for any other unexpected errors
+                    return new SearchAddressApiModel();
                 }
             }
+            catch (HttpRequestException httpEx)
+            {
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(httpEx);
+                return new SearchAddressApiModel();
+            }
+            catch (JsonException jsonEx)
+            {
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(jsonEx);
+                return new SearchAddressApiModel();
+            }
+            catch (Exception ex)
+            {
+                await ConfigurationGithubViewModel.GitHubInstance.SendStacktraceToGithubRepo(ex);
+                return new SearchAddressApiModel();
+            }
         }
-
-
     }
 }

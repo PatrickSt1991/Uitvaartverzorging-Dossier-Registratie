@@ -2,6 +2,7 @@
 using Dossier_Registratie.Helper;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using Microsoft.Win32;
 using System;
 using System.Data.SqlClient;

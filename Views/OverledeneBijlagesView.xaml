@@ -7,9 +7,6 @@
              mc:Ignorable="d" d:DesignHeight="696.96" d:DesignWidth="1190.257"
              DataContext="{x:Static local:OverledeneBijlagesViewModel.BijlagesInstance}"
              KeyboardNavigation.TabNavigation="Cycle">
-    <UserControl.Resources>
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Name="BijlageGrid" Background="White" ScrollViewer.CanContentScroll="True" IsEnabled="{Binding CorrectAccessOrNotCompleted}">
             <Label x:Name="lbl_funeralAttendant" Content="Uitvaartverzorger aanname:" HorizontalAlignment="Left" Margin="555,16,0,0" VerticalAlignment="Top" Height="31" Width="223" FontFamily="Arial" FontSize="16"/>
@@ -28,7 +25,7 @@
             <Label x:Name="lbl_Uitvaartnummer"  Content="Uitvaartnummer" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="31" Width="179" FontFamily="Arial" FontSize="16"/>
             <Button x:Name="lbl_SaveOverledene" Command="{Binding Path=SaveCommand}" CommandParameter="VolgendeButton" Content="Volgende" Margin="1036,16,16,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="13" FontFamily="Arial" />
             <Button x:Name="lbl_Previous" Command="{Binding Path=PreviousCommand}" Content="Vorige" Margin="892,16,160,0" VerticalAlignment="Top" Height="31" Width="138.257" TabIndex="14" FontFamily="Arial" />
-            <Button x:Name="btn_DocumentAkteVanCessie" Content="Genereren" HorizontalAlignment="Left" Margin="797,130,0,0" VerticalAlignment="Top" Height="40" Width="185" Command="{Binding OpenPopupCommand}" CommandParameter="{Binding ElementName=myPopup}" TabIndex="8"/>
+            <Button x:Name="btn_DocumentAkteVanCessie" Content="Openen" HorizontalAlignment="Left" Margin="797,130,0,0" VerticalAlignment="Top" Height="40" Width="185" Command="{Binding OpenPopupCommand}" CommandParameter="{Binding ElementName=myPopup}" TabIndex="8"/>
             <Label x:Name="lbl_Rouwbrief" Content="Akte van Cessie" HorizontalAlignment="Left" Margin="570,140,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
             <ComboBox x:Name="cb_DocumentTevredenheid" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.TevredenheidTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="797,175,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
                 <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
@@ -465,33 +462,42 @@
             <Label x:Name="lbl_DocumentKoffiekamer" Content="Koffiekamer / Condoleance" HorizontalAlignment="Left" Margin="570,320,0,0" VerticalAlignment="Top" Height="30" Width="208" FontFamily="Arial" FontSize="16" BorderThickness="0,0,0,1" BorderBrush="Red"/>
             <Popup x:Name="myPopup" IsOpen="False" StaysOpen="False" PlacementTarget="{Binding ElementName=BijlageGrid}" Placement="Center">
                 <Border Background="White" BorderBrush="Black" BorderThickness="1" CornerRadius="5">
-                    <StackPanel Margin="10">
-                        <ComboBox x:Name="comboBoxVerzekering" Width="150" Height="30" Margin="0,0,0,5"
-                                      ItemsSource="{Binding Path=VerzekeringenWithAll}" DisplayMemberPath="VerzekeringName"
-                                      SelectedItem="{Binding Path=SelectedVerzekering, Mode=TwoWay}"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Genereren" Width="75" Height="30" Margin="0,0,5,0" Command="{Binding GenererenAkteVanCessieCommand}" />
-                            <Button Content="Mail" Height="30" Width="50" Margin="5,0,5,0" Command="{Binding GenererenAkteVanCessieCommand}" CommandParameter="mail"/>
-                            <Button Content="Sluiten" Width="75" Height="30" Command="{Binding ClosePopupCommand}" CommandParameter="{Binding ElementName=myPopup}"/>
+                    <Grid>
+                        <!-- Top-right close button -->
+                        <Button Width="24" Height="24" Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ClosePopupCommand}" CommandParameter="{Binding ElementName=myPopup}">
+                            <Button.Content>
+                                <TextBlock Text="✖" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button.Content>
+                        </Button>
 
+                        <!-- Main content -->
+                        <StackPanel Margin="10">
+                            <ComboBox x:Name="comboBoxVerzekering" HorizontalAlignment="Left" Width="280" Height="30" Margin="0,0,0,5"
+                          ItemsSource="{Binding Path=VerzekeringenWithAll}" DisplayMemberPath="VerzekeringName"
+                          SelectedItem="{Binding Path=SelectedVerzekering, Mode=TwoWay}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Width="150" Height="38" Command="{Binding CreateDocumentAkteVanCessieCommand}" CommandParameter="Word" Background="#FFC92F39" Foreground="White">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Image Source="pack://application:,,,/Images/word.png" Width="24" Height="24" Margin="0,5,5,5"/>
+                                            <TextBlock Text="Openen" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+
+                                <Button Height="38" Width="150" Margin="5,0,0,0" Command="{Binding CreateDocumentAkteVanCessieCommand}" CommandParameter="Email" Background="#FFC92F39" Foreground="White">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Image Source="pack://application:,,,/Images/email.png" Width="24" Height="24" Margin="0,5,5,5"/>
+                                            <TextBlock Text="Email bijlage" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Border>
             </Popup>
-            <ProgressBar x:Name="loadingSpinner" Width="65" Height="65" IsIndeterminate="True" 
-                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" 
-                         VerticalAlignment="Center" HorizontalAlignment="Center">
-                <ProgressBar.Template>
-                    <ControlTemplate TargetType="ProgressBar">
-                        <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="0" Padding="1">
-                            <Grid x:Name="PART_Indicator" HorizontalAlignment="Left">
-                                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
-                                <Ellipse x:Name="glow" Width="60" Height="60" Stroke="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" StrokeThickness="10" Opacity="0.4" />
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </ProgressBar.Template>
-            </ProgressBar>
             <ComboBox x:Name="cb_DocumentAangifte" Style="{StaticResource ComboBoxStyle_Eefting}" Tag="{Binding TagModel.AangifteTag, Mode=TwoWay}" SelectedValue="{Binding DocumentOption}" Width="185" Height="40" Margin="218,355,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" TabIndex="6" SelectionChanged="Cb_GeneralDocument_SelectionChanged">
                 <ComboBoxItem Tag="Print" Content="Uitprinten" Background="#FFC92F39" Foreground="White" Height="38" FontSize="14">
                     <ComboBoxItem.ContentTemplate>

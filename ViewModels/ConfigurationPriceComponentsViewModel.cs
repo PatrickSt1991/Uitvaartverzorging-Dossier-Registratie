@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Dossier_Registratie.Models;
 using Dossier_Registratie.Repositories;
+using Dossier_Registratie.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using Dossier_Registratie.Helper;
 
 namespace Dossier_Registratie.ViewModels
 {
@@ -412,6 +414,12 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSavePriceComponentCommand(object obj)
         {
+            if (SelectedPriceComponent.HasData())
+            {
+                new ToastWindow("Missende gegevens!\r\nOmschrijving en Sortering is verplicht.").Show();
+                return;
+            }
+
             if (!newPriceComponent)
             {
                 try

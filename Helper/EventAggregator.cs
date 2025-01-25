@@ -4,26 +4,19 @@ namespace Dossier_Registratie.Helper
 {
     public static class IntAggregator
     {
+        public static Action<int> OnDataTransmitted { get; set; } = _ => { };
         public static void Transmit(int data)
         {
-            if (OnDataTransmitted != null)
-            {
-                OnDataTransmitted(data);
-            }
+            OnDataTransmitted?.Invoke(data);
         }
-
-        public static Action<int> OnDataTransmitted;
     }
+
     public static class ComboAggregator
     {
+        public static Action OnDataTransmitted { get; set; } = () => { };
         public static void Transmit()
         {
-            if (OnDataTransmitted != null)
-            {
-                OnDataTransmitted();
-            }
+            OnDataTransmitted?.Invoke();
         }
-
-        public static Action OnDataTransmitted;
     }
 }
