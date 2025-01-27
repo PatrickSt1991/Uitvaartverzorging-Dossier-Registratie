@@ -81,23 +81,21 @@
                 </DataGrid.Columns>
             </DataGrid>
             <Button x:Name="CreateKostenbegrotingFile" Content="Genereer Excel" IsEnabled="{Binding IsExcelButtonEnabled}" Command="{Binding Path=CreateKostenbegrotingFileCommand}" Margin="771,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
-            <TextBox x:Name="input_subtotaal" Margin="1119,854,10,0" TextWrapping="Wrap" Text="{Binding Subtotaal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
-            <Label x:Name="lbl_SubTotaal" Content="Subtotaal: " HorizontalAlignment="Left" Margin="990,854,0,0" VerticalAlignment="Top"/>
-            <TextBox x:Name="input_korting" Margin="1132,885,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" 
+            <TextBox x:Name="input_subtotaal" Margin="1119,824,10,0" TextWrapping="Wrap" Text="{Binding Subtotaal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
+            <Label x:Name="lbl_SubTotaal" Content="Subtotaal: " HorizontalAlignment="Left" Margin="990,824,0,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="input_korting" Margin="1132,855,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" 
                               Text="{Binding DiscountAmount, 
                         Mode=TwoWay, 
                         Converter={StaticResource DecimalToStringConverter}, 
                         FallbackValue=0, 
                         TargetNullValue=''}" />
-            <Label x:Name="lbl_korting" Content="Reductie:" HorizontalAlignment="Left" Margin="990,885,0,0" VerticalAlignment="Top"/>
-            <TextBox x:Name="input_total" Margin="1119,916,10,0" TextWrapping="Wrap" Text="{Binding Total, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False" IsReadOnly="True"/>
+            <Label x:Name="lbl_korting" Content="Reductie:" HorizontalAlignment="Left" Margin="990,855,0,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="input_total" Margin="1119,886,10,0" TextWrapping="Wrap" Text="{Binding Total, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False" IsReadOnly="True"/>
 
-            <Label x:Name="lbl_totaal" Content="Totaal:" HorizontalAlignment="Left" Margin="990,916,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="lbl_totaal" Content="Totaal:" HorizontalAlignment="Left" Margin="990,886,0,0" VerticalAlignment="Top"/>
             <Button x:Name="OpenVerzekering" Content="Verzekering Veranderen" Command="{Binding OpenPopupCommand}" Margin="10,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
-            <TextBox x:Name="input_bedragAf" Margin="1119,823,10,0" TextWrapping="Wrap" Text="{Binding CalculatedSubtotal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
-            <Label x:Name="lbl_bedragAf" Content="Bedrag in mindering: " HorizontalAlignment="Left" Margin="990,823,0,0" VerticalAlignment="Top"/>
             <Button x:Name="OpenKostenbegrotingFile" Content="Open Excel" Visibility="{Binding IsExcelFileButtonVisable}" Command="{Binding OpenKostenbegrotingCommand}" Margin="608,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
-            <Label x:Name="lbl_korting_Copy" Content="€" HorizontalAlignment="Left" Margin="1115,886,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="lbl_korting_Copy" Content="€" HorizontalAlignment="Left" Margin="1115,856,0,0" VerticalAlignment="Top"/>
         </Grid>
     </ScrollViewer>
 </UserControl>

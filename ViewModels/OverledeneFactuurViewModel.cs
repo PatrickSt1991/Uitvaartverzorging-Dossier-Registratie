@@ -324,7 +324,6 @@ namespace Dossier_Registratie.ViewModels
                 .Sum(item => item.OrgBedrag.Value - item.Bedrag.Value);
 
             Total = Subtotaal - CalculatedSubtotal - DiscountAmount;
-            //Total = CalculatedSubtotal - DiscountAmount;
         }
         private void ExecuteKeyDownCommand(object parameter)
         {
@@ -1025,24 +1024,19 @@ namespace Dossier_Registratie.ViewModels
             worksheet.Cells[excelRow + 1, 8] = negativeDiscount;
             ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
 
-            decimal calculatedSubtotal = CalculatedSubtotal < 0 ? CalculatedSubtotal : -CalculatedSubtotal;
-            worksheet.Cells[excelRow + 2, 8] = calculatedSubtotal;
-
-            ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
-
             excelRow++;
             if (CalculatedSubtotal > 0) 
-                totalAmount = (double)((decimal)totalAmount - CalculatedSubtotal - DiscountAmount);
+                totalAmount = (double)((decimal)totalAmount - DiscountAmount);
 
-            worksheet.Cells[excelRow + 2, 8] = totalAmount;
+            worksheet.Cells[excelRow + 1, 8] = totalAmount;
             ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).Formula = $"=SUM(H8:H{excelRow})";
             ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
             
-            worksheet.Cells[excelRow + 6, 4] = $"{kostenbegrotingInfoResult.OpdrachtgeverAanhef} {voorletters} {kostenbegrotingInfoResult.OpdrachtgeverAchternaam}";
-            worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
-            worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
-            worksheet.Cells[excelRow + 9, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
-            worksheet.Cells[excelRow + 13, 2] = $"Dossier: {Globals.UitvaartCode}";
+            worksheet.Cells[excelRow + 5, 4] = $"{kostenbegrotingInfoResult.OpdrachtgeverAanhef} {voorletters} {kostenbegrotingInfoResult.OpdrachtgeverAchternaam}";
+            worksheet.Cells[excelRow + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
+            worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
+            worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
+            worksheet.Cells[excelRow + 12, 2] = $"Dossier: {Globals.UitvaartCode}";
 
             worksheet.PageSetup.PrintArea = $"A1:I{excelRow + 18},A{excelRow + 19}:I{excelRow + 78}"; //82
 
