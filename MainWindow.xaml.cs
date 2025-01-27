@@ -256,12 +256,20 @@ namespace Dossier_Registratie
         }
         private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is TabItem && Globals.NewDossierCreation)
+
+            if (sender is TabItem tabItem)
             {
-                new ToastWindow("De navigatie balk is alleen beschikbaar bij een bestaand dossier!").Show();
-                e.Handled = true;
+                if (e.OriginalSource is FrameworkElement sourceElement && sourceElement.DataContext == tabItem.DataContext)
+                {
+                    if (Globals.NewDossierCreation)
+                    {
+                        new ToastWindow("De navigatie balk is alleen beschikbaar bij een bestaand dossier!").Show();
+                        e.Handled = true;
+                    }
+                }
             }
         }
+
         /*
                 private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
                 {
