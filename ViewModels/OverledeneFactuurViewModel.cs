@@ -323,7 +323,7 @@ namespace Dossier_Registratie.ViewModels
                 .Where(item => item.Bedrag.HasValue && item.OrgBedrag.HasValue && item.Bedrag.Value < item.OrgBedrag.Value)
                 .Sum(item => item.OrgBedrag.Value - item.Bedrag.Value);
 
-            Total = Subtotaal - CalculatedSubtotal - DiscountAmount;
+            Total = Subtotaal - DiscountAmount;
         }
         private void ExecuteKeyDownCommand(object parameter)
         {
