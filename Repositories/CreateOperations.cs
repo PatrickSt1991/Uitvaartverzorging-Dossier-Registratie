@@ -84,8 +84,10 @@ namespace Dossier_Registratie.Repositories
         }
         public async Task InsertDocumentInfoAsync(OverledeneBijlagesModel documentInfo)
         {
-            
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(documentInfo.DocumentName).Split('_')[1];
+            string fileNameWithoutExtension = documentInfo.DocumentName;
+
+            if (documentInfo.DocumentName.Contains('_'))
+                fileNameWithoutExtension = Path.GetFileNameWithoutExtension(documentInfo.DocumentName).Split('_')[1];
 
             using (var connection = GetConnection())
             using (var command = new SqlCommand())
