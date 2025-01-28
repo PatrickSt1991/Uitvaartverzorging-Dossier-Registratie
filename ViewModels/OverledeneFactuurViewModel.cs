@@ -323,8 +323,7 @@ namespace Dossier_Registratie.ViewModels
                 .Where(item => item.Bedrag.HasValue && item.OrgBedrag.HasValue && item.Bedrag.Value < item.OrgBedrag.Value)
                 .Sum(item => item.OrgBedrag.Value - item.Bedrag.Value);
 
-            Total = Subtotaal - CalculatedSubtotal - DiscountAmount;
-            //Total = CalculatedSubtotal - DiscountAmount;
+            Total = Subtotaal - DiscountAmount;
         }
         private void ExecuteKeyDownCommand(object parameter)
         {
@@ -431,9 +430,9 @@ namespace Dossier_Registratie.ViewModels
             InfoUitvaartleider.PersoneelNaam = Globals.UitvaarLeider;
 
             var factuurResult = searchRepository.GetOverlijdenKostenbegrotingByUitvaartId(uitvaartNummer);
-
             if (factuurResult != null)
             {
+                Debug.WriteLine("factuurResult not null");
                 IsExcelButtonEnabled = true;
 
                 if ((factuurResult.KostenbegrotingUrl != null) && (!string.IsNullOrEmpty(factuurResult.KostenbegrotingUrl)))
@@ -471,6 +470,7 @@ namespace Dossier_Registratie.ViewModels
                 };
 
                 var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(OverledeneFactuurModel.KostenbegrotingJson);
+                Debug.WriteLine(priceComponents);
                 if (priceComponents != null)
                 {
                     PriceComponents = new ObservableCollection<GeneratedKostenbegrotingModel>(
@@ -529,6 +529,7 @@ namespace Dossier_Registratie.ViewModels
             }
             else
             {
+                Debug.WriteLine("factuurResult IS null");
                 var selectedHerkomst = miscellaneousRepository.GetHerkomstByUitvaartId(Globals.UitvaartCodeGuid);
                 if (selectedHerkomst.herkomstId != Guid.Empty)
                 {
@@ -741,8 +742,9 @@ namespace Dossier_Registratie.ViewModels
 
                 try
                 {
-                    if (!string.IsNullOrEmpty(factuurResult.PolisJson))
-                        polisList = JsonConvert.DeserializeObject<List<PolisVerzekering>>(factuurResult.PolisJson);
+                    if(factuurResult != null)
+                        if (!string.IsNullOrEmpty(factuurResult.PolisJson))
+                            polisList = JsonConvert.DeserializeObject<List<PolisVerzekering>>(factuurResult.PolisJson);
                 }
                 catch (JsonException ex)
                 {
@@ -811,6 +813,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteOpenPopupCommand(object obj)
         {
+            Debug.WriteLine("open popup");
             IsPopupVisible = true;
         }
         public void ExecuteOpenKostenbegrotingCommand(object obj)
@@ -955,8 +958,19 @@ namespace Dossier_Registratie.ViewModels
 
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
 
-            ((Excel.Range)worksheet.Cells[7, 8]).Value2 = kostenbegrotingInfoResult.OverledenDatum != default ? kostenbegrotingInfoResult.OverledenDatum : (object)string.Empty;
-            ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "dd-mm-yyyy";
+            var dateValue = kostenbegrotingInfoResult.OverledenDatum;
+
+            if (dateValue == DateTime.MinValue || dateValue == new DateTime(1753, 1, 1))
+            {
+                ((Excel.Range)worksheet.Cells[7, 8]).Value2 = "Voorregeling";
+                ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "@"; // Format as text
+            }
+            else
+            {
+                ((Excel.Range)worksheet.Cells[7, 8]).Value2 = dateValue;
+                ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "dd-mm-yyyy"; // Date format
+            }
+
 
 
             var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson);
@@ -1014,6 +1028,7 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
+            int afterPriceLoop = excelRow;
 
             foreach (var range in mergeRanges)
             {
@@ -1025,26 +1040,26 @@ namespace Dossier_Registratie.ViewModels
             worksheet.Cells[excelRow + 1, 8] = negativeDiscount;
             ((Excel.Range)worksheet.Cells[excelRow + 1, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
 
-            decimal calculatedSubtotal = CalculatedSubtotal < 0 ? CalculatedSubtotal : -CalculatedSubtotal;
-            worksheet.Cells[excelRow + 2, 8] = calculatedSubtotal;
-
-            ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
-
             excelRow++;
             if (CalculatedSubtotal > 0) 
-                totalAmount = (double)((decimal)totalAmount - CalculatedSubtotal - DiscountAmount);
+                totalAmount = (double)((decimal)totalAmount - DiscountAmount);
 
-            worksheet.Cells[excelRow + 2, 8] = totalAmount;
+            worksheet.Cells[excelRow + 1, 8] = totalAmount;
             ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).Formula = $"=SUM(H8:H{excelRow})";
             ((Excel.Range)worksheet.Cells[excelRow + 2, 8]).NumberFormatLocal = "_-€ * #.##0,00_-;_-€ * #.##0,00-;_-€ * \"-\"??_-;_-@_-";
-            
-            worksheet.Cells[excelRow + 6, 4] = $"{kostenbegrotingInfoResult.OpdrachtgeverAanhef} {voorletters} {kostenbegrotingInfoResult.OpdrachtgeverAchternaam}";
-            worksheet.Cells[excelRow + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
-            worksheet.Cells[excelRow + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
-            worksheet.Cells[excelRow + 9, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
-            worksheet.Cells[excelRow + 13, 2] = $"Dossier: {Globals.UitvaartCode}";
 
-            worksheet.PageSetup.PrintArea = $"A1:I{excelRow + 18},A{excelRow + 19}:I{excelRow + 78}"; //82
+            afterPriceLoop = 43 - afterPriceLoop;
+
+            for (int i = 0; i < afterPriceLoop; i++)
+                ((Excel.Range)worksheet.Rows[excelRow + 2 + i + 1]).Insert();
+
+            worksheet.Cells[excelRow + afterPriceLoop + 5, 4] = $"{kostenbegrotingInfoResult.OpdrachtgeverAanhef} {voorletters} {kostenbegrotingInfoResult.OpdrachtgeverAchternaam}";
+            worksheet.Cells[excelRow + afterPriceLoop + 6, 4] = kostenbegrotingInfoResult.OpdrachtgeverStraat;
+            worksheet.Cells[excelRow + afterPriceLoop + 7, 4] = kostenbegrotingInfoResult.OpdrachtgeverPostcode;
+            worksheet.Cells[excelRow + afterPriceLoop + 8, 4] = kostenbegrotingInfoResult.OpdrachtgeverWoonplaats;
+            worksheet.Cells[excelRow + afterPriceLoop + 12, 2] = $"Dossier: {Globals.UitvaartCode}";
+
+            worksheet.PageSetup.PrintArea = $"A1:I{excelRow + afterPriceLoop + 18},A{excelRow + afterPriceLoop + 19}:I{excelRow + afterPriceLoop + 78}"; //82
 
             workbook.Close(true);
             excelApp.Quit();

@@ -95,7 +95,8 @@ namespace Dossier_Registratie.ViewModels
             var currentYear = DateTime.Now.Year;
             AvailableYears = new ObservableCollection<int>(
             _allItems.Where(item => item.DatumOverlijden.HasValue || item.Voorregeling)
-                     .Select(item => item.DatumOverlijden.HasValue ? item.DatumOverlijden.Value.Year : DateTime.MinValue.Year)
+                     //.Select(item => item.DatumOverlijden.HasValue ? item.DatumOverlijden.Value.Year : DateTime.MinValue.Year)
+                     .Select(item => item.DatumOverlijden.HasValue && item.DatumOverlijden.Value != DateTime.MinValue ? item.DatumOverlijden.Value.Year : new DateTime(1753, 1, 1).Year)
                      .Distinct()
                      .OrderByDescending(year => year)
             );

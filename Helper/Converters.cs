@@ -36,7 +36,13 @@ namespace Dossier_Registratie.Helper
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is int year)
-                return year == 1 ? "Voorregelingen" : year.ToString();
+            {
+                // Check if the year is 1 or represents a "no value" (DateTime.MinValue or SQL Server's minimum date)
+                if (year == 1 || year == new DateTime(1753, 1, 1).Year)
+                    return "Voorregelingen";
+
+                return year.ToString();
+            }
 
             return value;
         }
@@ -52,6 +58,7 @@ namespace Dossier_Registratie.Helper
             return null;
         }
     }
+
     public class NullableIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
