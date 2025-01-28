@@ -778,13 +778,31 @@ namespace Dossier_Registratie.ViewModels
                 }
             }
 
+
+            if (PersoonsGegevens.OverledeneVoorregeling)
+            {
+                OverlijdenInfo.OverledenDatumTijd = OverlijdenInfo.OverledenDatum == DateTime.MinValue ? new DateTime(1753, 1, 1) : OverlijdenInfo.OverledenDatum;
+                OverlijdenInfo.OverledenLocatie = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenLocatie) ? OverlijdenInfo.OverledenLocatie : string.Empty;
+                OverlijdenInfo.OverledenAdres = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenAdres) ? OverlijdenInfo.OverledenAdres : string.Empty;
+                OverlijdenInfo.OverledenPostcode = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenPostcode) ? OverlijdenInfo.OverledenPostcode : string.Empty;
+                OverlijdenInfo.OverledenHuisnummer = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisnummer) ? OverlijdenInfo.OverledenHuisnummer : string.Empty;
+                OverlijdenInfo.OverledenHuisnummerToevoeging = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisnummerToevoeging) ? OverlijdenInfo.OverledenHuisnummerToevoeging : string.Empty;
+                OverlijdenInfo.OverledenPlaats = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenPlaats) ? OverlijdenInfo.OverledenPlaats : string.Empty;
+                OverlijdenInfo.OverledenGemeente = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenGemeente) ? OverlijdenInfo.OverledenGemeente : string.Empty;
+                OverlijdenInfo.OverledenLijkvinding = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenLijkvinding) ? OverlijdenInfo.OverledenLijkvinding : string.Empty;
+                OverlijdenInfo.OverledenLidnummer = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenLidnummer) ? OverlijdenInfo.OverledenLidnummer : string.Empty;
+                OverlijdenInfo.OverledenHuisarts = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisarts) ? OverlijdenInfo.OverledenHuisarts : string.Empty;
+                OverlijdenInfo.OverledenHuisartsTelefoon = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenHuisartsTelefoon) ? OverlijdenInfo.OverledenHuisartsTelefoon : string.Empty;
+                OverlijdenInfo.OverledenSchouwarts = !string.IsNullOrWhiteSpace(OverlijdenInfo.OverledenSchouwarts) ? OverlijdenInfo.OverledenSchouwarts : string.Empty;
+                IsOverlijdenInfoValid = true;
+            }
+
             if (IsOverlijdenInfoValid)
             {
                 if (!OverledeneThuisOverleden)
                 {
                     try
                     {
-                        //Add the newly found to the database
                         NewSuggestion.Id = Guid.NewGuid();
                         NewSuggestion.ShortName = string.Empty;
                         NewSuggestion.LongName = OverlijdenLocatieLocal;
@@ -796,7 +814,7 @@ namespace Dossier_Registratie.ViewModels
 
                         int locationCheck = miscellaneousRepository.CheckLocationExistance(NewSuggestion);
 
-                        if (locationCheck == 0)
+                        if (locationCheck == 0 && !PersoonsGegevens.OverledeneVoorregeling)
                             createRepository.CreateSuggestion(NewSuggestion);
                     }
                     catch (Exception ex)
@@ -826,10 +844,11 @@ namespace Dossier_Registratie.ViewModels
                 {
                     bool overlijdenInfoChanged = modelCompare.AreValuesEqual(_originalOverlijdenInfoModel, OverlijdenInfo);
 
-                    if (overlijdenInfoChanged == false)
+                    if (!overlijdenInfoChanged)
                     {
                         try
                         {
+                            Debug.WriteLine("update overlijdeninfo");
                             updateRepository.EditOverlijdenInfo(OverlijdenInfo);
                         }
                         catch (Exception ex)

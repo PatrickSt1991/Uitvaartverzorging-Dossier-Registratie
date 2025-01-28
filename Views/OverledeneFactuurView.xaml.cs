@@ -1,5 +1,6 @@
 ﻿using Dossier_Registratie.Models;
 using Dossier_Registratie.ViewModels;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -25,9 +26,9 @@ namespace Dossier_Registratie.Views
                 {
                     if (e.PropertyName == "IsPopupVisible")
                         verzekeringPopup.IsOpen = viewModel.IsPopupVisible;
-
                 };
             }
+
         }
         private void ReloadDynamicElements(object sender, RoutedEventArgs e)
         {
@@ -142,11 +143,6 @@ namespace Dossier_Registratie.Views
 
                 viewModel?.UpdateSubtotaal();
             }
-        }
-
-        private void input_subtotaal_Copy_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }

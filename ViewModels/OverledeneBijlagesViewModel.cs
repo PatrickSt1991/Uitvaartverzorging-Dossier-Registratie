@@ -1227,16 +1227,21 @@ namespace Dossier_Registratie.ViewModels
         {
             searchRepository = new SearchOperations();
             var verzekeringResult = searchRepository.GetOverlijdenVerzekeringByUitvaartId(UitvaartNummer);
-            string jsonString = verzekeringResult.VerzekeringProperties;
-            Debug.WriteLine(jsonString);
-            var verzekeringen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(jsonString);
-            var filteredVerzekeringen = verzekeringen
-                .Where(v => !string.IsNullOrEmpty(v.VerzekeringName) && v.VerzekeringName != "null")
-                .GroupBy(v => v.VerzekeringName)
-                .Select(g => g.First())
-                .ToList();
+            if(verzekeringResult?.VerzekeringProperties != null)
+            {
+                string jsonString = verzekeringResult.VerzekeringProperties;
+                Debug.WriteLine(jsonString);
+                var verzekeringen = JsonConvert.DeserializeObject<List<PolisVerzekering>>(jsonString);
+                var filteredVerzekeringen = verzekeringen
+                    .Where(v => !string.IsNullOrEmpty(v.VerzekeringName) && v.VerzekeringName != "null")
+                    .GroupBy(v => v.VerzekeringName)
+                    .Select(g => g.First())
+                    .ToList();
 
-            return new ObservableCollection<PolisVerzekering>(filteredVerzekeringen);
+                return new ObservableCollection<PolisVerzekering>(filteredVerzekeringen);
+            }
+
+            return new ObservableCollection<PolisVerzekering>();
         }
     }
 }
