@@ -59,22 +59,22 @@
                     </StackPanel>
                 </Border>
             </Popup>
-            
+
             <DataGrid Name="dataGrid" 
-                      CanUserResizeColumns="True" 
-                      CanUserAddRows="True" 
-                      CanUserDeleteRows="True" 
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Top"
-                      ItemsSource="{Binding PriceComponents}" 
-                      LostFocus="DataGrid_LostFocus" 
-                      PreviewKeyDown="DataGrid_PreviewKeyDown" 
-                      RowEditEnding="DataGrid_RowEditEnding" 
-                      AutoGenerateColumns="False" Margin="10,85,10,0" Height="731"
-                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" 
-                      dd:DragDrop.IsDragSource="True" 
-                      dd:DragDrop.IsDropTarget="True" 
-                      dd:DragDrop.DropHandler="{Binding}">
+          CanUserResizeColumns="True" 
+          CanUserAddRows="True" 
+          CanUserDeleteRows="True" 
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Top"
+          ItemsSource="{Binding PriceComponents}" 
+          LostFocus="DataGrid_LostFocus" 
+          PreviewKeyDown="DataGrid_PreviewKeyDown" 
+          RowEditEnding="DataGrid_RowEditEnding" 
+          AutoGenerateColumns="False" Margin="10,85,10,0" Height="731"
+          HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" 
+          dd:DragDrop.IsDragSource="True" 
+          dd:DragDrop.IsDropTarget="True" 
+          dd:DragDrop.DropHandler="{Binding}">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Omschrijving" MinWidth="1400" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
@@ -82,9 +82,14 @@
                                 <TextBlock Text="{Binding Omschrijving}" TextWrapping="Wrap" VerticalAlignment="Top" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Omschrijving, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn MinWidth="25" Width="*" Header="Aantal" Binding="{Binding Aantal}" />
-                    <DataGridTextColumn MinWidth="25" Width="*" Header="Verzekerd" Binding="{Binding Verzekerd}" />
+                    <DataGridTextColumn MinWidth="25" Width="*" Header="Aantal" Binding="{Binding Aantal, Mode=TwoWay}" />
+                    <DataGridTextColumn MinWidth="25" Width="*" Header="Verzekerd" Binding="{Binding Verzekerd, Mode=TwoWay}" />
                     <DataGridTextColumn MinWidth="25" Width="*" Header="Bedrag">
                         <DataGridTextColumn.Binding>
                             <Binding Path="Bedrag" Mode="TwoWay" Converter="{StaticResource DecimalToStringConverter}" TargetNullValue="">
@@ -92,13 +97,14 @@
                             </Binding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridCheckBoxColumn MinWidth="75" Width="Auto" Header="PM" Binding="{Binding PmAmount}" />
-                    <DataGridCheckBoxColumn MinWidth="75" Width="Auto" Header="Print" Binding="{Binding PrintTrue}" />
+                    <DataGridCheckBoxColumn MinWidth="75" Width="Auto" Header="PM" Binding="{Binding PmAmount, Mode=TwoWay}" />
+                    <DataGridCheckBoxColumn MinWidth="75" Width="Auto" Header="Print" Binding="{Binding PrintTrue, Mode=TwoWay}" />
                     <DataGridTextColumn Visibility="Hidden" Binding="{Binding OrgAantal}" />
                     <DataGridTextColumn Visibility="Hidden" Binding="{Binding OrgBedrag}" />
                     <DataGridTextColumn Visibility="Hidden" Binding="{Binding Id}" />
                 </DataGrid.Columns>
             </DataGrid>
+
             <Button x:Name="CreateKostenbegrotingFile" Content="Genereer Excel" IsEnabled="{Binding IsExcelButtonEnabled}" Command="{Binding Path=CreateKostenbegrotingFileCommand}" Margin="771,821,0,0" Height="37" VerticalAlignment="Top" HorizontalAlignment="Left" Width="158"/>
             <TextBox x:Name="input_subtotaal" Margin="1119,824,10,0" TextWrapping="Wrap" Text="{Binding Subtotaal, Mode=TwoWay, StringFormat='€ {0:N2}'}" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" IsEnabled="False"/>
             <Label x:Name="lbl_SubTotaal" Content="Subtotaal: " HorizontalAlignment="Left" Margin="990,824,0,0" VerticalAlignment="Top"/>

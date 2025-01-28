@@ -454,8 +454,7 @@ namespace Dossier_Registratie.Models
 
         public bool HasData()
         {
-            return !SortOrder.HasValue ||
-                   !string.IsNullOrEmpty(ComponentOmschrijving);
+            return SortOrder.HasValue && !string.IsNullOrEmpty(ComponentOmschrijving);
         }
 
     }
