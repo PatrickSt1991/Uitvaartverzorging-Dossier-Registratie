@@ -958,8 +958,19 @@ namespace Dossier_Registratie.ViewModels
 
             worksheet.Cells[7, 5] = kostenbegrotingInfoResult.OverledeneNaam;
 
-            ((Excel.Range)worksheet.Cells[7, 8]).Value2 = kostenbegrotingInfoResult.OverledenDatum != default ? kostenbegrotingInfoResult.OverledenDatum : (object)string.Empty;
-            ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "dd-mm-yyyy";
+            var dateValue = kostenbegrotingInfoResult.OverledenDatum;
+
+            if (dateValue == DateTime.MinValue || dateValue == new DateTime(1753, 1, 1))
+            {
+                ((Excel.Range)worksheet.Cells[7, 8]).Value2 = "Voorregeling";
+                ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "@"; // Format as text
+            }
+            else
+            {
+                ((Excel.Range)worksheet.Cells[7, 8]).Value2 = dateValue;
+                ((Excel.Range)worksheet.Cells[7, 8]).NumberFormat = "dd-mm-yyyy"; // Date format
+            }
+
 
 
             var priceComponents = JsonConvert.DeserializeObject<List<GeneratedKostenbegrotingModel>>(kostenbegrotingJson);
