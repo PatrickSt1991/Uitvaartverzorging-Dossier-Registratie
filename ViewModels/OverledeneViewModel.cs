@@ -799,7 +799,7 @@ namespace Dossier_Registratie.ViewModels
 
             if (IsOverlijdenInfoValid)
             {
-                if (!OverledeneThuisOverleden)
+                if (!OverledeneThuisOverleden && !PersoonsGegevens.OverledeneVoorregeling)
                 {
                     try
                     {
