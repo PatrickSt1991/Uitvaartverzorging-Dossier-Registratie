@@ -414,7 +414,7 @@ namespace Dossier_Registratie.ViewModels
         }
         public void ExecuteSavePriceComponentCommand(object obj)
         {
-            if (SelectedPriceComponent.HasData())
+            if (!SelectedPriceComponent.HasData())
             {
                 new ToastWindow("Missende gegevens!\r\nOmschrijving en Sortering is verplicht.").Show();
                 return;
