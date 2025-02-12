@@ -1043,9 +1043,9 @@ namespace Dossier_Registratie.ViewModels
         {
             Kostenbegrotingen.Clear();
 
-            foreach (var kostenbegroting in miscellaneousRepository.GetAllKostenbegrotingen())
+            foreach (var kostenbegroting in miscellaneousRepository.GetAllKostenbegrotingen().OrderByDescending(k => k.UitvaartNummer))
             {
-                if (kostenbegroting.KostenbegrotingCreated == true)
+                if (kostenbegroting.KostenbegrotingCreated)
                 {
                     Kostenbegrotingen.Add(new FactuurModel
                     {
@@ -1083,7 +1083,7 @@ namespace Dossier_Registratie.ViewModels
         {
             BloemenFinancieel.Clear();
 
-            foreach (var bloem in searchRepository.GetOverlijdenBloemen())
+            foreach (var bloem in searchRepository.GetOverlijdenBloemen().OrderByDescending(k => k.UitvaartNummer))
             {
                 BloemenFinancieel.Add(new OverledeneBloemenModel
                 {
@@ -1103,7 +1103,7 @@ namespace Dossier_Registratie.ViewModels
         {
             SteenhouwerijFinancieel.Clear();
 
-            foreach (var steen in searchRepository.GetOverlijdenSteenhouwerij())
+            foreach (var steen in searchRepository.GetOverlijdenSteenhouwerij().OrderByDescending(k => k.UitvaartNummer))
             {
                 SteenhouwerijFinancieel.Add(new OverledeneSteenhouwerijModel
                 {
@@ -1125,7 +1125,7 @@ namespace Dossier_Registratie.ViewModels
         {
             UrnSieradenFinancieel.Clear();
 
-            foreach (var urnSieraden in searchRepository.GetOverlijdenUrnSieraden())
+            foreach (var urnSieraden in searchRepository.GetOverlijdenUrnSieraden().OrderByDescending(k => k.UitvaartNummer))
             {
                 UrnSieradenFinancieel.Add(new OverledeneUrnSieradenModel
                 {
@@ -1668,7 +1668,7 @@ namespace Dossier_Registratie.ViewModels
         {
             FilteredSteenhouwerijFinancieel.Clear();
 
-            foreach (var steen in searchRepository.GetOverlijdenSteenhouwerij())
+            foreach (var steen in searchRepository.GetOverlijdenSteenhouwerij().OrderByDescending(k => k.UitvaartNummer))
             {
                 FilteredSteenhouwerijFinancieel.Add(new OverledeneSteenhouwerijModel
                 {
@@ -1691,7 +1691,7 @@ namespace Dossier_Registratie.ViewModels
         {
             FilteredBloemenFinancieel.Clear();
 
-            foreach (var bloem in searchRepository.GetOverlijdenBloemen())
+            foreach (var bloem in searchRepository.GetOverlijdenBloemen().OrderByDescending(k => k.UitvaartNummer))
             {
                 FilteredBloemenFinancieel.Add(new OverledeneBloemenModel
                 {
@@ -1711,7 +1711,7 @@ namespace Dossier_Registratie.ViewModels
         {
             FilteredUrnSieradenFinancieel.Clear();
 
-            foreach (var urnSieraden in searchRepository.GetOverlijdenUrnSieraden())
+            foreach (var urnSieraden in searchRepository.GetOverlijdenUrnSieraden().OrderByDescending(k => k.UitvaartNummer))
             {
                 FilteredUrnSieradenFinancieel.Add(new OverledeneUrnSieradenModel
                 {

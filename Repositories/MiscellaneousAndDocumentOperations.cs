@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dossier_Registratie.Helper;
+using System.Windows;
 
 namespace Dossier_Registratie.Repositories
 {
@@ -1265,58 +1265,71 @@ namespace Dossier_Registratie.Repositories
             }
             return rouwbrieven;
         }
-        public ObservableCollection<FactuurModel> GetAllKostenbegrotingen()
+public ObservableCollection<FactuurModel> GetAllKostenbegrotingen()
+{
+    var kostenbegrotingGegevens = new ObservableCollection<FactuurModel>();
+
+    using var connection = GetConnection();
+    using var command = new SqlCommand(@"
+        SELECT 
+            OFA.[Id], 
+            OU.UitvaartId AS OUUitvaartId, 
+            OU.[Uitvaartnummer], 
+            OFA.[kostenbegrotingUrl], 
+            OFA.[kostenbegrotingJson], 
+            OFA.[kostenbegrotingCreationDate], 
+            OFA.[kostenbegrotingCreated], 
+            OFA.[factuurCreationDate], 
+            OFA.[factuurUrl], 
+            OFA.[factuurCreated]
+        FROM [OverledeneFacturen] AS OFA
+        INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId
+        WHERE OFA.kostenbegrotingUrl IS NOT NULL AND OFA.kostenbegrotingUrl != ''", connection);
+
+    connection.Open();
+    using var reader = command.ExecuteReader();
+
+    while (reader.Read())
+    {
+        var factuurUrlValue = reader.IsDBNull(reader.GetOrdinal("factuurUrl")) 
+            ? string.Empty 
+            : reader.GetString(reader.GetOrdinal("factuurUrl"));
+
+        string opdrachtUrl = string.Empty;
+        string verenigingUrl = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(factuurUrlValue))
         {
-            var kostenbegrotingGegevens = new ObservableCollection<FactuurModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new SqlCommand("SELECT [Id], OU.UitvaartId AS OUUitvaartId, Uitvaartnummer, [kostenbegrotingUrl], [kostenbegrotingJson], " +
-                                                "[kostenbegrotingCreationDate], [kostenbegrotingCreated], [factuurCreationDate], [factuurUrl], [factuurCreated] " +
-                                                "FROM [OverledeneFacturen] AS OFA " +
-                                                "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
-                                                "WHERE kostenbegrotingUrl IS NOT NULL AND kostenbegrotingUrl != ''", connection))
+            if (JsonConvert.DeserializeObject<ExpandoObject>(factuurUrlValue) is IDictionary<string, object> jsonFactuur)
             {
-                connection.Open();
+                opdrachtUrl = jsonFactuur.TryGetValue("opdrachtgeverFactuurUrl", out var opdrachtgeverFactuurUrl) 
+                    ? opdrachtgeverFactuurUrl?.ToString() ?? string.Empty 
+                    : string.Empty;
 
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    string factuurUrlValue = reader.GetString("factuurUrl");
-                    string opdrachtUrl = string.Empty;
-                    string verenigingUrl = string.Empty;
-
-                    if (!string.IsNullOrWhiteSpace(factuurUrlValue) &&
-                        JsonConvert.DeserializeObject<ExpandoObject>(factuurUrlValue) is IDictionary<string, object> jsonFactuur)
-                    {
-                        opdrachtUrl = jsonFactuur.TryGetValue("opdrachtgeverFactuurUrl", out var opdrachtgeverFactuurUrl)
-                            ? opdrachtgeverFactuurUrl?.ToString() ?? string.Empty
-                            : string.Empty;
-
-                        verenigingUrl = jsonFactuur.TryGetValue("verenigingFactuurUrl", out var verenigingFactuurUrl)
-                            ? verenigingFactuurUrl?.ToString() ?? string.Empty
-                            : string.Empty;
-                    }
-
-
-                    kostenbegrotingGegevens.Add(new FactuurModel
-                    {
-                        Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
-                        UitvaartId = reader["OUUitvaartId"] != DBNull.Value ? (Guid)reader["OUUitvaartId"] : Guid.Empty,
-                        UitvaartNummer = reader["Uitvaartnummer"]?.ToString() ?? string.Empty,
-                        KostenbegrotingUrl = reader["kostenbegrotingUrl"]?.ToString() ?? string.Empty,
-                        KostenbegrotingJson = reader["kostenbegrotingJson"]?.ToString() ?? string.Empty,
-                        KostenbegrotingCreationDate = reader["kostenbegrotingCreationDate"] != DBNull.Value ? (DateTime)reader["kostenbegrotingCreationDate"] : DateTime.MinValue,
-                        KostenbegrotingCreated = reader["kostenbegrotingCreated"] != DBNull.Value && (bool)reader["kostenbegrotingCreated"],
-                        FactuurCreationDate = reader["factuurCreationDate"] != DBNull.Value ? (DateTime)reader["factuurCreationDate"] : DateTime.MinValue,
-                        FactuurVerenigingUrl = verenigingUrl,
-                        FactuurOpdrachtgeverUrl = opdrachtUrl,
-                        FactuurCreated = reader["factuurCreated"] != DBNull.Value && (bool)reader["factuurCreated"],
-                    });
-                }
+                verenigingUrl = jsonFactuur.TryGetValue("verenigingFactuurUrl", out var verenigingFactuurUrl) 
+                    ? verenigingFactuurUrl?.ToString() ?? string.Empty 
+                    : string.Empty;
             }
-
-            return kostenbegrotingGegevens;
         }
+
+        kostenbegrotingGegevens.Add(new FactuurModel
+        {
+            Id = reader.IsDBNull(reader.GetOrdinal("Id")) ? Guid.Empty : reader.GetGuid(reader.GetOrdinal("Id")),
+            UitvaartId = reader.IsDBNull(reader.GetOrdinal("OUUitvaartId")) ? Guid.Empty : reader.GetGuid(reader.GetOrdinal("OUUitvaartId")),
+            UitvaartNummer = reader.IsDBNull(reader.GetOrdinal("Uitvaartnummer")) ? string.Empty : reader.GetString(reader.GetOrdinal("Uitvaartnummer")),
+            KostenbegrotingUrl = reader.IsDBNull(reader.GetOrdinal("kostenbegrotingUrl")) ? string.Empty : reader.GetString(reader.GetOrdinal("kostenbegrotingUrl")),
+            KostenbegrotingJson = reader.IsDBNull(reader.GetOrdinal("kostenbegrotingJson")) ? string.Empty : reader.GetString(reader.GetOrdinal("kostenbegrotingJson")),
+            KostenbegrotingCreationDate = reader.IsDBNull(reader.GetOrdinal("kostenbegrotingCreationDate")) ? DateTime.MinValue : reader.GetDateTime(reader.GetOrdinal("kostenbegrotingCreationDate")),
+            KostenbegrotingCreated = !reader.IsDBNull(reader.GetOrdinal("kostenbegrotingCreated")) && reader.GetBoolean(reader.GetOrdinal("kostenbegrotingCreated")),
+            FactuurCreationDate = reader.IsDBNull(reader.GetOrdinal("factuurCreationDate")) ? DateTime.MinValue : reader.GetDateTime(reader.GetOrdinal("factuurCreationDate")),
+            FactuurVerenigingUrl = verenigingUrl,
+            FactuurOpdrachtgeverUrl = opdrachtUrl,
+            FactuurCreated = !reader.IsDBNull(reader.GetOrdinal("factuurCreated")) && reader.GetBoolean(reader.GetOrdinal("factuurCreated"))
+        });
+    }
+
+    return kostenbegrotingGegevens;
+}
 
 
         /*
