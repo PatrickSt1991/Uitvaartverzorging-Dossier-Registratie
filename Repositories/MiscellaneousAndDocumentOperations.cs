@@ -3121,11 +3121,11 @@ public ObservableCollection<FactuurModel> GetAllKostenbegrotingen()
                 connection.Open();
                 command.Connection = connection;
                 command.CommandText = "SELECT COUNT(*) FROM ConfigurationOverledenLocaties WHERE Street = @street AND Housenumber = @housenumber AND Zipcode = @zipcode AND City = @city AND County = @county";
-                command.Parameters.AddWithValue("@street", newSuggestion.Street);
-                command.Parameters.AddWithValue("@housenumber", newSuggestion.HouseNumber);
-                command.Parameters.AddWithValue("@zipcode", newSuggestion.ZipCode);
-                command.Parameters.AddWithValue("@city", newSuggestion.City);
-                command.Parameters.AddWithValue("@county", newSuggestion.County);
+                command.Parameters.AddWithValue("@street", newSuggestion.Street ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@housenumber", newSuggestion.HouseNumber ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@zipcode", newSuggestion.ZipCode ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@city", newSuggestion.City ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@county", newSuggestion.County ?? (object)DBNull.Value);
 
                 int locationCount = (int)(command.ExecuteScalar() ?? 0); // Handle potential null
 
