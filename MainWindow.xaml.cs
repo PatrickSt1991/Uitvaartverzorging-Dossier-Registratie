@@ -15,6 +15,7 @@ namespace Dossier_Registratie
 {
     public partial class MainWindow : Window
     {
+        private TabItem _previousTabItem;
         private bool _isFirstSelection = true;
 
         private bool _tabControlChecked = false;

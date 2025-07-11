@@ -96,7 +96,6 @@ namespace Dossier_Registratie.ViewModels
         public ConfigurationAsbestemmingenViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
-            searchRepository = new SearchOperations();
             createRepository = new CreateOperations();
             updateRepository = new UpdateOperations();
             commandRepository = new DeleteAndActivateDisableOperations();
