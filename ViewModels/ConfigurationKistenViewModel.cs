@@ -14,7 +14,6 @@ namespace Dossier_Registratie.ViewModels
     public class ConfigurationKistenViewModel : ViewModelBase
     {
         private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
-        private readonly ISearchOperations searchRepository;
         private readonly ICreateOperations createRepository;
         private readonly IUpdateOperations updateRepository;
         private readonly IDeleteAndActivateDisableOperations commandRepository;
@@ -97,7 +96,6 @@ namespace Dossier_Registratie.ViewModels
         public ConfigurationKistenViewModel()
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
-            searchRepository = new SearchOperations();
             createRepository = new CreateOperations();
             updateRepository = new UpdateOperations();
             commandRepository = new DeleteAndActivateDisableOperations();

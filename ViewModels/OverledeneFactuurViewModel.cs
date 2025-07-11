@@ -882,17 +882,18 @@ namespace Dossier_Registratie.ViewModels
                     bitmap.EndInit();
                 }
 
-                string tempDirectory = Path.GetTempPath(); // Use the system temp directory for safety
-                string tempFileName = Path.GetRandomFileName() + "." + documentType; // Use documentType from the database
-                string tempPath = Path.Combine(tempDirectory, tempFileName);
+                string tempDirectory = Path.GetTempPath();
+                string tempFileName = Path.GetRandomFileName();
+                string tempFileWithExtension = Path.ChangeExtension(tempFileName, documentType);
+                string tempPath = Path.Combine(tempDirectory, tempFileWithExtension);
 
                 try
                 {
-                    using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
+                    using (var fs = new FileStream(tempPath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None))
                     {
                         var encoder = new PngBitmapEncoder();
                         encoder.Frames.Add(BitmapFrame.Create(bitmap));
-                        encoder.Save(fileStream);
+                        encoder.Save(fs);
                     }
                 }
                 catch (IOException ex)

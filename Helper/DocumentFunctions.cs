@@ -412,7 +412,7 @@ namespace Dossier_Registratie.Helper
             return new OverledeneBijlagesModel
             {
                 DocumentName = document.DocumentName,
-                DocumentHash = Checksum.GetMD5Checksum(document.DestinationFile),
+                DocumentHash = Checksum.GetSha256Checksum(document.DestinationFile),
                 UitvaartId = document.UitvaartId,
                 BijlageId = document.Updated ? Guid.NewGuid() : document.DocumentId,
                 IsModified = !document.Updated

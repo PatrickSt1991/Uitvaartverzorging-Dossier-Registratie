@@ -34,7 +34,7 @@ namespace Dossier_Registratie.ViewModels
         private ModelCompare modelCompare;
 
         private Polis? _polistList;
-        public static bool IsPopulated = false;
+        private bool IsPopulated = false;
         public bool CorrectAccessOrNotCompleted
         {
             get { return _correctAccessOrNotCompleted; }

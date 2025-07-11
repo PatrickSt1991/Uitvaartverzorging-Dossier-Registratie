@@ -162,14 +162,14 @@ namespace Dossier_Registratie.Repositories
 
             return ("NotRegistered", "NotRegistered");
         }
-        public async Task<int> SearchKostenbegrotingExistanceAsync(Guid uitvaartGuid)
+        public async Task<int> SearchKostenbegrotingExistanceAsync(Guid uitvaartIdGuid)
         {
             using var connection = GetConnection();
             using var command = new SqlCommand();
             await connection.OpenAsync();
             command.Connection = connection;
             command.CommandText = "SELECT COUNT(*) FROM [OverledeneFacturen] WHERE [UitvaartId] = @UitvaartId AND [kostenbegrotingUrl] != ''";
-            command.Parameters.AddWithValue("@UitvaartId", uitvaartGuid);
+            command.Parameters.AddWithValue("@UitvaartId", uitvaartIdGuid);
 
             return (int)await command.ExecuteScalarAsync();
         }
@@ -302,7 +302,7 @@ namespace Dossier_Registratie.Repositories
             }
             return uitvaartLeiderGegevens;
         }
-        public OverledenePersoonsGegevensModel GetPeroonsGegevensByUitvaartId(string uitvaartId)
+        public OverledenePersoonsGegevensModel GetPeroonsGegevensByUitvaartId(string UitvaartId)
         {
             OverledenePersoonsGegevensModel persoonsGegevens = null;
             using (var connection = GetConnection())
@@ -319,7 +319,7 @@ namespace Dossier_Registratie.Repositories
                                         "FROM OverledenePersoonsGegevens OPG " +
                                         "RIGHT JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OPG.UitvaartId " +
                                         "WHERE Uitvaartnummer=@uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -349,7 +349,7 @@ namespace Dossier_Registratie.Repositories
             }
             return persoonsGegevens;
         }
-        public OverledeneOverlijdenInfoModel GetOverlijdenInfoByUitvaartId(string uitvaartId)
+        public OverledeneOverlijdenInfoModel GetOverlijdenInfoByUitvaartId(string UitvaartId)
         {
             OverledeneOverlijdenInfoModel overlijdenInfo = null;
             using (var connection = GetConnection())
@@ -365,7 +365,7 @@ namespace Dossier_Registratie.Repositories
                                         "FROM OverledeneOverlijdenInfo OOI " +
                                         "RIGHT JOIN OverledeneUitvaartleider OUL ON OUL.UitvaartId = OOI.UitvaartId " +
                                         "WHERE Uitvaartnummer=@uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -394,7 +394,7 @@ namespace Dossier_Registratie.Repositories
             }
             return overlijdenInfo;
         }
-        public OverledeneExtraInfoModel GetExtraInfoByUitvaartId(string uitvaartId)
+        public OverledeneExtraInfoModel GetExtraInfoByUitvaartId(string UitvaartId)
         {
             OverledeneExtraInfoModel extraInfo = null;
             using (var connection = GetConnection())
@@ -410,7 +410,7 @@ namespace Dossier_Registratie.Repositories
                                         " FROM [OverledeneExtraInfo] OEI" +
                                         " INNER JOIN [OverledeneUitvaartleider] OU ON OU.UitvaartId = OEI.uitvaartId" +
                                         " WHERE Uitvaartnummer=@uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -494,7 +494,7 @@ namespace Dossier_Registratie.Repositories
             }
             return opdrachtGever;
         }
-        public OpdrachtgeverPersoonsGegevensModel GetExtraOpdrachtgeverByUitvaartId(string uitvaartId)
+        public OpdrachtgeverPersoonsGegevensModel GetExtraOpdrachtgeverByUitvaartId(string UitvaartId)
         {
             OpdrachtgeverPersoonsGegevensModel opdrachtGever = null;
             using (var connection = GetConnection())
@@ -509,7 +509,7 @@ namespace Dossier_Registratie.Repositories
                                     " FROM [OverledeneExtraOpdrachtgever] OO" +
                                     " INNER JOIN [OverledeneUitvaartleider] OU ON OU.UitvaartId = OO.uitvaartId" +
                                     " WHERE Uitvaartnummer=@uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -540,7 +540,7 @@ namespace Dossier_Registratie.Repositories
             }
             return opdrachtGever;
         }
-        public OverledeneVerzekeringModel GetOverlijdenVerzekeringByUitvaartId(string uitvaartId)
+        public OverledeneVerzekeringModel GetOverlijdenVerzekeringByUitvaartId(string UitvaartId)
         {
             OverledeneVerzekeringModel verzekeringGegevens = null;
             using (var connection = GetConnection())
@@ -553,7 +553,7 @@ namespace Dossier_Registratie.Repositories
                                       " INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OVI.UitvaartId" +
                                       " WHERE Uitvaartnummer = @uitvaartNummer";
 
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -569,7 +569,7 @@ namespace Dossier_Registratie.Repositories
             }
             return verzekeringGegevens;
         }
-        public OverledeneOpbarenModel GetOverlijdenOpbarenInfoByUitvaartId(string uitvaartId)
+        public OverledeneOpbarenModel GetOverlijdenOpbarenInfoByUitvaartId(string UitvaartId)
         {
             OverledeneOpbarenModel opbarenInfo = null;
 
@@ -584,7 +584,7 @@ namespace Dossier_Registratie.Repositories
                                         "FROM [OverledeneOpbaring] OO  " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OO.UitvaartId " +
                                         "WHERE Uitvaartnummer=@uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -613,7 +613,7 @@ namespace Dossier_Registratie.Repositories
             }
             return opbarenInfo;
         }
-        public OverledeneUitvaartModel GetOverlijdenUitvaartInfoByUitvaartId(string uitvaartId)
+        public OverledeneUitvaartModel GetOverlijdenUitvaartInfoByUitvaartId(string UitvaartId)
         {
             OverledeneUitvaartModel uitvaartGegevens = null;
             using (var connection = GetConnection())
@@ -631,7 +631,7 @@ namespace Dossier_Registratie.Repositories
                                         "FROM [OverledeneUitvaartInfo] OUI " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OUI.UitvaartId " +
                                         "WHERE Uitvaartnummer = @Uitvaartnummer";
-                command.Parameters.AddWithValue("@Uitvaartnummer", uitvaartId);
+                command.Parameters.AddWithValue("@Uitvaartnummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -700,7 +700,7 @@ namespace Dossier_Registratie.Repositories
             }
             return uitvaartMisc;
         }
-        public OverledeneAsbestemmingModel GetOverlijdenAsbestemmingInfoByUitvaartId(string uitvaartId)
+        public OverledeneAsbestemmingModel GetOverlijdenAsbestemmingInfoByUitvaartId(string UitvaartId)
         {
             OverledeneAsbestemmingModel asbestemmingGegevens = null;
             using (var connection = GetConnection())
@@ -713,7 +713,7 @@ namespace Dossier_Registratie.Repositories
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OA.UitvaartId " +
                                         "WHERE Uitvaartnummer = @uitvaartNummer";
 
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -1017,7 +1017,7 @@ namespace Dossier_Registratie.Repositories
             }
             return bloemenGegevens;
         }
-        public OverledeneWerkbonUitvaart GetOverlijdenWerkbonnenByUitvaartId(string uitvaartId)
+        public OverledeneWerkbonUitvaart GetOverlijdenWerkbonnenByUitvaartId(string UitvaartId)
         {
             OverledeneWerkbonUitvaart werkbonGegevens = null;
             using (var connection = GetConnection())
@@ -1029,7 +1029,7 @@ namespace Dossier_Registratie.Repositories
                                         "FROM [OverledeneWerkbon] OW " +
                                         "INNER JOIN OverledeneUitvaartleider OU ON OU.UitvaartId = OW.UitvaartId " +
                                         "WHERE Uitvaartnummer = @uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -1235,7 +1235,7 @@ namespace Dossier_Registratie.Repositories
             }
             return kostenbegrotingGegevens;
         }
-        public FactuurModel GetOverlijdenKostenbegrotingByUitvaartId(string uitvaartId)
+        public FactuurModel GetOverlijdenKostenbegrotingByUitvaartId(string UitvaartId)
         {
             FactuurModel kostenbegrotingGegevens = null;
             using (var connection = GetConnection())
@@ -1248,7 +1248,7 @@ namespace Dossier_Registratie.Repositories
                                         "INNER JOIN OverledeneUitvaartleider OU ON OFA.uitvaartId = OU.UitvaartId " +
                                         "LEFT JOIN OverledeneVerzerkeringInfo  OVI ON OFA.uitvaartId = OVI.uitvaartId " +
                                         "WHERE OU.Uitvaartnummer = @uitvaartNummer";
-                command.Parameters.AddWithValue("@uitvaartNummer", uitvaartId);
+                command.Parameters.AddWithValue("@uitvaartNummer", UitvaartId);
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
