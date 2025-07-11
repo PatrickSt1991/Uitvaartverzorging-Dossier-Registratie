@@ -26,9 +26,9 @@ namespace Dossier_Registratie.Interfaces
         string EditBijlages(OverledeneBijlagesModel bijlagesModel);
         void EditSteenhouwerij(OverledeneSteenhouwerijModel overledeneSteenhouwerijModel);
         void EditBloemen(OverledeneBloemenModel overledeneBloemenModel);
-        void EditWerkbonnen(OverledeneWerkbonUitvaart overledeneWerkbonModel);
+        void EditWerkbonnen(OverledeneWerkbonUitvaart overledeneWerkbonUitvaart);
         void EditUrnSieraden(OverledeneUrnSieradenModel overledeneUrnSieradenModel);
-        void EditFactuur(FactuurModel overledeneKostenbegrotingModel);
+        void EditFactuur(FactuurModel overledeneFactuurModel);
         void EditKlanttevredenheid(Klanttevredenheid klanttevredenheid);
         void EmployeeUpdate(WerknemersModel werknemerUpdate);
         void KistUpdate(KistenModel kistUpdate);

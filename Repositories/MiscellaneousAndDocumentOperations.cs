@@ -41,12 +41,20 @@ namespace Dossier_Registratie.Repositories
         {
             List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
 
-            string tableName = db switch
+            // Extracted command text per allowed db
+            string commandText = db switch
             {
-                "2024" => "[OudeEeftingData].[dbo].[data2024]",
-                "2023" => "[OudeEeftingData].[dbo].[data2023]",
+                "2024" => @"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+               FROM [OudeEeftingData].[dbo].[data2024] 
+               WHERE [Uitvaartnummer] = @uitvaartnummer",
+
+                "2023" => @"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+               FROM [OudeEeftingData].[dbo].[data2023] 
+               WHERE [Uitvaartnummer] = @uitvaartnummer",
+
                 _ => throw new ArgumentException("Invalid database identifier", nameof(db))
             };
+
 
             using (var connection = GetArchiefConnection())
             using (var command = new SqlCommand())
@@ -54,9 +62,7 @@ namespace Dossier_Registratie.Repositories
                 await connection.OpenAsync();
                 command.Connection = connection;
 
-                command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
-                                    FROM {tableName} 
-                                    WHERE [Uitvaartnummer] = @uitvaartnummer";
+                command.CommandText = commandText;
 
                 if (!int.TryParse(searchNumber, out int searchNumberValue))
                     throw new ArgumentException("Search number must be a valid integer.", nameof(searchNumber));
@@ -88,10 +94,16 @@ namespace Dossier_Registratie.Repositories
         {
             List<OverledeneSearchSurname> records = new List<OverledeneSearchSurname>();
 
-            string tableName = db switch
+            string commandText = db switch
             {
-                "2024" => "[OudeEeftingData].[dbo].[data2024]",
-                "2023" => "[OudeEeftingData].[dbo].[data2023]",
+                "2024" => @"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+               FROM [OudeEeftingData].[dbo].[data2024] 
+               WHERE [1 Naam overledene] LIKE @achternaam",
+
+                "2023" => @"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum 
+               FROM [OudeEeftingData].[dbo].[data2023] 
+               WHERE [1 Naam overledene] LIKE @achternaam",
+
                 _ => throw new ArgumentException("Invalid database identifier", nameof(db))
             };
 
@@ -101,10 +113,7 @@ namespace Dossier_Registratie.Repositories
                 await connection.OpenAsync();
                 command.Connection = connection;
 
-                command.CommandText = $@"SELECT [Uitvaartnummer], [Uitvaartverzorger], [1 Naam overledene] as achternaam, [1 Geboortedatum] as geboortedatum,
-                                        [1 Aanhef] as aanhef, [1 Voornamen] as voornamen, [1 Tussenvoegsel] as tussenvoegsel 
-                                        FROM {tableName} 
-                                        WHERE [1 Naam overledene] LIKE @achternaam";
+                command.CommandText = commandText;
 
                 command.Parameters.AddWithValue("@achternaam", "%" + achternaam + "%");
 

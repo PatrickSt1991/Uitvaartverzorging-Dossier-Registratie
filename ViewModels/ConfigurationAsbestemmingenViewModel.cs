@@ -14,7 +14,6 @@ namespace Dossier_Registratie.ViewModels
     public class ConfigurationAsbestemmingenViewModel : ViewModelBase
     {
         private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
-        private readonly ISearchOperations searchRepository;
         private readonly ICreateOperations createRepository;
         private readonly IUpdateOperations updateRepository;
         private readonly IDeleteAndActivateDisableOperations commandRepository;

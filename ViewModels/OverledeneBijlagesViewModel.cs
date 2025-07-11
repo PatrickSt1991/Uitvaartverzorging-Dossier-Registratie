@@ -497,7 +497,7 @@ namespace Dossier_Registratie.ViewModels
                         VerlofDossier.DocumentName = "Verlof";
                         VerlofDossier.DocumentType = "PDF";
                         VerlofDossier.DocumentUrl = destinationFilePath;
-                        VerlofDossier.DocumentHash = Checksum.GetMD5Checksum(selectedFilePath);
+                        VerlofDossier.DocumentHash = Checksum.GetSha256Checksum(selectedFilePath);
                         VerlofDossier.DocumentInconsistent = false;
                         VerlofDossier.IsDeleted = false;
 
@@ -909,7 +909,7 @@ namespace Dossier_Registratie.ViewModels
                 return (string.Empty, true);
 
             string savedHash = documentInfo.DocumentHash;
-            string currentHash = Checksum.GetMD5Checksum(tag);
+            string currentHash = Checksum.GetSha256Checksum(tag);
 
             if (savedHash != currentHash)
             {
@@ -1193,7 +1193,7 @@ namespace Dossier_Registratie.ViewModels
                         continue;
                     }
 
-                    string currentHash = Checksum.GetMD5Checksum(model.DestinationFile);
+                    string currentHash = Checksum.GetSha256Checksum(model.DestinationFile);
 
                     docResults.DocumentType = model.FileType;
                     docResults.DocumentUrl = model.DestinationFile;

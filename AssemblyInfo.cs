@@ -9,4 +9,4 @@ using System.Windows;
                                               //(used if a resource is not found in the page,
                                               // app, or any theme specific resource dictionaries)
 )]
-[assembly: AssemblyVersion("4.0.9.9")]
+[assembly: AssemblyVersion("4.1.0.0")]

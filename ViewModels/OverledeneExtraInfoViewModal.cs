@@ -28,7 +28,6 @@ namespace Dossier_Registratie.ViewModels
         private ModelCompare modelCompare;
         private ComboBoxItem _selectedMaritalStatus;
         private bool isCreateExtraContactPopupOpen;
-        private bool extraContact;
         private bool _correctAccessOrNotCompleted = true;
 
         public ComboBoxItem SelectedMaritalStatus
@@ -272,7 +271,6 @@ namespace Dossier_Registratie.ViewModels
             var OpdrachtgeverExtraPersoonsGegevensResult = searchRepository.GetExtraOpdrachtgeverByUitvaartId(uitvaartNummer);
             if (OpdrachtgeverExtraPersoonsGegevensResult != null)
             {
-                extraContact = true;
                 ExtraOpdrachtgeverPersoonsgegevens.Id = OpdrachtgeverExtraPersoonsGegevensResult.Id;
                 ExtraOpdrachtgeverPersoonsgegevens.UitvaartId = OpdrachtgeverExtraPersoonsGegevensResult.UitvaartId;
                 ExtraOpdrachtgeverPersoonsgegevens.OpdrachtgeverBSN = OpdrachtgeverExtraPersoonsGegevensResult.OpdrachtgeverBSN;

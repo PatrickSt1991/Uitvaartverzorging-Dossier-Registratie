@@ -200,13 +200,23 @@ namespace Dossier_Registratie.ViewModels
             get { return werkbonPrintButtonVisable; }
             set { werkbonPrintButtonVisable = value; OnPropertyChanged(nameof(WerkbonPrintButtonVisable)); }
         }
+
         public Visibility LintTextVisable
         {
             get
             {
-                return (IsLintChecked) ? Visibility.Visible : Visibility.Collapsed;
+                return _lintTextVisable;
+            }
+            set
+            {
+                if (_lintTextVisable != value)
+                {
+                    _lintTextVisable = value;
+                    OnPropertyChanged(nameof(LintTextVisable)); // if using INotifyPropertyChanged
+                }
             }
         }
+
         public string Lint1
         {
             get => _lint1;
@@ -1345,7 +1355,7 @@ namespace Dossier_Registratie.ViewModels
                 docResults.DocumentType = "Word";
                 docResults.DocumentName = "Bloemen";
                 docResults.DocumentUrl = BloemenDocModel.DestinationFile;
-                docResults.DocumentHash = Checksum.GetMD5Checksum(BloemenDocModel.DestinationFile);
+                docResults.DocumentHash = Checksum.GetSha256Checksum(BloemenDocModel.DestinationFile);
 
                 if (initialCreation)
                 {

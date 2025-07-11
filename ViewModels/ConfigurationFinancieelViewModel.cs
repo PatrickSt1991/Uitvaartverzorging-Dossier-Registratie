@@ -51,9 +51,7 @@ namespace Dossier_Registratie.ViewModels
 
         private readonly IMiscellaneousAndDocumentOperations miscellaneousRepository;
         private readonly ISearchOperations searchRepository;
-        private readonly ICreateOperations createRepository;
         private readonly IUpdateOperations updateRepository;
-        private readonly IDeleteAndActivateDisableOperations commandRepository;
 
         private bool isFilterFinancieelPopupOpen;
         private bool isGeneratingFilePopupOpen;
@@ -392,9 +390,7 @@ namespace Dossier_Registratie.ViewModels
         {
             miscellaneousRepository = new MiscellaneousAndDocumentOperations();
             searchRepository = new SearchOperations();
-            createRepository = new CreateOperations();
             updateRepository = new UpdateOperations();
-            commandRepository = new DeleteAndActivateDisableOperations();
 
             SelectedBloemUitbetaling = new OverledeneBloemenModel();
             SelectedSteenhouwerUitbetaling = new OverledeneSteenhouwerijModel();

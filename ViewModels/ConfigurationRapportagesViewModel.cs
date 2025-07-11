@@ -642,7 +642,6 @@ namespace Dossier_Registratie.ViewModels
         }
         public void VerzekeringRapportageData(string startNummer, string endNummer)
         {
-            Random rand = new Random();
             VerzekeringSeries.Clear();
             XAxes.Clear();
             YAxes.Clear();
@@ -658,13 +657,11 @@ namespace Dossier_Registratie.ViewModels
 
             Func<int, SKColor> GenerateColor = (index) =>
             {
-                lock (rand)
-                {
-                    return new SKColor(
-                        (byte)rand.Next(0, 255),
-                        (byte)rand.Next(0, 255),
-                        (byte)rand.Next(0, 255));
-                }
+                var rnd = Random.Shared;
+                return new SKColor(
+                    (byte)rnd.Next(0, 255),
+                    (byte)rnd.Next(0, 255),
+                    (byte)rnd.Next(0, 255));
             };
 
             var verzekeringResults = miscellaneousRepository.GetRapportagesVerzekeringWoonplaats(startNummer, endNummer);
@@ -691,7 +688,6 @@ namespace Dossier_Registratie.ViewModels
                     Stroke = null,
                 });
 
-                // Add the results to the observable collection
                 VerzekeringRapportages.Add(new RapportagesVerzekering
                 {
                     VerzekeringHerkomst = groupedResult.VerzekeringHerkomst,
@@ -699,7 +695,6 @@ namespace Dossier_Registratie.ViewModels
                 });
             }
 
-            // Configure X-Axis (insurer names), but hide the labels
             XAxes.Add(new Axis
             {
                 Labels = Array.Empty<string>(),  // Set to empty to hide labels
@@ -708,7 +703,6 @@ namespace Dossier_Registratie.ViewModels
                 TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35))
             });
 
-            // Configure Y-Axis (numeric values starting from 0)
             YAxes.Add(new Axis
             {
                 MinLimit = 0,  // Y-axis starts at 0
@@ -717,6 +711,7 @@ namespace Dossier_Registratie.ViewModels
                 TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35))
             });
         }
+
         public void VerzekeringWoonplaatsRapportageData(string startNummer, string endNummer)
         {
             VerzekeringWoonplaatsRapportages.Clear();
